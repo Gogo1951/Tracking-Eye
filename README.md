@@ -44,7 +44,7 @@ https://www.curseforge.com/wow/addons/tracking-eye-classic-era
 
 🟢 World of Warcraft Classic : Hardcore Anniversary Realms
 
-🔴 Cataclysm Classic
+🔴 Mists of Pandaria Classic
 
 🔴 World of Warcraft
 
