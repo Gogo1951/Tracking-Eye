@@ -9,7 +9,7 @@
 
 ## SavedVariablesPerCharacter: TrackingEyeDB
 
-#Tracking Eye
+# Tracking Eye
 TrackingEye.lua
 
 # Feedback Welcome! (=
