@@ -1,12 +1,17 @@
 ## Title: Tracking Eye
 ## Notes: A simple tracking menu for the minimap.
-## Author: Linden Ryuujin, Gogo1951
-## Version: @project-version@
-
-## X-Curse-Project-ID: 1129680
+## Author: Gogo1951
 
 ## Interface: 11508
+## Version: @project-version@
+## X-Curse-Project-ID: 1129680
 
 ## SavedVariablesPerCharacter: TrackingEyeDB
 
+#Tracking Eye
 TrackingEye.lua
+
+# Feedback Welcome! (=
+# Tracking Eye on CurseForge // https://www.curseforge.com/wow/addons/tracking-eye-classic
+# Tracking Eye on GitHub // https://github.com/Gogo1951/Tracking-Eye
+# Tracking Eye on Discord // https://discord.gg/eh8hKq992Q
