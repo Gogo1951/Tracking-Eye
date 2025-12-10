@@ -1,6 +1,7 @@
 ## Title: Tracking Eye
 ## Notes: A simple tracking menu for the minimap.
 ## Author: Gogo1951
+## X-License: MIT
 
 ## Interface: 11508
 ## Version: @project-version@
