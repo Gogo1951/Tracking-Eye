@@ -3,24 +3,19 @@ package-as: TrackingEye
 
 externals:
     Includes/LibStub:
-        url: https://github.com/Stanzilla/LibStub
-        tag: latest
+        url: https://repos.wowace.com/wow/libstub/trunk
         
     Includes/CallbackHandler-1.0:
-        url: https://github.com/BigWigsMods/CallbackHandler-1.0
-        tag: latest
+        url: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
 
     Includes/LibDataBroker-1.1:
-        url: https://github.com/tekkub/libdatabroker-1-1
-        tag: latest
+        url: https://repos.wowace.com/wow/libdatabroker-1-1/trunk
 
     Includes/LibDBIcon-1.0:
-        url: https://github.com/golban/LibDBIcon-1.0
-        tag: latest
+        url: https://repos.wowace.com/wow/libdbicon-1-0/trunk
 
     Includes/LibUIDropDownMenu:
-        url: https://github.com/linuxfray/LibUIDropDownMenu
-        tag: latest
+        url: https://repos.wowace.com/wow/libuidropdownmenu/trunk
 
 ignore:
     - .git
