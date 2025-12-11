@@ -1,27 +1,6 @@
 # .pkgmeta
 package-as: TrackingEye
 
-externals:
-  Includes/LibStub:
-    url: svn://svn.wowace.com/wow/libstub/mainline/trunk
-    tag: latest
-
-  Includes/CallbackHandler-1.0:
-    url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
-    tag: latest
-
-  Includes/LibDataBroker-1.1:
-    url: svn://svn.wowace.com/wow/libdatabroker-1-1/mainline/trunk
-    tag: latest
-
-  Includes/LibDBIcon-1.0:
-    url: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk
-    tag: latest
-
-  Includes/LibUIDropDownMenu:
-    url: svn://svn.wowace.com/wow/libuidropdownmenu/mainline/trunk
-    tag: latest
-
 ignore:
   - .git
   - .gitignore
