@@ -1,6 +1,27 @@
 # .pkgmeta
 package-as: TrackingEye
 
+externals:
+    Includes/LibStub:
+        url: https://github.com/Stanzilla/LibStub
+        tag: latest
+        
+    Includes/CallbackHandler-1.0:
+        url: https://github.com/BigWigsMods/CallbackHandler-1.0
+        tag: latest
+
+    Includes/LibDataBroker-1.1:
+        url: https://github.com/tekkub/libdatabroker-1-1
+        tag: latest
+
+    Includes/LibDBIcon-1.0:
+        url: https://github.com/golban/LibDBIcon-1.0
+        tag: latest
+
+    Includes/LibUIDropDownMenu:
+        url: https://github.com/linuxfray/LibUIDropDownMenu
+        tag: latest
+
 ignore:
     - .git
     - .gitignore
