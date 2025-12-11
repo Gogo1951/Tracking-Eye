@@ -1,29 +1,17 @@
 local ADDON_NAME = "TrackingEye"
-local addonTable = ...
 
+--------------------------------------------------------------------------------
+-- Dependencies
+--------------------------------------------------------------------------------
+local LibStub = LibStub
+local LDB = LibStub("LibDataBroker-1.1")
+local LDBIcon = LibStub("LibDBIcon-1.0")
+
+--------------------------------------------------------------------------------
+-- Constants & Data
+--------------------------------------------------------------------------------
 local DEFAULT_MINIMAP_ICON = "Interface\\Icons\\inv_misc_map_01"
-local MINIMAP_RADIUS = 80
 local DRUID_CAT_FORM_SPELL_ID = 768
-
-local function InitializeSavedVariables()
-    if not _G[ADDON_NAME .. "DB"] or type(_G[ADDON_NAME .. "DB"]) ~= "table" then
-        _G[ADDON_NAME .. "DB"] = {}
-    end
-    local db = _G[ADDON_NAME .. "DB"]
-
-    if not db.minimapPos or type(db.minimapPos) ~= "number" then
-        db.minimapPos = 159.03
-    end
-    if db.selectedSpellId and type(db.selectedSpellId) ~= "number" then
-        db.selectedSpellId = nil
-    end
-end
-
-if not IsAddOnLoaded("Blizzard_UIDropDownMenu") then
-    LoadAddOn("Blizzard_UIDropDownMenu")
-end
-
-local dropdown = CreateFrame("Frame", ADDON_NAME .. "Dropdown", UIParent, "UIDropDownMenuTemplate")
 
 local trackingSpells = {
     [2383] = "Find Herbs",
@@ -36,11 +24,29 @@ local trackingSpells = {
     [19882] = "Track Giants",
     [19885] = "Track Hidden",
     [19883] = "Track Humanoids",
-    [5225] = "Track Humanoids",
+    [5225] = "Track Humanoids", -- Druid
     [19884] = "Track Undead",
     [5500] = "Sense Demons",
-    [5502] = "Sense Undead",
+    [5502] = "Sense Undead"
 }
+
+local TrackingEyeDB
+local trackingLauncher
+local isRetryPending = false
+local retryCount = 0
+
+--------------------------------------------------------------------------------
+-- Helper Functions
+--------------------------------------------------------------------------------
+
+local function HasAnyTrackingSpell()
+    for spellId, _ in pairs(trackingSpells) do
+        if IsPlayerSpell(spellId) then
+            return true
+        end
+    end
+    return false
+end
 
 local function IsDruidInCatForm()
     if select(2, UnitClass("player")) ~= "DRUID" then
@@ -55,62 +61,128 @@ local function IsDruidInCatForm()
     return false
 end
 
-local function ReapplyTracking()
-    local db = _G[ADDON_NAME .. "DB"]
-    local spellId = db.selectedSpellId
-    if spellId and IsPlayerSpell(spellId) then
-        if spellId == 5225 and not IsDruidInCatForm() then
-            return
+local function IsPlayerStealthed()
+    if IsStealthed then
+        return IsStealthed()
+    end
+    return false
+end
+
+local function IsPlayerCasting()
+    return UnitCastingInfo("player") ~= nil or UnitChannelInfo("player") ~= nil
+end
+
+local function GetTrackingIconTexture()
+    local selectedId = TrackingEyeDB.selectedSpellId
+    if selectedId then
+        local icon = GetSpellTexture(selectedId)
+        if icon then
+            return icon
         end
-        CastSpellByID(spellId)
+    end
+    return DEFAULT_MINIMAP_ICON
+end
+
+local function UpdateButtonIcon()
+    if trackingLauncher then
+        trackingLauncher.icon = GetTrackingIconTexture()
     end
 end
 
 local function ClearTrackingSelection()
-    local db = _G[ADDON_NAME .. "DB"]
     CancelTrackingBuff()
-    db.selectedSpellId = nil
+    TrackingEyeDB.selectedSpellId = nil
+    UpdateButtonIcon()
 end
 
-local function GetMinimapOffset(angle, radius)
-    local rad = math.rad(angle)
-    return math.cos(rad) * radius, math.sin(rad) * radius
+local function ToggleAutoTracking()
+    TrackingEyeDB.autoTracking = not TrackingEyeDB.autoTracking
 end
+
+--------------------------------------------------------------------------------
+-- Core Logic: Reapply Tracking
+--------------------------------------------------------------------------------
+
+local function ReapplyTracking(isAutoTrigger)
+    -- If triggered automatically (events), respect the user's setting
+    if isAutoTrigger and not TrackingEyeDB.autoTracking then
+        return
+    end
+
+    local spellId = TrackingEyeDB.selectedSpellId
+    if not spellId then
+        return
+    end
+
+    if UnitIsDeadOrGhost("player") or IsPlayerStealthed() or IsPlayerCasting() or UnitAffectingCombat("player") then
+        return
+    end
+
+    local start, duration = GetSpellCooldown(spellId)
+    if start > 0 and duration > 0 then
+        if not isRetryPending and retryCount < 5 then
+            isRetryPending = true
+            retryCount = retryCount + 1
+            local remaining = (start + duration) - GetTime()
+            C_Timer.After(
+                remaining + 0.1,
+                function()
+                    isRetryPending = false
+                    ReapplyTracking(isAutoTrigger)
+                end
+            )
+        end
+        return
+    end
+
+    retryCount = 0
+
+    local currentTracking = GetTrackingTexture()
+    local selectedIcon = GetSpellTexture(spellId)
+
+    if currentTracking and selectedIcon and currentTracking == selectedIcon then
+        return
+    end
+
+    if IsPlayerSpell(spellId) then
+        if spellId == 5225 and not IsDruidInCatForm() then
+            return
+        end
+        
+        pcall(CastSpellByID, spellId)
+    end
+end
+
+--------------------------------------------------------------------------------
+-- Dropdown Menu
+--------------------------------------------------------------------------------
+
+if not IsAddOnLoaded("Blizzard_UIDropDownMenu") then
+    LoadAddOn("Blizzard_UIDropDownMenu")
+end
+
+local dropdown = CreateFrame("Frame", ADDON_NAME .. "Dropdown", UIParent, "UIDropDownMenuTemplate")
 
 local function BuildMenu(self, level)
     if level ~= 1 then
         return
     end
 
-    local db = _G[ADDON_NAME .. "DB"]
-    local info = UIDropDownMenu_CreateInfo()
-
-    info.text = "Select Tracking Ability"
-    info.isTitle = true
-    info.notCheckable = true
-    UIDropDownMenu_AddButton(info, level)
-
+    local info
     local spellList = {}
+    
     for id, name in pairs(trackingSpells) do
         table.insert(spellList, {id = id, name = name})
     end
-    table.sort(
-        spellList,
-        function(a, b)
-            return a.name < b.name
-        end
-    )
-
-    local hasAnyAvailableTracking = false
+    
+    table.sort(spellList, function(a, b) return a.name < b.name end)
 
     for _, spellData in ipairs(spellList) do
         local spellId = spellData.id
         local spellName = spellData.name
-
         local isAvailable = IsPlayerSpell(spellId) and (spellId ~= 5225 or IsDruidInCatForm())
 
         if isAvailable then
-            hasAnyAvailableTracking = true
             local icon = GetSpellTexture(spellId)
 
             info = UIDropDownMenu_CreateInfo()
@@ -119,146 +191,148 @@ local function BuildMenu(self, level)
                 info.text = "|T" .. icon .. ":16:16:0:0:64:64:5:59:5:59|t " .. spellName
             end
             info.value = {spellId = spellId}
-            info.checked = (db.selectedSpellId == spellId)
+            info.checked = (TrackingEyeDB.selectedSpellId == spellId)
             info.func = function(self)
                 local idToCast = self.value.spellId
-                local current_db = _G[ADDON_NAME .. "DB"]
-                current_db.selectedSpellId = idToCast
-                CastSpellByID(idToCast)
+                TrackingEyeDB.selectedSpellId = idToCast
+                UpdateButtonIcon()
+                ReapplyTracking(false)
                 CloseDropDownMenus()
             end
             UIDropDownMenu_AddButton(info, level)
         end
     end
+end
 
-    if not hasAnyAvailableTracking then
-        info = UIDropDownMenu_CreateInfo()
-        info.text = "No Tracking Skills Available"
-        info.disabled = true
-        info.notCheckable = true
-        UIDropDownMenu_AddButton(info, level)
+UIDropDownMenu_Initialize(dropdown, BuildMenu, "MENU")
+
+--------------------------------------------------------------------------------
+-- LDB Initialization
+--------------------------------------------------------------------------------
+
+local function InitLDB()
+    if not HasAnyTrackingSpell() then
+        return
     end
-end
 
-local button = CreateFrame("Button", ADDON_NAME .. "MinimapButton", Minimap)
-button:SetSize(32, 32)
-button:SetFrameStrata("MEDIUM")
-button:SetMovable(true)
-button:EnableMouse(true)
-button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-button:RegisterForDrag("LeftButton")
-button:SetClampedToScreen(true)
-button:Hide()
+    trackingLauncher = LDB:NewDataObject(ADDON_NAME, {
+        type = "launcher",
+        text = "Tracking Eye",
+        icon = GetTrackingIconTexture(),
+        OnTooltipShow = function(tooltip)
+            tooltip:AddLine("Tracking Eye")
+            tooltip:AddLine(" ")
 
-button.icon = button:CreateTexture(nil, "ARTWORK")
-button.icon:SetTexture(DEFAULT_MINIMAP_ICON)
-button.icon:SetAllPoints()
+            if TrackingEyeDB.selectedSpellId then
+                local name = trackingSpells[TrackingEyeDB.selectedSpellId] or "Unknown"
+                local icon = GetSpellTexture(TrackingEyeDB.selectedSpellId)
+                tooltip:AddLine("|T" .. icon .. ":16|t |cFFFFFFFF" .. name .. "|r")
+            else
+                tooltip:AddLine("|cFFCCCCCCNo Tracking Selected|r")
+            end
 
-local function ShowTooltip(self)
-    GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
-    GameTooltip:AddLine(ADDON_NAME)
-    GameTooltip:AddLine(" ")
-    GameTooltip:AddLine("Left-click : Select Tracking", 1, 1, 1)
-    GameTooltip:AddLine("Right-click : Clear Tracking", 1, 1, 1)
-    GameTooltip:Show()
-end
-
-button:SetScript("OnEnter", ShowTooltip)
-button:SetScript("OnLeave", GameTooltip_Hide)
-
-button:SetScript(
-    "OnClick",
-    function(self, buttonPressed)
-        if buttonPressed == "RightButton" then
-            ClearTrackingSelection()
-        else
-            UIDropDownMenu_Initialize(dropdown, BuildMenu, "MENU")
-            ToggleDropDownMenu(1, nil, dropdown, "cursor", 0, 0)
+            tooltip:AddLine(" ")
+            local autoColor = TrackingEyeDB.autoTracking and "|cFF00FF00Enabled|r" or "|cFFFF0000Disabled|r"
+            tooltip:AddDoubleLine("Persistent Tracking", autoColor)
+            tooltip:AddLine(" ")
+            tooltip:AddDoubleLine("|cFFFFFF00Left-Click|r", "|cFFFFFFFFTracking Menu|r")
+            tooltip:AddDoubleLine("|cFFFFFF00Right-Click|r", "|cFFFFFFFFClear Tracking|r")
+            tooltip:AddDoubleLine("|cFFFFFF00Middle-Click|r", "|cFFFFFFFFToggle Persistent Tracking|r")
+        end,
+        OnClick = function(self, button)
+            if button == "RightButton" then
+                ClearTrackingSelection()
+            elseif button == "MiddleButton" then
+                ToggleAutoTracking()
+                local onEnter = self:GetScript("OnEnter")
+                if onEnter then onEnter(self) end
+            else
+                local dropDown = _G[ADDON_NAME .. "Dropdown"]
+                ToggleDropDownMenu(1, nil, dropDown, self, 0, 0)
+            end
         end
-    end
-)
+    })
 
-local function OnDragUpdate(self)
-    local db = _G[ADDON_NAME .. "DB"]
-    local mx, my = Minimap:GetCenter()
-    local px, py = GetCursorPosition()
-    local scale = UIParent:GetEffectiveScale()
-    px, py = px / scale, py / scale
-    local angle = math.deg(math.atan2(py - my, px - mx))
-    if angle < 0 then
-        angle = angle + 360
+    if LDBIcon then
+        LDBIcon:Register(ADDON_NAME, trackingLauncher, TrackingEyeDB)
     end
-    db.minimapPos = angle
-    local x, y = GetMinimapOffset(angle, MINIMAP_RADIUS)
-    self:ClearAllPoints()
-    self:SetPoint("CENTER", Minimap, "CENTER", x, y)
 end
 
-button:SetScript(
-    "OnDragStart",
-    function(self)
-        self:SetScript("OnUpdate", OnDragUpdate)
-    end
-)
+--------------------------------------------------------------------------------
+-- Event Handling & Synchronization
+--------------------------------------------------------------------------------
 
-button:SetScript(
-    "OnDragStop",
-    function(self)
-        self:SetScript("OnUpdate", nil)
-        OnDragUpdate(self)
-    end
-)
+local function SyncFromGameStatus()
+    local currentTexture = GetTrackingTexture()
+    if not currentTexture then return end
 
-local function PositionButton()
-    local db = _G[ADDON_NAME .. "DB"]
-    local angle = db.minimapPos
-    local x, y = GetMinimapOffset(angle, MINIMAP_RADIUS)
-    button:ClearAllPoints()
-    button:SetPoint("CENTER", Minimap, "CENTER", x, y)
-end
-
-local function UpdateButtonIcon()
-    local currentTrackingTexture = GetTrackingTexture()
-    if currentTrackingTexture then
-        button.icon:SetTexture(currentTrackingTexture)
-    else
-        button.icon:SetTexture(DEFAULT_MINIMAP_ICON)
+    local found = false
+    for spellId, _ in pairs(trackingSpells) do
+        if GetSpellTexture(spellId) == currentTexture and IsPlayerSpell(spellId) then
+            TrackingEyeDB.selectedSpellId = spellId
+            UpdateButtonIcon()
+            found = true
+            break
+        end
     end
 end
 
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("ADDON_LOADED")
 eventFrame:RegisterEvent("PLAYER_LOGIN")
-eventFrame:RegisterEvent("PLAYER_ALIVE")
-eventFrame:RegisterEvent("PLAYER_UNGHOST")
+eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 eventFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 eventFrame:RegisterEvent("MINIMAP_UPDATE_TRACKING")
+eventFrame:RegisterEvent("PLAYER_UNGHOST")
+eventFrame:RegisterEvent("PLAYER_ALIVE")
+eventFrame:RegisterEvent("UPDATE_STEALTH")
 
-eventFrame:SetScript(
-    "OnEvent",
-    function(self, event, ...)
-        local arg1 = ...
-        local db = _G[ADDON_NAME .. "DB"]
+eventFrame:SetScript("OnEvent", function(self, event, ...)
+    local arg1 = ...
 
-        if event == "ADDON_LOADED" and arg1 == ADDON_NAME then
-            InitializeSavedVariables()
-            PositionButton()
-            button:Show()
-        elseif event == "PLAYER_LOGIN" then
-            C_Timer.After(2, ReapplyTracking)
-            UpdateButtonIcon()
-        elseif event == "PLAYER_ALIVE" or event == "PLAYER_UNGHOST" then
-            C_Timer.After(0.5, ReapplyTracking)
-        elseif event == "UPDATE_SHAPESHIFT_FORM" then
-            if db.selectedSpellId == 5225 and IsDruidInCatForm() then
-                if not GetTrackingTexture() then
-                    ReapplyTracking()
-                end
-            end
+    if event == "ADDON_LOADED" and arg1 == ADDON_NAME then
+        TrackingEyeDB = _G[ADDON_NAME .. "DB"]
 
-            UpdateButtonIcon()
-        elseif event == "MINIMAP_UPDATE_TRACKING" then
-            UpdateButtonIcon()
+        if not TrackingEyeDB or type(TrackingEyeDB) ~= "table" then
+            TrackingEyeDB = {}
+        end
+
+        if type(TrackingEyeDB.minimapPos) == "table" then
+            TrackingEyeDB.minimapPos = nil
+        end
+
+        if TrackingEyeDB.hide == nil then
+            TrackingEyeDB.hide = false
+        end
+        if TrackingEyeDB.autoTracking == nil then
+            TrackingEyeDB.autoTracking = true
+        end
+        
+    elseif event == "PLAYER_LOGIN" then
+        InitLDB()
+        SyncFromGameStatus()
+        
+    elseif event == "MINIMAP_UPDATE_TRACKING" then
+        SyncFromGameStatus()
+        
+    elseif event == "PLAYER_ENTERING_WORLD" then
+        C_Timer.After(1.0, function()
+            SyncFromGameStatus()
+            ReapplyTracking(true)
+        end)
+        
+    elseif event == "PLAYER_REGEN_ENABLED" or 
+           event == "UPDATE_STEALTH" or 
+           event == "PLAYER_UNGHOST" or 
+           event == "PLAYER_ALIVE" then
+        C_Timer.After(0.5, function()
+            ReapplyTracking(true)
+        end)
+        
+    elseif event == "UPDATE_SHAPESHIFT_FORM" then
+        if TrackingEyeDB.selectedSpellId == 5225 and IsDruidInCatForm() then
+            ReapplyTracking(true)
         end
     end
-)
+end)
