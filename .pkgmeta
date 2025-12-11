@@ -6,7 +6,7 @@ externals:
         url: https://repos.curseforge.com/wow/libstub
         tag: latest
 
-Includes/CallbackHandler-1.0:
+    Includes/CallbackHandler-1.0:
         url: https://repos.curseforge.com/wow/callbackhandler
         tag: latest
 
