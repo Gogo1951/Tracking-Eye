@@ -235,9 +235,9 @@ local function InitLDB()
             local autoColor = TrackingEyeDB.autoTracking and "|cFF00FF00Enabled|r" or "|cFFFF0000Disabled|r"
             tooltip:AddDoubleLine("Persistent Tracking", autoColor)
             tooltip:AddLine(" ")
-            tooltip:AddDoubleLine("|cFFFFFF00Left-Click|r", "|cFFFFFFFFTracking Menu|r")
-            tooltip:AddDoubleLine("|cFFFFFF00Right-Click|r", "|cFFFFFFFFClear Tracking|r")
-            tooltip:AddDoubleLine("|cFFFFFF00Middle-Click|r", "|cFFFFFFFFToggle Persistent Tracking|r")
+            tooltip:AddDoubleLine("|cFF66BBFFLeft-Click|r", "|cFFFFFFFFTracking Menu|r")
+            tooltip:AddDoubleLine("|cFF66BBFFRight-Click|r", "|cFFFFFFFFClear Tracking|r")
+            tooltip:AddDoubleLine("|cFF66BBFFMiddle-Click|r", "|cFFFFFFFFToggle Persistent Tracking|r")
         end,
         OnClick = function(self, button)
             if button == "RightButton" then
