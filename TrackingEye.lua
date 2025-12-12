@@ -220,7 +220,11 @@ local function InitLDB()
         text = "Tracking Eye",
         icon = GetTrackingIconTexture(),
         OnTooltipShow = function(tooltip)
-            tooltip:AddLine("Tracking Eye")
+            local version = "@project-version@"
+            if version:find("project-version", 1, true) then 
+                version = "Dev" 
+            end
+            tooltip:AddDoubleLine(ADDON_NAME, "|cFFAAAAAA" .. version .. "|r", 1, 0.82, 0, 1, 1, 1)
             tooltip:AddLine(" ")
 
             if TrackingEyeDB.selectedSpellId then
