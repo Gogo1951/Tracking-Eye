@@ -232,16 +232,16 @@ local function InitLDB()
                 local icon = GetSpellTexture(TrackingEyeDB.selectedSpellId)
                 tooltip:AddLine("|T" .. icon .. ":16|t |cFFFFFFFF" .. name .. "|r")
             else
-                tooltip:AddLine("|cFFCCCCCCNo Tracking Selected|r")
+                tooltip:AddLine("|cFFAAAAAANo Tracking Selected|r")
             end
 
             tooltip:AddLine(" ")
             local autoColor = TrackingEyeDB.autoTracking and "|cFF00FF00Enabled|r" or "|cFFFF0000Disabled|r"
             tooltip:AddDoubleLine("Persistent Tracking", autoColor)
             tooltip:AddLine(" ")
-            tooltip:AddDoubleLine("|cFF66BBFFLeft-Click|r", "|cFFFFFFFFTracking Menu|r")
-            tooltip:AddDoubleLine("|cFF66BBFFRight-Click|r", "|cFFFFFFFFClear Tracking|r")
-            tooltip:AddDoubleLine("|cFF66BBFFMiddle-Click|r", "|cFFFFFFFFToggle Persistent Tracking|r")
+            tooltip:AddDoubleLine("|cFF00BBFFLeft-Click|r", "|cFFFFFFFFTracking Menu|r")
+            tooltip:AddDoubleLine("|cFF00BBFFRight-Click|r", "|cFFFFFFFFClear Tracking|r")
+            tooltip:AddDoubleLine("|cFF00BBFFMiddle-Click|r", "|cFFFFFFFFToggle Persistent Tracking|r")
         end,
         OnClick = function(self, button)
             if button == "RightButton" then
