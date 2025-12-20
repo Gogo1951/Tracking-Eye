@@ -6,7 +6,7 @@ This add-on adds a handy tracking icon to your minimap with a button that lets y
 
 <img width="233" alt="image" src="https://github.com/user-attachments/assets/9d432d0c-1f48-4678-a5d3-12aafc8fc685" />
 
-<img width="350" alt="image" src="https://github.com/user-attachments/assets/8b9c989f-0d7f-43eb-9e8e-7ffd485f438c" />
+<img width="350" alt="image" src="https://github.com/user-attachments/assets/2be43dbc-bbfe-42fa-a9b3-406327eace89" />
 
 💀 When you resurrect, Tracking Eye will attempt to reapply the tracking ability you were using before you died.
 
