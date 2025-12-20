@@ -10,9 +10,11 @@ This add-on adds a handy tracking icon to your minimap with a button that lets y
 
 🎯 Free Placement Mode: Want to replace the default tracking icon? Middle-Click to detach the icon and place it anywhere on your screen—perfect for overlaying the default UI in Classic Era.
 
+Tracking Eye automatically pauses itself when you are in combat.
+
 <img width="350" alt="image" src="https://github.com/user-attachments/assets/d056e8e1-ea1f-40e5-b88e-be427f2c106e" />
 
-<img width="233" alt="image" src="https://github.com/user-attachments/assets/9d432d0c-1f48-4678-a5d3-12aafc8fc685" />
+<img width="200" alt="image" src="https://github.com/user-attachments/assets/de98982b-d787-4fa3-ac6f-00aca4d637e8" />
 
 ## Supported Abilities
 
