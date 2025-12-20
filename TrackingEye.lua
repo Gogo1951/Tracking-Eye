@@ -247,6 +247,8 @@ local function InitLDB()
                 local autoColor = TrackingEyeDB.autoTracking and "|cFF00FF00Enabled|r" or "|cFFFF0000Disabled|r"
                 tooltip:AddDoubleLine("Persistent Tracking", autoColor)
                 tooltip:AddLine(" ")
+                tooltip:AddLine("|cFFAAAAAAWhen enabled, your chosen tracking spell will be recast automatically after you resurrect.|r", 1, 1, 1, true)
+                tooltip:AddLine(" ")
                 tooltip:AddDoubleLine("|cFF00BBFFLeft-Click|r", "|cFFFFFFFFTracking Menu|r")
                 tooltip:AddDoubleLine("|cFF00BBFFRight-Click|r", "|cFFFFFFFFClear Tracking|r")
                 tooltip:AddDoubleLine("|cFF00BBFFMiddle-Click|r", "|cFFFFFFFFToggle Persistent Tracking|r")
