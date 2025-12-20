@@ -227,6 +227,9 @@ local function InitLDB()
             text = "Tracking Eye",
             icon = GetTrackingIconTexture(),
             OnTooltipShow = function(tooltip)
+                tooltip:SetOwner(LibStub("LibDBIcon-1.0"):GetMinimapButton(ADDON_NAME), "ANCHOR_NONE")
+                tooltip:SetPoint("TOPRIGHT", LibStub("LibDBIcon-1.0"):GetMinimapButton(ADDON_NAME), "BOTTOMLEFT", 0, 0)
+
                 local version = C_AddOns and C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version") or "Dev"
                 if version:find("@") then
                     version = "Dev"
