@@ -1,14 +1,18 @@
-# Tracking Eye (Classic)
+# Tracking Eye
 
 This add-on adds a handy tracking icon to your minimap with a button that lets you easily switch between tracking types.
 
-👁️ Note that while we can’t add a menu to the default "Tracking Eye" functionality in Classic.
+## Key Features
+
+🚜 Farm Mode: The gatherer's best friend. Automatically cycles between Find Herbs, Find Minerals, and Find Treasure whenever you are mounted or in travel form. Never miss a node again.
+
+💀 Persistent Tracking: Forget to turn tracking back on after a wipe? No problem. Tracking Eye remembers your Persistent Tracking selection and automatically re-applies it the moment you resurrect.
+
+🎯 Free Placement Mode: Want to replace the default tracking icon? Middle-Click to detach the icon and place it anywhere on your screen—perfect for overlaying the default UI in Classic Era.
+
+<img width="350" alt="image" src="https://github.com/user-attachments/assets/d056e8e1-ea1f-40e5-b88e-be427f2c106e" />
 
 <img width="233" alt="image" src="https://github.com/user-attachments/assets/9d432d0c-1f48-4678-a5d3-12aafc8fc685" />
-
-<img width="350" alt="image" src="https://github.com/user-attachments/assets/2be43dbc-bbfe-42fa-a9b3-406327eace89" />
-
-💀 When you resurrect, Tracking Eye will attempt to reapply the tracking ability you were using before you died.
 
 ## Supported Abilities
 
