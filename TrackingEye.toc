@@ -1,11 +1,14 @@
 ## Title: Tracking Eye
 ## Notes: A simple tracking menu for the minimap.
 ## Author: Gogo1951
+
+## IconTexture: Interface/AddOns/TrackingEye/Tracking-Eye.tga
+## Category-enUS: Map & Minimap
 ## X-License: MIT
 
+## X-Curse-Project-ID: 1129680
 ## Interface: 11508
 ## Version: @project-version@
-## X-Curse-Project-ID: 1129680
 
 ## SavedVariablesPerCharacter: TrackingEyeDB
 
