@@ -19,6 +19,7 @@ local FREE_BORDER_SIZE = 62
 -- DATA TABLES
 -----------------------------------------------------------------------
 local trackingSpells = {
+    [43308] = "Find Fish",
     [2383] = "Find Herbs",
     [2580] = "Find Minerals",
     [2481] = "Find Treasure",
