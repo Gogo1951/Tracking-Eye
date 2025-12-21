@@ -1,5 +1,5 @@
 ## Title: Tracking Eye
-## Notes: A simple tracking menu for the minimap.
+## Notes: A smart tracking menu that auto-cycles herbs & ore scanning while mounted, and restores tracking after death.
 ## Author: Gogo1951
 
 ## IconTexture: Interface/AddOns/TrackingEye/Tracking-Eye.tga
