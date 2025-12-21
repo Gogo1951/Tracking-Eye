@@ -12,9 +12,9 @@ A smart tracking menu that auto-cycles herbs & ore scanning while mounted, and r
 
 Tracking Eye automatically pauses all automation when you are in combat.
 
-<img width="350" alt="image" src="https://github.com/user-attachments/assets/d056e8e1-ea1f-40e5-b88e-be427f2c106e" />
-
-<img width="200" alt="image" src="https://github.com/user-attachments/assets/de98982b-d787-4fa3-ac6f-00aca4d637e8" />
+<img width="350" alt="image" src="https://github.com/user-attachments/assets/a58dbce2-ee40-4fdf-80b4-fb72b6cded6d" />
+ 
+<img width="175" alt="image" src="https://github.com/user-attachments/assets/de98982b-d787-4fa3-ac6f-00aca4d637e8" />
 
 ## Supported Abilities
 
