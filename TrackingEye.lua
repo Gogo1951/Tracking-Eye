@@ -432,26 +432,26 @@ local function PopulateTooltip(tooltip)
     end
     tooltip:AddLine(" ")
     local auto = (TrackingEyeDB and TrackingEyeDB.autoTracking)
-    local autoColor = auto and "|cFF00FF00Enabled|r" or "|cFFFF0000Disabled|r"
+    local autoColor = auto and "|cFF33FF33Enabled|r" or "|cFFCC3333Disabled|r"
     tooltip:AddDoubleLine("Persistent Tracking", autoColor)
     tooltip:AddLine("|cFFAAAAAAAutomatically recasts your tracking spell after resurrection.|r", 1, 1, 1, true)
-    tooltip:AddDoubleLine("|cFF00BBFFShift + Left-Click|r", "|cFFFFFFFFToggle|r")
+    tooltip:AddDoubleLine("|cFF00BBFFShift + Left-Click|r", "|cFFCCCCCCToggle|r")
     tooltip:AddLine(" ")
     local farm = (TrackingEyeDB and TrackingEyeDB.farmingMode)
-    local farmColor = farm and "|cFF00FF00Enabled|r" or "|cFFFF0000Disabled|r"
+    local farmColor = farm and "|cFF33FF33Enabled|r" or "|cFFCC3333Disabled|r"
     tooltip:AddDoubleLine("Farming Mode", farmColor)
     tooltip:AddLine("|cFFAAAAAACycles between Herbs, Minerals, and Treasure while mounted or in travel form.|r", 1, 1, 1, true)
-    tooltip:AddDoubleLine("|cFF00BBFFShift + Right-Click|r", "|cFFFFFFFFToggle|r")
+    tooltip:AddDoubleLine("|cFF00BBFFShift + Right-Click|r", "|cFFCCCCCCToggle|r")
     tooltip:AddLine(" ")
     local free = (TrackingEyeDB and TrackingEyeDB.freePlacement)
-    local freeColor = free and "|cFF00FF00Enabled|r" or "|cFFFF0000Disabled|r"
+    local freeColor = free and "|cFF33FF33Enabled|r" or "|cFFCC3333Disabled|r"
     tooltip:AddDoubleLine("Free Placement Mode", freeColor)
     tooltip:AddLine("|cFFAAAAAAReplaces the minimap button with a standalone icon you can move anywhere.|r", 1, 1, 1, true)
-    tooltip:AddDoubleLine("|cFF00BBFFMiddle-Click|r", "|cFFFFFFFFToggle|r")
+    tooltip:AddDoubleLine("|cFF00BBFFMiddle-Click|r", "|cFFCCCCCCToggle|r")
     tooltip:AddLine(" ")
-    tooltip:AddDoubleLine("|cFF00BBFFLeft-Click|r", "|cFFFFFFFFTracking Menu|r")
+    tooltip:AddDoubleLine("|cFF00BBFFLeft-Click|r", "|cFFCCCCCCTracking Menu|r")
     tooltip:AddLine(" ")
-    tooltip:AddDoubleLine("|cFF00BBFFRight-Click|r", "|cFFFFFFFFClear Tracking|r")
+    tooltip:AddDoubleLine("|cFF00BBFFRight-Click|r", "|cFFCCCCCCClear Persistent Tracking|r")
 end
 
 local function HandleClick(self, button)
