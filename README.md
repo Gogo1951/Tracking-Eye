@@ -18,6 +18,7 @@ Tracking Eye automatically pauses all automation when you are in combat.
 
 ## Supported Abilities
 
+* Find Fish
 * Find Herbs
 * Find Minerals
 * Find Treasure
