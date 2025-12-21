@@ -1,4 +1,4 @@
-local ADDON_NAME = "TrackingEye"
+local ADDON_NAME = "Tracking Eye"
 
 -----------------------------------------------------------------------
 -- LIBRARIES & CONSTANTS
