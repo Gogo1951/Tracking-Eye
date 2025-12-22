@@ -1,23 +1,39 @@
-local ADDON_NAME = "Tracking Eye"
-
------------------------------------------------------------------------
--- LIBRARIES & CONSTANTS
------------------------------------------------------------------------
+local ADDON_NAME = "TrackingEye"
+local ADDON_TITLE = "Tracking Eye"
 local LibStub = LibStub
 local LDB = LibStub("LibDataBroker-1.1")
 local LDBIcon = LibStub("LibDBIcon-1.0")
-
+-- Identifiers & Intervals
 local DEFAULT_MINIMAP_ICON = "Interface\\Icons\\inv_misc_map_01"
 local DRUID_CAT_FORM_SPELL_ID = 768
 local FARM_INTERVAL = 3.0
 
+-- Frame Dimensions
 local FREE_FRAME_SIZE = 37
 local FREE_ICON_SIZE = 24
 local FREE_BORDER_SIZE = 62
 
------------------------------------------------------------------------
--- DATA TABLES
------------------------------------------------------------------------
+-- Branding & Tooltip Colors
+local COLOR_PREFIX = "|cff"
+local C_TITLE = "FFD100" -- Gold: Titles
+local C_INFO = "00BBFF" -- Blue: Interactions
+local C_BODY = "CCCCCC" -- Silver: Descriptions
+local C_TEXT = "FFFFFF" -- White: Messages
+local C_SUCCESS = "33CC33" -- Green: On
+local C_DISABLED = "CC3333" -- Red: Off
+local C_SEP = "AAAAAA" -- Gray: Separators
+local C_MUTED = "808080" -- Dark Gray: Meta-data
+
+local COLORS = {
+    TITLE = COLOR_PREFIX .. C_TITLE,
+    INFO = COLOR_PREFIX .. C_INFO,
+    DESC = COLOR_PREFIX .. C_BODY,
+    TEXT = COLOR_PREFIX .. C_TEXT,
+    SUCCESS = COLOR_PREFIX .. C_SUCCESS,
+    DISABLED = COLOR_PREFIX .. C_DISABLED,
+    SEP = COLOR_PREFIX .. C_SEP,
+    MUTED = COLOR_PREFIX .. C_MUTED
+}
 local trackingSpells = {
     [43308] = "Find Fish",
     [2383] = "Find Herbs",
@@ -41,23 +57,20 @@ local farmSpellIds = {
     2580,
     2481
 }
-
------------------------------------------------------------------------
--- VARIABLES
------------------------------------------------------------------------
+-- State Variables
 local currentVisualTexture = nil
 local TrackingEyeDB
-local trackingLauncher
-local freeFrame
 local isRetryPending = false
 local retryCount = 0
 local currentFarmIndex = 0
 local wasFarmingLastTick = false
 local farmCycleCache = {}
 
------------------------------------------------------------------------
--- API COMPATIBILITY
------------------------------------------------------------------------
+-- Frame & Object References
+local trackingLauncher
+local freeFrame
+local dropdown = CreateFrame("Frame", ADDON_NAME .. "Dropdown", UIParent, "UIDropDownMenuTemplate")
+local eventFrame = CreateFrame("Frame")
 local GetNumTrackingTypes_Fn
 local GetTrackingInfo_Fn
 local IsModernTrackingAPI = false
@@ -77,10 +90,6 @@ else
         return
     end
 end
-
------------------------------------------------------------------------
--- UTILITY FUNCTIONS
------------------------------------------------------------------------
 local function ClearTable(t)
     if table.wipe then
         table.wipe(t)
@@ -90,10 +99,6 @@ local function ClearTable(t)
         end
     end
 end
-
------------------------------------------------------------------------
--- STATE HELPERS
------------------------------------------------------------------------
 local function HasAnyTrackingSpell()
     for id in pairs(trackingSpells) do
         if IsPlayerSpell(id) then
@@ -141,10 +146,6 @@ end
 local function IsPlayerCasting()
     return UnitCastingInfo("player") ~= nil or UnitChannelInfo("player") ~= nil
 end
-
------------------------------------------------------------------------
--- VISUAL UPDATES
------------------------------------------------------------------------
 local function GetCurrentStateIcon()
     if currentVisualTexture then
         return currentVisualTexture
@@ -212,22 +213,22 @@ local function UpdatePlacementMode()
         end
     end
 end
-
------------------------------------------------------------------------
--- TRACKING LOGIC
------------------------------------------------------------------------
 local function IsTrackingActive(spellId)
     if not spellId then
         return false
     end
     local spellName = GetSpellInfo(spellId)
     local spellIcon = GetSpellTexture(spellId)
+    
+    -- Check 1: Texture Match
     if GetTrackingTexture and spellIcon then
         local currentTexture = GetTrackingTexture()
         if currentTexture and tostring(currentTexture) == tostring(spellIcon) then
             return true
         end
     end
+    
+    -- Check 2: API Iteration
     if not GetNumTrackingTypes_Fn then
         return IsCurrentSpell(spellId)
     end
@@ -257,9 +258,6 @@ local function IsTrackingActive(spellId)
     return false
 end
 
------------------------------------------------------------------------
--- AUTO-REAPPLICATION LOGIC
------------------------------------------------------------------------
 local function ReapplyTracking(isAutoTrigger)
     if not TrackingEyeDB then
         return
@@ -286,8 +284,7 @@ local function ReapplyTracking(isAutoTrigger)
             isRetryPending = true
             retryCount = retryCount + 1
             local remaining = (start + duration) - GetTime()
-            C_Timer.After(
-                remaining + 0.1, function()
+            C_Timer.After(remaining + 0.1, function()
                 isRetryPending = false
                 ReapplyTracking(isAutoTrigger)
             end)
@@ -302,26 +299,28 @@ local function ReapplyTracking(isAutoTrigger)
         pcall(CastSpellByID, spellId)
     end
 end
-
------------------------------------------------------------------------
--- FARMING MODE LOGIC
------------------------------------------------------------------------
 local function DoFarmingSwap()
     if not TrackingEyeDB then
         return
     end
     local inForm = IsFarmingForm()
+    
+    -- Transitioning OUT of farming form
     if not inForm and wasFarmingLastTick then
         wasFarmingLastTick = false
         ReapplyTracking(true)
         return
     end
+    
+    -- Checks to allow cycling
     if not TrackingEyeDB.farmingMode or not inForm then
         return
     end
     if UnitAffectingCombat("player") or IsPlayerCasting() or IsPlayerStealthed() then
         return
     end
+    
+    -- Build Cycle Table
     ClearTable(farmCycleCache)
     if TrackingEyeDB.selectedSpellId then
         if TrackingEyeDB.selectedSpellId ~= 5225 then
@@ -337,6 +336,8 @@ local function DoFarmingSwap()
     if count == 0 then
         return
     end
+    
+    -- Single Spell Logic
     if count == 1 then
         local soloSpell = farmCycleCache[1]
         if IsTrackingActive(soloSpell) then
@@ -347,6 +348,8 @@ local function DoFarmingSwap()
         wasFarmingLastTick = true
         return
     end
+    
+    -- Cycle Logic
     currentFarmIndex = currentFarmIndex + 1
     if currentFarmIndex > count then
         currentFarmIndex = 1
@@ -359,99 +362,52 @@ local function DoFarmingSwap()
     pcall(CastSpellByID, nextSpell)
     wasFarmingLastTick = true
 end
-
------------------------------------------------------------------------
--- DROPDOWN MENU
------------------------------------------------------------------------
-if not C_AddOns.IsAddOnLoaded("Blizzard_UIDropDownMenu") then
-    C_AddOns.LoadAddOn("Blizzard_UIDropDownMenu")
-end
-
-local dropdown = CreateFrame("Frame", ADDON_NAME .. "Dropdown", UIParent, "UIDropDownMenuTemplate")
-
-local function BuildMenu(self, level)
-    if level ~= 1 then
-        return
-    end
-    local info
-    local spellList = {}
-    for id, name in pairs(trackingSpells) do
-        table.insert(spellList, {
-            id = id,
-            name = name
-        })
-    end
-    table.sort(
-        spellList, function(a, b)
-        return a.name < b.name
-    end)
-    for _, spellData in ipairs(spellList) do
-        local spellId = spellData.id
-        local spellName = spellData.name
-        local known = IsPlayerSpell(spellId)
-        local isDruidReqMet = (spellId ~= 5225 or IsDruidInCatForm())
-        if known and isDruidReqMet then
-            local icon = GetSpellTexture(spellId)
-            info = UIDropDownMenu_CreateInfo()
-            info.text = spellName
-            if icon then
-                info.text = "|T" .. icon .. ":16:16:0:0:64:64:5:59:5:59|t " .. spellName
-            end
-            info.value = {
-                spellId = spellId
-            }
-            info.checked = (TrackingEyeDB.selectedSpellId == spellId)
-            info.func = function(self)
-                local idToCast = self.value.spellId
-                TrackingEyeDB.selectedSpellId = idToCast
-                wasFarmingLastTick = false
-                ReapplyTracking(false)
-                UpdateVisuals()
-                CloseDropDownMenus()
-            end
-            UIDropDownMenu_AddButton(info, level)
-        end
-    end
-end
-
-UIDropDownMenu_Initialize(dropdown, BuildMenu, "MENU")
-
------------------------------------------------------------------------
--- TOOLTIP & CLICK HANDLING
------------------------------------------------------------------------
 local function PopulateTooltip(tooltip)
     local version = C_AddOns and C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version") or "2025.12.20.IV"
-    tooltip:AddDoubleLine(ADDON_NAME, "|cFFAAAAAA" .. version .. "|r", 1, 0.82, 0, 1, 1, 1)
+    
+    -- Header
+    tooltip:AddDoubleLine(COLORS.TITLE .. ADDON_TITLE .. "|r", COLORS.MUTED .. version .. "|r")
     tooltip:AddLine(" ")
+    tooltip:AddLine(" ")
+    
+    -- Current State
     if TrackingEyeDB and TrackingEyeDB.selectedSpellId then
         local name = trackingSpells[TrackingEyeDB.selectedSpellId] or "Unknown"
         local icon = GetSpellTexture(TrackingEyeDB.selectedSpellId)
-        tooltip:AddLine("|T" .. icon .. ":16|t |cFFFFFFFF" .. name .. "|r")
+        tooltip:AddLine("|T" .. icon .. ":16|t " .. COLORS.TEXT .. name .. "|r")
     else
-        tooltip:AddLine("|cFFAAAAAANo Tracking Selected|r")
+        tooltip:AddLine("|TInterface\\Icons\\inv_misc_map_01:16|t " .. COLORS.DESC .. "No Tracking Selected|r")
     end
     tooltip:AddLine(" ")
+
+    -- Setting: Persistent Tracking
     local auto = (TrackingEyeDB and TrackingEyeDB.autoTracking)
-    local autoColor = auto and "|cFF33FF33Enabled|r" or "|cFFCC3333Disabled|r"
-    tooltip:AddDoubleLine("Persistent Tracking", autoColor)
-    tooltip:AddLine("|cFFAAAAAAAutomatically recasts your tracking spell after resurrection.|r", 1, 1, 1, true)
-    tooltip:AddDoubleLine("|cFF00BBFFShift + Left-Click|r", "|cFFCCCCCCToggle|r")
+    local autoColor = auto and (COLORS.SUCCESS .. "Enabled|r") or (COLORS.DISABLED .. "Disabled|r")
+    tooltip:AddDoubleLine(COLORS.TITLE .. "Persistent Tracking|r", autoColor)
+    tooltip:AddLine(COLORS.DESC .. "Automatically recasts your tracking spell after resurrection.|r", 1, 1, 1, true)
+    tooltip:AddDoubleLine(COLORS.INFO .. "Shift + Left-Click|r", COLORS.INFO .. "Toggle|r")
     tooltip:AddLine(" ")
+
+    -- Setting: Farming Mode
     local farm = (TrackingEyeDB and TrackingEyeDB.farmingMode)
-    local farmColor = farm and "|cFF33FF33Enabled|r" or "|cFFCC3333Disabled|r"
-    tooltip:AddDoubleLine("Farming Mode", farmColor)
-    tooltip:AddLine("|cFFAAAAAACycles between Herbs, Minerals, and Treasure while mounted or in travel form.|r", 1, 1, 1, true)
-    tooltip:AddDoubleLine("|cFF00BBFFShift + Right-Click|r", "|cFFCCCCCCToggle|r")
+    local farmColor = farm and (COLORS.SUCCESS .. "Enabled|r") or (COLORS.DISABLED .. "Disabled|r")
+    tooltip:AddDoubleLine(COLORS.TITLE .. "Farming Mode|r", farmColor)
+    tooltip:AddLine(COLORS.DESC .. "Cycles between Herbs, Minerals, and Treasure while mounted or in travel form.|r", 1, 1, 1, true)
+    tooltip:AddDoubleLine(COLORS.INFO .. "Shift + Right-Click|r", COLORS.INFO .. "Toggle|r")
     tooltip:AddLine(" ")
+
+    -- Setting: Free Placement Mode
     local free = (TrackingEyeDB and TrackingEyeDB.freePlacement)
-    local freeColor = free and "|cFF33FF33Enabled|r" or "|cFFCC3333Disabled|r"
-    tooltip:AddDoubleLine("Free Placement Mode", freeColor)
-    tooltip:AddLine("|cFFAAAAAAReplaces the minimap button with a standalone icon you can move anywhere.|r", 1, 1, 1, true)
-    tooltip:AddDoubleLine("|cFF00BBFFMiddle-Click|r", "|cFFCCCCCCToggle|r")
+    local freeColor = free and (COLORS.SUCCESS .. "Enabled|r") or (COLORS.DISABLED .. "Disabled|r")
+    tooltip:AddDoubleLine(COLORS.TITLE .. "Free Placement Mode|r", freeColor)
+    tooltip:AddLine(COLORS.DESC .. "Replaces the minimap button with a standalone icon you can move anywhere.|r", 1, 1, 1, true)
+    tooltip:AddDoubleLine(COLORS.INFO .. "Middle-Click|r", COLORS.INFO .. "Toggle|r")
     tooltip:AddLine(" ")
-    tooltip:AddDoubleLine("|cFF00BBFFLeft-Click|r", "|cFFCCCCCCTracking Menu|r")
+
+    -- Menu Controls
+    tooltip:AddDoubleLine(COLORS.INFO .. "Left-Click|r", COLORS.INFO .. "Tracking Menu|r")
     tooltip:AddLine(" ")
-    tooltip:AddDoubleLine("|cFF00BBFFRight-Click|r", "|cFFCCCCCCClear Persistent Tracking|r")
+    tooltip:AddDoubleLine(COLORS.INFO .. "Right-Click|r", COLORS.INFO .. "Clear Persistent Tracking|r")
 end
 
 local function HandleClick(self, button)
@@ -488,9 +444,58 @@ local function HandleClick(self, button)
     end
 end
 
------------------------------------------------------------------------
--- FREE PLACEMENT FRAME
------------------------------------------------------------------------
+-- Dropdown Menu Construction
+if not C_AddOns.IsAddOnLoaded("Blizzard_UIDropDownMenu") then
+    C_AddOns.LoadAddOn("Blizzard_UIDropDownMenu")
+end
+
+local function BuildMenu(self, level)
+    if level ~= 1 then
+        return
+    end
+    local info
+    local spellList = {}
+    for id, name in pairs(trackingSpells) do
+        table.insert(spellList, {
+            id = id,
+            name = name
+        })
+    end
+    table.sort(spellList, function(a, b)
+        return a.name < b.name
+    end)
+    for _, spellData in ipairs(spellList) do
+        local spellId = spellData.id
+        local spellName = spellData.name
+        local known = IsPlayerSpell(spellId)
+        local isDruidReqMet = (spellId ~= 5225 or IsDruidInCatForm())
+        if known and isDruidReqMet then
+            local icon = GetSpellTexture(spellId)
+            info = UIDropDownMenu_CreateInfo()
+            info.text = spellName
+            if icon then
+                info.text = "|T" .. icon .. ":16:16:0:0:64:64:5:59:5:59|t " .. spellName
+            end
+            info.value = {
+                spellId = spellId
+            }
+            info.checked = (TrackingEyeDB.selectedSpellId == spellId)
+            info.func = function(self)
+                local idToCast = self.value.spellId
+                TrackingEyeDB.selectedSpellId = idToCast
+                wasFarmingLastTick = false
+                ReapplyTracking(false)
+                UpdateVisuals()
+                CloseDropDownMenus()
+            end
+            UIDropDownMenu_AddButton(info, level)
+        end
+    end
+end
+
+UIDropDownMenu_Initialize(dropdown, BuildMenu, "MENU")
+
+-- Free Frame Construction
 local function CreateFreeFrame()
     if freeFrame then
         return
@@ -554,15 +559,12 @@ local function CreateFreeFrame()
     freeFrame = f
 end
 
------------------------------------------------------------------------
--- LDB INITIALIZATION
------------------------------------------------------------------------
+-- LDB Initialization
 local function InitLDB()
     if not HasAnyTrackingSpell() then
         return
     end
-    trackingLauncher = LDB:NewDataObject(
-        ADDON_NAME, {
+    trackingLauncher = LDB:NewDataObject(ADDON_NAME, {
         type = "launcher",
         text = "Tracking Eye",
         icon = GetCurrentStateIcon(),
@@ -580,11 +582,6 @@ local function InitLDB()
         LDBIcon:Register(ADDON_NAME, trackingLauncher, TrackingEyeDB.minimap)
     end
 end
-
------------------------------------------------------------------------
--- EVENT HANDLING
------------------------------------------------------------------------
-local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("ADDON_LOADED")
 eventFrame:RegisterEvent("PLAYER_LOGIN")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
