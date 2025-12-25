@@ -92,6 +92,20 @@ local state = {
 --------------------------------------------------------------------------------
 -- 3. Utility & Helpers
 --------------------------------------------------------------------------------
+local function HasAnyTrackingSpell()
+	for id in pairs(TRACKING_SPELLS) do
+        -- Special Case: Druid "Track Humanoids" (5225) is granted by knowing Cat Form (768)
+		if id == SPELL_TRACK_HUMAN then
+			if IsPlayerSpell(FORM_CAT) then
+				return true
+			end
+		elseif IsPlayerSpell(id) then
+			return true
+		end
+	end
+	return false
+end
+
 local function HasBuff(spellID)
 	for i = 1, 40 do
 		local _, _, _, _, _, _, _, _, _, id = UnitBuff("player", i)
@@ -162,6 +176,9 @@ end
 
 local function UpdatePlacement()
 	if not DB then
+		return
+	end
+	if not ldbLauncher then
 		return
 	end
 	if DB.freePlacement then
@@ -353,6 +370,7 @@ local function BuildTooltip(tooltip)
 	tooltip:AddDoubleLine(COLORS.INFO .. "Middle-Click|r", COLORS.INFO .. "Toggle|r")
 	tooltip:AddLine(" ")
 	tooltip:AddDoubleLine(COLORS.INFO .. "Left-Click|r", COLORS.INFO .. "Tracking Menu|r")
+	tooltip:AddLine(" ")
 	tooltip:AddDoubleLine(COLORS.INFO .. "Right-Click|r", COLORS.INFO .. "Clear Persistent Tracking|r")
 end
 
@@ -427,6 +445,9 @@ UIDropDownMenu_Initialize(dropdown, InitMenu, "MENU")
 -- 8. Initialization
 --------------------------------------------------------------------------------
 local function CreateFreeFrame()
+	if not HasAnyTrackingSpell() then
+		return
+	end
 	if freeFrame then
 		return
 	end
@@ -490,6 +511,9 @@ local function CreateFreeFrame()
 end
 
 local function InitLDB()
+	if not HasAnyTrackingSpell() then
+		return
+	end
 	ldbLauncher = LDB:NewDataObject(addonName, {
 		type = "launcher",
 		text = addonTitle,
@@ -540,13 +564,14 @@ function events.ADDON_LOADED(name)
 	if DB.farmingMode == nil then
 		DB.farmingMode = true
 	end
+
+end
+
+function events.PLAYER_LOGIN()
 	InitLDB()
 	CreateFreeFrame()
 	C_Timer.NewTicker(0.5, UpdateIcon)
 	C_Timer.NewTicker(FARM_INTERVAL, RunFarmLogic)
-end
-
-function events.PLAYER_LOGIN()
 	UpdateIcon()
 	UpdatePlacement()
 end
