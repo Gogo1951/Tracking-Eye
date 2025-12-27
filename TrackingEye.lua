@@ -10,7 +10,7 @@ local LDBIcon = LibStub("LibDBIcon-1.0")
 local ICON_DEFAULT = "Interface\\Icons\\inv_misc_map_01"
 local ICON_SIZE = 24
 local FRAME_SIZE = 37
-local FARM_INTERVAL = 3.0
+local FARM_INTERVAL = 4.0
 
 local SPELL_FIND_FISH = 43308
 local SPELL_FIND_HERBS = 2383
@@ -94,7 +94,6 @@ local state = {
 --------------------------------------------------------------------------------
 local function HasAnyTrackingSpell()
 	for id in pairs(TRACKING_SPELLS) do
-        -- Special Case: Druid "Track Humanoids" (5225) is granted by knowing Cat Form (768)
 		if id == SPELL_TRACK_HUMAN then
 			if IsPlayerSpell(FORM_CAT) then
 				return true
@@ -224,6 +223,12 @@ function CastTracking(spellId)
 	if IsTrackingActive(spellId) then
 		return
 	end
+	local start, duration = GetSpellCooldown(spellId)
+	if start and duration and (start > 0 and duration > 1.5) then
+		return
+	end
+	state.lastCastSpell = spellId
+	UpdateIcon()
 	pcall(CastSpellByID, spellId)
 end
 
@@ -269,7 +274,6 @@ end
 --------------------------------------------------------------------------------
 -- 6. Farming Mode
 --------------------------------------------------------------------------------
-
 local function RunFarmLogic()
 	if not DB then
 		return
@@ -286,7 +290,10 @@ local function RunFarmLogic()
 		ReapplyTracking(true)
 		return
 	end
-	if not DB.farmingMode or not inForm or not CanCast() then
+	if not DB.farmingMode or not inForm then
+		return
+	end
+	if not CanCast() then
 		return
 	end
 	table.wipe(state.cycleCache)
@@ -535,20 +542,14 @@ end
 -- 9. Events
 --------------------------------------------------------------------------------
 local events = {}
-local updateTimerHandle = nil
+local farmTicker = nil
 
-local function ScheduleUpdate()
-	if updateTimerHandle then
-		updateTimerHandle:Cancel()
+local function ResetFarmCycle()
+	if farmTicker then
+		farmTicker:Cancel()
 	end
-	state.shiftPending = true
-	updateTimerHandle = C_Timer.NewTimer(3.0, function()
-		state.shiftPending = false
-		UpdateIcon()
-		RunFarmLogic()
-		ReapplyTracking(true)
-		updateTimerHandle = nil
-	end)
+	UpdateIcon()
+	farmTicker = C_Timer.NewTicker(FARM_INTERVAL, RunFarmLogic)
 end
 
 function events.ADDON_LOADED(name)
@@ -564,14 +565,13 @@ function events.ADDON_LOADED(name)
 	if DB.farmingMode == nil then
 		DB.farmingMode = true
 	end
-
 end
 
 function events.PLAYER_LOGIN()
 	InitLDB()
 	CreateFreeFrame()
 	C_Timer.NewTicker(0.5, UpdateIcon)
-	C_Timer.NewTicker(FARM_INTERVAL, RunFarmLogic)
+	farmTicker = C_Timer.NewTicker(FARM_INTERVAL, RunFarmLogic)
 	UpdateIcon()
 	UpdatePlacement()
 end
@@ -583,15 +583,11 @@ function events.UNIT_SPELLCAST_SUCCEEDED(unit, _, spellId)
 	end
 end
 
-function events.PLAYER_ENTERING_WORLD()
-	ScheduleUpdate()
-end
-
-events.PLAYER_REGEN_ENABLED = ScheduleUpdate
-events.UPDATE_STEALTH = ScheduleUpdate
-events.PLAYER_UNGHOST = ScheduleUpdate
-events.PLAYER_ALIVE = ScheduleUpdate
-events.UPDATE_SHAPESHIFT_FORM = ScheduleUpdate
+events.PLAYER_ENTERING_WORLD = ResetFarmCycle
+events.PLAYER_REGEN_ENABLED = ResetFarmCycle
+events.UPDATE_SHAPESHIFT_FORM = ResetFarmCycle
+events.PLAYER_UNGHOST = ResetFarmCycle
+events.PLAYER_ALIVE = ResetFarmCycle
 events.MINIMAP_UPDATE_TRACKING = UpdateIcon
 
 eventFrame:SetScript("OnEvent", function(_, event, ...)
