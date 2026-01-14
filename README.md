@@ -42,11 +42,9 @@ https://www.curseforge.com/wow/addons/tracking-eye-classic-era
 
 ## Testing Status
 
-🟢 World of Warcraft Classic : Vanilla (Era, Anniversary, Hardcore, Anniversary Hardcore)
+🟢 World of Warcraft Classic
 
-🟢 World of Warcraft Classic : Season of Discovery
-
-🟢 World of Warcraft Classic : The Burning Crusade (Anniversary)
+🟢 Burning Crusade Anniversary
 
 🔴 Mists of Pandaria Classic
 
