@@ -30,6 +30,5 @@ ignore:
   - .idea
   - .pkgmeta
   - .vscode
-  - .vscode
   - LICENSE
   - README.md
