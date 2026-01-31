@@ -16,7 +16,7 @@ externals:
         url: https://repos.curseforge.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0/
 
     Includes/LibUIDropDownMenu:
-        url: https://repos.wowace.com/wow/libuidropdownmenu/trunk/
+        url: https://repos.wowace.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu/
 
 ignore:
   - .git
