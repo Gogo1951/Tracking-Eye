@@ -7,7 +7,7 @@ local dropdown = LibDD:Create_UIDropDownMenu(addonName .. "TrackingMenu", UIPare
 --------------------------------------------------------------------------------
 -- Menu Logic
 --------------------------------------------------------------------------------
-local function InitMenu(self, level)
+local function InitMenu(_, level)
     if level ~= 1 then return end
     
     local list = {}
