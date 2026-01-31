@@ -66,7 +66,8 @@ ns.TRACKING_IDS = {
 
 ns.FARM_CYCLE = {
     ns.SPELLS.HERBS,
-    ns.SPELLS.MINERALS
+    ns.SPELLS.MINERALS,
+    ns.SPELLS.TREASURE
 }
 
 ns.COLORS = {
@@ -93,4 +94,5 @@ end
 function ns.GetColor(key)
     return ns.COLOR_PREFIX .. (ns.COLORS[key] or "FFFFFF")
 end
+
 
