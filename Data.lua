@@ -20,15 +20,21 @@ ns.SPELLS = {
     HERBS = 2383,
     MINERALS = 2580,
     TREASURE = 2481,
-    HUMAN = 5225,
+    
+    -- Hunter Tracking
     BEASTS = 1494,
     DEMONS = 19878,
     DRAGONKIN = 19879,
     ELEMENTALS = 19880,
     GIANTS = 19882,
     HIDDEN = 19885,
-    HUMANOIDS = 19883,
+    HUMANOIDS = 19883, -- Hunter Version
     UNDEAD = 19884,
+
+    -- Druid Tracking
+    DRUID_HUMANOIDS = 5225, -- Druid Version (Cat Form)
+
+    -- Warlock/Paladin/Other
     SENSE_DEMONS = 5500,
     SENSE_UNDEAD = 5502
 }
@@ -52,7 +58,7 @@ ns.TRACKING_IDS = {
     ns.SPELLS.GIANTS,
     ns.SPELLS.HIDDEN,
     ns.SPELLS.HUMANOIDS,
-    ns.SPELLS.HUMAN,
+    ns.SPELLS.DRUID_HUMANOIDS,
     ns.SPELLS.UNDEAD,
     ns.SPELLS.SENSE_DEMONS,
     ns.SPELLS.SENSE_UNDEAD
