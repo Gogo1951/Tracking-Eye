@@ -3,20 +3,21 @@ local LDB = LibStub("LibDataBroker-1.1")
 local LDBIcon = LibStub("LibDBIcon-1.0")
 
 TrackingEyeDB = TrackingEyeDB or {}
-TrackingEyeDB.minimap = TrackingEyeDB.minimap or {}
+TrackingEyeGlobalDB = TrackingEyeGlobalDB or {}
+TrackingEyeGlobalDB.minimap = TrackingEyeGlobalDB.minimap or {}
 
 --------------------------------------------------------------------------------
 -- Visuals & Placement
 --------------------------------------------------------------------------------
 function ns.UpdatePlacement()
-    if not TrackingEyeDB then return end
+    if not TrackingEyeGlobalDB then return end
     
-    if TrackingEyeDB.freePlacement then
-        TrackingEyeDB.minimap.hide = true
+    if TrackingEyeGlobalDB.freePlacement then
+        TrackingEyeGlobalDB.minimap.hide = true
         LDBIcon:Hide(addonName)
         if ns.freeFrame then ns.freeFrame:Show() end
     else
-        TrackingEyeDB.minimap.hide = false
+        TrackingEyeGlobalDB.minimap.hide = false
         LDBIcon:Show(addonName)
         if ns.freeFrame then ns.freeFrame:Hide() end
     end
@@ -46,7 +47,7 @@ function ns.BuildTooltip(tooltip)
 
     AddOption("PERSISTENT_TRACKING", TrackingEyeDB.autoTracking, "PERSISTENT_DESC", "MOD_SHIFT_LEFT")
     AddOption("FARMING_MODE", TrackingEyeDB.farmingMode, "FARMING_DESC", "MOD_SHIFT_RIGHT")
-    AddOption("PLACEMENT_MODE", TrackingEyeDB.freePlacement, "PLACEMENT_DESC", "MOD_MIDDLE")
+    AddOption("PLACEMENT_MODE", TrackingEyeGlobalDB.freePlacement, "PLACEMENT_DESC", "MOD_MIDDLE")
     
     tooltip:AddDoubleLine(ns.GetColor("INFO") .. ns.L["MOD_LEFT"] .. "|r", ns.GetColor("INFO") .. ns.L["TRACKING_MENU"] .. "|r")
     tooltip:AddLine(" ")
@@ -79,7 +80,7 @@ local function OnClick(self, button)
     local updateNeeded = false
     
     if button == "MiddleButton" then
-        TrackingEyeDB.freePlacement = not TrackingEyeDB.freePlacement
+        TrackingEyeGlobalDB.freePlacement = not TrackingEyeGlobalDB.freePlacement
         ns.UpdatePlacement()
         updateNeeded = true
     elseif IsShiftKeyDown() then
@@ -133,7 +134,7 @@ function ns.CreateFreeFrame()
     f:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
         local p, _, rp, x, y = self:GetPoint()
-        TrackingEyeDB.freePos = {p, rp, x, y}
+        TrackingEyeGlobalDB.freePos = {p, rp, x, y}
     end)
     f:SetScript("OnClick", OnClick)
     f:SetScript("OnEnter", function(self)
@@ -143,8 +144,8 @@ function ns.CreateFreeFrame()
     end)
     f:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-    if TrackingEyeDB.freePos then
-        local p = TrackingEyeDB.freePos
+    if TrackingEyeGlobalDB.freePos then
+        local p = TrackingEyeGlobalDB.freePos
         f:SetPoint(p[1], UIParent, p[2], p[3], p[4])
     else
         f:SetPoint("CENTER")
@@ -161,6 +162,6 @@ function ns.InitMinimap()
         OnTooltipShow = function(tt) ns.BuildTooltip(tt) end
     })
     
-    LDBIcon:Register(addonName, ns.ldb, TrackingEyeDB.minimap)
+    LDBIcon:Register(addonName, ns.ldb, TrackingEyeGlobalDB.minimap)
     ns.UpdatePlacement()
 end
