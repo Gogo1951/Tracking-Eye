@@ -1,11 +1,35 @@
 # .pkgmeta
 package-as: TrackingEye
+enable-nolib-creation: no
+
+externals:
+    Includes/LibStub:
+        url: https://repos.curseforge.com/wow/libstub/trunk
+        tag: latest
+
+    Includes/CallbackHandler-1.0:
+        url: https://repos.curseforge.com/wow/callbackhandler/trunk/CallbackHandler-1.0
+        tag: latest
+
+    Includes/LibDataBroker-1.1:
+        url: https://github.com/tekkub/libdatabroker-1-1
+        tag: latest
+
+    Includes/LibDBIcon-1.0:
+        url: https://repos.curseforge.com/wow/libdbicon-1-0/trunk
+        tag: latest
+
+    Includes/LibUIDropDownMenu:
+        url: https://repos.wowace.com/wow/libuidropdownmenu/trunk
+        tag: latest
 
 ignore:
   - .git
+  - .gitattributes
   - .gitignore
   - .idea
   - .pkgmeta
+  - .vscode
   - .vscode
   - LICENSE
   - README.md
