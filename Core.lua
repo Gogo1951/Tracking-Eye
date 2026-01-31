@@ -101,7 +101,7 @@ end
 function ns.RunFarmLogic()
     if not TrackingEyeDB or not TrackingEyeDB.farmingMode then return end
     
-    local isCat, inForm = ns.GetPlayerStates()
+    local _, inForm = ns.GetPlayerStates()
     local currentTrackingTex = GetTrackingTexture()
 
     if not inForm and ns.state.wasFarming then
