@@ -51,7 +51,7 @@ function ns.UpdateIcon()
     local tex = nil
     local isCat, _ = ns.GetPlayerStates()
 
-    if ns.state.lastCastSpell == ns.SPELLS.HUMAN and not isCat then
+    if ns.state.lastCastSpell == ns.SPELLS.DRUID_HUMANOIDS and not isCat then
         ns.state.lastCastSpell = nil
     end
 
@@ -172,8 +172,15 @@ eventFrame:SetScript(
     "OnEvent",
     function(_, event, arg1, ...)
         if event == "ADDON_LOADED" and arg1 == addonName then
-            TrackingEyeDB = TrackingEyeDB or {autoTracking = true, farmingMode = true, minimap = {}}
-            TrackingEyeDB.minimap = TrackingEyeDB.minimap or {}
+            TrackingEyeDB = TrackingEyeDB or {
+                autoTracking = true, 
+                farmingMode = true
+            }
+            
+            TrackingEyeGlobalDB = TrackingEyeGlobalDB or {
+                minimap = {}
+            }
+            TrackingEyeGlobalDB.minimap = TrackingEyeGlobalDB.minimap or {}
             
             if ns.CreateFreeFrame then ns.CreateFreeFrame() end
             ns.UpdateIcon()
