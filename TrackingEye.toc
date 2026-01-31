@@ -10,6 +10,7 @@
 ## Interface: 11508, 20505
 ## Version: 2025.12.26.A
 
+## SavedVariables: TrackingEyeGlobalDB
 ## SavedVariablesPerCharacter: TrackingEyeDB
 
 # Includes
@@ -30,4 +31,5 @@ Minimap-Button.lua
 # Tracking Eye on CurseForge // https://www.curseforge.com/wow/addons/tracking-eye-classic
 # Tracking Eye on GitHub // https://github.com/Gogo1951/Tracking-Eye
 # Tracking Eye on Discord // https://discord.gg/eh8hKq992Q
+
 
