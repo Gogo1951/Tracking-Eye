@@ -23,7 +23,7 @@ local function InitMenu(self, level)
     local isCat, _ = ns.GetPlayerStates()
 
     for _, data in ipairs(list) do
-        if IsPlayerSpell(data.id) and (data.id ~= ns.SPELLS.HUMAN or isCat) then
+        if IsPlayerSpell(data.id) and (data.id ~= ns.SPELLS.DRUID_HUMANOIDS or isCat) then
             local info = LibDD:UIDropDownMenu_CreateInfo()
             info.text = string.format("|T%s:16|t %s", GetSpellTexture(data.id) or "", data.name)
             info.value = data.id
