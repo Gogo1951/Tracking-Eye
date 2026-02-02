@@ -8,8 +8,10 @@ local dropdown = LibDD:Create_UIDropDownMenu(addonName .. "TrackingMenu", UIPare
 -- Menu Logic
 --------------------------------------------------------------------------------
 local function InitMenu(_, level)
-    if level ~= 1 then return end
-    
+    if level ~= 1 then
+        return
+    end
+
     -- Title
     local titleInfo = LibDD:UIDropDownMenu_CreateInfo()
     titleInfo.text = te.GetColor("TITLE") .. te.L["TRACKING_MENU"] .. "|r"
@@ -26,7 +28,12 @@ local function InitMenu(_, level)
         end
     end
 
-    table.sort(list, function(a, b) return a.name < b.name end)
+    table.sort(
+        list,
+        function(a, b)
+            return a.name < b.name
+        end
+    )
 
     local isCat, _ = te.GetPlayerStates()
 
@@ -52,7 +59,6 @@ LibDD:UIDropDownMenu_Initialize(dropdown, InitMenu, "MENU")
 function te.ToggleMenu(anchor)
     local xOffset = 0
     if anchor and anchor.GetWidth then
-        -- Anchor Top-Left of menu to Bottom-Right of button.
         xOffset = anchor:GetWidth()
     end
     LibDD:ToggleDropDownMenu(1, nil, dropdown, anchor, xOffset, 0)

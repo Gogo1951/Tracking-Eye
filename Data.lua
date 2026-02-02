@@ -13,13 +13,11 @@ te.SPELLS = {
     AQUATIC = 1066,
     FLIGHT = 33943,
     SWIFT_FLIGHT = 40120,
-
     -- Tracking Spells
     FISH = 43308,
     HERBS = 2383,
     MINERALS = 2580,
     TREASURE = 2481,
-    
     -- Hunter Tracking
     BEASTS = 1494,
     DEMONS = 19878,
@@ -29,10 +27,8 @@ te.SPELLS = {
     HIDDEN = 19885,
     HUMANOIDS = 19883, -- Hunter Version
     UNDEAD = 19884,
-
     -- Druid Tracking
     DRUID_HUMANOIDS = 5225, -- Druid Version (Cat Form)
-
     -- Warlock/Paladin/Other
     SENSE_DEMONS = 5500,
     SENSE_UNDEAD = 5502

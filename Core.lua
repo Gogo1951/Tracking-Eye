@@ -17,19 +17,21 @@ te.state = {
 --------------------------------------------------------------------------------
 function te.GetPlayerStates()
     local isCat, isFarming = false, false
-    
+
     if UnitOnTaxi("player") then
         return false, false
     end
-    
+
     if IsMounted() then
         isFarming = true
     end
 
     for i = 1, 40 do
         local _, _, _, _, _, _, _, _, _, id = UnitBuff("player", i)
-        if not id then break end
-        
+        if not id then
+            break
+        end
+
         if id == te.SPELLS.CAT then
             isCat = true
         elseif te.FARM_FORMS[id] then
@@ -41,7 +43,8 @@ function te.GetPlayerStates()
 end
 
 function te.CanCast()
-    return not (UnitIsDeadOrGhost("player") or IsStealthed() or UnitCastingInfo("player") or UnitAffectingCombat("player"))
+    return not (UnitIsDeadOrGhost("player") or IsStealthed() or UnitCastingInfo("player") or
+        UnitAffectingCombat("player"))
 end
 
 function te.HasTrackingAbility()
@@ -88,7 +91,7 @@ function te.UpdateIcon()
     if te.freeFrame and te.freeFrame.icon then
         te.freeFrame.icon:SetTexture(te.state.currentIcon)
     end
-    
+
     if te.RefreshTooltip then
         te.RefreshTooltip()
     end
@@ -108,8 +111,10 @@ end
 -- Farm Logic
 --------------------------------------------------------------------------------
 function te.RunFarmLogic()
-    if not TrackingEyeDB or not TrackingEyeDB.farmingMode then return end
-    
+    if not TrackingEyeDB or not TrackingEyeDB.farmingMode then
+        return
+    end
+
     local _, inForm = te.GetPlayerStates()
     local currentTrackingTex = GetTrackingTexture()
 
@@ -124,10 +129,12 @@ function te.RunFarmLogic()
         return
     end
 
-    if not inForm or not te.CanCast() then return end
+    if not inForm or not te.CanCast() then
+        return
+    end
 
     table.wipe(te.state.cycleCache)
-    
+
     for _, id in ipairs(te.FARM_CYCLE) do
         if IsPlayerSpell(id) then
             local usable, noMana = IsUsableSpell(id)
@@ -137,12 +144,14 @@ function te.RunFarmLogic()
         end
     end
 
-    if #te.state.cycleCache == 0 then return end
+    if #te.state.cycleCache == 0 then
+        return
+    end
 
     if #te.state.cycleCache == 1 then
         local spellId = te.state.cycleCache[1]
         local spellTex = GetSpellTexture(spellId)
-        
+
         if currentTrackingTex == spellTex or te.state.lastCastSpell == spellId then
             te.state.wasFarming = true
             return
@@ -162,13 +171,15 @@ function te.RunFarmLogic()
 end
 
 function te.CastTracking(spellId)
-    if not spellId or not IsPlayerSpell(spellId) then return end
-    
+    if not spellId or not IsPlayerSpell(spellId) then
+        return
+    end
+
     local start, duration = GetSpellCooldown(spellId)
     if start and duration and (start > 0 and duration > 1.5) then
         return
     end
-    
+
     te.state.lastCastSpell = spellId
     te.UpdateIcon()
     pcall(CastSpellByID, spellId)
@@ -181,25 +192,40 @@ eventFrame:SetScript(
     "OnEvent",
     function(_, event, arg1, ...)
         if event == "ADDON_LOADED" and arg1 == addonName then
-            TrackingEyeDB = TrackingEyeDB or {
-                autoTracking = true, 
-                farmingMode = true
-            }
-            
-            TrackingEyeGlobalDB = TrackingEyeGlobalDB or {
-                minimap = {}
-            }
-            TrackingEyeGlobalDB.minimap = TrackingEyeGlobalDB.minimap or {}
-            
-            if te.CreateFreeFrame then te.CreateFreeFrame() end
+            -- 1. Initialize Character DB
+            if not TrackingEyeDB then
+                TrackingEyeDB = {}
+            end
+
+            -- Persistent Tracking -> Default Enabled
+            if TrackingEyeDB.autoTracking == nil then
+                TrackingEyeDB.autoTracking = true
+            end
+
+            -- Farm Mode -> Default Enabled
+            if TrackingEyeDB.farmingMode == nil then
+                TrackingEyeDB.farmingMode = true
+            end
+
+            -- 3. Initialize Global DB
+            if not TrackingEyeGlobalDB then
+                TrackingEyeGlobalDB = {}
+            end
+            if not TrackingEyeGlobalDB.minimap then
+                TrackingEyeGlobalDB.minimap = {}
+            end
+
+            if te.CreateFreeFrame then
+                te.CreateFreeFrame()
+            end
             te.UpdateIcon()
-            
         elseif event == "PLAYER_LOGIN" then
-            if te.InitMinimap then te.InitMinimap() end
-            
+            if te.InitMinimap then
+                te.InitMinimap()
+            end
+
             te.UpdateIcon()
             C_Timer.NewTicker(te.FARM_INTERVAL, te.RunFarmLogic)
-            
         elseif event == "UNIT_SPELLCAST_SUCCEEDED" and arg1 == "player" then
             local spellId = select(3, ...)
             for _, id in ipairs(te.TRACKING_IDS) do
@@ -209,12 +235,17 @@ eventFrame:SetScript(
                     break
                 end
             end
-        elseif event == "MINIMAP_UPDATE_TRACKING" or event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or event == "UPDATE_SHAPESHIFT_FORM" or event == "SPELLS_CHANGED" then
+        elseif
+            event == "MINIMAP_UPDATE_TRACKING" or event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or
+                event == "UPDATE_SHAPESHIFT_FORM" or
+                event == "SPELLS_CHANGED"
+         then
             te.UpdateIcon()
-            
-            -- Re-check placement/visibility on spell changes (learning tracking)
+
             if event == "SPELLS_CHANGED" or event == "PLAYER_ENTERING_WORLD" then
-                 if te.UpdatePlacement then te.UpdatePlacement() end
+                if te.UpdatePlacement then
+                    te.UpdatePlacement()
+                end
             end
 
             if event == "UPDATE_SHAPESHIFT_FORM" and TrackingEyeDB.autoTracking and TrackingEyeDB.selectedSpellId then
@@ -222,8 +253,7 @@ eventFrame:SetScript(
                 if not isFarming then
                     local currentTex = GetTrackingTexture()
                     local targetTex = GetSpellTexture(TrackingEyeDB.selectedSpellId)
-                    
-                    -- Check if we already cast this spell to prevent spamming
+
                     if currentTex ~= targetTex and te.state.lastCastSpell ~= TrackingEyeDB.selectedSpellId then
                         local usable, noMana = IsUsableSpell(TrackingEyeDB.selectedSpellId)
                         if usable or noMana then
