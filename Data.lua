@@ -1,13 +1,12 @@
-local _, ns = ...
+local _, te = ...
 
 --------------------------------------------------------------------------------
 -- Constants & Config
 --------------------------------------------------------------------------------
-ns.ICON_DEFAULT = "Interface\\Icons\\inv_misc_map_01"
-ns.FARM_INTERVAL = 4.0
-ns.COLOR_PREFIX = "|cff"
+te.ICON_DEFAULT = "Interface\\Icons\\inv_misc_map_01"
+te.FARM_INTERVAL = 4.0
 
-ns.SPELLS = {
+te.SPELLS = {
     -- Farming & Travel Forms
     CAT = 768,
     TRAVEL = 783,
@@ -39,38 +38,41 @@ ns.SPELLS = {
     SENSE_UNDEAD = 5502
 }
 
-ns.FARM_FORMS = {
-    [ns.SPELLS.TRAVEL] = true,
-    [ns.SPELLS.AQUATIC] = true,
-    [ns.SPELLS.FLIGHT] = true,
-    [ns.SPELLS.SWIFT_FLIGHT] = true
+te.FARM_FORMS = {
+    [te.SPELLS.TRAVEL] = true,
+    [te.SPELLS.AQUATIC] = true,
+    [te.SPELLS.FLIGHT] = true,
+    [te.SPELLS.SWIFT_FLIGHT] = true
 }
 
-ns.TRACKING_IDS = {
-    ns.SPELLS.FISH,
-    ns.SPELLS.HERBS,
-    ns.SPELLS.MINERALS,
-    ns.SPELLS.TREASURE,
-    ns.SPELLS.BEASTS,
-    ns.SPELLS.DEMONS,
-    ns.SPELLS.DRAGONKIN,
-    ns.SPELLS.ELEMENTALS,
-    ns.SPELLS.GIANTS,
-    ns.SPELLS.HIDDEN,
-    ns.SPELLS.HUMANOIDS,
-    ns.SPELLS.DRUID_HUMANOIDS,
-    ns.SPELLS.UNDEAD,
-    ns.SPELLS.SENSE_DEMONS,
-    ns.SPELLS.SENSE_UNDEAD
+te.TRACKING_IDS = {
+    te.SPELLS.FISH,
+    te.SPELLS.HERBS,
+    te.SPELLS.MINERALS,
+    te.SPELLS.TREASURE,
+    te.SPELLS.BEASTS,
+    te.SPELLS.DEMONS,
+    te.SPELLS.DRAGONKIN,
+    te.SPELLS.ELEMENTALS,
+    te.SPELLS.GIANTS,
+    te.SPELLS.HIDDEN,
+    te.SPELLS.HUMANOIDS,
+    te.SPELLS.DRUID_HUMANOIDS,
+    te.SPELLS.UNDEAD,
+    te.SPELLS.SENSE_DEMONS,
+    te.SPELLS.SENSE_UNDEAD
 }
 
-ns.FARM_CYCLE = {
-    ns.SPELLS.HERBS,
-    ns.SPELLS.MINERALS,
-    ns.SPELLS.TREASURE
+te.FARM_CYCLE = {
+    te.SPELLS.HERBS,
+    te.SPELLS.MINERALS,
+    te.SPELLS.TREASURE
 }
 
-ns.COLORS = {
+--------------------------------------------------------------------------------
+-- Colors
+--------------------------------------------------------------------------------
+te.COLORS = {
     TITLE = "FFD100",
     INFO = "00BBFF",
     DESC = "CCCCCC",
@@ -81,18 +83,11 @@ ns.COLORS = {
     MUTED = "808080"
 }
 
---------------------------------------------------------------------------------
--- Helpers
---------------------------------------------------------------------------------
-function ns.GetSpellName(spellID)
-    if not spellID then return nil end
-    local spellInfo = C_Spell and C_Spell.GetSpellInfo(spellID)
-    if spellInfo then return spellInfo.name end
-    return GetSpellInfo(spellID)
+function te.GetColor(key)
+    return "|cff" .. (te.COLORS[key] or "FFFFFF")
 end
 
-function ns.GetColor(key)
-    return ns.COLOR_PREFIX .. (ns.COLORS[key] or "FFFFFF")
+function te.GetSpellName(spellID)
+    local name = GetSpellInfo(spellID)
+    return name
 end
-
-

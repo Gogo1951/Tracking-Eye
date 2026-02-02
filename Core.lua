@@ -1,11 +1,11 @@
-local addonName, ns = ...
+local addonName, te = ...
 local eventFrame = CreateFrame("Frame")
 
 --------------------------------------------------------------------------------
 -- State & Variables
 --------------------------------------------------------------------------------
-ns.state = {
-    currentIcon = ns.ICON_DEFAULT,
+te.state = {
+    currentIcon = te.ICON_DEFAULT,
     farmIndex = 0,
     wasFarming = false,
     cycleCache = {},
@@ -15,7 +15,7 @@ ns.state = {
 --------------------------------------------------------------------------------
 -- Utility Functions
 --------------------------------------------------------------------------------
-function ns.GetPlayerStates()
+function te.GetPlayerStates()
     local isCat, isFarming = false, false
     
     if UnitOnTaxi("player") then
@@ -30,9 +30,9 @@ function ns.GetPlayerStates()
         local _, _, _, _, _, _, _, _, _, id = UnitBuff("player", i)
         if not id then break end
         
-        if id == ns.SPELLS.CAT then
+        if id == te.SPELLS.CAT then
             isCat = true
-        elseif ns.FARM_FORMS[id] then
+        elseif te.FARM_FORMS[id] then
             isFarming = true
         end
     end
@@ -40,23 +40,32 @@ function ns.GetPlayerStates()
     return isCat, isFarming
 end
 
-function ns.CanCast()
+function te.CanCast()
     return not (UnitIsDeadOrGhost("player") or IsStealthed() or UnitCastingInfo("player") or UnitAffectingCombat("player"))
+end
+
+function te.HasTrackingAbility()
+    for _, id in ipairs(te.TRACKING_IDS) do
+        if IsPlayerSpell(id) then
+            return true
+        end
+    end
+    return false
 end
 
 --------------------------------------------------------------------------------
 -- Icon Management
 --------------------------------------------------------------------------------
-function ns.UpdateIcon()
+function te.UpdateIcon()
     local tex = nil
-    local isCat, _ = ns.GetPlayerStates()
+    local isCat, _ = te.GetPlayerStates()
 
-    if ns.state.lastCastSpell == ns.SPELLS.DRUID_HUMANOIDS and not isCat then
-        ns.state.lastCastSpell = nil
+    if te.state.lastCastSpell == te.SPELLS.DRUID_HUMANOIDS and not isCat then
+        te.state.lastCastSpell = nil
     end
 
-    if ns.state.lastCastSpell then
-        tex = GetSpellTexture(ns.state.lastCastSpell)
+    if te.state.lastCastSpell then
+        tex = GetSpellTexture(te.state.lastCastSpell)
     end
 
     if not tex then
@@ -67,92 +76,92 @@ function ns.UpdateIcon()
         tex = TrackingEyeDB.lastIcon
     end
 
-    ns.state.currentIcon = tex or ns.ICON_DEFAULT
+    te.state.currentIcon = tex or te.ICON_DEFAULT
 
-    if TrackingEyeDB and tex and tex ~= ns.ICON_DEFAULT then
+    if TrackingEyeDB and tex and tex ~= te.ICON_DEFAULT then
         TrackingEyeDB.lastIcon = tex
     end
 
-    if ns.ldb then
-        ns.ldb.icon = ns.state.currentIcon
+    if te.ldb then
+        te.ldb.icon = te.state.currentIcon
     end
-    if ns.freeFrame and ns.freeFrame.icon then
-        ns.freeFrame.icon:SetTexture(ns.state.currentIcon)
+    if te.freeFrame and te.freeFrame.icon then
+        te.freeFrame.icon:SetTexture(te.state.currentIcon)
     end
     
-    if ns.RefreshTooltip then
-        ns.RefreshTooltip()
+    if te.RefreshTooltip then
+        te.RefreshTooltip()
     end
 end
 
-function ns.ClearTracking()
-    ns.state.lastCastSpell = nil
+function te.ClearTracking()
+    te.state.lastCastSpell = nil
     if TrackingEyeDB then
         TrackingEyeDB.selectedSpellId = nil
         TrackingEyeDB.lastIcon = nil
     end
     CancelTrackingBuff()
-    ns.UpdateIcon()
+    te.UpdateIcon()
 end
 
 --------------------------------------------------------------------------------
 -- Farm Logic
 --------------------------------------------------------------------------------
-function ns.RunFarmLogic()
+function te.RunFarmLogic()
     if not TrackingEyeDB or not TrackingEyeDB.farmingMode then return end
     
-    local _, inForm = ns.GetPlayerStates()
+    local _, inForm = te.GetPlayerStates()
     local currentTrackingTex = GetTrackingTexture()
 
-    if not inForm and ns.state.wasFarming then
-        ns.state.wasFarming = false
+    if not inForm and te.state.wasFarming then
+        te.state.wasFarming = false
         if TrackingEyeDB.autoTracking and TrackingEyeDB.selectedSpellId then
             local targetTex = GetSpellTexture(TrackingEyeDB.selectedSpellId)
             if currentTrackingTex ~= targetTex then
-                ns.CastTracking(TrackingEyeDB.selectedSpellId)
+                te.CastTracking(TrackingEyeDB.selectedSpellId)
             end
         end
         return
     end
 
-    if not inForm or not ns.CanCast() then return end
+    if not inForm or not te.CanCast() then return end
 
-    table.wipe(ns.state.cycleCache)
+    table.wipe(te.state.cycleCache)
     
-    for _, id in ipairs(ns.FARM_CYCLE) do
+    for _, id in ipairs(te.FARM_CYCLE) do
         if IsPlayerSpell(id) then
             local usable, noMana = IsUsableSpell(id)
             if usable or noMana then
-                table.insert(ns.state.cycleCache, id)
+                table.insert(te.state.cycleCache, id)
             end
         end
     end
 
-    if #ns.state.cycleCache == 0 then return end
+    if #te.state.cycleCache == 0 then return end
 
-    if #ns.state.cycleCache == 1 then
-        local spellId = ns.state.cycleCache[1]
+    if #te.state.cycleCache == 1 then
+        local spellId = te.state.cycleCache[1]
         local spellTex = GetSpellTexture(spellId)
         
-        if currentTrackingTex == spellTex or ns.state.lastCastSpell == spellId then
-            ns.state.wasFarming = true
+        if currentTrackingTex == spellTex or te.state.lastCastSpell == spellId then
+            te.state.wasFarming = true
             return
         end
-        ns.state.farmIndex = 0
+        te.state.farmIndex = 0
     end
 
-    ns.state.farmIndex = (ns.state.farmIndex % #ns.state.cycleCache) + 1
-    local nextSpellId = ns.state.cycleCache[ns.state.farmIndex]
+    te.state.farmIndex = (te.state.farmIndex % #te.state.cycleCache) + 1
+    local nextSpellId = te.state.cycleCache[te.state.farmIndex]
     local nextTex = GetSpellTexture(nextSpellId)
 
     if currentTrackingTex ~= nextTex then
-        ns.CastTracking(nextSpellId)
+        te.CastTracking(nextSpellId)
     end
 
-    ns.state.wasFarming = true
+    te.state.wasFarming = true
 end
 
-function ns.CastTracking(spellId)
+function te.CastTracking(spellId)
     if not spellId or not IsPlayerSpell(spellId) then return end
     
     local start, duration = GetSpellCooldown(spellId)
@@ -160,8 +169,8 @@ function ns.CastTracking(spellId)
         return
     end
     
-    ns.state.lastCastSpell = spellId
-    ns.UpdateIcon()
+    te.state.lastCastSpell = spellId
+    te.UpdateIcon()
     pcall(CastSpellByID, spellId)
 end
 
@@ -182,37 +191,43 @@ eventFrame:SetScript(
             }
             TrackingEyeGlobalDB.minimap = TrackingEyeGlobalDB.minimap or {}
             
-            if ns.CreateFreeFrame then ns.CreateFreeFrame() end
-            ns.UpdateIcon()
+            if te.CreateFreeFrame then te.CreateFreeFrame() end
+            te.UpdateIcon()
             
         elseif event == "PLAYER_LOGIN" then
-            if ns.InitMinimap then ns.InitMinimap() end
+            if te.InitMinimap then te.InitMinimap() end
             
-            ns.UpdateIcon()
-            C_Timer.NewTicker(ns.FARM_INTERVAL, ns.RunFarmLogic)
+            te.UpdateIcon()
+            C_Timer.NewTicker(te.FARM_INTERVAL, te.RunFarmLogic)
             
         elseif event == "UNIT_SPELLCAST_SUCCEEDED" and arg1 == "player" then
             local spellId = select(3, ...)
-            for _, id in ipairs(ns.TRACKING_IDS) do
+            for _, id in ipairs(te.TRACKING_IDS) do
                 if id == spellId then
-                    ns.state.lastCastSpell = spellId
-                    ns.UpdateIcon()
+                    te.state.lastCastSpell = spellId
+                    te.UpdateIcon()
                     break
                 end
             end
-        elseif event == "MINIMAP_UPDATE_TRACKING" or event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or event == "UPDATE_SHAPESHIFT_FORM" then
-            ns.UpdateIcon()
+        elseif event == "MINIMAP_UPDATE_TRACKING" or event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or event == "UPDATE_SHAPESHIFT_FORM" or event == "SPELLS_CHANGED" then
+            te.UpdateIcon()
             
+            -- Re-check placement/visibility on spell changes (learning tracking)
+            if event == "SPELLS_CHANGED" or event == "PLAYER_ENTERING_WORLD" then
+                 if te.UpdatePlacement then te.UpdatePlacement() end
+            end
+
             if event == "UPDATE_SHAPESHIFT_FORM" and TrackingEyeDB.autoTracking and TrackingEyeDB.selectedSpellId then
-                local _, isFarming = ns.GetPlayerStates()
+                local _, isFarming = te.GetPlayerStates()
                 if not isFarming then
                     local currentTex = GetTrackingTexture()
                     local targetTex = GetSpellTexture(TrackingEyeDB.selectedSpellId)
                     
-                    if currentTex ~= targetTex then
+                    -- Check if we already cast this spell to prevent spamming
+                    if currentTex ~= targetTex and te.state.lastCastSpell ~= TrackingEyeDB.selectedSpellId then
                         local usable, noMana = IsUsableSpell(TrackingEyeDB.selectedSpellId)
                         if usable or noMana then
-                            ns.CastTracking(TrackingEyeDB.selectedSpellId)
+                            te.CastTracking(TrackingEyeDB.selectedSpellId)
                         end
                     end
                 end
@@ -228,3 +243,4 @@ eventFrame:RegisterEvent("MINIMAP_UPDATE_TRACKING")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 eventFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+eventFrame:RegisterEvent("SPELLS_CHANGED")
