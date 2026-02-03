@@ -22,7 +22,7 @@ function te.GetPlayerStates()
         return false, false
     end
 
-    if IsMounted() then
+    if IsMounted() and not UnitAffectingCombat("player") then
         isFarming = true
     end
 
