@@ -4,7 +4,7 @@ local _, te = ...
 -- Constants & Config
 --------------------------------------------------------------------------------
 te.ICON_DEFAULT = "Interface\\Icons\\inv_misc_map_01"
-te.FARM_INTERVAL = 4.0
+te.FARM_INTERVAL = 2.0
 
 te.SPELLS = {
     -- Farming & Travel Forms
@@ -86,4 +86,5 @@ end
 function te.GetSpellName(spellID)
     local name = GetSpellInfo(spellID)
     return name
+
 end
