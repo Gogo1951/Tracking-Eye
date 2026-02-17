@@ -1,6 +1,6 @@
 # Tracking Eye
 
-A smart tracking menu that auto-cycles herbs & ore scanning while mounted, and restores tracking after death.
+A smart tracking menu that auto-cycles herb and ore tracking while mounted, and automatically restores your tracking ability after death.
 
 ## Key Features
 
