@@ -10,7 +10,6 @@ function te.UpdatePlacement()
         return
     end
 
-    -- If player knows no tracking spells, hide everything
     if not te.HasTrackingAbility() then
         if te.freeFrame then
             te.freeFrame:Hide()
@@ -57,7 +56,6 @@ function te.BuildTooltip(tooltip)
     else
         tooltip:AddLine("|TInterface\\Icons\\inv_misc_map_01:16|t " .. te.GetColor("DESC") .. te.L["NONE_SET"] .. "|r")
     end
-
     tooltip:AddDoubleLine(
         te.GetColor("INFO") .. te.L["RIGHT_CLICK"] .. "|r",
         te.GetColor("INFO") .. te.L["CLEAR_TRACKING"] .. "|r"
@@ -76,7 +74,7 @@ function te.BuildTooltip(tooltip)
     )
     tooltip:AddLine(" ")
 
-    -- Farming Mode Toggle
+    -- Farm Mode Toggle
     local fState =
         (TrackingEyeDB and TrackingEyeDB.farmingMode) and (te.GetColor("SUCCESS") .. te.L["ENABLED"] .. "|r") or
         (te.GetColor("DISABLED") .. te.L["DISABLED"] .. "|r")
@@ -149,7 +147,6 @@ local function OnClick(self, button)
             updateNeeded = true
         end
     else
-        -- Non-Shift Clicks
         if button == "LeftButton" then
             te.ToggleMenu(self)
         elseif button == "RightButton" then
@@ -224,6 +221,7 @@ function te.CreateFreeFrame()
     else
         f:SetPoint("CENTER")
     end
+
     te.freeFrame = f
     te.UpdatePlacement()
 end
@@ -246,13 +244,11 @@ function te.InitMinimap()
         LDBIcon:Register(addonName, te.ldb, TrackingEyeGlobalDB.minimap)
     end
 
-    -- Custom anchor logic for the minimap button
     local btn = LDBIcon:GetMinimapButton(addonName)
     if btn then
         btn:SetScript(
             "OnEnter",
             function(self)
-                -- Anchor Top-Right of Tooltip to Bottom-Left of Button
                 GameTooltip:SetOwner(self, "ANCHOR_NONE")
                 GameTooltip:SetPoint("TOPRIGHT", self, "BOTTOMLEFT")
                 te.BuildTooltip(GameTooltip)

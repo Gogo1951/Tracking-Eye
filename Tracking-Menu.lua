@@ -14,12 +14,12 @@ local function InitMenu(_, level)
 
     -- Title
     local titleInfo = LibDD:UIDropDownMenu_CreateInfo()
-    titleInfo.text = te.GetColor("TITLE") .. te.L["TRACKING_MENU"] .. "|r"
-    titleInfo.isTitle = true
+    titleInfo.text         = te.GetColor("TITLE") .. te.L["TRACKING_MENU"] .. "|r"
+    titleInfo.isTitle      = true
     titleInfo.notCheckable = true
     LibDD:UIDropDownMenu_AddButton(titleInfo, level)
 
-    -- List
+    -- Build a sorted list of spells the player knows
     local list = {}
     for _, id in ipairs(te.TRACKING_IDS) do
         local name = te.GetSpellName(id)
@@ -28,22 +28,18 @@ local function InitMenu(_, level)
         end
     end
 
-    table.sort(
-        list,
-        function(a, b)
-            return a.name < b.name
-        end
-    )
+    table.sort(list, function(a, b) return a.name < b.name end)
 
-    local isCat, _ = te.GetPlayerStates()
+    local isCat = te.GetPlayerStates()
 
     for _, data in ipairs(list) do
+        -- Hide DRUID_HUMANOIDS unless the player is currently in cat form
         if IsPlayerSpell(data.id) and (data.id ~= te.SPELLS.DRUID_HUMANOIDS or isCat) then
-            local info = LibDD:UIDropDownMenu_CreateInfo()
-            info.text = string.format("|T%s:16|t %s", GetSpellTexture(data.id) or "", data.name)
-            info.value = data.id
-            info.checked = (TrackingEyeDB.selectedSpellId == data.id)
-            info.func = function(btn)
+            local info    = LibDD:UIDropDownMenu_CreateInfo()
+            info.text     = string.format("|T%s:16|t %s", GetSpellTexture(data.id) or "", data.name)
+            info.value    = data.id
+            info.checked  = (TrackingEyeDB.selectedSpellId == data.id)
+            info.func     = function(btn)
                 TrackingEyeDB.selectedSpellId = btn.value
                 te.state.wasFarming = false
                 te.CastTracking(btn.value)

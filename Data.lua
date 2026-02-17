@@ -25,11 +25,11 @@ te.SPELLS = {
     ELEMENTALS = 19880,
     GIANTS = 19882,
     HIDDEN = 19885,
-    HUMANOIDS = 19883, -- Hunter Version
+    HUMANOIDS = 19883, -- Hunter version
     UNDEAD = 19884,
     -- Druid Tracking
-    DRUID_HUMANOIDS = 5225, -- Druid Version (Cat Form)
-    -- Warlock/Paladin/Other
+    DRUID_HUMANOIDS = 5225, -- Druid version (Cat Form only)
+    -- Warlock / Paladin
     SENSE_DEMONS = 5500,
     SENSE_UNDEAD = 5502
 }
@@ -59,6 +59,13 @@ te.TRACKING_IDS = {
     te.SPELLS.SENSE_UNDEAD
 }
 
+-- Hash set built from TRACKING_IDS for O(1) lookups in UNIT_SPELLCAST_SUCCEEDED.
+-- Avoids a linear scan of the list on every spell cast by anyone.
+te.TRACKING_SET = {}
+for _, id in ipairs(te.TRACKING_IDS) do
+    te.TRACKING_SET[id] = true
+end
+
 te.FARM_CYCLE = {
     te.SPELLS.HERBS,
     te.SPELLS.MINERALS,
@@ -86,6 +93,4 @@ end
 function te.GetSpellName(spellID)
     local name = GetSpellInfo(spellID)
     return name
-
 end
-
