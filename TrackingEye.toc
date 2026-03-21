@@ -20,6 +20,9 @@ Includes/CallbackHandler-1.0/CallbackHandler-1.0.lua
 Includes/LibDataBroker-1.1/LibDataBroker-1.1.lua
 Includes/LibDBIcon-1.0/LibDBIcon-1.0.lua
 Includes/LibUIDropDownMenu/LibUIDropDownMenu.xml
+Includes/AceGUI-3.0/AceGUI-3.0.xml
+Includes/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
+Includes/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
 
 # Localization
 Locales/enUS.lua
