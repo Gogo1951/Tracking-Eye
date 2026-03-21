@@ -38,27 +38,15 @@ end
 --------------------------------------------------------------------------------
 local function BuildCycleCache()
     cachedCycle = {}
-    local added = {}
-
-    -- Always-on spells are always in the cycle
-    for id in pairs(te.FARM_ALWAYS_ON) do
-        if IsPlayerSpell(id) then
-            table.insert(cachedCycle, id)
-            added[id] = true
-        end
-    end
-
-    -- Add user-selected spells (skip always-on dupes and druid humanoids)
     local spells = TrackingEyeDB and TrackingEyeDB.farmCycleSpells
-    if spells then
-        for id, enabled in pairs(spells) do
-            if enabled and not added[id] and id ~= te.SPELLS.DRUID_HUMANOIDS and IsPlayerSpell(id) then
-                table.insert(cachedCycle, id)
-                added[id] = true
-            end
+    if not spells then
+        return
+    end
+    for id, enabled in pairs(spells) do
+        if enabled and id ~= te.SPELLS.DRUID_HUMANOIDS and IsPlayerSpell(id) then
+            table.insert(cachedCycle, id)
         end
     end
-
     table.sort(cachedCycle)
 end
 

@@ -29,20 +29,20 @@ local function Desc(text, order)
     }
 end
 
-local function SmallDesc(text, order)
-    return {
-        type     = "description",
-        name     = text,
-        fontSize = "small",
-        order    = order
-    }
-end
-
 local function Spacer(order)
     return {
         type  = "description",
         name  = " ",
         order = order
+    }
+end
+
+local function SubHeader(text, order)
+    return {
+        type     = "description",
+        name     = "\n" .. te.GetColor("TITLE") .. text .. "|r",
+        fontSize = "medium",
+        order    = order
     }
 end
 
@@ -63,7 +63,7 @@ local function BuildFarmAbilityArgs()
     local args = {}
     local order = 1
 
-    -- Build sorted list: always-on first, then alphabetical
+    -- Build sorted list alphabetically, exclude Druid Humanoids
     local allSpells = {}
     for _, id in ipairs(te.TRACKING_IDS) do
         if id ~= te.SPELLS.DRUID_HUMANOIDS then
@@ -73,47 +73,29 @@ local function BuildFarmAbilityArgs()
             end
         end
     end
-    table.sort(allSpells, function(a, b)
-        local aOn = te.FARM_ALWAYS_ON[a.id] and true or false
-        local bOn = te.FARM_ALWAYS_ON[b.id] and true or false
-        if aOn ~= bOn then return aOn end
-        return a.name < b.name
-    end)
+    table.sort(allSpells, function(a, b) return a.name < b.name end)
 
     for _, data in ipairs(allSpells) do
         local id = data.id
-        local isAlwaysOn = te.FARM_ALWAYS_ON[id]
         local key = "spell_" .. id
 
-        if isAlwaysOn then
-            args[key] = {
-                type     = "toggle",
-                name     = SpellLabel(id, te.L["OPTIONS_ALWAYS_ON"]),
-                order    = order,
-                width    = "full",
-                disabled = true,
-                get      = function() return true end,
-                set      = function() end
-            }
-        else
-            args[key] = {
-                type   = "toggle",
-                name   = SpellLabel(id),
-                order  = order,
-                width  = "full",
-                hidden = function() return not IsPlayerSpell(id) end,
-                get    = function()
-                    return TrackingEyeDB and TrackingEyeDB.farmCycleSpells and
-                        TrackingEyeDB.farmCycleSpells[id] or false
-                end,
-                set    = function(_, val)
-                    if TrackingEyeDB and TrackingEyeDB.farmCycleSpells then
-                        TrackingEyeDB.farmCycleSpells[id] = val or nil
-                        te.InvalidateFarmCache()
-                    end
+        args[key] = {
+            type   = "toggle",
+            name   = SpellLabel(id),
+            order  = order,
+            width  = "full",
+            hidden = function() return not IsPlayerSpell(id) end,
+            get    = function()
+                return TrackingEyeDB and TrackingEyeDB.farmCycleSpells and
+                    TrackingEyeDB.farmCycleSpells[id] or false
+            end,
+            set    = function(_, val)
+                if TrackingEyeDB and TrackingEyeDB.farmCycleSpells then
+                    TrackingEyeDB.farmCycleSpells[id] = val or nil
+                    te.InvalidateFarmCache()
                 end
-            }
-        end
+            end
+        }
         order = order + 1
     end
 
@@ -145,6 +127,7 @@ local function GetOptions()
             },
 
             -- Farm Mode
+            spaceFM0   = Spacer(19),
             headerFarm = Header(te.L["FARM_MODE"], 20),
             descFarm   = Desc(te.L["FARMING_DESC"], 21),
             spaceFM1   = Spacer(22),
@@ -171,13 +154,8 @@ local function GetOptions()
             spaceFM3 = Spacer(26),
 
             -- Cycle Speed
-            headerCycleSpeed = {
-                type     = "description",
-                name     = "\n" .. te.GetColor("TITLE") .. te.L["OPTIONS_CYCLE_SPEED"] .. "|r",
-                fontSize = "medium",
-                order    = 27
-            },
-            descCycleSpeed = SmallDesc(te.L["OPTIONS_CYCLE_SPEED_DESC"], 28),
+            subCycleSpeed  = SubHeader(te.L["OPTIONS_CYCLE_SPEED"], 27),
+            descCycleSpeed = Desc(te.L["OPTIONS_CYCLE_SPEED_DESC"], 28),
             cycleSpeed = {
                 type = "range",
                 name = "",
@@ -195,6 +173,7 @@ local function GetOptions()
             },
 
             -- Free Placement Mode
+            spaceFP0   = Spacer(39),
             headerFree = Header(te.L["PLACEMENT_MODE"], 40),
             descFree   = Desc(te.L["PLACEMENT_DESC"], 41),
             spaceFP1   = Spacer(42),
@@ -216,25 +195,20 @@ local function GetOptions()
             spaceFP2 = Spacer(44),
 
             -- Icon Size
-            headerIconSize = {
-                type     = "description",
-                name     = "\n" .. te.GetColor("TITLE") .. te.L["OPTIONS_ICON_SCALE"] .. "|r",
-                fontSize = "medium",
-                order    = 45
-            },
-            descIconSize = SmallDesc(te.L["OPTIONS_ICON_SCALE_DESC"], 46),
+            subIconSize  = SubHeader(te.L["OPTIONS_ICON_SCALE"], 45),
+            descIconSize = Desc(te.L["OPTIONS_ICON_SCALE_DESC"], 46),
             iconScale = {
-                type    = "range",
-                name    = "",
-                order   = 47,
-                min     = 0.25,
-                max     = 3.0,
-                step    = 0.05,
+                type      = "range",
+                name      = "",
+                order     = 47,
+                min       = 0.25,
+                max       = 3.0,
+                step      = 0.05,
                 isPercent = true,
-                get     = function()
+                get       = function()
                     return TrackingEyeGlobalDB and TrackingEyeGlobalDB.freeIconScale or te.FREE_ICON_SCALE_DEFAULT
                 end,
-                set     = function(_, val)
+                set       = function(_, val)
                     if TrackingEyeGlobalDB then
                         TrackingEyeGlobalDB.freeIconScale = val
                     end
@@ -244,13 +218,8 @@ local function GetOptions()
             spaceFP3 = Spacer(48),
 
             -- Icon Shape
-            headerIconShape = {
-                type     = "description",
-                name     = "\n" .. te.GetColor("TITLE") .. te.L["OPTIONS_ICON_SHAPE"] .. "|r",
-                fontSize = "medium",
-                order    = 49
-            },
-            descIconShape = SmallDesc(te.L["OPTIONS_ICON_SHAPE_DESC"], 50),
+            subIconShape  = SubHeader(te.L["OPTIONS_ICON_SHAPE"], 49),
+            descIconShape = Desc(te.L["OPTIONS_ICON_SHAPE_DESC"], 50),
             iconShape = {
                 type   = "select",
                 name   = "",
@@ -272,14 +241,10 @@ local function GetOptions()
             },
 
             -- Feedback & Support
-            headerLinks = Header(te.L["OPTIONS_LINKS"], 60),
-            spaceLinks1 = Spacer(61),
-            discordLabel = {
-                type     = "description",
-                name     = te.GetColor("TITLE") .. te.L["OPTIONS_DISCORD"] .. "|r",
-                fontSize = "medium",
-                order    = 62
-            },
+            spaceLinks0  = Spacer(59),
+            headerLinks  = Header(te.L["OPTIONS_LINKS"], 60),
+            spaceLinks1  = Spacer(61),
+            discordLabel = Desc(te.GetColor("TITLE") .. te.L["OPTIONS_DISCORD"] .. "|r", 62),
             discordURL = {
                 type  = "input",
                 name  = "",
@@ -288,13 +253,8 @@ local function GetOptions()
                 get   = function() return te.DISCORD_URL end,
                 set   = function() end
             },
-            spaceLinks2 = Spacer(64),
-            githubLabel = {
-                type     = "description",
-                name     = te.GetColor("TITLE") .. te.L["OPTIONS_GITHUB"] .. "|r",
-                fontSize = "medium",
-                order    = 65
-            },
+            spaceLinks2  = Spacer(64),
+            githubLabel  = Desc(te.GetColor("TITLE") .. te.L["OPTIONS_GITHUB"] .. "|r", 65),
             githubURL = {
                 type  = "input",
                 name  = "",
@@ -350,6 +310,16 @@ local mainPanel
 function te.InitOptions()
     AC:RegisterOptionsTable(addonName, GetOptions)
     mainPanel = ACD:AddToBlizOptions(addonName, te.L["ADDON_TITLE"])
+
+    -- Pause Farm Mode while options panel is visible
+    if mainPanel then
+        mainPanel:HookScript("OnShow", function()
+            te.optionsOpen = true
+        end)
+        mainPanel:HookScript("OnHide", function()
+            te.optionsOpen = false
+        end)
+    end
 end
 
 function te.OpenOptions()

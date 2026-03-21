@@ -112,7 +112,19 @@ function te.ClearTracking()
         TrackingEyeDB.lastIcon = nil
     end
     CancelTrackingBuff()
-    te.UpdateIcon()
+
+    -- Set icon to default immediately (CancelTrackingBuff is async,
+    -- so GetTrackingTexture still returns the old texture for a frame)
+    te.state.currentIcon = te.ICON_DEFAULT
+    if te.ldb then
+        te.ldb.icon = te.ICON_DEFAULT
+    end
+    if te.freeFrame and te.freeFrame.icon then
+        te.freeFrame.icon:SetTexture(te.ICON_DEFAULT)
+    end
+    if te.RefreshTooltip then
+        te.RefreshTooltip()
+    end
 end
 
 --------------------------------------------------------------------------------

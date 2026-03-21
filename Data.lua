@@ -75,14 +75,8 @@ for _, id in ipairs(te.TRACKING_IDS) do
 end
 
 -- Default farm cycle spells (used when no per-character override exists)
+-- Only Herbs and Minerals enabled by default; all others off
 te.FARM_CYCLE_DEFAULTS = {
-    [te.SPELLS.HERBS] = true,
-    [te.SPELLS.MINERALS] = true,
-    [te.SPELLS.TREASURE] = true
-}
-
--- Spells that Farm Mode always cycles (cannot be unchecked)
-te.FARM_ALWAYS_ON = {
     [te.SPELLS.HERBS] = true,
     [te.SPELLS.MINERALS] = true
 }
