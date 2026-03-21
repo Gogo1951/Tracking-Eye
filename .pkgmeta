@@ -12,11 +12,11 @@ externals:
     Includes/LibUIDropDownMenu:
         url: https://repos.wowace.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu/
     Includes/AceGUI-3.0:
-        url: https://repos.curseforge.com/wow/ace3/trunk/AceGUI-3.0/
+        url: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0/
     Includes/AceConfigRegistry-3.0:
-        url: https://repos.curseforge.com/wow/ace3/trunk/AceConfigRegistry-3.0/
+        url: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0/AceConfigRegistry-3.0/
     Includes/AceConfigDialog-3.0:
-        url: https://repos.curseforge.com/wow/ace3/trunk/AceConfigDialog-3.0/
+        url: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0/AceConfigDialog-3.0/
 ignore:
   - .git
   - .gitattributes
