@@ -7,6 +7,7 @@
 ## X-License: MIT
 
 ## X-Curse-Project-ID: 1129680
+## X-Discord: https://discord.gg/eh8hKq992Q
 ## Interface: 11508, 20505
 ## Version: @project-version@
 
@@ -38,6 +39,7 @@ Core.lua
 Farm-Mode.lua
 Tracking-Menu.lua
 Minimap-Button.lua
+Options.lua
 
 # Feedback Welcome! (=
 # Tracking Eye on CurseForge // https://www.curseforge.com/wow/addons/tracking-eye-classic
