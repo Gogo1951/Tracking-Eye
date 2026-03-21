@@ -5,7 +5,8 @@ local _, te = ...
 --------------------------------------------------------------------------------
 
 local farmIndex = 0
-local cycleCache = {}
+local cachedCycle = nil
+local farmTicker = nil
 
 --------------------------------------------------------------------------------
 -- Casting
@@ -23,7 +24,7 @@ function te.CastTracking(spellId)
     end
 
     local start, duration = GetSpellCooldown(spellId)
-    if start and duration and start > 0 and duration > 1.5 then
+    if start and duration and start > 0 and duration > 0 then
         return
     end
 
@@ -33,9 +34,47 @@ function te.CastTracking(spellId)
 end
 
 --------------------------------------------------------------------------------
+-- Farm Cycle Cache
+--------------------------------------------------------------------------------
+local function BuildCycleCache()
+    cachedCycle = {}
+    local added = {}
+
+    -- Always-on spells are always in the cycle
+    for id in pairs(te.FARM_ALWAYS_ON) do
+        if IsPlayerSpell(id) then
+            table.insert(cachedCycle, id)
+            added[id] = true
+        end
+    end
+
+    -- Add user-selected spells (skip always-on dupes and druid humanoids)
+    local spells = TrackingEyeDB and TrackingEyeDB.farmCycleSpells
+    if spells then
+        for id, enabled in pairs(spells) do
+            if enabled and not added[id] and id ~= te.SPELLS.DRUID_HUMANOIDS and IsPlayerSpell(id) then
+                table.insert(cachedCycle, id)
+                added[id] = true
+            end
+        end
+    end
+
+    table.sort(cachedCycle)
+end
+
+function te.InvalidateFarmCache()
+    cachedCycle = nil
+end
+
+--------------------------------------------------------------------------------
 -- Farm Cycle Logic
 --------------------------------------------------------------------------------
 function te.RunFarmLogic()
+    -- Pause while options panel is open
+    if te.optionsOpen then
+        return
+    end
+
     if not TrackingEyeDB or not TrackingEyeDB.farmingMode then
         return
     end
@@ -59,19 +98,17 @@ function te.RunFarmLogic()
         return
     end
 
-    table.wipe(cycleCache)
-    for _, id in ipairs(te.FARM_CYCLE) do
-        if IsPlayerSpell(id) then
-            table.insert(cycleCache, id)
-        end
+    -- Rebuild cache if invalidated
+    if not cachedCycle then
+        BuildCycleCache()
     end
 
-    if #cycleCache == 0 then
+    if #cachedCycle == 0 then
         return
     end
 
-    if #cycleCache == 1 then
-        local spellId = cycleCache[1]
+    if #cachedCycle == 1 then
+        local spellId = cachedCycle[1]
         local spellTex = GetSpellTexture(spellId)
 
         if currentTrackingTex == spellTex or te.state.lastCastSpell == spellId then
@@ -81,8 +118,8 @@ function te.RunFarmLogic()
         farmIndex = 0
     end
 
-    farmIndex = (farmIndex % #cycleCache) + 1
-    local nextSpellId = cycleCache[farmIndex]
+    farmIndex = (farmIndex % #cachedCycle) + 1
+    local nextSpellId = cachedCycle[farmIndex]
     local nextTex = GetSpellTexture(nextSpellId)
 
     if currentTrackingTex ~= nextTex then
@@ -93,8 +130,20 @@ function te.RunFarmLogic()
 end
 
 --------------------------------------------------------------------------------
+-- Ticker Management
+--------------------------------------------------------------------------------
+function te.RestartFarmTicker()
+    if farmTicker then
+        farmTicker:Cancel()
+        farmTicker = nil
+    end
+    local interval = (TrackingEyeDB and TrackingEyeDB.farmInterval) or te.FARM_INTERVAL_DEFAULT
+    farmTicker = C_Timer.NewTicker(interval, te.RunFarmLogic)
+end
+
+--------------------------------------------------------------------------------
 -- Initialization
 --------------------------------------------------------------------------------
 function te.InitFarmMode()
-    C_Timer.NewTicker(te.FARM_INTERVAL, te.RunFarmLogic)
+    te.RestartFarmTicker()
 end

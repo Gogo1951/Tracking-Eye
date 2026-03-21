@@ -4,7 +4,16 @@ local _, te = ...
 -- Constants & Config
 --------------------------------------------------------------------------------
 te.ICON_DEFAULT = "Interface\\Icons\\inv_misc_map_01"
-te.FARM_INTERVAL = 3.0
+te.FARM_INTERVAL_DEFAULT = 3.5
+te.FREE_ICON_SCALE_DEFAULT = 1.1
+te.DISCORD_URL = "https://discord.gg/eh8hKq992Q"
+te.GITHUB_URL  = "https://github.com/Gogo1951/Tracking-Eye"
+
+te.SHAPES = {
+    CIRCLE = "circle",
+    SQUARE = "square"
+}
+te.FREE_ICON_SHAPE_DEFAULT = te.SHAPES.CIRCLE
 
 te.SPELLS = {
     -- Farming & Travel Forms
@@ -60,16 +69,22 @@ te.TRACKING_IDS = {
 }
 
 -- Hash set built from TRACKING_IDS for O(1) lookups in UNIT_SPELLCAST_SUCCEEDED.
--- Avoids a linear scan of the list on every spell cast by anyone.
 te.TRACKING_SET = {}
 for _, id in ipairs(te.TRACKING_IDS) do
     te.TRACKING_SET[id] = true
 end
 
-te.FARM_CYCLE = {
-    te.SPELLS.HERBS,
-    te.SPELLS.MINERALS,
-    te.SPELLS.TREASURE
+-- Default farm cycle spells (used when no per-character override exists)
+te.FARM_CYCLE_DEFAULTS = {
+    [te.SPELLS.HERBS] = true,
+    [te.SPELLS.MINERALS] = true,
+    [te.SPELLS.TREASURE] = true
+}
+
+-- Spells that Farm Mode always cycles (cannot be unchecked)
+te.FARM_ALWAYS_ON = {
+    [te.SPELLS.HERBS] = true,
+    [te.SPELLS.MINERALS] = true
 }
 
 --------------------------------------------------------------------------------

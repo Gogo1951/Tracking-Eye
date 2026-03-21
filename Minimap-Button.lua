@@ -3,8 +3,40 @@ local LDB = LibStub("LibDataBroker-1.1")
 local LDBIcon = LibStub("LibDBIcon-1.0")
 
 --------------------------------------------------------------------------------
+-- Compat
+--------------------------------------------------------------------------------
+local function GetAddonMetadata(addon, field)
+    if C_AddOns and C_AddOns.GetAddOnMetadata then
+        return C_AddOns.GetAddOnMetadata(addon, field)
+    elseif GetAddOnMetadata then
+        return GetAddOnMetadata(addon, field)
+    end
+    return nil
+end
+
+--------------------------------------------------------------------------------
 -- Visuals & Placement
 --------------------------------------------------------------------------------
+function te.UpdateFreeFrameScale()
+    if te.freeFrame then
+        local scale = (TrackingEyeGlobalDB and TrackingEyeGlobalDB.freeIconScale) or te.FREE_ICON_SCALE_DEFAULT
+        te.freeFrame:SetScale(scale)
+    end
+end
+
+function te.UpdateFreeFrameShape()
+    if not te.freeFrame then
+        return
+    end
+    local shape = (TrackingEyeGlobalDB and TrackingEyeGlobalDB.freeIconShape) or te.FREE_ICON_SHAPE_DEFAULT
+    local isSquare = (shape == te.SHAPES.SQUARE)
+
+    te.freeFrame.circleBg:SetShown(not isSquare)
+    te.freeFrame.circleBorder:SetShown(not isSquare)
+    te.freeFrame.squareBg:SetShown(isSquare)
+    te.freeFrame.squareBorder:SetShown(isSquare)
+end
+
 function te.UpdatePlacement()
     if not TrackingEyeGlobalDB then
         return
@@ -31,10 +63,13 @@ function te.UpdatePlacement()
             te.freeFrame:Hide()
         end
     end
+
+    te.UpdateFreeFrameScale()
+    te.UpdateFreeFrameShape()
 end
 
 function te.BuildTooltip(tooltip)
-    local version = C_AddOns.GetAddOnMetadata(addonName, "Version") or "Dev"
+    local version = GetAddonMetadata(addonName, "Version") or "Dev"
 
     -- Header
     tooltip:AddDoubleLine(te.GetColor("TITLE") .. te.L["ADDON_TITLE"] .. "|r", te.GetColor("MUTED") .. version .. "|r")
@@ -78,7 +113,7 @@ function te.BuildTooltip(tooltip)
     local fState =
         (TrackingEyeDB and TrackingEyeDB.farmingMode) and (te.GetColor("SUCCESS") .. te.L["ENABLED"] .. "|r") or
         (te.GetColor("DISABLED") .. te.L["DISABLED"] .. "|r")
-    tooltip:AddDoubleLine(te.GetColor("TITLE") .. te.L["FARMING_MODE"] .. "|r", fState)
+    tooltip:AddDoubleLine(te.GetColor("TITLE") .. te.L["FARM_MODE"] .. "|r", fState)
     tooltip:AddLine(te.GetColor("DESC") .. te.L["FARMING_DESC"] .. "|r", 1, 1, 1, true)
     tooltip:AddDoubleLine(
         te.GetColor("INFO") .. te.L["SHIFT_RIGHT"] .. "|r",
@@ -97,6 +132,8 @@ function te.BuildTooltip(tooltip)
         te.GetColor("INFO") .. te.L["SHIFT_MIDDLE"] .. "|r",
         te.GetColor("INFO") .. te.L["TOGGLE"] .. "|r"
     )
+    tooltip:AddLine(" ")
+    tooltip:AddLine(te.GetColor("DESC") .. te.L["TOOLTIP_OPTIONS_HINT"] .. "|r", 1, 1, 1, true)
 end
 
 function te.RefreshTooltip()
@@ -173,20 +210,33 @@ function te.CreateFreeFrame()
     f:SetClampedToScreen(true)
     f:SetFrameStrata("HIGH")
 
-    f.bg = f:CreateTexture(nil, "BACKGROUND")
-    f.bg:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
-    f.bg:SetSize(24, 24)
-    f.bg:SetPoint("CENTER")
-    f.bg:SetVertexColor(0, 0, 0, 0.6)
+    -- Circle elements
+    f.circleBg = f:CreateTexture(nil, "BACKGROUND")
+    f.circleBg:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
+    f.circleBg:SetSize(24, 24)
+    f.circleBg:SetPoint("CENTER")
+    f.circleBg:SetVertexColor(0, 0, 0, 0.6)
 
+    f.circleBorder = f:CreateTexture(nil, "OVERLAY")
+    f.circleBorder:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
+    f.circleBorder:SetSize(62, 62)
+    f.circleBorder:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
+
+    -- Square elements
+    f.squareBorder = f:CreateTexture(nil, "BACKGROUND")
+    f.squareBorder:SetColorTexture(0, 0, 0, 0.8)
+    f.squareBorder:SetSize(27, 27)
+    f.squareBorder:SetPoint("CENTER")
+
+    f.squareBg = f:CreateTexture(nil, "BACKGROUND")
+    f.squareBg:SetColorTexture(0, 0, 0, 0)
+    f.squareBg:SetSize(1, 1)
+    f.squareBg:SetPoint("CENTER")
+
+    -- Shared icon
     f.icon = f:CreateTexture(nil, "ARTWORK")
     f.icon:SetSize(24, 24)
     f.icon:SetPoint("CENTER")
-
-    f.border = f:CreateTexture(nil, "OVERLAY")
-    f.border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-    f.border:SetSize(62, 62)
-    f.border:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
 
     f:SetScript("OnDragStart", f.StartMoving)
     f:SetScript(

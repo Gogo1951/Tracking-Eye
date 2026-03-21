@@ -10,6 +10,8 @@ te.state = {
     lastCastSpell = nil
 }
 
+te.optionsOpen = false
+
 --------------------------------------------------------------------------------
 -- Utility Functions
 --------------------------------------------------------------------------------
@@ -36,6 +38,11 @@ function te.GetPlayerStates()
             elseif te.FARM_FORMS[id] then
                 isFarming = true
             end
+        end
+
+        -- Early exit once both flags are set
+        if isCat and isFarming then
+            break
         end
     end
 
@@ -109,6 +116,40 @@ function te.ClearTracking()
 end
 
 --------------------------------------------------------------------------------
+-- Persistent Tracking Recast Helper
+--------------------------------------------------------------------------------
+local function TryRecastPersistent()
+    if not TrackingEyeDB or not TrackingEyeDB.autoTracking or not TrackingEyeDB.selectedSpellId then
+        return
+    end
+
+    local _, isFarming = te.GetPlayerStates()
+    if isFarming then
+        return
+    end
+
+    local spellId = TrackingEyeDB.selectedSpellId
+    if not IsPlayerSpell(spellId) then
+        return
+    end
+
+    local currentTex = GetTrackingTexture()
+    local targetTex = GetSpellTexture(spellId)
+    if currentTex ~= targetTex and te.state.lastCastSpell ~= spellId then
+        te.CastTracking(spellId)
+    end
+end
+
+--------------------------------------------------------------------------------
+-- Slash Command
+--------------------------------------------------------------------------------
+SLASH_TRACKINGEYE1 = "/te"
+SLASH_TRACKINGEYE2 = "/trackingeye"
+SlashCmdList["TRACKINGEYE"] = function()
+    te.OpenOptions()
+end
+
+--------------------------------------------------------------------------------
 -- Event Handling
 --------------------------------------------------------------------------------
 eventFrame:SetScript(
@@ -125,12 +166,27 @@ eventFrame:SetScript(
             if TrackingEyeDB.farmingMode == nil then
                 TrackingEyeDB.farmingMode = true
             end
+            if TrackingEyeDB.farmInterval == nil then
+                TrackingEyeDB.farmInterval = te.FARM_INTERVAL_DEFAULT
+            end
+            if TrackingEyeDB.farmCycleSpells == nil then
+                TrackingEyeDB.farmCycleSpells = {}
+                for id, v in pairs(te.FARM_CYCLE_DEFAULTS) do
+                    TrackingEyeDB.farmCycleSpells[id] = v
+                end
+            end
 
             if not TrackingEyeGlobalDB then
                 TrackingEyeGlobalDB = {}
             end
             if not TrackingEyeGlobalDB.minimap then
                 TrackingEyeGlobalDB.minimap = {}
+            end
+            if TrackingEyeGlobalDB.freeIconScale == nil then
+                TrackingEyeGlobalDB.freeIconScale = te.FREE_ICON_SCALE_DEFAULT
+            end
+            if TrackingEyeGlobalDB.freeIconShape == nil then
+                TrackingEyeGlobalDB.freeIconShape = te.FREE_ICON_SHAPE_DEFAULT
             end
 
             if te.CreateFreeFrame then
@@ -144,13 +200,22 @@ eventFrame:SetScript(
             if te.InitFarmMode then
                 te.InitFarmMode()
             end
+            if te.InitOptions then
+                te.InitOptions()
+            end
             te.UpdateIcon()
         elseif event == "UNIT_SPELLCAST_SUCCEEDED" and arg1 == "player" then
-            local spellId = select(3, ...)
+            local spellId = select(2, ...)
             if te.TRACKING_SET[spellId] then
                 te.state.lastCastSpell = spellId
                 te.UpdateIcon()
             end
+        elseif event == "PLAYER_UNGHOST" then
+            -- Delay recast slightly so the client settles after resurrection
+            C_Timer.After(1.5, function()
+                TryRecastPersistent()
+                te.UpdateIcon()
+            end)
         elseif
             event == "MINIMAP_UPDATE_TRACKING" or event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or
                 event == "UPDATE_SHAPESHIFT_FORM" or
@@ -162,24 +227,13 @@ eventFrame:SetScript(
                 if te.UpdatePlacement then
                     te.UpdatePlacement()
                 end
+                if te.InvalidateFarmCache then
+                    te.InvalidateFarmCache()
+                end
             end
 
-            if
-                event == "UPDATE_SHAPESHIFT_FORM" and TrackingEyeDB and TrackingEyeDB.autoTracking and
-                    TrackingEyeDB.selectedSpellId
-             then
-                local _, isFarming = te.GetPlayerStates()
-                if not isFarming then
-                    local currentTex = GetTrackingTexture()
-                    local targetTex = GetSpellTexture(TrackingEyeDB.selectedSpellId)
-
-                    if
-                        currentTex ~= targetTex and te.state.lastCastSpell ~= TrackingEyeDB.selectedSpellId and
-                            IsPlayerSpell(TrackingEyeDB.selectedSpellId)
-                     then
-                        te.CastTracking(TrackingEyeDB.selectedSpellId)
-                    end
-                end
+            if event == "UPDATE_SHAPESHIFT_FORM" then
+                TryRecastPersistent()
             end
         end
     end
@@ -193,3 +247,4 @@ eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 eventFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 eventFrame:RegisterEvent("SPELLS_CHANGED")
+eventFrame:RegisterEvent("PLAYER_UNGHOST")
