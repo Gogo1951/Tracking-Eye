@@ -233,7 +233,9 @@ eventFrame:SetScript(
             end
 
             if event == "UPDATE_SHAPESHIFT_FORM" then
-                TryRecastPersistent()
+                C_Timer.After(1.5, function()
+                    TryRecastPersistent()
+                end)
             end
         end
     end
