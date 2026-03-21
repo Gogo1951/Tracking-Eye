@@ -1,23 +1,22 @@
-# .pkgmeta
 package-as: TrackingEye
 enable-nolib-creation: no
-
 externals:
     Includes/LibStub:
         url: svn://svn.wowace.com/wow/libstub/mainline/trunk
-
     Includes/CallbackHandler-1.0:
         url: https://repos.curseforge.com/wow/callbackhandler/trunk/CallbackHandler-1.0/
-
     Includes/LibDataBroker-1.1:
         url: https://github.com/tekkub/libdatabroker-1-1/
-
     Includes/LibDBIcon-1.0:
         url: https://repos.curseforge.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0/
-
     Includes/LibUIDropDownMenu:
         url: https://repos.wowace.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu/
-
+    Includes/AceGUI-3.0:
+        url: https://repos.curseforge.com/wow/ace3/trunk/AceGUI-3.0/
+    Includes/AceConfigRegistry-3.0:
+        url: https://repos.curseforge.com/wow/ace3/trunk/AceConfigRegistry-3.0/
+    Includes/AceConfigDialog-3.0:
+        url: https://repos.curseforge.com/wow/ace3/trunk/AceConfigDialog-3.0/
 ignore:
   - .git
   - .gitattributes
