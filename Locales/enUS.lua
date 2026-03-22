@@ -34,6 +34,8 @@ L["TOOLTIP_OPTIONS_HINT"] = "Additional options available by typing /te or going
 
 -- Options Panel
 L["OPTIONS_RESET"]               = "Reset All Options"
+L["OPTIONS_RESET_HEADER"]        = "Reset"
+L["OPTIONS_RESET_CONFIRM"]       = "Reset all Tracking Eye options to defaults?"
 L["OPTIONS_ENABLE_PERSISTENT"]   = "Enable Persistent Tracking"
 L["OPTIONS_ENABLE_FARM"]         = "Enable Farm Mode"
 L["OPTIONS_ENABLE_FREE"]         = "Enable Free Placement Mode"

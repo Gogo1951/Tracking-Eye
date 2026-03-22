@@ -1,3 +1,4 @@
+-- deDE.lua
 local _, te = ...
 if GetLocale() ~= "deDE" then return end
 
@@ -16,7 +17,7 @@ L["PERSISTENT_TRACKING"] = "Dauerhafte Aufspürung"
 L["PERSISTENT_DESC"]      = "Wirkt Aufspürungszauber nach Wiederbelebung automatisch erneut."
 
 L["FARM_MODE"]    = "Farming-Modus"
-L["FARMING_DESC"] = "Wechselt zwischen Kräutern und Erzen, während Ihr reitet oder in Reisegestalt seid."
+L["FARMING_DESC"] = "Wechselt zwischen Kräutern, Erzen und Schätzen, während Ihr reitet oder in Reisegestalt seid."
 
 L["PLACEMENT_MODE"] = "Freie Platzierung"
 L["PLACEMENT_DESC"] = "Ersetzt den Minimap-Button durch ein eigenständiges Symbol, das überall hin bewegt werden kann."
@@ -31,10 +32,12 @@ L["SHIFT_LEFT"]   = "Umschalt + Linksklick"
 L["SHIFT_RIGHT"]  = "Umschalt + Rechtsklick"
 L["SHIFT_MIDDLE"] = "Umschalt + Mittelklick"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Weitere Optionen sind unter Optionen > AddOns > Tracking Eye verfügbar."
+L["TOOLTIP_OPTIONS_HINT"] = "Weitere Optionen sind durch Eingabe von /te oder unter Optionen > AddOns > Tracking Eye verfügbar."
 
 -- Options Panel
 L["OPTIONS_RESET"]               = "Alle Optionen zurücksetzen"
+L["OPTIONS_RESET_HEADER"]        = "Zurücksetzen"
+L["OPTIONS_RESET_CONFIRM"]       = "Alle Optionen von Tracking Eye auf Standard zurücksetzen?"
 L["OPTIONS_ENABLE_PERSISTENT"]   = "Dauerhafte Aufspürung aktivieren"
 L["OPTIONS_ENABLE_FARM"]         = "Farming-Modus aktivieren"
 L["OPTIONS_ENABLE_FREE"]         = "Freie Platzierung aktivieren"

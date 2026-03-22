@@ -1,3 +1,4 @@
+-- koKR.lua
 local _, te = ...
 if GetLocale() ~= "koKR" then return end
 
@@ -16,7 +17,7 @@ L["PERSISTENT_TRACKING"] = "지속적인 추적"
 L["PERSISTENT_DESC"]      = "부활 후 추적 주문을 자동으로 다시 시전합니다."
 
 L["FARM_MODE"]    = "파밍 모드"
-L["FARMING_DESC"] = "탈것에 탑승하거나 여행 형상일 때 약초와 광석 사이를 순환합니다."
+L["FARMING_DESC"] = "탈것에 탑승하거나 여행 형상일 때 약초, 광석, 보물 사이를 순환합니다."
 
 L["PLACEMENT_MODE"] = "자유 배치 모드"
 L["PLACEMENT_DESC"] = "미니맵 버튼을 어디든 이동할 수 있는 독립형 아이콘으로 대체합니다."
@@ -31,10 +32,12 @@ L["SHIFT_LEFT"]   = "Shift + 왼쪽 클릭"
 L["SHIFT_RIGHT"]  = "Shift + 오른쪽 클릭"
 L["SHIFT_MIDDLE"] = "Shift + 휠 클릭"
 
-L["TOOLTIP_OPTIONS_HINT"] = "추가 설정은 설정 > 애드온 > Tracking Eye에서 사용할 수 있습니다."
+L["TOOLTIP_OPTIONS_HINT"] = "/te 를 입력하거나 설정 > 애드온 > Tracking Eye에서 추가 설정을 사용할 수 있습니다."
 
 -- Options Panel
 L["OPTIONS_RESET"]               = "모든 설정 초기화"
+L["OPTIONS_RESET_HEADER"]        = "초기화"
+L["OPTIONS_RESET_CONFIRM"]       = "모든 Tracking Eye 설정을 기본값으로 초기화하시겠습니까?"
 L["OPTIONS_ENABLE_PERSISTENT"]   = "지속적인 추적 활성화"
 L["OPTIONS_ENABLE_FARM"]         = "파밍 모드 활성화"
 L["OPTIONS_ENABLE_FREE"]         = "자유 배치 모드 활성화"

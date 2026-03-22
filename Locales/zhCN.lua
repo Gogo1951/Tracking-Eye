@@ -1,3 +1,4 @@
+-- zhCN.lua
 local _, te = ...
 if GetLocale() ~= "zhCN" then return end
 
@@ -16,7 +17,7 @@ L["PERSISTENT_TRACKING"] = "持久追踪"
 L["PERSISTENT_DESC"]      = "复活后自动重新施放追踪法术。"
 
 L["FARM_MODE"]    = "采集模式"
-L["FARMING_DESC"] = "在坐骑或旅行形态下，于草药和矿石之间循环。"
+L["FARMING_DESC"] = "在坐骑或旅行形态下，于草药、矿石和宝藏之间循环。"
 
 L["PLACEMENT_MODE"] = "自由移动模式"
 L["PLACEMENT_DESC"] = "将小地图按钮替换为可随处移动的独立图标。"
@@ -31,10 +32,12 @@ L["SHIFT_LEFT"]   = "Shift + 左键"
 L["SHIFT_RIGHT"]  = "Shift + 右键"
 L["SHIFT_MIDDLE"] = "Shift + 中键"
 
-L["TOOLTIP_OPTIONS_HINT"] = "更多选项可在 选项 > 插件 > Tracking Eye 中查看。"
+L["TOOLTIP_OPTIONS_HINT"] = "输入 /te 或在 选项 > 插件 > Tracking Eye 中查看更多选项。"
 
 -- Options Panel
 L["OPTIONS_RESET"]               = "重置所有选项"
+L["OPTIONS_RESET_HEADER"]        = "重置"
+L["OPTIONS_RESET_CONFIRM"]       = "将所有 Tracking Eye 选项重置为默认值？"
 L["OPTIONS_ENABLE_PERSISTENT"]   = "启用持久追踪"
 L["OPTIONS_ENABLE_FARM"]         = "启用采集模式"
 L["OPTIONS_ENABLE_FREE"]         = "启用自由移动模式"

@@ -1,3 +1,4 @@
+-- ruRU.lua
 local _, te = ...
 if GetLocale() ~= "ruRU" then return end
 
@@ -16,7 +17,7 @@ L["PERSISTENT_TRACKING"] = "Постоянное отслеживание"
 L["PERSISTENT_DESC"]      = "Автоматически восстанавливает заклинание отслеживания после воскрешения."
 
 L["FARM_MODE"]    = "Режим фарма"
-L["FARMING_DESC"] = "Переключает поиск трав и минералов во время езды верхом или в походном облике."
+L["FARMING_DESC"] = "Переключает поиск трав, минералов и сокровищ во время езды верхом или в походном облике."
 
 L["PLACEMENT_MODE"] = "Свободное перемещение"
 L["PLACEMENT_DESC"] = "Заменяет кнопку у миникарты отдельным значком, который можно переместить куда угодно."
@@ -31,10 +32,12 @@ L["SHIFT_LEFT"]   = "Shift + ЛКМ"
 L["SHIFT_RIGHT"]  = "Shift + ПКМ"
 L["SHIFT_MIDDLE"] = "Shift + СКМ"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Дополнительные настройки доступны в Настройки > Модификации > Tracking Eye."
+L["TOOLTIP_OPTIONS_HINT"] = "Дополнительные настройки доступны при вводе /te или в Настройки > Модификации > Tracking Eye."
 
 -- Options Panel
 L["OPTIONS_RESET"]               = "Сбросить все настройки"
+L["OPTIONS_RESET_HEADER"]        = "Сброс"
+L["OPTIONS_RESET_CONFIRM"]       = "Сбросить все настройки Tracking Eye по умолчанию?"
 L["OPTIONS_ENABLE_PERSISTENT"]   = "Включить Постоянное отслеживание"
 L["OPTIONS_ENABLE_FARM"]         = "Включить Режим фарма"
 L["OPTIONS_ENABLE_FREE"]         = "Включить Свободное перемещение"

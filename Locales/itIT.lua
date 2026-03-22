@@ -1,3 +1,4 @@
+-- itIT.lua
 local _, te = ...
 if GetLocale() ~= "itIT" then return end
 
@@ -16,7 +17,7 @@ L["PERSISTENT_TRACKING"] = "Tracciamento Persistente"
 L["PERSISTENT_DESC"]      = "Rilancia automaticamente l'incantesimo di tracciamento dopo la resurrezione."
 
 L["FARM_MODE"]    = "Modalità Raccolta"
-L["FARMING_DESC"] = "Cicla tra Erbe e Minerali mentre sei a cavallo o in forma di viaggio."
+L["FARMING_DESC"] = "Cicla tra Erbe, Minerali e Tesori mentre sei a cavallo o in forma di viaggio."
 
 L["PLACEMENT_MODE"] = "Posizionamento Libero"
 L["PLACEMENT_DESC"] = "Sostituisce il pulsante della minimappa con un'icona autonoma che puoi spostare ovunque."
@@ -31,10 +32,12 @@ L["SHIFT_LEFT"]   = "Maiusc + Clic Sinistro"
 L["SHIFT_RIGHT"]  = "Maiusc + Clic Destro"
 L["SHIFT_MIDDLE"] = "Maiusc + Clic Centrale"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Opzioni aggiuntive sono disponibili in Opzioni > Addon > Tracking Eye."
+L["TOOLTIP_OPTIONS_HINT"] = "Opzioni aggiuntive sono disponibili digitando /te o in Opzioni > Addon > Tracking Eye."
 
 -- Options Panel
 L["OPTIONS_RESET"]               = "Ripristina tutte le opzioni"
+L["OPTIONS_RESET_HEADER"]        = "Ripristina"
+L["OPTIONS_RESET_CONFIRM"]       = "Ripristinare tutte le opzioni di Tracking Eye ai valori predefiniti?"
 L["OPTIONS_ENABLE_PERSISTENT"]   = "Abilita Tracciamento Persistente"
 L["OPTIONS_ENABLE_FARM"]         = "Abilita Modalità Raccolta"
 L["OPTIONS_ENABLE_FREE"]         = "Abilita Posizionamento Libero"
