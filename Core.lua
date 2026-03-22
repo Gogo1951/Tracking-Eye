@@ -15,6 +15,15 @@ te.optionsOpen = false
 --------------------------------------------------------------------------------
 -- Utility Functions
 --------------------------------------------------------------------------------
+function te.GetColor(key)
+    return "|cff" .. (te.COLORS[key] or "FFFFFF")
+end
+
+function te.GetSpellName(spellId)
+    local name = GetSpellInfo(spellId)
+    return name
+end
+
 function te.GetPlayerStates()
     local isCat, isFarming = false, false
 
@@ -147,7 +156,17 @@ local function TryRecastPersistent()
 
     local currentTex = GetTrackingTexture()
     local targetTex = GetSpellTexture(spellId)
-    if currentTex ~= targetTex and te.state.lastCastSpell ~= spellId then
+
+    -- If the correct spell is already active (e.g. on login), sync
+    -- lastCastSpell and skip the cast. DO NOT remove this check —
+    -- without it the addon recasts on every login even when tracking
+    -- is already running.
+    if currentTex and targetTex and currentTex == targetTex then
+        te.state.lastCastSpell = spellId
+        return
+    end
+
+    if te.state.lastCastSpell ~= spellId then
         te.CastTracking(spellId)
     end
 end
@@ -224,13 +243,10 @@ eventFrame:SetScript(
             end
         elseif event == "PLAYER_UNGHOST" then
             -- Delay recast slightly so the client settles after resurrection
-            C_Timer.After(
-                1.5,
-                function()
-                    TryRecastPersistent()
-                    te.UpdateIcon()
-                end
-            )
+            C_Timer.After(1.5, function()
+                TryRecastPersistent()
+                te.UpdateIcon()
+            end)
         elseif
             event == "MINIMAP_UPDATE_TRACKING" or event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or
                 event == "UPDATE_SHAPESHIFT_FORM" or
@@ -248,12 +264,9 @@ eventFrame:SetScript(
             end
 
             if event == "UPDATE_SHAPESHIFT_FORM" then
-                C_Timer.After(
-                    1.5,
-                    function()
-                        TryRecastPersistent()
-                    end
-                )
+                C_Timer.After(1.5, function()
+                    TryRecastPersistent()
+                end)
             end
         end
     end

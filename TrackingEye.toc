@@ -24,6 +24,9 @@ Includes/AceGUI-3.0/AceGUI-3.0.xml
 Includes/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
 Includes/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
 
+# Tracking Eye Data
+Data.lua
+
 # Localization
 Locales/enUS.lua
 Locales/deDE.lua
@@ -37,7 +40,6 @@ Locales/zhCN.lua
 Locales/zhTW.lua
 
 # Tracking Eye
-Data.lua
 Core.lua
 Farm-Mode.lua
 Tracking-Menu.lua

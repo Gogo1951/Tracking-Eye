@@ -15,27 +15,30 @@ te.SHAPES = {
 }
 te.FREE_ICON_SHAPE_DEFAULT = te.SHAPES.CIRCLE
 
+--------------------------------------------------------------------------------
+-- Spells
+--------------------------------------------------------------------------------
 te.SPELLS = {
     -- Farming & Travel Forms
-    CAT = 768,
-    TRAVEL = 783,
-    AQUATIC = 1066,
-    FLIGHT = 33943,
+    CAT         = 768,
+    TRAVEL      = 783,
+    AQUATIC     = 1066,
+    FLIGHT      = 33943,
     SWIFT_FLIGHT = 40120,
     -- Tracking Spells
-    FISH = 43308,
-    HERBS = 2383,
-    MINERALS = 2580,
-    TREASURE = 2481,
+    FISH        = 43308,
+    HERBS       = 2383,
+    MINERALS    = 2580,
+    TREASURE    = 2481,
     -- Hunter Tracking
-    BEASTS = 1494,
-    DEMONS = 19878,
-    DRAGONKIN = 19879,
-    ELEMENTALS = 19880,
-    GIANTS = 19882,
-    HIDDEN = 19885,
-    HUMANOIDS = 19883, -- Hunter version
-    UNDEAD = 19884,
+    BEASTS      = 1494,
+    DEMONS      = 19878,
+    DRAGONKIN   = 19879,
+    ELEMENTALS  = 19880,
+    GIANTS      = 19882,
+    HIDDEN      = 19885,
+    HUMANOIDS   = 19883, -- Hunter version
+    UNDEAD      = 19884,
     -- Druid Tracking
     DRUID_HUMANOIDS = 5225, -- Druid version (Cat Form only)
     -- Warlock / Paladin
@@ -44,9 +47,9 @@ te.SPELLS = {
 }
 
 te.FARM_FORMS = {
-    [te.SPELLS.TRAVEL] = true,
-    [te.SPELLS.AQUATIC] = true,
-    [te.SPELLS.FLIGHT] = true,
+    [te.SPELLS.TRAVEL]       = true,
+    [te.SPELLS.AQUATIC]      = true,
+    [te.SPELLS.FLIGHT]       = true,
     [te.SPELLS.SWIFT_FLIGHT] = true
 }
 
@@ -68,16 +71,19 @@ te.TRACKING_IDS = {
     te.SPELLS.SENSE_UNDEAD
 }
 
--- Hash set built from TRACKING_IDS for O(1) lookups in UNIT_SPELLCAST_SUCCEEDED.
+-- Hash set built from TRACKING_IDS for O(1) lookups in UNIT_SPELLCAST_SUCCEEDED
 te.TRACKING_SET = {}
 for _, id in ipairs(te.TRACKING_IDS) do
     te.TRACKING_SET[id] = true
 end
 
--- Default farm cycle spells (used when no per-character override exists)
+--------------------------------------------------------------------------------
+-- Farm Cycle Defaults
+--------------------------------------------------------------------------------
+
 -- Only Herbs and Minerals enabled by default; all others off
 te.FARM_CYCLE_DEFAULTS = {
-    [te.SPELLS.HERBS] = true,
+    [te.SPELLS.HERBS]    = true,
     [te.SPELLS.MINERALS] = true
 }
 
@@ -85,21 +91,12 @@ te.FARM_CYCLE_DEFAULTS = {
 -- Colors
 --------------------------------------------------------------------------------
 te.COLORS = {
-    TITLE = "FFD100",
-    INFO = "00BBFF",
-    DESC = "CCCCCC",
-    TEXT = "FFFFFF",
-    SUCCESS = "33CC33",
+    TITLE    = "FFD100",
+    INFO     = "00BBFF",
+    DESC     = "CCCCCC",
+    TEXT     = "FFFFFF",
+    SUCCESS  = "33CC33",
     DISABLED = "CC3333",
-    SEP = "AAAAAA",
-    MUTED = "808080"
+    SEP      = "AAAAAA",
+    MUTED    = "808080"
 }
-
-function te.GetColor(key)
-    return "|cff" .. (te.COLORS[key] or "FFFFFF")
-end
-
-function te.GetSpellName(spellID)
-    local name = GetSpellInfo(spellID)
-    return name
-end

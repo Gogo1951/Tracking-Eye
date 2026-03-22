@@ -7,8 +7,6 @@ local addonName, te = ...
 local AC  = LibStub("AceConfigRegistry-3.0")
 local ACD = LibStub("AceConfigDialog-3.0")
 
-te.optionsOpen = false
-
 --------------------------------------------------------------------------------
 -- Helpers
 --------------------------------------------------------------------------------
@@ -240,39 +238,17 @@ local function GetOptions()
                 end
             },
 
-            -- Feedback & Support
-            spaceLinks0  = Spacer(59),
-            headerLinks  = Header(te.L["OPTIONS_LINKS"], 60),
-            spaceLinks1  = Spacer(61),
-            discordLabel = Desc(te.GetColor("TITLE") .. te.L["OPTIONS_DISCORD"] .. "|r", 62),
-            discordURL = {
-                type  = "input",
-                name  = "",
-                order = 63,
-                width = "double",
-                get   = function() return te.DISCORD_URL end,
-                set   = function() end
-            },
-            spaceLinks2  = Spacer(64),
-            githubLabel  = Desc(te.GetColor("TITLE") .. te.L["OPTIONS_GITHUB"] .. "|r", 65),
-            githubURL = {
-                type  = "input",
-                name  = "",
-                order = 66,
-                width = "double",
-                get   = function() return te.GITHUB_URL end,
-                set   = function() end
-            },
-            spaceLinks3 = Spacer(67),
-
             -- Reset
+            spaceReset0 = Spacer(59),
+            headerReset = Header(te.L["OPTIONS_RESET_HEADER"], 60),
+            spaceReset1 = Spacer(61),
             resetAll = {
                 type    = "execute",
                 name    = te.L["OPTIONS_RESET"],
-                order   = 70,
+                order   = 62,
                 width   = "normal",
                 confirm = true,
-                confirmText = "Reset all Tracking Eye options to defaults?",
+                confirmText = te.L["OPTIONS_RESET_CONFIRM"],
                 func    = function()
                     if TrackingEyeDB then
                         TrackingEyeDB.autoTracking = true
@@ -297,6 +273,30 @@ local function GetOptions()
                     te.UpdateFreeFrameShape()
                     te.UpdateIcon()
                 end
+            },
+
+            -- Feedback & Support
+            spaceLinks0  = Spacer(69),
+            headerLinks  = Header(te.L["OPTIONS_LINKS"], 70),
+            spaceLinks1  = Spacer(71),
+            discordLabel = Desc(te.GetColor("TITLE") .. te.L["OPTIONS_DISCORD"] .. "|r", 72),
+            discordURL = {
+                type  = "input",
+                name  = "",
+                order = 73,
+                width = "double",
+                get   = function() return te.DISCORD_URL end,
+                set   = function() end
+            },
+            spaceLinks2  = Spacer(74),
+            githubLabel  = Desc(te.GetColor("TITLE") .. te.L["OPTIONS_GITHUB"] .. "|r", 75),
+            githubURL = {
+                type  = "input",
+                name  = "",
+                order = 76,
+                width = "double",
+                get   = function() return te.GITHUB_URL end,
+                set   = function() end
             }
         }
     }

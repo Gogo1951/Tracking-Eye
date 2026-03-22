@@ -1,7 +1,9 @@
 local addonName, te = ...
-
 local LibDD = LibStub("LibUIDropDownMenu-4.0")
 
+--------------------------------------------------------------------------------
+-- State
+--------------------------------------------------------------------------------
 local dropdown = LibDD:Create_UIDropDownMenu(addonName .. "TrackingMenu", UIParent)
 
 --------------------------------------------------------------------------------
@@ -38,9 +40,11 @@ local function InitMenu(_, level)
             local info    = LibDD:UIDropDownMenu_CreateInfo()
             info.text     = string.format("|T%s:16|t %s", GetSpellTexture(data.id) or "", data.name)
             info.value    = data.id
-            info.checked  = (TrackingEyeDB.selectedSpellId == data.id)
+            info.checked  = (TrackingEyeDB and TrackingEyeDB.selectedSpellId == data.id)
             info.func     = function(btn)
-                TrackingEyeDB.selectedSpellId = btn.value
+                if TrackingEyeDB then
+                    TrackingEyeDB.selectedSpellId = btn.value
+                end
                 te.state.wasFarming = false
                 te.CastTracking(btn.value)
                 LibDD:CloseDropDownMenus()
@@ -52,6 +56,9 @@ end
 
 LibDD:UIDropDownMenu_Initialize(dropdown, InitMenu, "MENU")
 
+--------------------------------------------------------------------------------
+-- Public API
+--------------------------------------------------------------------------------
 function te.ToggleMenu(anchor)
     local xOffset = 0
     if anchor and anchor.GetWidth then
