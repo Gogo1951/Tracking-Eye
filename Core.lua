@@ -139,6 +139,18 @@ end
 --------------------------------------------------------------------------------
 -- Persistent Tracking Recast Helper
 --------------------------------------------------------------------------------
+
+-- TryRecastPersistent handles mid-play recasts triggered by
+-- UPDATE_SHAPESHIFT_FORM (e.g. druid leaving cat form). It relies
+-- on GetTrackingTexture to compare the active spell against the
+-- saved one.
+--
+-- If GetTrackingTexture returns nil, the tracking API is not ready
+-- (happens for 10+ seconds during the Classic login/reload event
+-- storm). Casting blindly here causes the login-recast bug. DO NOT
+-- remove the nil bail — it is the fix. Post-death recasts are
+-- handled separately by PLAYER_UNGHOST, which bypasses this
+-- function entirely.
 local function TryRecastPersistent()
     if not TrackingEyeDB or not TrackingEyeDB.autoTracking or not TrackingEyeDB.selectedSpellId then
         return
@@ -155,13 +167,19 @@ local function TryRecastPersistent()
     end
 
     local currentTex = GetTrackingTexture()
+
+    -- If the tracking API hasn't initialized yet (returns nil during
+    -- login/reload), bail. We cannot tell whether the spell is already
+    -- active, so casting would be a guess. DO NOT remove this check.
+    if not currentTex then
+        return
+    end
+
     local targetTex = GetSpellTexture(spellId)
 
-    -- If the correct spell is already active (e.g. on login), sync
-    -- lastCastSpell and skip the cast. DO NOT remove this check —
-    -- without it the addon recasts on every login even when tracking
-    -- is already running.
-    if currentTex and targetTex and currentTex == targetTex then
+    -- If the correct spell is already active, sync lastCastSpell and
+    -- skip the cast
+    if targetTex and currentTex == targetTex then
         te.state.lastCastSpell = spellId
         return
     end
@@ -242,9 +260,26 @@ eventFrame:SetScript(
                 te.UpdateIcon()
             end
         elseif event == "PLAYER_UNGHOST" then
-            -- Delay recast slightly so the client settles after resurrection
+            -- After resurrection, tracking is genuinely cleared by the
+            -- server. Recast directly without relying on
+            -- GetTrackingTexture — it would return nil here regardless,
+            -- and we know a recast is needed.
             C_Timer.After(1.5, function()
-                TryRecastPersistent()
+                if not TrackingEyeDB or not TrackingEyeDB.autoTracking or not TrackingEyeDB.selectedSpellId then
+                    te.UpdateIcon()
+                    return
+                end
+
+                local _, isFarming = te.GetPlayerStates()
+                if isFarming then
+                    te.UpdateIcon()
+                    return
+                end
+
+                local spellId = TrackingEyeDB.selectedSpellId
+                if IsPlayerSpell(spellId) then
+                    te.CastTracking(spellId)
+                end
                 te.UpdateIcon()
             end)
         elseif
@@ -264,6 +299,8 @@ eventFrame:SetScript(
             end
 
             if event == "UPDATE_SHAPESHIFT_FORM" then
+                -- Delay recast so the GCD from shapeshifting expires
+                -- before we attempt to cast
                 C_Timer.After(1.5, function()
                     TryRecastPersistent()
                 end)
