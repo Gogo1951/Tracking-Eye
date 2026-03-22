@@ -224,10 +224,13 @@ eventFrame:SetScript(
             end
         elseif event == "PLAYER_UNGHOST" then
             -- Delay recast slightly so the client settles after resurrection
-            C_Timer.After(1.5, function()
-                TryRecastPersistent()
-                te.UpdateIcon()
-            end)
+            C_Timer.After(
+                1.5,
+                function()
+                    TryRecastPersistent()
+                    te.UpdateIcon()
+                end
+            )
         elseif
             event == "MINIMAP_UPDATE_TRACKING" or event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or
                 event == "UPDATE_SHAPESHIFT_FORM" or
@@ -245,9 +248,12 @@ eventFrame:SetScript(
             end
 
             if event == "UPDATE_SHAPESHIFT_FORM" then
-                C_Timer.After(1.5, function()
-                    TryRecastPersistent()
-                end)
+                C_Timer.After(
+                    1.5,
+                    function()
+                        TryRecastPersistent()
+                    end
+                )
             end
         end
     end
