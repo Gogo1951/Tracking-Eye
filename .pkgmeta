@@ -11,6 +11,8 @@ externals:
         url: https://repos.curseforge.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0/
     Includes/LibUIDropDownMenu:
         url: https://repos.wowace.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu/
+    Includes/AceLocale-3.0:
+        url: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0/
     Includes/AceGUI-3.0:
         url: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0/
     Includes/AceConfigRegistry-3.0:
