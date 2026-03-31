@@ -46,8 +46,8 @@ end
 
 local function SpellLabel(spellId, suffix)
     local name = te.GetSpellName(spellId) or "Unknown"
-    local tex = GetSpellTexture(spellId) or te.ICON_DEFAULT
-    local label = string.format("|T%s:16|t %s", tex, name)
+    local texture = GetSpellTexture(spellId) or te.ICON_DEFAULT
+    local label = string.format("|T%s:16|t %s", texture, name)
     if suffix then
         label = label .. "  " .. te.GetColor("MUTED") .. suffix .. "|r"
     end
@@ -87,9 +87,9 @@ local function BuildFarmAbilityArgs()
                 return TrackingEyeDB and TrackingEyeDB.farmCycleSpells and
                     TrackingEyeDB.farmCycleSpells[id] or false
             end,
-            set    = function(_, val)
+            set    = function(_, value)
                 if TrackingEyeDB and TrackingEyeDB.farmCycleSpells then
-                    TrackingEyeDB.farmCycleSpells[id] = val or nil
+                    TrackingEyeDB.farmCycleSpells[id] = value or nil
                     te.InvalidateFarmCache()
                 end
             end
@@ -109,7 +109,21 @@ local function GetOptions()
         type = "group",
         args = {
 
+            -- Brief Description
+            spacerIntro0 = Spacer(1),
+            descIntro    = Desc(te.L["OPTIONS_DESC"], 2),
+
+            -- /Commands
+            spaceCommands0 = Spacer(3),
+            headerCommands = Header("/Commands", 4),
+            spaceCommands1 = Spacer(5),
+            descCommands = Desc(
+                te.GetColor("INFO") .. "/te|r" .. "  Opens the Tracking Eye options interface.",
+                6
+            ),
+
             -- Persistent Tracking
+            spacePT0         = Spacer(9),
             headerPersistent = Header(te.L["PERSISTENT_TRACKING"], 10),
             descPersistent   = Desc(te.L["PERSISTENT_DESC"], 11),
             spacePT1         = Spacer(12),
@@ -119,8 +133,8 @@ local function GetOptions()
                 order = 13,
                 width = "full",
                 get   = function() return TrackingEyeDB and TrackingEyeDB.autoTracking end,
-                set   = function(_, val)
-                    if TrackingEyeDB then TrackingEyeDB.autoTracking = val end
+                set   = function(_, value)
+                    if TrackingEyeDB then TrackingEyeDB.autoTracking = value end
                 end
             },
 
@@ -135,8 +149,8 @@ local function GetOptions()
                 order = 23,
                 width = "full",
                 get   = function() return TrackingEyeDB and TrackingEyeDB.farmingMode end,
-                set   = function(_, val)
-                    if TrackingEyeDB then TrackingEyeDB.farmingMode = val end
+                set   = function(_, value)
+                    if TrackingEyeDB then TrackingEyeDB.farmingMode = value end
                 end
             },
             spaceFM2 = Spacer(24),
@@ -164,8 +178,8 @@ local function GetOptions()
                 get  = function()
                     return TrackingEyeDB and TrackingEyeDB.farmInterval or te.FARM_INTERVAL_DEFAULT
                 end,
-                set  = function(_, val)
-                    if TrackingEyeDB then TrackingEyeDB.farmInterval = val end
+                set  = function(_, value)
+                    if TrackingEyeDB then TrackingEyeDB.farmInterval = value end
                     te.RestartFarmTicker()
                 end
             },
@@ -183,9 +197,9 @@ local function GetOptions()
                 get   = function()
                     return TrackingEyeGlobalDB and TrackingEyeGlobalDB.freePlacement
                 end,
-                set   = function(_, val)
+                set   = function(_, value)
                     if TrackingEyeGlobalDB then
-                        TrackingEyeGlobalDB.freePlacement = val
+                        TrackingEyeGlobalDB.freePlacement = value
                         te.UpdatePlacement()
                     end
                 end
@@ -206,9 +220,9 @@ local function GetOptions()
                 get       = function()
                     return TrackingEyeGlobalDB and TrackingEyeGlobalDB.freeIconScale or te.FREE_ICON_SCALE_DEFAULT
                 end,
-                set       = function(_, val)
+                set       = function(_, value)
                     if TrackingEyeGlobalDB then
-                        TrackingEyeGlobalDB.freeIconScale = val
+                        TrackingEyeGlobalDB.freeIconScale = value
                     end
                     te.UpdateFreeFrameScale()
                 end
@@ -230,9 +244,9 @@ local function GetOptions()
                 get    = function()
                     return TrackingEyeGlobalDB and TrackingEyeGlobalDB.freeIconShape or te.FREE_ICON_SHAPE_DEFAULT
                 end,
-                set    = function(_, val)
+                set    = function(_, value)
                     if TrackingEyeGlobalDB then
-                        TrackingEyeGlobalDB.freeIconShape = val
+                        TrackingEyeGlobalDB.freeIconShape = value
                     end
                     te.UpdateFreeFrameShape()
                 end
@@ -257,8 +271,8 @@ local function GetOptions()
                         TrackingEyeDB.selectedSpellId = nil
                         TrackingEyeDB.lastIcon = nil
                         TrackingEyeDB.farmCycleSpells = {}
-                        for id, v in pairs(te.FARM_CYCLE_DEFAULTS) do
-                            TrackingEyeDB.farmCycleSpells[id] = v
+                        for id, enabled in pairs(te.FARM_CYCLE_DEFAULTS) do
+                            TrackingEyeDB.farmCycleSpells[id] = enabled
                         end
                     end
                     if TrackingEyeGlobalDB then
@@ -276,16 +290,16 @@ local function GetOptions()
             },
 
             -- Feedback & Support
-            spaceLinks0  = Spacer(69),
-            headerLinks  = Header(te.L["OPTIONS_LINKS"], 70),
-            spaceLinks1  = Spacer(71),
-            discordLabel = Desc(te.GetColor("TITLE") .. te.L["OPTIONS_DISCORD"] .. "|r", 72),
-            discordURL = {
+            spaceLinks0      = Spacer(69),
+            headerLinks      = Header(te.L["OPTIONS_LINKS"], 70),
+            spaceLinks1      = Spacer(71),
+            curseforgeLabel  = Desc(te.GetColor("TITLE") .. te.L["OPTIONS_CURSEFORGE"] .. "|r", 72),
+            curseforgeURL = {
                 type  = "input",
                 name  = "",
                 order = 73,
                 width = "double",
-                get   = function() return te.DISCORD_URL end,
+                get   = function() return te.CURSEFORGE_URL end,
                 set   = function() end
             },
             spaceLinks2  = Spacer(74),
@@ -297,9 +311,28 @@ local function GetOptions()
                 width = "double",
                 get   = function() return te.GITHUB_URL end,
                 set   = function() end
+            },
+            spaceLinks3  = Spacer(77),
+            discordLabel = Desc(te.GetColor("TITLE") .. te.L["OPTIONS_DISCORD"] .. "|r", 78),
+            discordURL = {
+                type  = "input",
+                name  = "",
+                order = 79,
+                width = "double",
+                get   = function() return te.DISCORD_URL end,
+                set   = function() end
             }
         }
     }
+end
+
+--------------------------------------------------------------------------------
+-- Slash Command
+--------------------------------------------------------------------------------
+SLASH_TRACKINGEYE1 = "/te"
+SLASH_TRACKINGEYE2 = "/trackingeye"
+SlashCmdList["TRACKINGEYE"] = function()
+    te.OpenOptions()
 end
 
 --------------------------------------------------------------------------------

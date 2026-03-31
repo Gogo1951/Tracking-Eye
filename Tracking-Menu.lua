@@ -41,12 +41,12 @@ local function InitMenu(_, level)
             info.text     = string.format("|T%s:16|t %s", GetSpellTexture(data.id) or "", data.name)
             info.value    = data.id
             info.checked  = (TrackingEyeDB and TrackingEyeDB.selectedSpellId == data.id)
-            info.func     = function(btn)
+            info.func     = function(button)
                 if TrackingEyeDB then
-                    TrackingEyeDB.selectedSpellId = btn.value
+                    TrackingEyeDB.selectedSpellId = button.value
                 end
                 te.state.wasFarming = false
-                te.CastTracking(btn.value)
+                te.CastTracking(button.value)
                 LibDD:CloseDropDownMenus()
             end
             LibDD:UIDropDownMenu_AddButton(info, level)

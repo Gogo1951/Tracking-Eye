@@ -6,10 +6,11 @@
 ## Category-enUS: Map & Minimap
 ## X-License: MIT
 
-## X-Curse-Project-ID: 1129680
-## X-Discord: https://discord.gg/eh8hKq992Q
 ## Interface: 11508, 20505
 ## Version: @project-version@
+## X-Curse-Project-ID: 1129680
+
+## X-Discord: https://discord.gg/eh8hKq992Q
 
 ## SavedVariables: TrackingEyeGlobalDB
 ## SavedVariablesPerCharacter: TrackingEyeDB
@@ -20,11 +21,12 @@ Includes/CallbackHandler-1.0/CallbackHandler-1.0.lua
 Includes/LibDataBroker-1.1/LibDataBroker-1.1.lua
 Includes/LibDBIcon-1.0/LibDBIcon-1.0.lua
 Includes/LibUIDropDownMenu/LibUIDropDownMenu.xml
+Includes/AceLocale-3.0/AceLocale-3.0.xml
 Includes/AceGUI-3.0/AceGUI-3.0.xml
 Includes/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
 Includes/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
 
-# Tracking Eye Data
+# Data
 Data.lua
 
 # Localization

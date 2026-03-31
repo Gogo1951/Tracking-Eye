@@ -1,5 +1,22 @@
 local addonName, te = ...
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
+te.L = L
+
 local eventFrame = CreateFrame("Frame")
+
+--------------------------------------------------------------------------------
+-- Version
+--------------------------------------------------------------------------------
+local function GetVersion()
+    local version = C_AddOns and C_AddOns.GetAddOnMetadata(addonName, "Version")
+        or GetAddOnMetadata(addonName, "Version")
+    if not version or version:find("@") then
+        return "Dev"
+    end
+    return version
+end
+
+te.Version = GetVersion()
 
 --------------------------------------------------------------------------------
 -- State
@@ -76,7 +93,7 @@ end
 -- Icon Management
 --------------------------------------------------------------------------------
 function te.UpdateIcon()
-    local tex = nil
+    local texture = nil
     local isCat = te.GetPlayerStates()
 
     -- Clear cat-form humanoid tracking state if we've left cat form
@@ -85,21 +102,21 @@ function te.UpdateIcon()
     end
 
     if te.state.lastCastSpell then
-        tex = GetSpellTexture(te.state.lastCastSpell)
+        texture = GetSpellTexture(te.state.lastCastSpell)
     end
 
-    if not tex then
-        tex = GetTrackingTexture()
+    if not texture then
+        texture = GetTrackingTexture()
     end
 
-    if not tex and TrackingEyeDB and TrackingEyeDB.lastIcon then
-        tex = TrackingEyeDB.lastIcon
+    if not texture and TrackingEyeDB and TrackingEyeDB.lastIcon then
+        texture = TrackingEyeDB.lastIcon
     end
 
-    te.state.currentIcon = tex or te.ICON_DEFAULT
+    te.state.currentIcon = texture or te.ICON_DEFAULT
 
-    if TrackingEyeDB and tex and tex ~= te.ICON_DEFAULT then
-        TrackingEyeDB.lastIcon = tex
+    if TrackingEyeDB and texture and texture ~= te.ICON_DEFAULT then
+        TrackingEyeDB.lastIcon = texture
     end
 
     if te.ldb then
@@ -166,20 +183,20 @@ local function TryRecastPersistent()
         return
     end
 
-    local currentTex = GetTrackingTexture()
+    local currentTexture = GetTrackingTexture()
 
     -- If the tracking API hasn't initialized yet (returns nil during
     -- login/reload), bail. We cannot tell whether the spell is already
     -- active, so casting would be a guess. DO NOT remove this check.
-    if not currentTex then
+    if not currentTexture then
         return
     end
 
-    local targetTex = GetSpellTexture(spellId)
+    local targetTexture = GetSpellTexture(spellId)
 
     -- If the correct spell is already active, sync lastCastSpell and
     -- skip the cast
-    if targetTex and currentTex == targetTex then
+    if targetTexture and currentTexture == targetTexture then
         te.state.lastCastSpell = spellId
         return
     end
@@ -187,15 +204,6 @@ local function TryRecastPersistent()
     if te.state.lastCastSpell ~= spellId then
         te.CastTracking(spellId)
     end
-end
-
---------------------------------------------------------------------------------
--- Slash Command
---------------------------------------------------------------------------------
-SLASH_TRACKINGEYE1 = "/te"
-SLASH_TRACKINGEYE2 = "/trackingeye"
-SlashCmdList["TRACKINGEYE"] = function()
-    te.OpenOptions()
 end
 
 --------------------------------------------------------------------------------
@@ -220,8 +228,8 @@ eventFrame:SetScript(
             end
             if TrackingEyeDB.farmCycleSpells == nil then
                 TrackingEyeDB.farmCycleSpells = {}
-                for id, v in pairs(te.FARM_CYCLE_DEFAULTS) do
-                    TrackingEyeDB.farmCycleSpells[id] = v
+                for id, enabled in pairs(te.FARM_CYCLE_DEFAULTS) do
+                    TrackingEyeDB.farmCycleSpells[id] = enabled
                 end
             end
 

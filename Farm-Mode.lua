@@ -68,14 +68,14 @@ function te.RunFarmLogic()
     end
 
     local _, inForm = te.GetPlayerStates()
-    local currentTrackingTex = GetTrackingTexture()
+    local currentTrackingTexture = GetTrackingTexture()
 
     if not inForm and te.state.wasFarming then
         te.state.wasFarming = false
         if TrackingEyeDB.autoTracking and TrackingEyeDB.selectedSpellId then
             local spellId = TrackingEyeDB.selectedSpellId
-            local targetTex = GetSpellTexture(spellId)
-            if currentTrackingTex ~= targetTex then
+            local targetTexture = GetSpellTexture(spellId)
+            if currentTrackingTexture ~= targetTexture then
                 te.CastTracking(spellId)
             end
         end
@@ -97,9 +97,9 @@ function te.RunFarmLogic()
 
     if #cachedCycle == 1 then
         local spellId = cachedCycle[1]
-        local spellTex = GetSpellTexture(spellId)
+        local spellTexture = GetSpellTexture(spellId)
 
-        if currentTrackingTex == spellTex or te.state.lastCastSpell == spellId then
+        if currentTrackingTexture == spellTexture or te.state.lastCastSpell == spellId then
             te.state.wasFarming = true
             return
         end
@@ -108,9 +108,9 @@ function te.RunFarmLogic()
 
     farmIndex = (farmIndex % #cachedCycle) + 1
     local nextSpellId = cachedCycle[farmIndex]
-    local nextTex = GetSpellTexture(nextSpellId)
+    local nextTexture = GetSpellTexture(nextSpellId)
 
-    if currentTrackingTex ~= nextTex then
+    if currentTrackingTexture ~= nextTexture then
         te.CastTracking(nextSpellId)
     end
 

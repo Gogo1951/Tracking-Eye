@@ -3,18 +3,6 @@ local LDB = LibStub("LibDataBroker-1.1")
 local LDBIcon = LibStub("LibDBIcon-1.0")
 
 --------------------------------------------------------------------------------
--- Compat
---------------------------------------------------------------------------------
-local function GetAddonMetadata(addon, field)
-    if C_AddOns and C_AddOns.GetAddOnMetadata then
-        return C_AddOns.GetAddOnMetadata(addon, field)
-    elseif GetAddOnMetadata then
-        return GetAddOnMetadata(addon, field)
-    end
-    return nil
-end
-
---------------------------------------------------------------------------------
 -- Visuals & Placement
 --------------------------------------------------------------------------------
 function te.UpdateFreeFrameScale()
@@ -69,10 +57,8 @@ function te.UpdatePlacement()
 end
 
 function te.BuildTooltip(tooltip)
-    local version = GetAddonMetadata(addonName, "Version") or "Dev"
-
     -- Header
-    tooltip:AddDoubleLine(te.GetColor("TITLE") .. te.L["ADDON_TITLE"] .. "|r", te.GetColor("MUTED") .. version .. "|r")
+    tooltip:AddDoubleLine(te.GetColor("TITLE") .. te.L["ADDON_TITLE"] .. "|r", te.GetColor("MUTED") .. te.Version .. "|r")
     tooltip:AddLine(" ")
     tooltip:AddLine(" ")
 
@@ -84,10 +70,10 @@ function te.BuildTooltip(tooltip)
 
     -- Persistent Tracking Ability
     tooltip:AddLine(te.GetColor("TITLE") .. te.L["PERSISTENT_ABILITY"] .. "|r")
-    local displayID = TrackingEyeDB and TrackingEyeDB.selectedSpellId
-    if displayID then
-        local name = te.GetSpellName(displayID) or "Unknown"
-        tooltip:AddLine("|T" .. (GetSpellTexture(displayID) or "") .. ":16|t " .. te.GetColor("TEXT") .. name .. "|r")
+    local selectedSpellId = TrackingEyeDB and TrackingEyeDB.selectedSpellId
+    if selectedSpellId then
+        local name = te.GetSpellName(selectedSpellId) or "Unknown"
+        tooltip:AddLine("|T" .. (GetSpellTexture(selectedSpellId) or "") .. ":16|t " .. te.GetColor("TEXT") .. name .. "|r")
     else
         tooltip:AddLine("|TInterface\\Icons\\inv_misc_map_01:16|t " .. te.GetColor("DESC") .. te.L["NONE_SET"] .. "|r")
     end
@@ -98,10 +84,10 @@ function te.BuildTooltip(tooltip)
     tooltip:AddLine(" ")
 
     -- Persistent Tracking Toggle
-    local pState =
+    local persistentState =
         (TrackingEyeDB and TrackingEyeDB.autoTracking) and (te.GetColor("SUCCESS") .. te.L["ENABLED"] .. "|r") or
         (te.GetColor("DISABLED") .. te.L["DISABLED"] .. "|r")
-    tooltip:AddDoubleLine(te.GetColor("TITLE") .. te.L["PERSISTENT_TRACKING"] .. "|r", pState)
+    tooltip:AddDoubleLine(te.GetColor("TITLE") .. te.L["PERSISTENT_TRACKING"] .. "|r", persistentState)
     tooltip:AddLine(te.GetColor("DESC") .. te.L["PERSISTENT_DESC"] .. "|r", 1, 1, 1, true)
     tooltip:AddDoubleLine(
         te.GetColor("INFO") .. te.L["SHIFT_LEFT"] .. "|r",
@@ -110,10 +96,10 @@ function te.BuildTooltip(tooltip)
     tooltip:AddLine(" ")
 
     -- Farm Mode Toggle
-    local fState =
+    local farmState =
         (TrackingEyeDB and TrackingEyeDB.farmingMode) and (te.GetColor("SUCCESS") .. te.L["ENABLED"] .. "|r") or
         (te.GetColor("DISABLED") .. te.L["DISABLED"] .. "|r")
-    tooltip:AddDoubleLine(te.GetColor("TITLE") .. te.L["FARM_MODE"] .. "|r", fState)
+    tooltip:AddDoubleLine(te.GetColor("TITLE") .. te.L["FARM_MODE"] .. "|r", farmState)
     tooltip:AddLine(te.GetColor("DESC") .. te.L["FARMING_DESC"] .. "|r", 1, 1, 1, true)
     tooltip:AddDoubleLine(
         te.GetColor("INFO") .. te.L["SHIFT_RIGHT"] .. "|r",
@@ -122,11 +108,11 @@ function te.BuildTooltip(tooltip)
     tooltip:AddLine(" ")
 
     -- Free Placement Mode
-    local fpState =
+    local freePlacementState =
         (TrackingEyeGlobalDB and TrackingEyeGlobalDB.freePlacement) and
         (te.GetColor("SUCCESS") .. te.L["ENABLED"] .. "|r") or
         (te.GetColor("DISABLED") .. te.L["DISABLED"] .. "|r")
-    tooltip:AddDoubleLine(te.GetColor("TITLE") .. te.L["PLACEMENT_MODE"] .. "|r", fpState)
+    tooltip:AddDoubleLine(te.GetColor("TITLE") .. te.L["PLACEMENT_MODE"] .. "|r", freePlacementState)
     tooltip:AddLine(te.GetColor("DESC") .. te.L["PLACEMENT_DESC"] .. "|r", 1, 1, 1, true)
     tooltip:AddDoubleLine(
         te.GetColor("INFO") .. te.L["SHIFT_MIDDLE"] .. "|r",
@@ -153,9 +139,9 @@ function te.RefreshTooltip()
         TryRefresh(te.freeFrame)
     end
 
-    local minimapBtn = LDBIcon:GetMinimapButton(addonName)
-    if minimapBtn then
-        TryRefresh(minimapBtn)
+    local minimapButton = LDBIcon:GetMinimapButton(addonName)
+    if minimapButton then
+        TryRefresh(minimapButton)
     end
 end
 
@@ -201,56 +187,56 @@ end
 -- Initialization
 --------------------------------------------------------------------------------
 function te.CreateFreeFrame()
-    local f = CreateFrame("Button", addonName .. "FreeFrame", UIParent)
-    f:SetSize(37, 37)
-    f:SetMovable(true)
-    f:EnableMouse(true)
-    f:RegisterForDrag("LeftButton")
-    f:RegisterForClicks("AnyUp")
-    f:SetClampedToScreen(true)
-    f:SetFrameStrata("HIGH")
+    local frame = CreateFrame("Button", addonName .. "FreeFrame", UIParent)
+    frame:SetSize(37, 37)
+    frame:SetMovable(true)
+    frame:EnableMouse(true)
+    frame:RegisterForDrag("LeftButton")
+    frame:RegisterForClicks("AnyUp")
+    frame:SetClampedToScreen(true)
+    frame:SetFrameStrata("HIGH")
 
     -- Circle elements
-    f.circleBg = f:CreateTexture(nil, "BACKGROUND")
-    f.circleBg:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
-    f.circleBg:SetSize(24, 24)
-    f.circleBg:SetPoint("CENTER")
-    f.circleBg:SetVertexColor(0, 0, 0, 0.6)
+    frame.circleBg = frame:CreateTexture(nil, "BACKGROUND")
+    frame.circleBg:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
+    frame.circleBg:SetSize(24, 24)
+    frame.circleBg:SetPoint("CENTER")
+    frame.circleBg:SetVertexColor(0, 0, 0, 0.6)
 
-    f.circleBorder = f:CreateTexture(nil, "OVERLAY")
-    f.circleBorder:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-    f.circleBorder:SetSize(62, 62)
-    f.circleBorder:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
+    frame.circleBorder = frame:CreateTexture(nil, "OVERLAY")
+    frame.circleBorder:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
+    frame.circleBorder:SetSize(62, 62)
+    frame.circleBorder:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
 
     -- Square elements
-    f.squareBorder = f:CreateTexture(nil, "BACKGROUND")
-    f.squareBorder:SetColorTexture(0, 0, 0, 0.8)
-    f.squareBorder:SetSize(27, 27)
-    f.squareBorder:SetPoint("CENTER")
+    frame.squareBorder = frame:CreateTexture(nil, "BACKGROUND")
+    frame.squareBorder:SetColorTexture(0, 0, 0, 0.8)
+    frame.squareBorder:SetSize(27, 27)
+    frame.squareBorder:SetPoint("CENTER")
 
-    f.squareBg = f:CreateTexture(nil, "BACKGROUND")
-    f.squareBg:SetColorTexture(0, 0, 0, 0)
-    f.squareBg:SetSize(1, 1)
-    f.squareBg:SetPoint("CENTER")
+    frame.squareBg = frame:CreateTexture(nil, "BACKGROUND")
+    frame.squareBg:SetColorTexture(0, 0, 0, 0)
+    frame.squareBg:SetSize(1, 1)
+    frame.squareBg:SetPoint("CENTER")
 
     -- Shared icon
-    f.icon = f:CreateTexture(nil, "ARTWORK")
-    f.icon:SetSize(24, 24)
-    f.icon:SetPoint("CENTER")
+    frame.icon = frame:CreateTexture(nil, "ARTWORK")
+    frame.icon:SetSize(24, 24)
+    frame.icon:SetPoint("CENTER")
 
-    f:SetScript("OnDragStart", f.StartMoving)
-    f:SetScript(
+    frame:SetScript("OnDragStart", frame.StartMoving)
+    frame:SetScript(
         "OnDragStop",
         function(self)
             self:StopMovingOrSizing()
-            local p, _, rp, x, y = self:GetPoint()
+            local point, _, relativePoint, xOffset, yOffset = self:GetPoint()
             if TrackingEyeGlobalDB then
-                TrackingEyeGlobalDB.freePos = {p, rp, x, y}
+                TrackingEyeGlobalDB.freePos = {point, relativePoint, xOffset, yOffset}
             end
         end
     )
-    f:SetScript("OnClick", OnClick)
-    f:SetScript(
+    frame:SetScript("OnClick", OnClick)
+    frame:SetScript(
         "OnEnter",
         function(self)
             GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
@@ -258,7 +244,7 @@ function te.CreateFreeFrame()
             GameTooltip:Show()
         end
     )
-    f:SetScript(
+    frame:SetScript(
         "OnLeave",
         function()
             GameTooltip:Hide()
@@ -266,13 +252,13 @@ function te.CreateFreeFrame()
     )
 
     if TrackingEyeGlobalDB and TrackingEyeGlobalDB.freePos then
-        local p = TrackingEyeGlobalDB.freePos
-        f:SetPoint(p[1], UIParent, p[2], p[3], p[4])
+        local position = TrackingEyeGlobalDB.freePos
+        frame:SetPoint(position[1], UIParent, position[2], position[3], position[4])
     else
-        f:SetPoint("CENTER")
+        frame:SetPoint("CENTER")
     end
 
-    te.freeFrame = f
+    te.freeFrame = frame
     te.UpdatePlacement()
 end
 
@@ -284,8 +270,8 @@ function te.InitMinimap()
             type = "launcher",
             icon = te.state.currentIcon or te.ICON_DEFAULT,
             OnClick = OnClick,
-            OnTooltipShow = function(tt)
-                te.BuildTooltip(tt)
+            OnTooltipShow = function(tooltip)
+                te.BuildTooltip(tooltip)
             end
         }
     )
@@ -294,9 +280,9 @@ function te.InitMinimap()
         LDBIcon:Register(addonName, te.ldb, TrackingEyeGlobalDB.minimap)
     end
 
-    local btn = LDBIcon:GetMinimapButton(addonName)
-    if btn then
-        btn:SetScript(
+    local button = LDBIcon:GetMinimapButton(addonName)
+    if button then
+        button:SetScript(
             "OnEnter",
             function(self)
                 GameTooltip:SetOwner(self, "ANCHOR_NONE")
@@ -305,7 +291,7 @@ function te.InitMinimap()
                 GameTooltip:Show()
             end
         )
-        btn:SetScript(
+        button:SetScript(
             "OnLeave",
             function()
                 GameTooltip:Hide()
