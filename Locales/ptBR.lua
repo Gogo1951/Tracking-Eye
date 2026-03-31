@@ -1,8 +1,5 @@
--- ptBR.lua
-local _, te = ...
-if GetLocale() ~= "ptBR" then return end
-
-local L = te.L
+local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "ptBR")
+if not L then return end
 
 L["ADDON_TITLE"]        = "Tracking Eye"
 
@@ -23,7 +20,7 @@ L["PLACEMENT_MODE"] = "Modo de Posicionamento Livre"
 L["PLACEMENT_DESC"] = "Substitui o botão do minimapa por um ícone independente que você pode mover para qualquer lugar."
 
 L["ENABLED"]  = "Habilitado"
-L["DISABLED"] = "Deshabilitado"
+L["DISABLED"] = "Desabilitado"
 L["TOGGLE"]   = "Alternar"
 
 L["LEFT_CLICK"]   = "Clique Esquerdo"
@@ -32,9 +29,10 @@ L["SHIFT_LEFT"]   = "Shift + Clique Esquerdo"
 L["SHIFT_RIGHT"]  = "Shift + Clique Direito"
 L["SHIFT_MIDDLE"] = "Shift + Clique do Meio"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Opções adicionais estão disponíveis digitando /te ou em Opções > AddOns > Tracking Eye."
+L["TOOLTIP_OPTIONS_HINT"] = "Configurações adicionais podem ser encontradas em Opções > AddOns > Tracking Eye."
 
 -- Options Panel
+L["OPTIONS_DESC"]                = "Um menu de rastreamento inteligente que alterna entre rastreamento de ervas e minérios enquanto montado, e restaura automaticamente sua habilidade de rastreamento após a morte."
 L["OPTIONS_RESET"]               = "Redefinir todas as opções"
 L["OPTIONS_RESET_HEADER"]        = "Redefinir"
 L["OPTIONS_RESET_CONFIRM"]       = "Redefinir todas as opções do Tracking Eye para os padrões?"
@@ -52,6 +50,7 @@ L["OPTIONS_ICON_SHAPE_DESC"]     = "Forma da borda do ícone de rastreamento ao 
 L["OPTIONS_SHAPE_CIRCLE"]        = "Círculo"
 L["OPTIONS_SHAPE_SQUARE"]        = "Quadrado"
 L["OPTIONS_LINKS"]               = "Feedback e Suporte"
+L["OPTIONS_CURSEFORGE"]          = "CurseForge"
 L["OPTIONS_DISCORD"]             = "Discord"
 L["OPTIONS_GITHUB"]              = "GitHub"
 L["OPTIONS_SECONDS"]             = "%.1f seg"

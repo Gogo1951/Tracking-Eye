@@ -1,8 +1,5 @@
--- esES.lua
-local _, te = ...
-if GetLocale() ~= "esES" and GetLocale() ~= "esMX" then return end
-
-local L = te.L
+local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "esES")
+if not L then return end
 
 L["ADDON_TITLE"]        = "Tracking Eye"
 
@@ -32,9 +29,10 @@ L["SHIFT_LEFT"]   = "Mayús + Clic Izquierdo"
 L["SHIFT_RIGHT"]  = "Mayús + Clic Derecho"
 L["SHIFT_MIDDLE"] = "Mayús + Clic Central"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Hay opciones adicionales disponibles escribiendo /te o en Opciones > Accesorios > Tracking Eye."
+L["TOOLTIP_OPTIONS_HINT"] = "Se pueden encontrar ajustes adicionales en Opciones > Accesorios > Tracking Eye."
 
 -- Options Panel
+L["OPTIONS_DESC"]                = "Un menú de rastreo inteligente que alterna entre rastreo de hierbas y minerales mientras estás montado, y restaura automáticamente tu habilidad de rastreo tras la muerte."
 L["OPTIONS_RESET"]               = "Restablecer todas las opciones"
 L["OPTIONS_RESET_HEADER"]        = "Restablecer"
 L["OPTIONS_RESET_CONFIRM"]       = "¿Restablecer todas las opciones de Tracking Eye a los valores predeterminados?"
@@ -52,7 +50,13 @@ L["OPTIONS_ICON_SHAPE_DESC"]     = "Forma del borde del icono de rastreo al usar
 L["OPTIONS_SHAPE_CIRCLE"]        = "Círculo"
 L["OPTIONS_SHAPE_SQUARE"]        = "Cuadrado"
 L["OPTIONS_LINKS"]               = "Comentarios y soporte"
+L["OPTIONS_CURSEFORGE"]          = "CurseForge"
 L["OPTIONS_DISCORD"]             = "Discord"
 L["OPTIONS_GITHUB"]              = "GitHub"
 L["OPTIONS_SECONDS"]             = "%.1f seg"
 L["OPTIONS_PERCENT"]             = "%d%%"
+
+-- Copy esES translations to esMX
+local L2 = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "esMX")
+if not L2 then return end
+for k, v in pairs(L) do L2[k] = v end

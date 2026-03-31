@@ -1,8 +1,5 @@
--- deDE.lua
-local _, te = ...
-if GetLocale() ~= "deDE" then return end
-
-local L = te.L
+local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "deDE")
+if not L then return end
 
 L["ADDON_TITLE"]        = "Tracking Eye"
 
@@ -32,9 +29,10 @@ L["SHIFT_LEFT"]   = "Umschalt + Linksklick"
 L["SHIFT_RIGHT"]  = "Umschalt + Rechtsklick"
 L["SHIFT_MIDDLE"] = "Umschalt + Mittelklick"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Weitere Optionen sind durch Eingabe von /te oder unter Optionen > AddOns > Tracking Eye verfügbar."
+L["TOOLTIP_OPTIONS_HINT"] = "Zusätzliche Einstellungen finden Sie unter Optionen > AddOns > Tracking Eye."
 
 -- Options Panel
+L["OPTIONS_DESC"]                = "Ein intelligentes Aufspürungsmenü, das Kräuter- und Erzsuche während des Reitens automatisch wechselt und eure Aufspürfähigkeit nach dem Tod wiederherstellt."
 L["OPTIONS_RESET"]               = "Alle Optionen zurücksetzen"
 L["OPTIONS_RESET_HEADER"]        = "Zurücksetzen"
 L["OPTIONS_RESET_CONFIRM"]       = "Alle Optionen von Tracking Eye auf Standard zurücksetzen?"
@@ -52,6 +50,7 @@ L["OPTIONS_ICON_SHAPE_DESC"]     = "Form des Rahmens des Aufspürungssymbols bei
 L["OPTIONS_SHAPE_CIRCLE"]        = "Kreis"
 L["OPTIONS_SHAPE_SQUARE"]        = "Quadrat"
 L["OPTIONS_LINKS"]               = "Feedback & Support"
+L["OPTIONS_CURSEFORGE"]          = "CurseForge"
 L["OPTIONS_DISCORD"]             = "Discord"
 L["OPTIONS_GITHUB"]              = "GitHub"
 L["OPTIONS_SECONDS"]             = "%.1f Sek."

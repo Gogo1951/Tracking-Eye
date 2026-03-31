@@ -1,8 +1,5 @@
--- koKR.lua
-local _, te = ...
-if GetLocale() ~= "koKR" then return end
-
-local L = te.L
+local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "koKR")
+if not L then return end
 
 L["ADDON_TITLE"]        = "Tracking Eye"
 
@@ -32,9 +29,10 @@ L["SHIFT_LEFT"]   = "Shift + 왼쪽 클릭"
 L["SHIFT_RIGHT"]  = "Shift + 오른쪽 클릭"
 L["SHIFT_MIDDLE"] = "Shift + 휠 클릭"
 
-L["TOOLTIP_OPTIONS_HINT"] = "/te 를 입력하거나 설정 > 애드온 > Tracking Eye에서 추가 설정을 사용할 수 있습니다."
+L["TOOLTIP_OPTIONS_HINT"] = "추가 설정은 설정 > 애드온 > Tracking Eye에서 찾을 수 있습니다."
 
 -- Options Panel
+L["OPTIONS_DESC"]                = "탈것에 탑승 중 약초와 광석 추적을 자동 순환하고 사망 후 추적 능력을 자동으로 복원하는 스마트 추적 메뉴입니다."
 L["OPTIONS_RESET"]               = "모든 설정 초기화"
 L["OPTIONS_RESET_HEADER"]        = "초기화"
 L["OPTIONS_RESET_CONFIRM"]       = "모든 Tracking Eye 설정을 기본값으로 초기화하시겠습니까?"
@@ -52,6 +50,7 @@ L["OPTIONS_ICON_SHAPE_DESC"]     = "자유 배치 모드를 사용할 때 추적
 L["OPTIONS_SHAPE_CIRCLE"]        = "원형"
 L["OPTIONS_SHAPE_SQUARE"]        = "사각형"
 L["OPTIONS_LINKS"]               = "피드백 및 지원"
+L["OPTIONS_CURSEFORGE"]          = "CurseForge"
 L["OPTIONS_DISCORD"]             = "Discord"
 L["OPTIONS_GITHUB"]              = "GitHub"
 L["OPTIONS_SECONDS"]             = "%.1f초"

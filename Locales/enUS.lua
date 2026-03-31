@@ -1,6 +1,5 @@
-local _, te = ...
-local L = setmetatable({}, {__index = function(_, k) return k end})
-te.L = L
+local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "enUS", true)
+if not L then return end
 
 L["ADDON_TITLE"]        = "Tracking Eye"
 
@@ -30,9 +29,10 @@ L["SHIFT_LEFT"]    = "Shift + Left-Click"
 L["SHIFT_RIGHT"]   = "Shift + Right-Click"
 L["SHIFT_MIDDLE"]  = "Shift + Middle-Click"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Additional options available by typing /te or going to Options > AddOns > Tracking Eye."
+L["TOOLTIP_OPTIONS_HINT"] = "Additional settings can be found under Options > AddOns > Tracking Eye."
 
 -- Options Panel
+L["OPTIONS_DESC"]                = "A smart tracking menu that auto-cycles herb and ore tracking while mounted, and automatically restores your tracking ability after death."
 L["OPTIONS_RESET"]               = "Reset All Options"
 L["OPTIONS_RESET_HEADER"]        = "Reset"
 L["OPTIONS_RESET_CONFIRM"]       = "Reset all Tracking Eye options to defaults?"
@@ -50,6 +50,7 @@ L["OPTIONS_ICON_SHAPE_DESC"]     = "Shape of the tracking icon border when using
 L["OPTIONS_SHAPE_CIRCLE"]        = "Circle"
 L["OPTIONS_SHAPE_SQUARE"]        = "Square"
 L["OPTIONS_LINKS"]               = "Feedback & Support"
+L["OPTIONS_CURSEFORGE"]          = "CurseForge"
 L["OPTIONS_DISCORD"]             = "Discord"
 L["OPTIONS_GITHUB"]              = "GitHub"
 L["OPTIONS_SECONDS"]             = "%.1f sec"

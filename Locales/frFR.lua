@@ -1,8 +1,5 @@
--- frFR.lua
-local _, te = ...
-if GetLocale() ~= "frFR" then return end
-
-local L = te.L
+local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "frFR")
+if not L then return end
 
 L["ADDON_TITLE"]        = "Tracking Eye"
 
@@ -32,9 +29,10 @@ L["SHIFT_LEFT"]   = "Maj + Clic gauche"
 L["SHIFT_RIGHT"]  = "Maj + Clic droit"
 L["SHIFT_MIDDLE"] = "Maj + Clic milieu"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Des options supplémentaires sont disponibles en tapant /te ou dans Options > Addons > Tracking Eye."
+L["TOOLTIP_OPTIONS_HINT"] = "Des paramètres supplémentaires se trouvent dans Options > Addons > Tracking Eye."
 
 -- Options Panel
+L["OPTIONS_DESC"]                = "Un menu de pistage intelligent qui alterne entre la recherche d'herbes et de minerais en monture, et restaure automatiquement votre capacité de pistage après la mort."
 L["OPTIONS_RESET"]               = "Réinitialiser toutes les options"
 L["OPTIONS_RESET_HEADER"]        = "Réinitialiser"
 L["OPTIONS_RESET_CONFIRM"]       = "Réinitialiser toutes les options de Tracking Eye aux valeurs par défaut ?"
@@ -52,6 +50,7 @@ L["OPTIONS_ICON_SHAPE_DESC"]     = "Forme de la bordure de l'icône de pistage l
 L["OPTIONS_SHAPE_CIRCLE"]        = "Cercle"
 L["OPTIONS_SHAPE_SQUARE"]        = "Carré"
 L["OPTIONS_LINKS"]               = "Commentaires et assistance"
+L["OPTIONS_CURSEFORGE"]          = "CurseForge"
 L["OPTIONS_DISCORD"]             = "Discord"
 L["OPTIONS_GITHUB"]              = "GitHub"
 L["OPTIONS_SECONDS"]             = "%.1f sec"
