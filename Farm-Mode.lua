@@ -57,6 +57,16 @@ end
 --------------------------------------------------------------------------------
 -- Farm Cycle Logic
 --------------------------------------------------------------------------------
+local function IsFarmModeBlocked()
+    local pvpType = GetZonePVPInfo()
+    local inInstance, instanceType = IsInInstance()
+
+    local inCity = (pvpType == "sanctuary") or IsResting()
+    local inPvPInstance = inInstance and (instanceType == "pvp" or instanceType == "arena")
+
+    return inCity or inPvPInstance
+end
+
 function te.RunFarmLogic()
     -- Pause while options panel is open
     if te.optionsOpen then
@@ -64,6 +74,22 @@ function te.RunFarmLogic()
     end
 
     if not TrackingEyeDB or not TrackingEyeDB.farmingMode then
+        return
+    end
+
+    if IsFarmModeBlocked() then
+        if te.state.wasFarming then
+            te.state.wasFarming = false
+            if TrackingEyeDB.autoTracking and TrackingEyeDB.selectedSpellId then
+                local spellId = TrackingEyeDB.selectedSpellId
+                local currentTrackingTexture = GetTrackingTexture()
+                local targetTexture = GetSpellTexture(spellId)
+
+                if currentTrackingTexture ~= targetTexture then
+                    te.CastTracking(spellId)
+                end
+            end
+        end
         return
     end
 
@@ -86,7 +112,6 @@ function te.RunFarmLogic()
         return
     end
 
-    -- Rebuild cache if invalidated
     if not cachedCycle then
         BuildCycleCache()
     end
