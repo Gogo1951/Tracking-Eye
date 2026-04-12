@@ -8,8 +8,8 @@ local eventFrame = CreateFrame("Frame")
 -- Version
 --------------------------------------------------------------------------------
 local function GetVersion()
-    local version = C_AddOns and C_AddOns.GetAddOnMetadata(addonName, "Version")
-        or GetAddOnMetadata(addonName, "Version")
+    local version =
+        C_AddOns and C_AddOns.GetAddOnMetadata(addonName, "Version") or GetAddOnMetadata(addonName, "Version")
     if not version or version:find("@") then
         return "Dev"
     end
@@ -87,6 +87,14 @@ function te.HasTrackingAbility()
         end
     end
     return false
+end
+
+function te.IsRestrictedZone()
+    local mapId = C_Map.GetBestMapForUnit("player")
+    if not mapId then
+        return false
+    end
+    return te.CAPITAL_CITIES[mapId] or te.BATTLEGROUNDS[mapId] or false
 end
 
 --------------------------------------------------------------------------------
@@ -272,24 +280,27 @@ eventFrame:SetScript(
             -- server. Recast directly without relying on
             -- GetTrackingTexture — it would return nil here regardless,
             -- and we know a recast is needed.
-            C_Timer.After(1.5, function()
-                if not TrackingEyeDB or not TrackingEyeDB.autoTracking or not TrackingEyeDB.selectedSpellId then
-                    te.UpdateIcon()
-                    return
-                end
+            C_Timer.After(
+                1.5,
+                function()
+                    if not TrackingEyeDB or not TrackingEyeDB.autoTracking or not TrackingEyeDB.selectedSpellId then
+                        te.UpdateIcon()
+                        return
+                    end
 
-                local _, isFarming = te.GetPlayerStates()
-                if isFarming then
-                    te.UpdateIcon()
-                    return
-                end
+                    local _, isFarming = te.GetPlayerStates()
+                    if isFarming then
+                        te.UpdateIcon()
+                        return
+                    end
 
-                local spellId = TrackingEyeDB.selectedSpellId
-                if IsPlayerSpell(spellId) then
-                    te.CastTracking(spellId)
+                    local spellId = TrackingEyeDB.selectedSpellId
+                    if IsPlayerSpell(spellId) then
+                        te.CastTracking(spellId)
+                    end
+                    te.UpdateIcon()
                 end
-                te.UpdateIcon()
-            end)
+            )
         elseif
             event == "MINIMAP_UPDATE_TRACKING" or event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or
                 event == "UPDATE_SHAPESHIFT_FORM" or
@@ -309,9 +320,12 @@ eventFrame:SetScript(
             if event == "UPDATE_SHAPESHIFT_FORM" then
                 -- Delay recast so the GCD from shapeshifting expires
                 -- before we attempt to cast
-                C_Timer.After(1.5, function()
-                    TryRecastPersistent()
-                end)
+                C_Timer.After(
+                    1.5,
+                    function()
+                        TryRecastPersistent()
+                    end
+                )
             end
         end
     end

@@ -67,6 +67,11 @@ function te.RunFarmLogic()
         return
     end
 
+    -- Skip farm cycling in capital cities and battlegrounds
+    if te.IsRestrictedZone() then
+        return
+    end
+
     local _, inForm = te.GetPlayerStates()
     local currentTrackingTexture = GetTrackingTexture()
 
