@@ -90,11 +90,11 @@ function te.HasTrackingAbility()
 end
 
 function te.IsRestrictedZone()
-    local mapId = C_Map.GetBestMapForUnit("player")
-    if not mapId then
-        return false
+    local inInstance = IsInInstance()
+    if inInstance then
+        return true
     end
-    return te.CAPITAL_CITIES[mapId] or te.BATTLEGROUNDS[mapId] or false
+    return IsResting()
 end
 
 --------------------------------------------------------------------------------
