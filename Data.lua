@@ -89,34 +89,6 @@ te.FARM_CYCLE_DEFAULTS = {
 }
 
 --------------------------------------------------------------------------------
--- Capital Cities (uiMapId keys — through Wrath)
---------------------------------------------------------------------------------
-te.CAPITAL_CITIES = {
-    [1453] = true, -- Stormwind City
-    [1455] = true, -- Ironforge
-    [1457] = true, -- Darnassus
-    [1458] = true, -- Undercity
-    [1454] = true, -- Orgrimmar
-    [1456] = true, -- Thunder Bluff
-    [1954] = true, -- Silvermoon City
-    [1947] = true, -- The Exodar
-    [1955] = true, -- Shattrath City
-    [125] = true -- Dalaran
-}
-
---------------------------------------------------------------------------------
--- Battlegrounds (uiMapId keys — through Wrath)
---------------------------------------------------------------------------------
-te.BATTLEGROUNDS = {
-    [1459] = true, -- Alterac Valley
-    [1460] = true, -- Warsong Gulch
-    [1461] = true, -- Arathi Basin
-    [1956] = true, -- Eye of the Storm
-    [128] = true, -- Strand of the Ancients
-    [169] = true -- Isle of Conquest
-}
-
---------------------------------------------------------------------------------
 -- Colors
 --------------------------------------------------------------------------------
 te.COLORS = {
