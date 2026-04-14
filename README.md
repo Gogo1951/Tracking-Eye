@@ -16,6 +16,8 @@ A smart tracking menu for World of Warcraft Classic and Anniversary Edition that
 
 **Free Placement Mode** — Detach the tracking icon from the minimap and place it anywhere on your screen. Choose between circle and square border styles, and scale the icon to your preference.
 
+**Localized** — Works with all Classic WoW Locales (enUS, deDE, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW).
+
 ## Supported Classes
 
 - **Hunters** — All tracking spells (Beasts, Demons, Dragonkin, Elementals, Giants, Hidden, Humanoids, Undead)
