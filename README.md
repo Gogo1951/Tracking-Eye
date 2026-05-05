@@ -81,22 +81,32 @@ Please reach out if you would like to be involved!
 
 🟢 Pairs With // gogo1951's [Come & Get It]([https://www.curseforge.com/wow/addons/tracking-eye-classic](https://www.curseforge.com/wow/addons/come-get-it))
 
+🟢 Pairs With // hizuro\_de's [FarmHud](https://www.curseforge.com/wow/addons/farmhud)
+
+🟢 Pairs With // Noshei's [Gathering Tracker](https://www.curseforge.com/wow/addons/gathering-tracker)
+
+🟢 Pairs With // The GatherLite Team's [GatherLite](https://www.curseforge.com/wow/addons/gatherlite)
+
 🟢 Pairs With // nevcairiel's [GatherMate2 Classic](https://www.curseforge.com/wow/addons/gathermate2-classic)
 
 🟢 Pairs With // Xinhuan's [HandyNotes](https://www.curseforge.com/wow/addons/handynotes)
 
 🟢 Pairs With // Xinhuan's [Routes](https://www.curseforge.com/wow/addons/routes)
 
+🔴 Direct Alternative // GenericBox's [Automatic Tracking Switcher](https://www.curseforge.com/wow/addons/automatic-tracking-switcher)
+
 🔴 Direct Alternative // IceDNicco's [AutoTracker](https://www.curseforge.com/wow/addons/autotracker)
 
 🔴 Direct Alternative // mmx428's [Hunter Tracks](https://www.curseforge.com/wow/addons/hunter-tracks)
+
+🔴 Direct Alternative // Petazo's [GatherTracker](https://www.curseforge.com/wow/addons/gather-tracker)
 
 🔴 Direct Alternative // a14st0r's [nOde: the Omnitracker](https://www.curseforge.com/wow/addons/node)
 
 🔴 Direct Alternative // mxiii's [Track Everything](https://www.wowinterface.com/downloads/info25637-TrackEverything.html)
 
-🔴 Direct Alternative // Beast-Masters-addons's [TrackingMenu](https://github.com/Beast-Masters-addons/TrackingMenu)
+🔴 Direct Alternative // datagutten's [TrackingMenu](https://www.curseforge.com/wow/addons/trackingmenu)
 
 🔴 Direct Alternative // Epenance's [Tracking Switcher](https://www.curseforge.com/wow/addons/tracking-switcher)
 
-🔴 Direct Alternative // Petazo's [GatherTracker](https://www.curseforge.com/wow/addons/gather-tracker)
+🔴 Direct Alternative // executedpoorly's [Tracking Switcher X](https://www.curseforge.com/wow/addons/tracking-switcher-x)
