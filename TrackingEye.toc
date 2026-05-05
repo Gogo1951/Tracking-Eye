@@ -1,5 +1,5 @@
 ## Title: Tracking Eye
-## Notes: A smart tracking menu that auto-cycles herb and ore tracking while mounted, and automatically restores your tracking ability after death.
+## Notes: A smart tracking menu that auto-cycles herb and ore tracking while mounted (or in travel forms), and automatically restores your tracking ability after death.
 ## Author: Gogo1951
 
 ## IconTexture: Interface/AddOns/TrackingEye/Tracking-Eye.tga
@@ -10,10 +10,8 @@
 ## Version: @project-version@
 ## X-Curse-Project-ID: 1129680
 
-## X-Discord: https://discord.gg/eh8hKq992Q
-
 ## SavedVariables: TrackingEyeGlobalDB
-## SavedVariablesPerCharacter: TrackingEyeDB
+## SavedVariablesPerCharacter: TrackingEyeCharDB, TrackingEyeDB
 
 # Includes
 Includes/LibStub/LibStub.lua
@@ -21,13 +19,11 @@ Includes/CallbackHandler-1.0/CallbackHandler-1.0.lua
 Includes/LibDataBroker-1.1/LibDataBroker-1.1.lua
 Includes/LibDBIcon-1.0/LibDBIcon-1.0.lua
 Includes/LibUIDropDownMenu/LibUIDropDownMenu.xml
-Includes/AceLocale-3.0/AceLocale-3.0.xml
+Includes/AceLocale-3.0/AceLocale-3.0.lua
 Includes/AceGUI-3.0/AceGUI-3.0.xml
-Includes/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
-Includes/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
-
-# Data
-Data.lua
+Includes/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
+Includes/AceConfig-3.0/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
+Includes/AceConfig-3.0/AceConfig-3.0.lua
 
 # Localization
 Locales/enUS.lua
@@ -40,6 +36,9 @@ Locales/ptBR.lua
 Locales/ruRU.lua
 Locales/zhCN.lua
 Locales/zhTW.lua
+
+# Data
+Data.lua
 
 # Tracking Eye
 Core.lua

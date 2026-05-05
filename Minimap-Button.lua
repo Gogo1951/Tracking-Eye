@@ -7,7 +7,7 @@ local LDBIcon = LibStub("LibDBIcon-1.0")
 --------------------------------------------------------------------------------
 function te.UpdateFreeFrameScale()
     if te.freeFrame then
-        local scale = (TrackingEyeGlobalDB and TrackingEyeGlobalDB.freeIconScale) or te.FREE_ICON_SCALE_DEFAULT
+        local scale = (TrackingEyeGlobalDB and TrackingEyeGlobalDB.freeIconScale) or te.GLOBAL_DEFAULTS.freeIconScale
         te.freeFrame:SetScale(scale)
     end
 end
@@ -16,7 +16,7 @@ function te.UpdateFreeFrameShape()
     if not te.freeFrame then
         return
     end
-    local shape = (TrackingEyeGlobalDB and TrackingEyeGlobalDB.freeIconShape) or te.FREE_ICON_SHAPE_DEFAULT
+    local shape = (TrackingEyeGlobalDB and TrackingEyeGlobalDB.freeIconShape) or te.GLOBAL_DEFAULTS.freeIconShape
     local isSquare = (shape == te.SHAPES.SQUARE)
 
     te.freeFrame.circleBg:SetShown(not isSquare)
@@ -70,7 +70,7 @@ function te.BuildTooltip(tooltip)
 
     -- Persistent Tracking Ability
     tooltip:AddLine(te.GetColor("TITLE") .. te.L["PERSISTENT_ABILITY"] .. "|r")
-    local selectedSpellId = TrackingEyeDB and TrackingEyeDB.selectedSpellId
+    local selectedSpellId = TrackingEyeCharDB and TrackingEyeCharDB.selectedSpellId
     if selectedSpellId then
         local name = te.GetSpellName(selectedSpellId) or "Unknown"
         tooltip:AddLine("|T" .. (GetSpellTexture(selectedSpellId) or "") .. ":16|t " .. te.GetColor("TEXT") .. name .. "|r")
@@ -85,7 +85,7 @@ function te.BuildTooltip(tooltip)
 
     -- Persistent Tracking Toggle
     local persistentState =
-        (TrackingEyeDB and TrackingEyeDB.autoTracking) and (te.GetColor("SUCCESS") .. te.L["ENABLED"] .. "|r") or
+        (TrackingEyeCharDB and TrackingEyeCharDB.autoTracking) and (te.GetColor("SUCCESS") .. te.L["ENABLED"] .. "|r") or
         (te.GetColor("DISABLED") .. te.L["DISABLED"] .. "|r")
     tooltip:AddDoubleLine(te.GetColor("TITLE") .. te.L["PERSISTENT_TRACKING"] .. "|r", persistentState)
     tooltip:AddLine(te.GetColor("DESC") .. te.L["PERSISTENT_DESC"] .. "|r", 1, 1, 1, true)
@@ -97,7 +97,7 @@ function te.BuildTooltip(tooltip)
 
     -- Farm Mode Toggle
     local farmState =
-        (TrackingEyeDB and TrackingEyeDB.farmingMode) and (te.GetColor("SUCCESS") .. te.L["ENABLED"] .. "|r") or
+        (TrackingEyeCharDB and TrackingEyeCharDB.farmingMode) and (te.GetColor("SUCCESS") .. te.L["ENABLED"] .. "|r") or
         (te.GetColor("DISABLED") .. te.L["DISABLED"] .. "|r")
     tooltip:AddDoubleLine(te.GetColor("TITLE") .. te.L["FARM_MODE"] .. "|r", farmState)
     tooltip:AddLine(te.GetColor("DESC") .. te.L["FARMING_DESC"] .. "|r", 1, 1, 1, true)
@@ -149,7 +149,7 @@ end
 -- Interaction
 --------------------------------------------------------------------------------
 local function OnClick(self, button)
-    if not TrackingEyeDB then
+    if not TrackingEyeCharDB then
         return
     end
 
@@ -163,10 +163,10 @@ local function OnClick(self, button)
                 updateNeeded = true
             end
         elseif button == "LeftButton" then
-            TrackingEyeDB.autoTracking = not TrackingEyeDB.autoTracking
+            TrackingEyeCharDB.autoTracking = not TrackingEyeCharDB.autoTracking
             updateNeeded = true
         elseif button == "RightButton" then
-            TrackingEyeDB.farmingMode = not TrackingEyeDB.farmingMode
+            TrackingEyeCharDB.farmingMode = not TrackingEyeCharDB.farmingMode
             updateNeeded = true
         end
     else
