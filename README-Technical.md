@@ -4,7 +4,7 @@ This document combines architecture notes and contribution guidance for develope
 
 ## File Map
 
-```
+```text
 TrackingEye/
   TrackingEye.toc          TOC manifest — interface versions, metadata, load order
   Data.lua                 Locale init, constants, spell IDs, defaults, color palette
