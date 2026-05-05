@@ -1,103 +1,102 @@
 # Tracking Eye
 
-A smart tracking menu that auto-cycles herb and ore tracking while mounted (or in travel forms), and automatically restores your tracking ability after death.
+A tracking menu and tracking switcher for the minimap. Auto-cycles Find Herbs and Find Minerals while mounted, recasts your tracking spell after death, and supports every Hunter, Druid, Warlock, Paladin, and gathering tracking. Never miss a node.
 
 <img width="375" src="https://github.com/user-attachments/assets/f8627a30-8188-4691-bab8-75b5d82eaee1" />
 
 <img width="175" src="https://github.com/user-attachments/assets/de98982b-d787-4fa3-ac6f-00aca4d637e8" />
 
-## What It Does
+## Features
 
-Tracking in Classic is a chore. You forget to recast Find Herbs after a corpse run, you can only watch one node type at a time on a long mounted route, and the default tracking menu is a tiny minimap dropdown that never quite does what you want.
+🎯 **Tracking Menu** // Left-click the minimap button to pick from every tracking spell your character knows in one alphabetical list.
 
-Tracking Eye fixes those frustrations in one place. It gives you a clean menu of every tracking spell you know, remembers which one you want active, and quietly recasts it after you die. While you're mounted or in travel form, it cycles between the tracking abilities you care about so you never miss a node along the way.
+🔁 **Persistent Tracking** // Auto-recasts your tracking spell after death and form changes, so Find Herbs is already back before you finish your corpse run.
 
-It works for Hunters, Druids, Warlocks, Paladins, and any class that uses Find Herbs, Find Minerals, Find Treasure, or Find Fish.
+🚜 **Farm Mode** // Mounted or in travel form, cycles between your selected tracking abilities so both herbs and minerals show up on the minimap — automatically pausing inside instances and capital cities.
 
-## Quick Start
+📍 **Free Placement Mode** // Detach the tracking icon from the minimap and drag it anywhere on screen, with circular or square borders and adjustable size.
 
-1. Install from [CurseForge](https://www.curseforge.com/wow/addons/tracking-eye-classic), or grab the latest release from [GitHub](https://github.com/Gogo1951/Tracking-Eye) and drop it into your `Interface/AddOns` folder.
-2. Log in. A new tracking-eye icon appears on your minimap.
-3. Left-click the icon to pick a tracking spell — the addon will keep recasting it after death until you change your mind.
-4. Mount up. Farm Mode automatically rotates between Find Herbs and Find Minerals so both nodes show up while you ride.
-5. Type `/te` to open the options panel and tweak which abilities cycle, how fast, and where the icon lives.
-6. Want the icon off the minimap? Enable Free Placement Mode and drag the icon anywhere on your screen.
+## Setup
 
-## Tracking Menu
+1. Install the add-on, ideally using [CurseForge](https://www.curseforge.com/wow/addons/tracking-eye-classic).
+2. Log in.
+3. Left-click the new minimap button and pick a tracking spell.
+4. Mount up — Farm Mode handles the herb-and-ore cycling for you.
+5. Type `/te` to tweak which abilities cycle, the cycle speed, or icon placement.
+6. All your nodes are belong to us. (=
 
-Left-click the minimap button to see every tracking spell your character knows in one alphabetical list. Click any spell to set it as your Persistent Tracking Ability and cast it immediately. The menu automatically hides spells you don't have.
+## How It Works
 
-- **Hunters** can pick from every Find/Track ability — Beasts, Demons, Dragonkin, Elementals, Giants, Hidden, Humanoids, and Undead.
-- **Druids** see Track Humanoids in the menu when they're in Cat Form.
-- **Warlocks** can choose Sense Demons.
-- **Paladins** can choose Sense Undead.
-- **Every class** sees Find Herbs, Find Minerals, Find Treasure, and Find Fish if those spells are known.
+### Supported Tracking Spells
 
-## Persistent Tracking
+The menu only ever shows spells your character actually knows, so it stays clean across alts and levels.
 
-Set your tracking spell once and Tracking Eye remembers it. After you resurrect or change forms, the addon waits for the global cooldown and quietly recasts the spell so your minimap arrows come back without a thought. Toggle it on or off with Shift + Left-Click on the minimap button.
+* **Hunters** // All tracking spells — Beasts, Demons, Dragonkin, Elementals, Giants, Hidden, Humanoids, and Undead.
+* **Druids** // Track Humanoids in Cat Form.
+* **Warlocks** // Sense Demons.
+* **Paladins** // Sense Undead.
+* **All classes** // Find Herbs, Find Minerals, Find Treasure, and Find Fish (when learned).
 
-## Farm Mode
-
-While you're mounted or in a Druid travel form, Farm Mode rotates between the tracking abilities you've selected — by default Find Herbs and Find Minerals — so both node types show on your minimap as you ride. The cycle pauses automatically inside instances and while resting, where it would just be noise. Toggle it with Shift + Right-Click on the minimap button.
-
-## Free Placement Mode
-
-Detach the tracking icon from the minimap and place it anywhere on your screen. Pick a circular or square border, scale it up or down, and drag it where you want. Toggle it with Shift + Middle-Click on the minimap button.
-
-## Settings
-
-Open the options panel via `/te` or `/trackingeye`.
-
-- **Enable Welcome Message** — Show or hide the login chat message.
-- **Enable Persistent Tracking** — Recast your tracking spell after death and shapeshift changes.
-- **Enable Farm Mode** — Cycle through your selected tracking abilities while mounted or in travel form.
-- **Farm Mode Abilities** — Pick which tracking spells Farm Mode rotates through. Only spells you actually know appear here.
-- **Cycle Speed** — How often Farm Mode switches abilities, from 2 to 10 seconds (default 3.5).
-- **Enable Free Placement Mode** — Replace the minimap button with a draggable standalone icon.
-- **Icon Size** — Scale the standalone icon when Free Placement Mode is on.
-- **Icon Shape** — Choose a circular or square border for the standalone icon.
-- **Reset All Options** — Wipe every Tracking Eye setting back to defaults.
-
-## Slash Commands
-
-| Command | Effect |
-| --- | --- |
-| `/te` | Opens the options panel. |
-| `/trackingeye` | Opens the options panel. |
-
-## Minimap Button
+### Minimap Button
 
 | Action | Effect |
 | --- | --- |
-| Left-Click | Open the tracking menu. |
-| Right-Click | Clear current tracking. |
-| Shift + Left-Click | Toggle Persistent Tracking. |
-| Shift + Right-Click | Toggle Farm Mode. |
-| Shift + Middle-Click | Toggle Free Placement Mode. |
+| Left-click | Open the tracking menu |
+| Right-click | Clear current tracking |
+| Shift + Left-click | Toggle Persistent Tracking |
+| Shift + Right-click | Toggle Farm Mode |
+| Shift + Middle-click | Toggle Free Placement Mode |
 
-## Saved Variables
+### Slash Commands
 
-Tracking Eye stores per-character preferences in `TrackingEyeCharDB` (selected tracking spell, Persistent Tracking and Farm Mode toggles, cycle speed, farm-cycle ability list, last icon, welcome message toggle) and account-wide preferences in `TrackingEyeGlobalDB` (minimap button position, Free Placement Mode toggle, free-icon position, scale, and shape).
+`/te` or `/trackingeye` // Open the options panel.
 
-## Testing Status
+## Testing & Localization Status
 
-🟢 World of Warcraft Classic Era
+🟢 World of Warcraft Classic (🟡 Season of Discovery) // WoW 1.15.8
 
-🟢 Burning Crusade Classic Anniversary
+🟢 Burning Crusade Anniversary // WoW 2.5.5
 
-🔴 Mists of Pandaria Classic
+🔴 Mists of Pandaria Classic // WoW 5.5.3
 
-🔴 Retail
+🔴 World of Warcraft // WoW 12.0.5
 
-Please reach out if you would like to be involved with testing!
+**Localization Status** // Works with all Classic WoW Locales (enUS, deDE, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW).
+
+Please reach out if you would like to be involved!
 
 ## Links
 
-- [CurseForge](https://www.curseforge.com/wow/addons/tracking-eye-classic)
-- [GitHub](https://github.com/Gogo1951/Tracking-Eye)
-- [Discord](https://discord.gg/eh8hKq992Q)
+* [CurseForge](https://www.curseforge.com/wow/addons/tracking-eye-classic)
+* [GitHub](https://github.com/Gogo1951/Tracking-Eye)
+* [Discord](https://discord.gg/eh8hKq992Q)
 
 ## History
 
-This is a continuation of LindenRyuujin's [Tracking Eye](https://www.curseforge.com/wow/addons/tracking-eye).
+👾 **I didn't create this add-on, I just updated it.**
+
+* LindenRyuujin's [Tracking Eye](https://www.curseforge.com/wow/addons/tracking-eye)
+
+## Related Add-ons
+
+🟢 Pairs With // gogo1951's [Come & Get It]([https://www.curseforge.com/wow/addons/tracking-eye-classic](https://www.curseforge.com/wow/addons/come-get-it))
+
+🟢 Pairs With // nevcairiel's [GatherMate2 Classic](https://www.curseforge.com/wow/addons/gathermate2-classic)
+
+🟢 Pairs With // Xinhuan's [HandyNotes](https://www.curseforge.com/wow/addons/handynotes)
+
+🟢 Pairs With // Xinhuan's [Routes](https://www.curseforge.com/wow/addons/routes)
+
+🔴 Direct Alternative // IceDNicco's [AutoTracker](https://www.curseforge.com/wow/addons/autotracker)
+
+🔴 Direct Alternative // mmx428's [Hunter Tracks](https://www.curseforge.com/wow/addons/hunter-tracks)
+
+🔴 Direct Alternative // a14st0r's [nOde: the Omnitracker](https://www.curseforge.com/wow/addons/node)
+
+🔴 Direct Alternative // mxiii's [Track Everything](https://www.wowinterface.com/downloads/info25637-TrackEverything.html)
+
+🔴 Direct Alternative // Beast-Masters-addons's [TrackingMenu](https://github.com/Beast-Masters-addons/TrackingMenu)
+
+🔴 Direct Alternative // Epenance's [Tracking Switcher](https://www.curseforge.com/wow/addons/tracking-switcher)
+
+🔴 Direct Alternative // Petazo's [GatherTracker](https://www.curseforge.com/wow/addons/gather-tracker)
