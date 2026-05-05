@@ -2,17 +2,15 @@
 
 A tracking menu and tracking switcher for the minimap. Auto-cycles Find Herbs and Find Minerals while mounted, recasts your tracking spell after death, and supports every Hunter, Druid, Warlock, Paladin, and gathering tracking. Never miss a node.
 
-<img width="375" src="https://github.com/user-attachments/assets/f8627a30-8188-4691-bab8-75b5d82eaee1" />
-
-<img width="175" src="https://github.com/user-attachments/assets/de98982b-d787-4fa3-ac6f-00aca4d637e8" />
+<img width="375" src="https://github.com/user-attachments/assets/f8627a30-8188-4691-bab8-75b5d82eaee1" /> <img width="175" src="https://github.com/user-attachments/assets/de98982b-d787-4fa3-ac6f-00aca4d637e8" />
 
 ## Features
 
 🎯 **Tracking Menu** // Left-click the minimap button to pick from every tracking spell your character knows in one alphabetical list.
 
-🔁 **Persistent Tracking** // Auto-recasts your tracking spell after death and form changes, so Find Herbs is already back before you finish your corpse run.
-
 🚜 **Farm Mode** // Mounted or in travel form, cycles between your selected tracking abilities so both herbs and minerals show up on the minimap — automatically pausing inside instances and capital cities.
+
+🔁 **Persistent Tracking** // Auto-recasts your tracking spell after death and form changes, so Find Herbs is already back before you finish your corpse run.
 
 📍 **Free Placement Mode** // Detach the tracking icon from the minimap and drag it anywhere on screen, with circular or square borders and adjustable size.
 
