@@ -1,11 +1,10 @@
 local _, te = ...
+te.L = LibStub("AceLocale-3.0"):GetLocale("TrackingEye")
 
 --------------------------------------------------------------------------------
 -- Constants & Config
 --------------------------------------------------------------------------------
 te.ICON_DEFAULT = "Interface\\Icons\\inv_misc_map_01"
-te.FARM_INTERVAL_DEFAULT = 3.5
-te.FREE_ICON_SCALE_DEFAULT = 1.1
 te.CURSEFORGE_URL = "https://www.curseforge.com/wow/addons/tracking-eye-classic"
 te.DISCORD_URL = "https://discord.gg/eh8hKq992Q"
 te.GITHUB_URL = "https://github.com/Gogo1951/Tracking-Eye"
@@ -14,7 +13,31 @@ te.SHAPES = {
     CIRCLE = "circle",
     SQUARE = "square"
 }
-te.FREE_ICON_SHAPE_DEFAULT = te.SHAPES.CIRCLE
+
+--------------------------------------------------------------------------------
+-- Default Values
+--------------------------------------------------------------------------------
+
+-- TrackingEyeCharDB (per-character) scalar defaults.
+-- selectedSpellId, lastIcon, and farmCycleSpells are intentionally
+-- absent: nil cannot be stored in a Lua table, and farmCycleSpells
+-- is a nested table that must be deep-copied on each init/reset
+-- (see te.FARM_CYCLE_DEFAULTS below).
+te.CHAR_DEFAULTS = {
+    autoTracking = true,
+    farmingMode = true,
+    farmInterval = 3.5,
+    showWelcome = true
+}
+
+-- TrackingEyeGlobalDB (account-wide) scalar defaults.
+-- minimap is intentionally absent — LibDBIcon writes into it, and
+-- it must be initialized as an empty table separately.
+te.GLOBAL_DEFAULTS = {
+    freePlacement = false,
+    freeIconScale = 1.1,
+    freeIconShape = te.SHAPES.CIRCLE
+}
 
 --------------------------------------------------------------------------------
 -- Spells

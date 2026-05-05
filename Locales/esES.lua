@@ -1,62 +1,84 @@
+local strings = {}
+
+strings["ADDON_TITLE"] = "Tracking Eye"
+
+--------------------------------------------------------------------------------
+-- Printed Messages
+--------------------------------------------------------------------------------
+
+strings["CHAT_LOADED"] = "Versión @project-version@. Escribe %s para abrir las opciones. ¿Te gusta el addon? ¡Cuéntaselo a un amigo! (="
+
+--------------------------------------------------------------------------------
+-- Minimap Button Tooltip
+--------------------------------------------------------------------------------
+
+strings["TRACKING_MENU"] = "Menú de rastreo"
+strings["TRACKING_MENU_DESC"] = "Muestra una lista de tus habilidades de rastreo y establece la habilidad de rastreo persistente."
+
+strings["PERSISTENT_ABILITY"] = "Habilidad de rastreo persistente"
+strings["NONE_SET"] = "Ninguno establecido"
+strings["CLEAR_TRACKING"] = "Borrar rastreo"
+
+strings["PERSISTENT_TRACKING"] = "Rastreo persistente"
+strings["PERSISTENT_DESC"] = "Vuelve a lanzar tu hechizo de rastreo automáticamente tras resucitar."
+
+strings["FARM_MODE"] = "Modo de recolección"
+strings["FARMING_DESC"] = "Alterna entre Hierbas, Minerales y Tesoros mientras estás montado o en forma de viaje."
+
+strings["PLACEMENT_MODE"] = "Modo de ubicación libre"
+strings["PLACEMENT_DESC"] = "Reemplaza el botón del minimapa con un icono independiente que puedes mover a cualquier lugar."
+
+strings["ENABLED"] = "Habilitado"
+strings["DISABLED"] = "Deshabilitado"
+strings["TOGGLE"] = "Alternar"
+
+strings["LEFT_CLICK"] = "Clic Izquierdo"
+strings["RIGHT_CLICK"] = "Clic Derecho"
+strings["SHIFT_LEFT"] = "Mayús + Clic Izquierdo"
+strings["SHIFT_RIGHT"] = "Mayús + Clic Derecho"
+strings["SHIFT_MIDDLE"] = "Mayús + Clic Central"
+
+strings["TOOLTIP_OPTIONS_HINT"] = "Se pueden encontrar ajustes adicionales en Opciones > Accesorios > Tracking Eye."
+
+--------------------------------------------------------------------------------
+-- Options Interface
+--------------------------------------------------------------------------------
+
+strings["OPTIONS_DESC"] = "Un menú de rastreo inteligente que alterna entre rastreo de hierbas y minerales mientras estás montado, y restaura automáticamente tu habilidad de rastreo tras la muerte."
+strings["OPTIONS_COMMANDS_INTRO"] = "Comandos de barra para Tracking Eye. El panel de opciones cubre todo lo que necesitas; estos están aquí para los que prefieren usar el teclado."
+strings["OPTIONS_COMMAND_TE"] = "Abre la interfaz de opciones de Tracking Eye."
+strings["OPTIONS_GENERAL_SETTINGS"] = "Ajustes generales"
+strings["OPTIONS_WELCOME_DESC"] = "Imprime un saludo de una línea en el chat cuando Tracking Eye se carga."
+strings["OPTIONS_RESET"] = "Restablecer todas las opciones"
+strings["OPTIONS_RESET_HEADER"] = "Restablecer"
+strings["OPTIONS_RESET_CONFIRM"] = "¿Restablecer todas las opciones de Tracking Eye a los valores predeterminados?"
+strings["OPTIONS_ENABLE_PERSISTENT"] = "Habilitar Rastreo persistente"
+strings["OPTIONS_ENABLE_FARM"] = "Habilitar Modo de recolección"
+strings["OPTIONS_ENABLE_FREE"] = "Habilitar Modo de ubicación libre"
+strings["OPTIONS_ENABLE_WELCOME"] = "Habilitar mensaje de bienvenida"
+strings["OPTIONS_FARM_ABILITIES"] = "Habilidades del Modo de recolección"
+strings["OPTIONS_FARM_ABILITIES_DESC"] = "Selecciona qué habilidades de rastreo alternará el Modo de recolección mientras estás montado o en forma de viaje."
+strings["OPTIONS_CYCLE_SPEED"] = "Velocidad de ciclo"
+strings["OPTIONS_CYCLE_SPEED_DESC"] = "Con qué frecuencia el Modo de recolección cambia entre las habilidades de rastreo (en segundos)."
+strings["OPTIONS_ICON_SCALE"] = "Tamaño del icono"
+strings["OPTIONS_ICON_SCALE_DESC"] = "Escala del icono de rastreo al usar el Modo de ubicación libre."
+strings["OPTIONS_ICON_SHAPE"] = "Forma del icono"
+strings["OPTIONS_ICON_SHAPE_DESC"] = "Forma del borde del icono de rastreo al usar el Modo de ubicación libre."
+strings["OPTIONS_SHAPE_CIRCLE"] = "Círculo"
+strings["OPTIONS_SHAPE_SQUARE"] = "Cuadrado"
+strings["OPTIONS_LINKS"] = "Comentarios y soporte"
+strings["OPTIONS_CURSEFORGE"] = "CurseForge"
+strings["OPTIONS_DISCORD"] = "Discord"
+strings["OPTIONS_GITHUB"] = "GitHub"
+strings["OPTIONS_SECONDS"] = "%.1f seg"
+strings["OPTIONS_PERCENT"] = "%d%%"
+
 local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "esES")
-if not L then return end
+if L then
+    for k, v in pairs(strings) do L[k] = v end
+end
 
-L["ADDON_TITLE"]        = "Tracking Eye"
-
-L["TRACKING_MENU"]      = "Menú de rastreo"
-L["TRACKING_MENU_DESC"] = "Muestra una lista de tus habilidades de rastreo y establece la habilidad de rastreo persistente."
-
-L["PERSISTENT_ABILITY"] = "Habilidad de rastreo persistente"
-L["NONE_SET"]           = "Ninguno establecido"
-L["CLEAR_TRACKING"]     = "Borrar rastreo"
-
-L["PERSISTENT_TRACKING"] = "Rastreo persistente"
-L["PERSISTENT_DESC"]      = "Vuelve a lanzar tu hechizo de rastreo automáticamente tras resucitar."
-
-L["FARM_MODE"]    = "Modo de recolección"
-L["FARMING_DESC"] = "Alterna entre Hierbas, Minerales y Tesoros mientras estás montado o en forma de viaje."
-
-L["PLACEMENT_MODE"] = "Modo de ubicación libre"
-L["PLACEMENT_DESC"] = "Reemplaza el botón del minimapa con un icono independiente que puedes mover a cualquier lugar."
-
-L["ENABLED"]  = "Habilitado"
-L["DISABLED"] = "Deshabilitado"
-L["TOGGLE"]   = "Alternar"
-
-L["LEFT_CLICK"]   = "Clic Izquierdo"
-L["RIGHT_CLICK"]  = "Clic Derecho"
-L["SHIFT_LEFT"]   = "Mayús + Clic Izquierdo"
-L["SHIFT_RIGHT"]  = "Mayús + Clic Derecho"
-L["SHIFT_MIDDLE"] = "Mayús + Clic Central"
-
-L["TOOLTIP_OPTIONS_HINT"] = "Se pueden encontrar ajustes adicionales en Opciones > Accesorios > Tracking Eye."
-
--- Options Panel
-L["OPTIONS_DESC"]                = "Un menú de rastreo inteligente que alterna entre rastreo de hierbas y minerales mientras estás montado, y restaura automáticamente tu habilidad de rastreo tras la muerte."
-L["OPTIONS_RESET"]               = "Restablecer todas las opciones"
-L["OPTIONS_RESET_HEADER"]        = "Restablecer"
-L["OPTIONS_RESET_CONFIRM"]       = "¿Restablecer todas las opciones de Tracking Eye a los valores predeterminados?"
-L["OPTIONS_ENABLE_PERSISTENT"]   = "Habilitar Rastreo persistente"
-L["OPTIONS_ENABLE_FARM"]         = "Habilitar Modo de recolección"
-L["OPTIONS_ENABLE_FREE"]         = "Habilitar Modo de ubicación libre"
-L["OPTIONS_FARM_ABILITIES"]      = "Habilidades del Modo de recolección"
-L["OPTIONS_FARM_ABILITIES_DESC"] = "Selecciona qué habilidades de rastreo alternará el Modo de recolección mientras estás montado o en forma de viaje."
-L["OPTIONS_CYCLE_SPEED"]         = "Velocidad de ciclo"
-L["OPTIONS_CYCLE_SPEED_DESC"]    = "Con qué frecuencia el Modo de recolección cambia entre las habilidades de rastreo (en segundos)."
-L["OPTIONS_ICON_SCALE"]          = "Tamaño del icono"
-L["OPTIONS_ICON_SCALE_DESC"]     = "Escala del icono de rastreo al usar el Modo de ubicación libre."
-L["OPTIONS_ICON_SHAPE"]          = "Forma del icono"
-L["OPTIONS_ICON_SHAPE_DESC"]     = "Forma del borde del icono de rastreo al usar el Modo de ubicación libre."
-L["OPTIONS_SHAPE_CIRCLE"]        = "Círculo"
-L["OPTIONS_SHAPE_SQUARE"]        = "Cuadrado"
-L["OPTIONS_LINKS"]               = "Comentarios y soporte"
-L["OPTIONS_CURSEFORGE"]          = "CurseForge"
-L["OPTIONS_DISCORD"]             = "Discord"
-L["OPTIONS_GITHUB"]              = "GitHub"
-L["OPTIONS_SECONDS"]             = "%.1f seg"
-L["OPTIONS_PERCENT"]             = "%d%%"
-
--- Copy esES translations to esMX
 local L2 = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "esMX")
-if not L2 then return end
-for k, v in pairs(L) do L2[k] = v end
+if L2 then
+    for k, v in pairs(strings) do L2[k] = v end
+end

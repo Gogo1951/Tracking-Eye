@@ -16,8 +16,8 @@ local function InitMenu(_, level)
 
     -- Title
     local titleInfo = LibDD:UIDropDownMenu_CreateInfo()
-    titleInfo.text         = te.GetColor("TITLE") .. te.L["TRACKING_MENU"] .. "|r"
-    titleInfo.isTitle      = true
+    titleInfo.text = te.GetColor("TITLE") .. te.L["TRACKING_MENU"] .. "|r"
+    titleInfo.isTitle = true
     titleInfo.notCheckable = true
     LibDD:UIDropDownMenu_AddButton(titleInfo, level)
 
@@ -37,13 +37,13 @@ local function InitMenu(_, level)
     for _, data in ipairs(list) do
         -- Hide DRUID_HUMANOIDS unless the player is currently in cat form
         if IsPlayerSpell(data.id) and (data.id ~= te.SPELLS.DRUID_HUMANOIDS or isCat) then
-            local info    = LibDD:UIDropDownMenu_CreateInfo()
-            info.text     = string.format("|T%s:16|t %s", GetSpellTexture(data.id) or "", data.name)
-            info.value    = data.id
-            info.checked  = (TrackingEyeDB and TrackingEyeDB.selectedSpellId == data.id)
-            info.func     = function(button)
-                if TrackingEyeDB then
-                    TrackingEyeDB.selectedSpellId = button.value
+            local info = LibDD:UIDropDownMenu_CreateInfo()
+            info.text = string.format("|T%s:16|t %s", GetSpellTexture(data.id) or "", data.name)
+            info.value = data.id
+            info.checked = (TrackingEyeCharDB and TrackingEyeCharDB.selectedSpellId == data.id)
+            info.func = function(button)
+                if TrackingEyeCharDB then
+                    TrackingEyeCharDB.selectedSpellId = button.value
                 end
                 te.state.wasFarming = false
                 te.CastTracking(button.value)

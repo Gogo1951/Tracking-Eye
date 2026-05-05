@@ -1,6 +1,4 @@
 local addonName, te = ...
-local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
-te.L = L
 
 local eventFrame = CreateFrame("Frame")
 
@@ -117,14 +115,14 @@ function te.UpdateIcon()
         texture = GetTrackingTexture()
     end
 
-    if not texture and TrackingEyeDB and TrackingEyeDB.lastIcon then
-        texture = TrackingEyeDB.lastIcon
+    if not texture and TrackingEyeCharDB and TrackingEyeCharDB.lastIcon then
+        texture = TrackingEyeCharDB.lastIcon
     end
 
     te.state.currentIcon = texture or te.ICON_DEFAULT
 
-    if TrackingEyeDB and texture and texture ~= te.ICON_DEFAULT then
-        TrackingEyeDB.lastIcon = texture
+    if TrackingEyeCharDB and texture and texture ~= te.ICON_DEFAULT then
+        TrackingEyeCharDB.lastIcon = texture
     end
 
     if te.ldb then
@@ -141,9 +139,9 @@ end
 
 function te.ClearTracking()
     te.state.lastCastSpell = nil
-    if TrackingEyeDB then
-        TrackingEyeDB.selectedSpellId = nil
-        TrackingEyeDB.lastIcon = nil
+    if TrackingEyeCharDB then
+        TrackingEyeCharDB.selectedSpellId = nil
+        TrackingEyeCharDB.lastIcon = nil
     end
     CancelTrackingBuff()
 
@@ -177,7 +175,7 @@ end
 -- handled separately by PLAYER_UNGHOST, which bypasses this
 -- function entirely.
 local function TryRecastPersistent()
-    if not TrackingEyeDB or not TrackingEyeDB.autoTracking or not TrackingEyeDB.selectedSpellId then
+    if not TrackingEyeCharDB or not TrackingEyeCharDB.autoTracking or not TrackingEyeCharDB.selectedSpellId then
         return
     end
 
@@ -186,7 +184,7 @@ local function TryRecastPersistent()
         return
     end
 
-    local spellId = TrackingEyeDB.selectedSpellId
+    local spellId = TrackingEyeCharDB.selectedSpellId
     if not IsPlayerSpell(spellId) then
         return
     end
@@ -215,29 +213,87 @@ local function TryRecastPersistent()
 end
 
 --------------------------------------------------------------------------------
+-- Welcome Message
+--------------------------------------------------------------------------------
+local function PrintMessage(msg)
+    print(te.GetColor("INFO") .. "Tracking Eye" .. "|r "
+       .. te.GetColor("SEP") .. "//" .. "|r "
+       .. te.GetColor("TEXT") .. msg .. "|r")
+end
+
+local function PrintWelcome()
+    if not TrackingEyeCharDB or not TrackingEyeCharDB.showWelcome then return end
+    local cmd = te.GetColor("INFO") .. "/te" .. "|r"
+    PrintMessage(te.L["CHAT_LOADED"]:format(cmd))
+end
+
+--------------------------------------------------------------------------------
 -- Event Handling
 --------------------------------------------------------------------------------
 eventFrame:SetScript(
     "OnEvent",
     function(_, event, arg1, ...)
         if event == "ADDON_LOADED" and arg1 == addonName then
-            if not TrackingEyeDB then
-                TrackingEyeDB = {}
+            if not TrackingEyeCharDB then
+                TrackingEyeCharDB = {}
             end
 
-            if TrackingEyeDB.autoTracking == nil then
-                TrackingEyeDB.autoTracking = true
+            -- One-time migration: legacy per-character TrackingEyeDB → TrackingEyeCharDB.
+            -- Copies any field not already set in the new table, then wipes the old.
+            -- The legacy declaration in the TOC will be removed in a future release
+            -- once active users have had time to migrate.
+            --
+            -- TODO(2026-07): Stage 2 of the SavedVariables migration.
+            -- By July 2026, active users will have run the Stage 1 migration below
+            -- at least once. We can then drop the legacy TrackingEyeDB declaration
+            -- and complete the account-wide rename TrackingEyeGlobalDB → TrackingEyeDB
+            -- (matching the style guide canonical names AddonNameDB / AddonNameCharDB).
+            --
+            -- Prompt to run at that time:
+            --
+            -- """
+            -- Stage 2 of the SavedVariables migration. We need to:
+            --
+            --   1. In TrackingEye.toc:
+            --      - Remove ", TrackingEyeDB" from the
+            --        ## SavedVariablesPerCharacter: line.
+            --      - Change the ## SavedVariables: line to
+            --        "TrackingEyeDB, TrackingEyeGlobalDB".
+            --   2. In Core.lua's ADDON_LOADED handler:
+            --      - Delete the Stage 1 TrackingEyeDB migration block (the
+            --        per-character rename is now complete; the wipe is a no-op).
+            --      - Add a parallel migration for the account-wide rename
+            --        TrackingEyeGlobalDB → TrackingEyeDB using the same pattern:
+            --        copy non-nil fields, wipe(), set the legacy global to nil.
+            --   3. Run replace_all TrackingEyeGlobalDB → TrackingEyeDB in every
+            --      .lua file (Core, Farm-Mode, Tracking-Menu, Minimap-Button,
+            --      Options) and both READMEs.
+            --   4. In README-Technical.md's Migration Chain subsection: mark
+            --      step 1 complete, mark step 2 active.
+            --
+            -- A Stage 3 release (a few weeks after Stage 2 ships) drops
+            -- TrackingEyeGlobalDB from the TOC entirely and removes the
+            -- Stage 2 migration block.
+            -- """
+            if TrackingEyeDB and next(TrackingEyeDB) ~= nil then
+                for k, v in pairs(TrackingEyeDB) do
+                    if TrackingEyeCharDB[k] == nil then
+                        TrackingEyeCharDB[k] = v
+                    end
+                end
+                wipe(TrackingEyeDB)
             end
-            if TrackingEyeDB.farmingMode == nil then
-                TrackingEyeDB.farmingMode = true
+            TrackingEyeDB = nil
+
+            for k, v in pairs(te.CHAR_DEFAULTS) do
+                if TrackingEyeCharDB[k] == nil then
+                    TrackingEyeCharDB[k] = v
+                end
             end
-            if TrackingEyeDB.farmInterval == nil then
-                TrackingEyeDB.farmInterval = te.FARM_INTERVAL_DEFAULT
-            end
-            if TrackingEyeDB.farmCycleSpells == nil then
-                TrackingEyeDB.farmCycleSpells = {}
+            if TrackingEyeCharDB.farmCycleSpells == nil then
+                TrackingEyeCharDB.farmCycleSpells = {}
                 for id, enabled in pairs(te.FARM_CYCLE_DEFAULTS) do
-                    TrackingEyeDB.farmCycleSpells[id] = enabled
+                    TrackingEyeCharDB.farmCycleSpells[id] = enabled
                 end
             end
 
@@ -247,11 +303,10 @@ eventFrame:SetScript(
             if not TrackingEyeGlobalDB.minimap then
                 TrackingEyeGlobalDB.minimap = {}
             end
-            if TrackingEyeGlobalDB.freeIconScale == nil then
-                TrackingEyeGlobalDB.freeIconScale = te.FREE_ICON_SCALE_DEFAULT
-            end
-            if TrackingEyeGlobalDB.freeIconShape == nil then
-                TrackingEyeGlobalDB.freeIconShape = te.FREE_ICON_SHAPE_DEFAULT
+            for k, v in pairs(te.GLOBAL_DEFAULTS) do
+                if TrackingEyeGlobalDB[k] == nil then
+                    TrackingEyeGlobalDB[k] = v
+                end
             end
 
             if te.CreateFreeFrame then
@@ -269,6 +324,7 @@ eventFrame:SetScript(
                 te.InitOptions()
             end
             te.UpdateIcon()
+            PrintWelcome()
         elseif event == "UNIT_SPELLCAST_SUCCEEDED" and arg1 == "player" then
             local spellId = select(2, ...)
             if te.TRACKING_SET[spellId] then
@@ -283,7 +339,7 @@ eventFrame:SetScript(
             C_Timer.After(
                 1.5,
                 function()
-                    if not TrackingEyeDB or not TrackingEyeDB.autoTracking or not TrackingEyeDB.selectedSpellId then
+                    if not TrackingEyeCharDB or not TrackingEyeCharDB.autoTracking or not TrackingEyeCharDB.selectedSpellId then
                         te.UpdateIcon()
                         return
                     end
@@ -294,7 +350,7 @@ eventFrame:SetScript(
                         return
                     end
 
-                    local spellId = TrackingEyeDB.selectedSpellId
+                    local spellId = TrackingEyeCharDB.selectedSpellId
                     if IsPlayerSpell(spellId) then
                         te.CastTracking(spellId)
                     end

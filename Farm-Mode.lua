@@ -38,7 +38,7 @@ end
 --------------------------------------------------------------------------------
 local function BuildCycleCache()
     cachedCycle = {}
-    local spells = TrackingEyeDB and TrackingEyeDB.farmCycleSpells
+    local spells = TrackingEyeCharDB and TrackingEyeCharDB.farmCycleSpells
     if not spells then
         return
     end
@@ -63,11 +63,11 @@ function te.RunFarmLogic()
         return
     end
 
-    if not TrackingEyeDB or not TrackingEyeDB.farmingMode then
+    if not TrackingEyeCharDB or not TrackingEyeCharDB.farmingMode then
         return
     end
 
-    -- Skip farm cycling in capital cities and battlegrounds
+    -- Skip farm cycling inside instances and while resting
     if te.IsRestrictedZone() then
         return
     end
@@ -77,8 +77,8 @@ function te.RunFarmLogic()
 
     if not inForm and te.state.wasFarming then
         te.state.wasFarming = false
-        if TrackingEyeDB.autoTracking and TrackingEyeDB.selectedSpellId then
-            local spellId = TrackingEyeDB.selectedSpellId
+        if TrackingEyeCharDB.autoTracking and TrackingEyeCharDB.selectedSpellId then
+            local spellId = TrackingEyeCharDB.selectedSpellId
             local targetTexture = GetSpellTexture(spellId)
             if currentTrackingTexture ~= targetTexture then
                 te.CastTracking(spellId)
@@ -130,7 +130,7 @@ function te.RestartFarmTicker()
         farmTicker:Cancel()
         farmTicker = nil
     end
-    local interval = (TrackingEyeDB and TrackingEyeDB.farmInterval) or te.FARM_INTERVAL_DEFAULT
+    local interval = (TrackingEyeCharDB and TrackingEyeCharDB.farmInterval) or te.CHAR_DEFAULTS.farmInterval
     farmTicker = C_Timer.NewTicker(interval, te.RunFarmLogic)
 end
 
