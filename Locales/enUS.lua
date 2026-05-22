@@ -45,7 +45,7 @@ L["TOOLTIP_OPTIONS_HINT"] = "Additional settings can be found under Options > Ad
 -- Options Interface
 --------------------------------------------------------------------------------
 
-L["OPTIONS_DESC"] = "A smart tracking menu that auto-cycles herb and ore tracking while mounted (or in travel forms), and automatically restores your tracking ability after death."
+L["OPTIONS_DESC"] = "Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs and Find Minerals while farming and reapplies tracking after death. Supports every tracking ability. Never lose track of the resources you’re hunting."
 L["OPTIONS_COMMANDS_INTRO"] = "Slash commands for Tracking Eye. The options panel covers everything you need; these are here for the keyboard-first folks."
 L["OPTIONS_COMMAND_TE"] = "Opens the Tracking Eye options interface."
 L["OPTIONS_WELCOME_DESC"] = "Print a one-line greeting in chat when Tracking Eye loads."
