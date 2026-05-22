@@ -1,4 +1,4 @@
-local addonName, te = ...
+local addonName, ns = ...
 local LibDD = LibStub("LibUIDropDownMenu-4.0")
 
 --------------------------------------------------------------------------------
@@ -16,15 +16,15 @@ local function InitMenu(_, level)
 
     -- Title
     local titleInfo = LibDD:UIDropDownMenu_CreateInfo()
-    titleInfo.text = te.GetColor("TITLE") .. te.L["TRACKING_MENU"] .. "|r"
+    titleInfo.text = ns.GetColor("TITLE") .. ns.L["TRACKING_MENU"] .. "|r"
     titleInfo.isTitle = true
     titleInfo.notCheckable = true
     LibDD:UIDropDownMenu_AddButton(titleInfo, level)
 
     -- Build a sorted list of spells the player knows
     local list = {}
-    for _, id in ipairs(te.TRACKING_IDS) do
-        local name = te.GetSpellName(id)
+    for _, id in ipairs(ns.TRACKING_IDS) do
+        local name = GetSpellInfo(id)
         if name then
             table.insert(list, {id = id, name = name})
         end
@@ -32,11 +32,11 @@ local function InitMenu(_, level)
 
     table.sort(list, function(a, b) return a.name < b.name end)
 
-    local isCat = te.GetPlayerStates()
+    local isCat = ns.GetPlayerStates()
 
     for _, data in ipairs(list) do
         -- Hide DRUID_HUMANOIDS unless the player is currently in cat form
-        if IsPlayerSpell(data.id) and (data.id ~= te.SPELLS.DRUID_HUMANOIDS or isCat) then
+        if IsPlayerSpell(data.id) and (data.id ~= ns.SPELLS.DRUID_HUMANOIDS or isCat) then
             local info = LibDD:UIDropDownMenu_CreateInfo()
             info.text = string.format("|T%s:16|t %s", GetSpellTexture(data.id) or "", data.name)
             info.value = data.id
@@ -45,8 +45,8 @@ local function InitMenu(_, level)
                 if TrackingEyeCharDB then
                     TrackingEyeCharDB.selectedSpellId = button.value
                 end
-                te.state.wasFarming = false
-                te.CastTracking(button.value)
+                ns.state.wasFarming = false
+                ns.CastTracking(button.value)
                 LibDD:CloseDropDownMenus()
             end
             LibDD:UIDropDownMenu_AddButton(info, level)
@@ -59,7 +59,7 @@ LibDD:UIDropDownMenu_Initialize(dropdown, InitMenu, "MENU")
 --------------------------------------------------------------------------------
 -- Public API
 --------------------------------------------------------------------------------
-function te.ToggleMenu(anchor)
+function ns.ToggleMenu(anchor)
     local xOffset = 0
     if anchor and anchor.GetWidth then
         xOffset = anchor:GetWidth()

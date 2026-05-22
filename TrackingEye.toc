@@ -10,25 +10,26 @@
 ## Version: @project-version@
 ## X-Curse-Project-ID: 1129680
 
-## SavedVariables: TrackingEyeGlobalDB
-## SavedVariablesPerCharacter: TrackingEyeCharDB, TrackingEyeDB
+## SavedVariables: TrackingEyeDB
+## SavedVariablesPerCharacter: TrackingEyeCharDB
 
 # Includes
 Includes/LibStub/LibStub.lua
 Includes/CallbackHandler-1.0/CallbackHandler-1.0.lua
-Includes/LibDataBroker-1.1/LibDataBroker-1.1.lua
-Includes/LibDBIcon-1.0/LibDBIcon-1.0.lua
-Includes/LibUIDropDownMenu/LibUIDropDownMenu.xml
 Includes/AceLocale-3.0/AceLocale-3.0.lua
 Includes/AceGUI-3.0/AceGUI-3.0.xml
 Includes/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
 Includes/AceConfig-3.0/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
 Includes/AceConfig-3.0/AceConfig-3.0.lua
+Includes/LibDataBroker-1.1/LibDataBroker-1.1.lua
+Includes/LibDBIcon-1.0/LibDBIcon-1.0.lua
+Includes/LibUIDropDownMenu/LibUIDropDownMenu.xml
 
 # Localization
 Locales/enUS.lua
 Locales/deDE.lua
 Locales/esES.lua
+Locales/esMX.lua
 Locales/frFR.lua
 Locales/itIT.lua
 Locales/koKR.lua
