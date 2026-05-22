@@ -7,7 +7,7 @@ L["ADDON_TITLE"] = "Tracking Eye"
 -- Printed Messages
 --------------------------------------------------------------------------------
 
-L["CHAT_LOADED"] = "版本 @project-version@。輸入 %s 開啟選項。喜歡這個插件？告訴你的朋友吧！(="
+L["CHAT_LOADED"] = "版本 %s。設定（包含停用此訊息的選項）可以在 選項 > 插件 > Tracking Eye 中找到。喜歡這個插件？告訴你的朋友吧！(="
 
 --------------------------------------------------------------------------------
 -- Minimap Button Tooltip
@@ -48,17 +48,16 @@ L["TOOLTIP_OPTIONS_HINT"] = "更多設定可以在 選項 > 插件 > Tracking Ey
 L["OPTIONS_DESC"] = "一個智能追蹤選單，在坐騎狀態下自動循環草藥和礦石追蹤，並在死亡後自動恢復追蹤技能。"
 L["OPTIONS_COMMANDS_INTRO"] = "Tracking Eye 的斜線指令。選項面板涵蓋了您需要的一切；這些是為喜歡使用鍵盤的玩家準備的。"
 L["OPTIONS_COMMAND_TE"] = "打開 Tracking Eye 選項介面。"
-L["OPTIONS_GENERAL_SETTINGS"] = "一般設定"
 L["OPTIONS_WELCOME_DESC"] = "在 Tracking Eye 載入時，於聊天視窗印出一行問候語。"
 L["OPTIONS_RESET"] = "重置所有選項"
 L["OPTIONS_RESET_HEADER"] = "重置"
+L["OPTIONS_RESET_DESC"] = "將每一個 Tracking Eye 設定還原為預設值。"
 L["OPTIONS_RESET_CONFIRM"] = "將所有 Tracking Eye 選項重置為預設值？"
 L["OPTIONS_ENABLE_PERSISTENT"] = "啟用持久追蹤"
 L["OPTIONS_ENABLE_FARM"] = "啟用採集模式"
 L["OPTIONS_ENABLE_FREE"] = "啟用自由移動模式"
 L["OPTIONS_ENABLE_WELCOME"] = "啟用歡迎訊息"
 L["OPTIONS_FARM_ABILITIES"] = "採集模式技能"
-L["OPTIONS_FARM_ABILITIES_DESC"] = "選擇在坐騎或旅行形態下，採集模式要循環的追蹤技能。"
 L["OPTIONS_CYCLE_SPEED"] = "循環速度"
 L["OPTIONS_CYCLE_SPEED_DESC"] = "採集模式在追蹤技能之間切換的頻率（秒）。"
 L["OPTIONS_ICON_SCALE"] = "圖示大小"
@@ -71,5 +70,3 @@ L["OPTIONS_LINKS"] = "回饋與支援"
 L["OPTIONS_CURSEFORGE"] = "CurseForge"
 L["OPTIONS_DISCORD"] = "Discord"
 L["OPTIONS_GITHUB"] = "GitHub"
-L["OPTIONS_SECONDS"] = "%.1f 秒"
-L["OPTIONS_PERCENT"] = "%d%%"

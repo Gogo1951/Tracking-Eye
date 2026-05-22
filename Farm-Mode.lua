@@ -1,4 +1,4 @@
-local _, te = ...
+local _, ns = ...
 
 --------------------------------------------------------------------------------
 -- Farm Mode
@@ -7,31 +7,6 @@ local _, te = ...
 local farmIndex = 0
 local cachedCycle = nil
 local farmTicker = nil
-
---------------------------------------------------------------------------------
--- Casting
---------------------------------------------------------------------------------
-function te.CastTracking(spellId)
-    if not spellId or not IsPlayerSpell(spellId) then
-        return
-    end
-
-    if spellId == te.SPELLS.DRUID_HUMANOIDS then
-        local isCat = te.GetPlayerStates()
-        if not isCat then
-            return
-        end
-    end
-
-    local start, duration = GetSpellCooldown(spellId)
-    if start and duration and start > 0 and duration > 0 then
-        return
-    end
-
-    te.state.lastCastSpell = spellId
-    te.UpdateIcon()
-    pcall(CastSpellByID, spellId)
-end
 
 --------------------------------------------------------------------------------
 -- Farm Cycle Cache
@@ -43,23 +18,23 @@ local function BuildCycleCache()
         return
     end
     for id, enabled in pairs(spells) do
-        if enabled and id ~= te.SPELLS.DRUID_HUMANOIDS and IsPlayerSpell(id) then
+        if enabled and id ~= ns.SPELLS.DRUID_HUMANOIDS and IsPlayerSpell(id) then
             table.insert(cachedCycle, id)
         end
     end
     table.sort(cachedCycle)
 end
 
-function te.InvalidateFarmCache()
+function ns.InvalidateFarmCache()
     cachedCycle = nil
 end
 
 --------------------------------------------------------------------------------
 -- Farm Cycle Logic
 --------------------------------------------------------------------------------
-function te.RunFarmLogic()
+function ns.RunFarmLogic()
     -- Pause while options panel is open
-    if te.optionsOpen then
+    if ns.optionsOpen then
         return
     end
 
@@ -68,26 +43,26 @@ function te.RunFarmLogic()
     end
 
     -- Skip farm cycling inside instances and while resting
-    if te.IsRestrictedZone() then
+    if ns.IsRestrictedZone() then
         return
     end
 
-    local _, inForm = te.GetPlayerStates()
+    local _, inForm = ns.GetPlayerStates()
     local currentTrackingTexture = GetTrackingTexture()
 
-    if not inForm and te.state.wasFarming then
-        te.state.wasFarming = false
+    if not inForm and ns.state.wasFarming then
+        ns.state.wasFarming = false
         if TrackingEyeCharDB.autoTracking and TrackingEyeCharDB.selectedSpellId then
             local spellId = TrackingEyeCharDB.selectedSpellId
             local targetTexture = GetSpellTexture(spellId)
             if currentTrackingTexture ~= targetTexture then
-                te.CastTracking(spellId)
+                ns.CastTracking(spellId)
             end
         end
         return
     end
 
-    if not inForm or not te.CanCast() then
+    if not inForm or not ns.CanCast() then
         return
     end
 
@@ -104,8 +79,8 @@ function te.RunFarmLogic()
         local spellId = cachedCycle[1]
         local spellTexture = GetSpellTexture(spellId)
 
-        if currentTrackingTexture == spellTexture or te.state.lastCastSpell == spellId then
-            te.state.wasFarming = true
+        if currentTrackingTexture == spellTexture or ns.state.lastCastSpell == spellId then
+            ns.state.wasFarming = true
             return
         end
         farmIndex = 0
@@ -116,27 +91,27 @@ function te.RunFarmLogic()
     local nextTexture = GetSpellTexture(nextSpellId)
 
     if currentTrackingTexture ~= nextTexture then
-        te.CastTracking(nextSpellId)
+        ns.CastTracking(nextSpellId)
     end
 
-    te.state.wasFarming = true
+    ns.state.wasFarming = true
 end
 
 --------------------------------------------------------------------------------
 -- Ticker Management
 --------------------------------------------------------------------------------
-function te.RestartFarmTicker()
+function ns.RestartFarmTicker()
     if farmTicker then
         farmTicker:Cancel()
         farmTicker = nil
     end
-    local interval = (TrackingEyeCharDB and TrackingEyeCharDB.farmInterval) or te.CHAR_DEFAULTS.farmInterval
-    farmTicker = C_Timer.NewTicker(interval, te.RunFarmLogic)
+    local interval = (TrackingEyeCharDB and TrackingEyeCharDB.farmInterval) or ns.CHAR_DEFAULTS.farmInterval
+    farmTicker = C_Timer.NewTicker(interval, ns.RunFarmLogic)
 end
 
 --------------------------------------------------------------------------------
 -- Initialization
 --------------------------------------------------------------------------------
-function te.InitFarmMode()
-    te.RestartFarmTicker()
+function ns.InitFarmMode()
+    ns.RestartFarmTicker()
 end
