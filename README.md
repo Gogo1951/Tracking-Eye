@@ -1,6 +1,6 @@
 # Tracking Eye
 
-A tracking menu and tracking switcher for the minimap. Auto-cycles Find Herbs and Find Minerals while mounted, recasts your tracking spell after death, and supports every Hunter, Druid, Warlock, Paladin, and gathering tracking. Never miss a node.
+Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs and Find Minerals while farming and reapplies tracking after death. Supports every tracking ability. Never lose track of the resources you’re hunting.
 
 <img width="375" src="https://github.com/user-attachments/assets/f8627a30-8188-4691-bab8-75b5d82eaee1" /> <img width="175" src="https://github.com/user-attachments/assets/de98982b-d787-4fa3-ac6f-00aca4d637e8" />
 
