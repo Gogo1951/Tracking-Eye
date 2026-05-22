@@ -7,7 +7,7 @@ L["ADDON_TITLE"] = "Tracking Eye"
 -- Printed Messages
 --------------------------------------------------------------------------------
 
-L["CHAT_LOADED"] = "Version @project-version@. Tippt %s für Optionen. Gefällt Euch das AddOn? Erzählt es einem Freund! (="
+L["CHAT_LOADED"] = "Version %s. Einstellungen (einschließlich der Option, diese Nachricht zu deaktivieren) finden Sie unter Optionen > AddOns > Tracking Eye. Gefällt Euch das AddOn? Erzählt es einem Freund! (="
 
 --------------------------------------------------------------------------------
 -- Minimap Button Tooltip
@@ -24,7 +24,7 @@ L["PERSISTENT_TRACKING"] = "Dauerhafte Aufspürung"
 L["PERSISTENT_DESC"] = "Wirkt Aufspürungszauber nach Wiederbelebung automatisch erneut."
 
 L["FARM_MODE"] = "Farming-Modus"
-L["FARMING_DESC"] = "Wechselt zwischen Kräutern, Erzen und Schätzen, während Ihr reitet oder in Reisegestalt seid."
+L["FARMING_DESC"] = "Wechselt zwischen Euren ausgewählten Aufspürfähigkeiten, während Ihr reitet oder in Reisegestalt seid."
 
 L["PLACEMENT_MODE"] = "Freie Platzierung"
 L["PLACEMENT_DESC"] = "Ersetzt den Minimap-Button durch ein eigenständiges Symbol, das überall hin bewegt werden kann."
@@ -48,17 +48,16 @@ L["TOOLTIP_OPTIONS_HINT"] = "Zusätzliche Einstellungen finden Sie unter Optione
 L["OPTIONS_DESC"] = "Ein intelligentes Aufspürungsmenü, das Kräuter- und Erzsuche während des Reitens automatisch wechselt und eure Aufspürfähigkeit nach dem Tod wiederherstellt."
 L["OPTIONS_COMMANDS_INTRO"] = "Slash-Befehle für Tracking Eye. Das Optionsfenster deckt alles ab, was du brauchst; diese hier sind für diejenigen, die lieber die Tastatur benutzen."
 L["OPTIONS_COMMAND_TE"] = "Öffnet die Benutzeroberfläche für Tracking Eye-Optionen."
-L["OPTIONS_GENERAL_SETTINGS"] = "Allgemeine Einstellungen"
 L["OPTIONS_WELCOME_DESC"] = "Gibt eine einzeilige Begrüßung im Chat aus, wenn Tracking Eye geladen wird."
-L["OPTIONS_RESET"] = "Alle Optionen zurücksetzen"
+L["OPTIONS_RESET"] = "Alle Optionen von Tracking Eye zurücksetzen"
 L["OPTIONS_RESET_HEADER"] = "Zurücksetzen"
+L["OPTIONS_RESET_DESC"] = "Jede Einstellung von Tracking Eye auf den Standardwert zurücksetzen."
 L["OPTIONS_RESET_CONFIRM"] = "Alle Optionen von Tracking Eye auf Standard zurücksetzen?"
 L["OPTIONS_ENABLE_PERSISTENT"] = "Dauerhafte Aufspürung aktivieren"
 L["OPTIONS_ENABLE_FARM"] = "Farming-Modus aktivieren"
 L["OPTIONS_ENABLE_FREE"] = "Freie Platzierung aktivieren"
 L["OPTIONS_ENABLE_WELCOME"] = "Begrüßungsnachricht aktivieren"
 L["OPTIONS_FARM_ABILITIES"] = "Farming-Modus Fähigkeiten"
-L["OPTIONS_FARM_ABILITIES_DESC"] = "Wählt aus, durch welche Aufspürfähigkeiten der Farming-Modus wechseln soll, während Ihr reitet oder in Reisegestalt seid."
 L["OPTIONS_CYCLE_SPEED"] = "Wechselgeschwindigkeit"
 L["OPTIONS_CYCLE_SPEED_DESC"] = "Wie oft der Farming-Modus zwischen Aufspürfähigkeiten wechselt (in Sekunden)."
 L["OPTIONS_ICON_SCALE"] = "Symbolgröße"
@@ -71,5 +70,3 @@ L["OPTIONS_LINKS"] = "Feedback & Support"
 L["OPTIONS_CURSEFORGE"] = "CurseForge"
 L["OPTIONS_DISCORD"] = "Discord"
 L["OPTIONS_GITHUB"] = "GitHub"
-L["OPTIONS_SECONDS"] = "%.1f Sek."
-L["OPTIONS_PERCENT"] = "%d%%"

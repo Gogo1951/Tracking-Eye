@@ -7,7 +7,7 @@ L["ADDON_TITLE"] = "Tracking Eye"
 -- Printed Messages
 --------------------------------------------------------------------------------
 
-L["CHAT_LOADED"] = "版本 @project-version@。输入 %s 打开选项。喜欢这个插件？告诉你的朋友吧！(="
+L["CHAT_LOADED"] = "版本 %s。设置（包含禁用此消息的选项）可以在 选项 > 插件 > Tracking Eye 中找到。喜欢这个插件？告诉你的朋友吧！(="
 
 --------------------------------------------------------------------------------
 -- Minimap Button Tooltip
@@ -24,7 +24,7 @@ L["PERSISTENT_TRACKING"] = "持久追踪"
 L["PERSISTENT_DESC"] = "复活后自动重新施放追踪法术。"
 
 L["FARM_MODE"] = "采集模式"
-L["FARMING_DESC"] = "在坐骑或旅行形态下，于草药、矿石和宝藏之间循环。"
+L["FARMING_DESC"] = "在坐骑或旅行形态下，在您选择的追踪技能之间循环。"
 
 L["PLACEMENT_MODE"] = "自由移动模式"
 L["PLACEMENT_DESC"] = "将小地图按钮替换为可随处移动的独立图标。"
@@ -48,17 +48,16 @@ L["TOOLTIP_OPTIONS_HINT"] = "更多设置可以在 选项 > 插件 > Tracking Ey
 L["OPTIONS_DESC"] = "一个智能追踪菜单，在坐骑状态下自动循环草药和矿石追踪，并在死亡后自动恢复追踪技能。"
 L["OPTIONS_COMMANDS_INTRO"] = "Tracking Eye 的斜杠命令。选项面板涵盖了您需要的一切；这些是为喜欢使用键盘的玩家准备的。"
 L["OPTIONS_COMMAND_TE"] = "打开 Tracking Eye 选项界面。"
-L["OPTIONS_GENERAL_SETTINGS"] = "常规设置"
 L["OPTIONS_WELCOME_DESC"] = "在 Tracking Eye 加载时，于聊天窗口打印一行问候语。"
 L["OPTIONS_RESET"] = "重置所有选项"
 L["OPTIONS_RESET_HEADER"] = "重置"
+L["OPTIONS_RESET_DESC"] = "将每一个 Tracking Eye 设置还原为默认值。"
 L["OPTIONS_RESET_CONFIRM"] = "将所有 Tracking Eye 选项重置为默认值？"
 L["OPTIONS_ENABLE_PERSISTENT"] = "启用持久追踪"
 L["OPTIONS_ENABLE_FARM"] = "启用采集模式"
 L["OPTIONS_ENABLE_FREE"] = "启用自由移动模式"
 L["OPTIONS_ENABLE_WELCOME"] = "启用欢迎消息"
 L["OPTIONS_FARM_ABILITIES"] = "采集模式技能"
-L["OPTIONS_FARM_ABILITIES_DESC"] = "选择在坐骑或旅行形态下，采集模式要循环的追踪技能。"
 L["OPTIONS_CYCLE_SPEED"] = "循环速度"
 L["OPTIONS_CYCLE_SPEED_DESC"] = "采集模式在追踪技能之间切换的频率（秒）。"
 L["OPTIONS_ICON_SCALE"] = "图标大小"
@@ -71,5 +70,3 @@ L["OPTIONS_LINKS"] = "反馈与支持"
 L["OPTIONS_CURSEFORGE"] = "CurseForge"
 L["OPTIONS_DISCORD"] = "Discord"
 L["OPTIONS_GITHUB"] = "GitHub"
-L["OPTIONS_SECONDS"] = "%.1f 秒"
-L["OPTIONS_PERCENT"] = "%d%%"

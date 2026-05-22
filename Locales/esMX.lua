@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "esES")
+local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "esMX")
 if not L then return end
 
 L["ADDON_TITLE"] = "Tracking Eye"
