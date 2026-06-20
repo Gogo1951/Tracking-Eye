@@ -111,7 +111,7 @@ The last bail is load-bearing. During the Classic login and reload event storm t
 
 ### Restricted Zones
 
-`ns.IsRestrictedZone()` returns true when `IsInInstance()` is true (any instance — dungeon, raid, battleground, arena) or when `IsResting()` is true (capital cities and inn rest areas). It is intentionally simple: there is no `ns.CAPITAL_CITIES` or `ns.BATTLEGROUNDS` table and no `C_Map` lookup. The trade-off is breadth — Farm Mode pauses anywhere the resting flag is set, which covers more than just the named cities, and it correctly pauses in non-BG instances too.
+`ns.IsRestrictedZone()` returns true when `IsInInstance()` is true (any instance — dungeon, raid, battleground, arena), when the current instance map ID is found in the `ns.RESTRICTED_MAP_IDS` table, or when `IsResting()` is true (capital cities and inn rest areas). It is intentionally simple: there is no `ns.CAPITAL_CITIES` or `ns.BATTLEGROUNDS` table and no `C_Map` lookup. The trade-off is breadth — Farm Mode pauses anywhere the resting flag is set, which covers more than just the named cities, and it correctly pauses in non-BG instances too.
 
 ## Minimap Button & Free-Placement Frame
 
