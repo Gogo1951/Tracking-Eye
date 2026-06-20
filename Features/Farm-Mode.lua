@@ -38,7 +38,7 @@ function ns.RunFarmLogic()
         return
     end
 
-    if not TrackingEyeCharDB or not TrackingEyeCharDB.farmingMode then
+    if not TrackingEyeCharDB or not TrackingEyeCharDB.farmMode then
         return
     end
 
@@ -52,7 +52,7 @@ function ns.RunFarmLogic()
     ]]
     if not inForm and ns.state.wasFarming then
         ns.state.wasFarming = false
-        if TrackingEyeCharDB.autoTracking and TrackingEyeCharDB.selectedSpellId then
+        if TrackingEyeCharDB.persistentTracking and TrackingEyeCharDB.selectedSpellId then
             local spellId = TrackingEyeCharDB.selectedSpellId
             local targetTexture = GetSpellTexture(spellId)
             if currentTrackingTexture ~= targetTexture then

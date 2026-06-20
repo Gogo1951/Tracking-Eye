@@ -1,5 +1,5 @@
-local _, ns = ...
-ns.L = LibStub("AceLocale-3.0"):GetLocale("TrackingEye")
+local ADDON_NAME, ns = ...
+ns.L = LibStub("AceLocale-3.0"):GetLocale(ADDON_NAME)
 
 --------------------------------------------------------------------------------
 -- Constants & Config
@@ -9,38 +9,18 @@ ns.CURSEFORGE_URL = "https://www.curseforge.com/wow/addons/tracking-eye-classic"
 ns.DISCORD_URL = "https://discord.gg/eh8hKq992Q"
 ns.GITHUB_URL = "https://github.com/Gogo1951/Tracking-Eye"
 
+--[[
+    AceConfig registry names, derived from ADDON_NAME. Stable identifiers
+    referenced by NotifyChange across modules — never build them inline.
+]]
+ns.OPTIONS_REGISTRY = {
+    General = ADDON_NAME,
+    Diagnostics = ADDON_NAME .. "_Diagnostics"
+}
+
 ns.SHAPES = {
     CIRCLE = "circle",
     SQUARE = "square"
-}
-
---------------------------------------------------------------------------------
--- Default Values
---------------------------------------------------------------------------------
-
---[[
-    TrackingEyeCharDB (per-character) scalar defaults.
-    selectedSpellId and farmCycleSpells are intentionally absent:
-    nil cannot be stored in a Lua table, and farmCycleSpells is a
-    nested table that must be deep-copied on each init/reset (see
-    ns.FARM_CYCLE_DEFAULTS below).
-]]
-ns.CHAR_DEFAULTS = {
-    autoTracking = true,
-    farmingMode = true,
-    farmInterval = 3.5
-}
-
---[[
-    TrackingEyeDB (account-wide) scalar defaults.
-    minimap is intentionally absent — LibDBIcon writes into it, and
-    it must be initialized as an empty table separately.
-]]
-ns.GLOBAL_DEFAULTS = {
-    freePlacement = false,
-    freeIconScale = 1.1,
-    freeIconShape = ns.SHAPES.CIRCLE,
-    showWelcome = true
 }
 
 --------------------------------------------------------------------------------
@@ -71,6 +51,7 @@ ORDER BY FIELD(source,'Druid','Hunter','Warlock','Paladin','Herbalism','Mining',
 
 ]]
 
+-- Names and icons are resolved at runtime (GetSpellInfo/GetSpellTexture) so they localize automatically; only the stable IDs are stored here.
 -- { spellId, key, source }
 local SPELL_DATA = {
     -- Druid Forms
@@ -113,6 +94,19 @@ ns.FARM_FORMS = {
     [ns.SPELLS.SWIFT_FLIGHT] = true
 }
 
+--[[
+    Non-druid persistent movement states that activate Farm Mode, detected by
+    buff: Hunter Aspect of the Cheetah / Pack and Shaman Ghost Wolf. Druid travel
+    and flight forms are in ns.FARM_FORMS above.
+]]
+ns.GHOST_WOLF = 2645
+ns.ASPECT_CHEETAH = 5118
+ns.ASPECT_PACK = 13159
+ns.CHEETAH_BUFFS = {
+    [ns.ASPECT_CHEETAH] = true,
+    [ns.ASPECT_PACK] = true
+}
+
 local FORM_KEYS = {CAT = true, TRAVEL = true, AQUATIC = true, FLIGHT = true, SWIFT_FLIGHT = true}
 ns.TRACKING_IDS = {}
 for _, row in ipairs(SPELL_DATA) do
@@ -128,29 +122,20 @@ for _, id in ipairs(ns.TRACKING_IDS) do
 end
 
 --------------------------------------------------------------------------------
--- Farm Cycle Defaults
---------------------------------------------------------------------------------
-
--- Only Herbs and Minerals enabled by default; all others off
-ns.FARM_CYCLE_DEFAULTS = {
-    [ns.SPELLS.HERBS] = true,
-    [ns.SPELLS.MINERALS] = true
-}
-
---------------------------------------------------------------------------------
 -- Colors
 --------------------------------------------------------------------------------
-local C_TITLE = "FFD100"
-local C_INFO = "00BBFF"
-local C_BODY = "CCCCCC"
-local C_TEXT = "FFFFFF"
-local C_ON = "33CC33"
-local C_OFF = "CC3333"
-local C_SEPARATOR = "AAAAAA"
-local C_MUTED = "808080"
 
-ns.COLOR_PREFIX = "|cff"
-ns.COLORS = {
-    TITLE = C_TITLE, INFO = C_INFO, DESC = C_BODY, TEXT = C_TEXT,
-    ON = C_ON, OFF = C_OFF, SEPARATOR = C_SEPARATOR, MUTED = C_MUTED
+--[[
+    Raw hex palette. The derived COLORS table, the |cff prefix, and the GetColor
+    accessor live in Features/Utilities.lua (Data files hold no logic).
+]]
+ns.HEX = {
+    TITLE = "FFD100", -- Gold: Titles, Headers, Section Names
+    INFO = "00BBFF", -- Blue: Interactions, Toggles, Links, Keybinds, Slash Commands
+    BODY = "CCCCCC", -- Silver: Descriptions, Help Text
+    TEXT = "FFFFFF", -- White: Messages, Values, Spell Names
+    ON = "33CC33", -- Green: On
+    OFF = "CC3333", -- Red: Off
+    SEPARATOR = "AAAAAA", -- Gray: Separators, Dividers
+    MUTED = "808080" -- Dark Gray: Meta-data, Version Numbers
 }

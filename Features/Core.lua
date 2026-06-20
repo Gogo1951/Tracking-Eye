@@ -6,8 +6,8 @@ local eventFrame = CreateFrame("Frame")
 -- Version
 --------------------------------------------------------------------------------
 local function GetVersion()
-    local version =
-        C_AddOns and C_AddOns.GetAddOnMetadata(addonName, "Version") or GetAddOnMetadata(addonName, "Version")
+    local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
+    local version = GetAddOnMetadata(addonName, "Version")
     if not version or version:find("@") then
         return "Dev"
     end
@@ -39,69 +39,6 @@ function ns.SetLastCast(spellId)
     if TrackingEyeCharDB then
         TrackingEyeCharDB.lastCastSpell = spellId
     end
-end
-
---------------------------------------------------------------------------------
--- Utility Functions
---------------------------------------------------------------------------------
-function ns.GetColor(key)
-    return ns.COLOR_PREFIX .. (ns.COLORS[key] or "FFFFFF")
-end
-
-function ns.GetPlayerStates()
-    local isCat, isFarming = false, false
-
-    if UnitOnTaxi("player") then
-        return false, false
-    end
-
-    if IsMounted() and not UnitAffectingCombat("player") then
-        isFarming = true
-    end
-
-    for i = 1, 40 do
-        local name, _, _, _, _, _, _, _, _, id = UnitBuff("player", i)
-        if not name then
-            break
-        end
-
-        if id then
-            if id == ns.SPELLS.CAT then
-                isCat = true
-            elseif ns.FARM_FORMS[id] then
-                isFarming = true
-            end
-        end
-
-        -- Early exit once both flags are set
-        if isCat and isFarming then
-            break
-        end
-    end
-
-    return isCat, isFarming
-end
-
-function ns.CanCast()
-    return not (UnitIsDeadOrGhost("player") or IsStealthed() or UnitCastingInfo("player") or
-        UnitAffectingCombat("player"))
-end
-
-function ns.HasTrackingAbility()
-    for _, id in ipairs(ns.TRACKING_IDS) do
-        if IsPlayerSpell(id) then
-            return true
-        end
-    end
-    return false
-end
-
-function ns.IsRestrictedZone()
-    local inInstance = IsInInstance()
-    if inInstance then
-        return true
-    end
-    return IsResting()
 end
 
 --------------------------------------------------------------------------------
@@ -257,7 +194,7 @@ end
     function entirely.
 ]]
 local function TryRecastPersistent()
-    if not TrackingEyeCharDB or not TrackingEyeCharDB.autoTracking or not TrackingEyeCharDB.selectedSpellId then
+    if not TrackingEyeCharDB or not TrackingEyeCharDB.persistentTracking or not TrackingEyeCharDB.selectedSpellId then
         return
     end
 
@@ -301,15 +238,9 @@ end
 --------------------------------------------------------------------------------
 -- Welcome Message
 --------------------------------------------------------------------------------
-local function PrintMessage(msg)
-    print(ns.GetColor("INFO") .. ns.L["ADDON_TITLE"] .. "|r "
-       .. ns.GetColor("SEPARATOR") .. "//" .. "|r "
-       .. ns.GetColor("TEXT") .. msg .. "|r")
-end
-
 local function PrintWelcome()
     if not TrackingEyeDB or not TrackingEyeDB.showWelcome then return end
-    PrintMessage(ns.L["CHAT_LOADED"]:format(ns.Version))
+    ns:PrintMessage(ns.L["CHAT_LOADED"]:format(ns.Version))
 end
 
 --[[
@@ -339,6 +270,10 @@ end
 eventFrame:SetScript(
     "OnEvent",
     function(_, event, arg1, ...)
+        if ns.diagnostics and ns.diagnostics.logging then
+            ns:LogEvent(event, arg1, ...)
+        end
+
         if event == "ADDON_LOADED" and arg1 == addonName then
             if not TrackingEyeCharDB then
                 TrackingEyeCharDB = {}
@@ -358,6 +293,25 @@ eventFrame:SetScript(
             if (TrackingEyeCharDB.resetGeneration or 0) < globalGen then
                 wipe(TrackingEyeCharDB)
                 TrackingEyeCharDB.resetGeneration = globalGen
+            end
+
+            --[[
+                Migrate legacy per-character field names to their current names.
+                Copy the old value when present so a player who turned a feature
+                off keeps it off, then clear the old key. Runs before the default
+                backfill so a migrated value wins over the default; after one
+                login the legacy fields are gone.
+            ]]
+            -- TODO: Remove this legacy-field migration after 2026-09-17 (90 days from 2026-06-19).
+            local legacyCharKeys = {
+                autoTracking = "persistentTracking",
+                farmingMode = "farmMode"
+            }
+            for oldKey, newKey in pairs(legacyCharKeys) do
+                if TrackingEyeCharDB[oldKey] ~= nil and TrackingEyeCharDB[newKey] == nil then
+                    TrackingEyeCharDB[newKey] = TrackingEyeCharDB[oldKey]
+                end
+                TrackingEyeCharDB[oldKey] = nil
             end
 
             for k, v in pairs(ns.CHAR_DEFAULTS) do
@@ -433,7 +387,7 @@ eventFrame:SetScript(
             C_Timer.After(
                 1.5,
                 function()
-                    if not TrackingEyeCharDB or not TrackingEyeCharDB.autoTracking or not TrackingEyeCharDB.selectedSpellId then
+                    if not TrackingEyeCharDB or not TrackingEyeCharDB.persistentTracking or not TrackingEyeCharDB.selectedSpellId then
                         ns.UpdateIcon()
                         return
                     end
@@ -483,13 +437,24 @@ eventFrame:SetScript(
     end
 )
 
-eventFrame:RegisterEvent("ADDON_LOADED")
-eventFrame:RegisterEvent("PLAYER_LOGIN")
-eventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-eventFrame:RegisterEvent("MINIMAP_UPDATE_TRACKING")
-eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-eventFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-eventFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-eventFrame:RegisterEvent("SPELLS_CHANGED")
-eventFrame:RegisterEvent("PLAYER_UNGHOST")
-eventFrame:RegisterEvent("PLAYER_LOGOUT")
+--[[
+    Single source of truth for the events the dispatcher registers. The
+    Diagnostics panel's Event Registration check reads this same list
+    (ns.EVENT_NAMES) so it can never drift from what the add-on actually uses.
+]]
+ns.EVENT_NAMES = {
+    "ADDON_LOADED",
+    "PLAYER_LOGIN",
+    "UNIT_SPELLCAST_SUCCEEDED",
+    "MINIMAP_UPDATE_TRACKING",
+    "PLAYER_ENTERING_WORLD",
+    "ZONE_CHANGED_NEW_AREA",
+    "UPDATE_SHAPESHIFT_FORM",
+    "SPELLS_CHANGED",
+    "PLAYER_UNGHOST",
+    "PLAYER_LOGOUT"
+}
+
+for _, eventName in ipairs(ns.EVENT_NAMES) do
+    eventFrame:RegisterEvent(eventName)
+end

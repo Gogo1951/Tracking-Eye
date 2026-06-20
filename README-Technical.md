@@ -67,18 +67,21 @@ Selection happens in `Tracking-Menu.lua` (`InitMenu` → `info.func`): the menu 
 
 `ns.UpdateIcon()` resolves the displayed texture through this priority chain:
 
-1. `ns.state.lastCastSpell` → `GetSpellTexture(lastCastSpell)`. (Cleared first if the saved spell is `DRUID_HUMANOIDS` and the player is no longer in Cat Form.)
+1. `ReadActiveTracking()` — reads the live Blizzard minimap tracking texture from the global `MiniMapTrackingIcon` and matches it back to a known tracking spell. `GetTrackingTexture()` is unreliable on the Anniversary client (returns `nil` for some active trackers, such as the Dwarf racial Find Treasure), so the minimap icon is consulted first; this branch also self-heals the persisted `lastCastSpell` when the player toggled tracking through the default UI.
 2. `GetTrackingTexture()` — the active in-game tracking buff.
-3. `TrackingEyeCharDB.selectedSpellId` → `GetSpellTexture(selected)`, skipped if the selected spell is `DRUID_HUMANOIDS` and the player is not in Cat Form.
-4. `ns.ICON_DEFAULT` — `Interface\Icons\inv_misc_map_01`.
+3. `ns.state.lastCastSpell` → `GetSpellTexture(lastCastSpell)`. (Cleared first if the saved spell is `DRUID_HUMANOIDS` and the player is no longer in Cat Form.)
+4. `TrackingEyeCharDB.selectedSpellId` → `GetSpellTexture(selected)`, skipped if the selected spell is `DRUID_HUMANOIDS` and the player is not in Cat Form.
+5. `ns.ICON_DEFAULT` — `Interface\Icons\inv_misc_map_01`.
 
 The resolved texture is written to `ns.state.currentIcon`, the LDB launcher's `icon` field, and the free-placement frame's icon texture. `ns.RefreshTooltip()` is then called so a tooltip already on-screen reflects the new icon.
+
+**Client coverage.** The global `MiniMapTrackingIcon` read by `ReadActiveTracking` and `PollUntilTrackingReady` is present on both supported clients, verified against Blizzard's own minimap source: Classic Era 1.15.8 (`Blizzard_Minimap/Vanilla/Minimap.xml`, where the `MiniMapTracking` frame's `MiniMapTrackingIcon` texture is set from `GetTrackingTexture()` on `MINIMAP_UPDATE_TRACKING`) and TBC 2.5.5 (the `MiniMapTracking` frame is present in the TBC minimap source and confirmed by in-game testing). The read still degrades safely if the frame is ever absent on a future build — a nil frame yields no match and resolution falls through to `GetTrackingTexture()`.
 
 ## Persistent Tracking Deep Dive
 
 The `UPDATE_SHAPESHIFT_FORM` path runs `TryRecastPersistent()` after a 1.5-second delay. The function bails early under any of these conditions:
 
-- `TrackingEyeCharDB` missing, `autoTracking` off, or `selectedSpellId` not set.
+- `TrackingEyeCharDB` missing, `persistentTracking` off, or `selectedSpellId` not set.
 - The player is currently in a farm form (mounted, travel, aquatic, flight, swift flight) — Farm Mode owns the cast in that case.
 - `IsPlayerSpell(spellId)` is false (e.g., the saved spell was unlearned).
 - `GetTrackingTexture()` returns `nil`.
@@ -92,7 +95,7 @@ The last bail is load-bearing. During the Classic login and reload event storm t
 `ns.RunFarmLogic()` runs on a `C_Timer.NewTicker` (default interval 3.5s, configurable 2–10s via `TrackingEyeCharDB.farmInterval`). The decision chain:
 
 1. Bail if the options panel is visible (`ns.optionsOpen`).
-2. Bail if `TrackingEyeCharDB.farmingMode` is off.
+2. Bail if `TrackingEyeCharDB.farmMode` is off.
 3. Bail in restricted zones (`ns.IsRestrictedZone()` — see *Restricted Zones* below).
 4. Read `ns.GetPlayerStates()`. If the player just left farm form (`not inForm and ns.state.wasFarming`), recast the persistent tracking spell when its texture differs from the current tracking texture.
 5. Bail if not in farm form or `ns.CanCast()` is false.
@@ -148,8 +151,8 @@ The free-placement frame uses two file-local helpers in [Minimap-Button.lua](Min
 
 | Field              | Type                | Purpose                                                          |
 | ------------------ | ------------------- | ---------------------------------------------------------------- |
-| `autoTracking`     | boolean             | Persistent Tracking master toggle.                               |
-| `farmingMode`      | boolean             | Farm Mode master toggle.                                         |
+| `persistentTracking`     | boolean             | Persistent Tracking master toggle.                               |
+| `farmMode`      | boolean             | Farm Mode master toggle.                                         |
 | `farmInterval`     | number              | Farm Mode cycle interval in seconds (2–10).                      |
 | `farmCycleSpells`  | `[spellId] = bool`  | Which tracking abilities Farm Mode rotates through.              |
 | `selectedSpellId`  | number              | The Persistent Tracking ability the user picked.                 |

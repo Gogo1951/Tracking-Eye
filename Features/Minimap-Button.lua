@@ -117,7 +117,12 @@ function ns.UpdatePlacement()
     end
 
     if TrackingEyeDB.freePlacement then
-        TrackingEyeDB.minimap.hide = true
+        --[[
+            Free frame replaces the minimap button. Hide the button without
+            touching the saved Enable Mini-map Button preference
+            (TrackingEyeDB.minimap.hide), so the preference survives a Free
+            Placement round-trip.
+        ]]
         LDBIcon:Hide(addonName)
         if ns.freeFrame then
             --[[
@@ -130,10 +135,14 @@ function ns.UpdatePlacement()
             ns.freeFrame:Show()
         end
     else
-        TrackingEyeDB.minimap.hide = false
-        LDBIcon:Show(addonName)
         if ns.freeFrame then
             ns.freeFrame:Hide()
+        end
+        -- Honor the Enable Mini-map Button preference (minimap.hide, inverted).
+        if TrackingEyeDB.minimap.hide then
+            LDBIcon:Hide(addonName)
+        else
+            LDBIcon:Show(addonName)
         end
     end
 
@@ -149,7 +158,7 @@ function ns.BuildTooltip(tooltip)
 
     -- Tracking Menu
     tooltip:AddLine(ns.GetColor("TITLE") .. ns.L["TRACKING_MENU"] .. "|r")
-    tooltip:AddLine(ns.GetColor("DESC") .. ns.L["TRACKING_MENU_DESC"] .. "|r", 1, 1, 1, true)
+    tooltip:AddLine(ns.GetColor("BODY") .. ns.L["TRACKING_MENU_DESC"] .. "|r", 1, 1, 1, true)
     tooltip:AddLine(ns.GetColor("INFO") .. ns.L["LEFT_CLICK"] .. "|r")
     tooltip:AddLine(" ")
 
@@ -160,7 +169,7 @@ function ns.BuildTooltip(tooltip)
         local name = GetSpellInfo(selectedSpellId) or ns.L["NONE_SET"]
         tooltip:AddLine("|T" .. (GetSpellTexture(selectedSpellId) or "") .. ":16|t " .. ns.GetColor("TEXT") .. name .. "|r")
     else
-        tooltip:AddLine("|TInterface\\Icons\\inv_misc_map_01:16|t " .. ns.GetColor("DESC") .. ns.L["NONE_SET"] .. "|r")
+        tooltip:AddLine("|TInterface\\Icons\\inv_misc_map_01:16|t " .. ns.GetColor("BODY") .. ns.L["NONE_SET"] .. "|r")
     end
     tooltip:AddDoubleLine(
         ns.GetColor("INFO") .. ns.L["RIGHT_CLICK"] .. "|r",
@@ -170,10 +179,10 @@ function ns.BuildTooltip(tooltip)
 
     -- Persistent Tracking Toggle
     local persistentState =
-        (TrackingEyeCharDB and TrackingEyeCharDB.autoTracking) and (ns.GetColor("ON") .. ns.L["ENABLED"] .. "|r") or
+        (TrackingEyeCharDB and TrackingEyeCharDB.persistentTracking) and (ns.GetColor("ON") .. ns.L["ENABLED"] .. "|r") or
         (ns.GetColor("OFF") .. ns.L["DISABLED"] .. "|r")
     tooltip:AddDoubleLine(ns.GetColor("TITLE") .. ns.L["PERSISTENT_TRACKING"] .. "|r", persistentState)
-    tooltip:AddLine(ns.GetColor("DESC") .. ns.L["PERSISTENT_DESC"] .. "|r", 1, 1, 1, true)
+    tooltip:AddLine(ns.GetColor("BODY") .. ns.L["PERSISTENT_DESC"] .. "|r", 1, 1, 1, true)
     tooltip:AddDoubleLine(
         ns.GetColor("INFO") .. ns.L["SHIFT_LEFT"] .. "|r",
         ns.GetColor("INFO") .. ns.L["TOGGLE"] .. "|r"
@@ -182,10 +191,10 @@ function ns.BuildTooltip(tooltip)
 
     -- Farm Mode Toggle
     local farmState =
-        (TrackingEyeCharDB and TrackingEyeCharDB.farmingMode) and (ns.GetColor("ON") .. ns.L["ENABLED"] .. "|r") or
+        (TrackingEyeCharDB and TrackingEyeCharDB.farmMode) and (ns.GetColor("ON") .. ns.L["ENABLED"] .. "|r") or
         (ns.GetColor("OFF") .. ns.L["DISABLED"] .. "|r")
     tooltip:AddDoubleLine(ns.GetColor("TITLE") .. ns.L["FARM_MODE"] .. "|r", farmState)
-    tooltip:AddLine(ns.GetColor("DESC") .. ns.L["FARMING_DESC"] .. "|r", 1, 1, 1, true)
+    tooltip:AddLine(ns.GetColor("BODY") .. ns.L["FARM_MODE_DESC"] .. "|r", 1, 1, 1, true)
     tooltip:AddDoubleLine(
         ns.GetColor("INFO") .. ns.L["SHIFT_RIGHT"] .. "|r",
         ns.GetColor("INFO") .. ns.L["TOGGLE"] .. "|r"
@@ -198,13 +207,13 @@ function ns.BuildTooltip(tooltip)
         (ns.GetColor("ON") .. ns.L["ENABLED"] .. "|r") or
         (ns.GetColor("OFF") .. ns.L["DISABLED"] .. "|r")
     tooltip:AddDoubleLine(ns.GetColor("TITLE") .. ns.L["PLACEMENT_MODE"] .. "|r", freePlacementState)
-    tooltip:AddLine(ns.GetColor("DESC") .. ns.L["PLACEMENT_DESC"] .. "|r", 1, 1, 1, true)
+    tooltip:AddLine(ns.GetColor("BODY") .. ns.L["PLACEMENT_DESC"] .. "|r", 1, 1, 1, true)
     tooltip:AddDoubleLine(
         ns.GetColor("INFO") .. ns.L["SHIFT_MIDDLE"] .. "|r",
         ns.GetColor("INFO") .. ns.L["TOGGLE"] .. "|r"
     )
     tooltip:AddLine(" ")
-    tooltip:AddLine(ns.GetColor("DESC") .. ns.L["TOOLTIP_OPTIONS_HINT"] .. "|r", 1, 1, 1, true)
+    tooltip:AddLine(ns.GetColor("BODY") .. ns.L["TOOLTIP_OPTIONS_HINT"] .. "|r", 1, 1, 1, true)
 end
 
 function ns.RefreshTooltip()
@@ -248,10 +257,10 @@ local function OnClick(self, button)
                 updateNeeded = true
             end
         elseif button == "LeftButton" then
-            TrackingEyeCharDB.autoTracking = not TrackingEyeCharDB.autoTracking
+            TrackingEyeCharDB.persistentTracking = not TrackingEyeCharDB.persistentTracking
             updateNeeded = true
         elseif button == "RightButton" then
-            TrackingEyeCharDB.farmingMode = not TrackingEyeCharDB.farmingMode
+            TrackingEyeCharDB.farmMode = not TrackingEyeCharDB.farmMode
             updateNeeded = true
         end
     else
