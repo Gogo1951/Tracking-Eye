@@ -21,10 +21,10 @@ L["NONE_SET"] = "未设置"
 L["CLEAR_TRACKING"] = "清除追踪"
 
 L["PERSISTENT_TRACKING"] = "持久追踪"
-L["PERSISTENT_DESC"] = "复活后自动重新施放追踪法术。"
+L["PERSISTENT_DESC"] = "复活和变形后自动重新施放追踪法术。"
 
 L["FARM_MODE"] = "采集模式"
-L["FARMING_DESC"] = "在坐骑或旅行形态下，在您选择的追踪技能之间循环。"
+L["FARM_MODE_DESC"] = "在移动时，在您选择的追踪技能之间循环。"
 
 L["PLACEMENT_MODE"] = "自由移动模式"
 L["PLACEMENT_DESC"] = "将小地图按钮替换为可随处移动的独立图标。"
@@ -45,28 +45,58 @@ L["TOOLTIP_OPTIONS_HINT"] = "更多设置可以在 选项 > 插件 > Tracking Ey
 -- Options Interface
 --------------------------------------------------------------------------------
 
-L["OPTIONS_DESC"] = "一个智能追踪菜单，在坐骑状态下自动循环草药和矿石追踪，并在死亡后自动恢复追踪技能。"
+-- General
+
+L["OPTIONS_DESC"] = "改进的追踪菜单和自动追踪切换器，在采集时循环寻找草药和寻找矿物，并在死亡后重新应用追踪。支持所有追踪技能。绝不会跟丢您正在寻找的资源。"
+L["OPTIONS_ENABLE_WELCOME"] = "启用欢迎消息"
+L["OPTIONS_WELCOME_DESC"] = "在 Tracking Eye 加载时，于聊天窗口打印一行问候语。"
+L["OPTIONS_ENABLE_MINIMAP"] = "启用小地图按钮"
+L["OPTIONS_ENABLE_MINIMAP_DESC"] = "在小地图上显示 Tracking Eye 按钮；当其隐藏时，采集模式和持久追踪仍在运行。"
+
+-- Slash Commands
+
 L["OPTIONS_COMMANDS_INTRO"] = "Tracking Eye 的斜杠命令。选项面板涵盖了您需要的一切；这些是为喜欢使用键盘的玩家准备的。"
 L["OPTIONS_COMMAND_TE"] = "打开 Tracking Eye 选项界面。"
-L["OPTIONS_WELCOME_DESC"] = "在 Tracking Eye 加载时，于聊天窗口打印一行问候语。"
-L["OPTIONS_RESET"] = "重置所有选项"
-L["OPTIONS_RESET_HEADER"] = "重置"
-L["OPTIONS_RESET_DESC"] = "将每一个 Tracking Eye 设置还原为默认值。"
-L["OPTIONS_RESET_CONFIRM"] = "将所有 Tracking Eye 选项重置为默认值？"
+
+-- Persistent Tracking
+
 L["OPTIONS_ENABLE_PERSISTENT"] = "启用持久追踪"
+
+-- Farm Mode
+
 L["OPTIONS_ENABLE_FARM"] = "启用采集模式"
-L["OPTIONS_ENABLE_FREE"] = "启用自由移动模式"
-L["OPTIONS_ENABLE_WELCOME"] = "启用欢迎消息"
+L["OPTIONS_FARM_ACTIVATE"] = "在以下情况激活采集模式："
+L["OPTIONS_FARM_MOUNTED"] = "骑乘时"
+L["OPTIONS_FARM_TRAVEL_FORMS"] = "旅行和飞行形态"
+L["OPTIONS_FARM_CHEETAH"] = "猎豹守护"
+L["OPTIONS_FARM_GHOST_WOLF"] = "幽魂之狼"
+L["OPTIONS_FARM_NOT_MOUNTED"] = "未骑乘"
+L["OPTIONS_FARM_NOT_MOUNTED_DESC"] = "即使没有坐骑或移动形态也会循环。"
+L["OPTIONS_FARM_NOTE"] = "注意：采集模式仅在您脱离战斗、未施法，且位于城镇、旅店和副本之外时运行。"
 L["OPTIONS_FARM_ABILITIES"] = "采集模式技能"
 L["OPTIONS_CYCLE_SPEED"] = "循环速度"
 L["OPTIONS_CYCLE_SPEED_DESC"] = "采集模式在追踪技能之间切换的频率（秒）。"
+
+-- Free Placement Mode
+
+L["OPTIONS_ENABLE_FREE"] = "启用自由移动模式"
 L["OPTIONS_ICON_SCALE"] = "图标大小"
 L["OPTIONS_ICON_SCALE_DESC"] = "使用自由移动模式时追踪图标的缩放比例。"
 L["OPTIONS_ICON_SHAPE"] = "图标形状"
 L["OPTIONS_ICON_SHAPE_DESC"] = "使用自由移动模式时追踪图标边框的形状。"
 L["OPTIONS_SHAPE_CIRCLE"] = "圆形"
 L["OPTIONS_SHAPE_SQUARE"] = "方形"
+
+-- Reset
+
+L["OPTIONS_RESET_HEADER"] = "重置"
+L["OPTIONS_RESET_DESC"] = "将每一个 Tracking Eye 设置还原为默认值。"
+L["OPTIONS_RESET"] = "重置所有选项"
+L["OPTIONS_RESET_CONFIRM"] = "将所有 Tracking Eye 选项重置为默认值？"
+
+-- Feedback & Support
+
 L["OPTIONS_LINKS"] = "反馈与支持"
 L["OPTIONS_CURSEFORGE"] = "CurseForge"
-L["OPTIONS_DISCORD"] = "Discord"
 L["OPTIONS_GITHUB"] = "GitHub"
+L["OPTIONS_DISCORD"] = "Discord"
