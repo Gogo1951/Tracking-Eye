@@ -104,9 +104,8 @@ function ns.IsPlayerClass(class)
 end
 
 function ns.IsRestrictedZone()
-    local inInstance = IsInInstance()
-    if inInstance then
-        return true
-    end
+    if IsInInstance() then return true end
+    local _, _, _, _, _, _, _, instanceMapID = GetInstanceInfo()
+    if instanceMapID and ns.RESTRICTED_MAP_IDS[instanceMapID] then return true end
     return IsResting()
 end

@@ -121,6 +121,12 @@ for _, id in ipairs(ns.TRACKING_IDS) do
     ns.TRACKING_SET[id] = true
 end
 
+-- Restricted Zones
+
+ns.RESTRICTED_MAP_IDS = {
+    [369] = true,  -- Deeprun Tram
+}
+
 --------------------------------------------------------------------------------
 -- Colors
 --------------------------------------------------------------------------------
