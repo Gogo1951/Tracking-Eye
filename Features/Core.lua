@@ -1,4 +1,4 @@
-local addonName, ns = ...
+local ADDON_NAME, ns = ...
 
 local eventFrame = CreateFrame("Frame")
 
@@ -7,7 +7,7 @@ local eventFrame = CreateFrame("Frame")
 --------------------------------------------------------------------------------
 local function GetVersion()
     local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
-    local version = GetAddOnMetadata(addonName, "Version")
+    local version = GetAddOnMetadata(ADDON_NAME, "Version")
     if not version or version:find("@") then
         return "Dev"
     end
@@ -22,94 +22,101 @@ ns.Version = GetVersion()
 ns.state = {
     currentIcon = ns.ICON_DEFAULT,
     wasFarming = false,
-    lastCastSpell = nil
+    lastCastSpell = nil,
+    --[[
+        enteredWorldAt anchors the login/reload grace window used by
+        TryRecastPersistent (initialized at file load so triggers that
+        arrive before the first PLAYER_ENTERING_WORLD are still covered).
+        lastTrackingCastAt debounces recasts against the
+        MINIMAP_UPDATE_TRACKING echo of our own cast.
+    ]]
+    enteredWorldAt = GetTime(),
+    lastTrackingCastAt = 0,
+    --[[
+        Flipped true by UpdateIcon once the tracking mirror positively reports
+        our own lastCastSpell — i.e. the mirror has caught up. After that, a nil
+        mirror reading is a genuine external cancel (not lag), so the icon's
+        in-flight fallback stops overriding it. Reset to false on every new cast.
+    ]]
+    mirrorConfirmedCast = false
 }
 
 ns.optionsOpen = false
 
 --[[
-    Single write-site for lastCastSpell. Mirrors the value into
-    TrackingEyeCharDB so the icon survives logout/login — without
-    this, the API blackout during the Classic login event storm
-    leaves the minimap icon on the default until the next user
-    action, even though tracking is still active server-side.
+    Single write-site for the runtime-only lastCastSpell bookkeeping,
+    written from UNIT_SPELLCAST_SUCCEEDED (and cleared on demand). Never
+    persisted: last session's value treated as live bookkeeping makes the
+    farm cycle and persistent recast believe tracking is already up at
+    login and skip every real cast.
 ]]
 function ns.SetLastCast(spellId)
     ns.state.lastCastSpell = spellId
-    if TrackingEyeCharDB then
-        TrackingEyeCharDB.lastCastSpell = spellId
-    end
+    -- A freshly recorded cast is not yet mirror-confirmed; UpdateIcon flips this.
+    ns.state.mirrorConfirmedCast = false
 end
 
 --------------------------------------------------------------------------------
 -- Icon Management
 --------------------------------------------------------------------------------
 --[[
-    GetTrackingTexture is unreliable in Anniversary — returns nil for
-    several active trackers (notably racial passives like Find
-    Treasure) even when the Blizzard minimap tracking icon clearly
-    shows them. Read MiniMapTrackingIcon directly and match its
-    texture back to a known tracking spell. This also lets us
-    self-heal the persisted lastCastSpell for users who toggled
-    tracking via the default WoW UI without ever casting through
-    the addon.
+    Display resolution uses the SAME single source of truth as the cast
+    logic — ns.GetActiveTrackingSpell() (Blizzard minimap icon while
+    visible, GetTrackingTexture as fallback; see Utilities.lua). Never
+    read MiniMapTrackingIcon or GetTrackingTexture directly here: a
+    hidden frame retains its last texture, and a raw read resurrects a
+    cleared tracking icon (and, worse, re-poisons lastCastSpell through
+    the adoption branch). Every past icon bug on Era came from a second
+    reader of the mirror with slightly different rules.
 ]]
-local function ReadActiveTracking()
-    if not MiniMapTrackingIcon then
-        return nil, nil
-    end
-    local tex = MiniMapTrackingIcon:GetTexture()
-    if not tex then
-        return nil, nil
-    end
-    for _, id in ipairs(ns.TRACKING_IDS) do
-        if GetSpellTexture(id) == tex then
-            return tex, id
-        end
-    end
-    return nil, nil
-end
-
 function ns.UpdateIcon()
-    local texture = nil
     local isCat = ns.GetPlayerStates()
 
     -- Clear cat-form humanoid tracking state if we've left cat form
-    if ns.state.lastCastSpell == ns.SPELLS.DRUID_HUMANOIDS and not isCat then
+    if not isCat and ns.state.lastCastSpell == ns.SPELLS.DRUID_HUMANOIDS then
         ns.SetLastCast(nil)
     end
 
+    local activeSpell = ns.GetActiveTrackingSpell()
+    if activeSpell and not ns.state.lastCastSpell then
+        --[[
+            Adopt tracking that predates this session (set up before the
+            addon loaded) — but ONLY while the session has no confirmed
+            cast. In-session casts already update lastCastSpell via
+            UNIT_SPELLCAST_SUCCEEDED, and the mirror lags that event on
+            Era: adopting over fresh bookkeeping would corrupt the farm
+            cycle's comparisons.
+        ]]
+        ns.SetLastCast(activeSpell)
+    end
+
     --[[
-        Prefer live sources over the saved lastCastSpell. If the user
-        toggles tracking outside the addon (e.g., default WoW UI) the
-        saved spell can lag behind reality; consulting the minimap
-        icon and GetTrackingTexture first keeps the icon honest, and
-        the persistence branch below self-heals the saved value.
+        Once the mirror positively reports our own cast it has caught up, so a
+        later nil reading is a genuine external cancel rather than lag. Latch
+        that here so the in-flight fallback below stops re-showing the stale
+        icon — this is what makes an external cancel resolve promptly instead of
+        hanging on the old spell for the rest of the window.
     ]]
-    local mirroredTex, mirroredId = ReadActiveTracking()
-    if mirroredTex then
-        texture = mirroredTex
-        if mirroredId and (not TrackingEyeCharDB or TrackingEyeCharDB.lastCastSpell ~= mirroredId) then
-            ns.SetLastCast(mirroredId)
-        end
+    if activeSpell and activeSpell == ns.state.lastCastSpell then
+        ns.state.mirrorConfirmedCast = true
     end
 
-    if not texture then
-        texture = GetTrackingTexture()
+    --[[
+        THE ICON SHOWS WHAT THE GAME IS TRACKING — nothing tracked means
+        the default icon. No fallback to saved or selected spells: every
+        such fallback has produced a stale icon (e.g. showing last
+        session's spell at login with nothing up). Single exception: for
+        a few seconds after our own CONFIRMED cast — and only until the mirror
+        confirms it — show that spell while the laggy Blizzard icon catches up.
+        The cast succeeded, so that is still the game's real state.
+    ]]
+    local iconSpell = activeSpell
+    if not iconSpell and ns.state.lastCastSpell and not ns.state.mirrorConfirmedCast and
+        (GetTime() - (ns.state.lastTrackingCastAt or 0)) < ns.ICON_IN_FLIGHT_SECONDS then
+        iconSpell = ns.state.lastCastSpell
     end
 
-    if not texture and ns.state.lastCastSpell then
-        texture = GetSpellTexture(ns.state.lastCastSpell)
-    end
-
-    if not texture and TrackingEyeCharDB and TrackingEyeCharDB.selectedSpellId then
-        local selected = TrackingEyeCharDB.selectedSpellId
-        if selected ~= ns.SPELLS.DRUID_HUMANOIDS or isCat then
-            texture = GetSpellTexture(selected)
-        end
-    end
-
-    ns.state.currentIcon = texture or ns.ICON_DEFAULT
+    ns.state.currentIcon = iconSpell and GetSpellTexture(iconSpell) or ns.ICON_DEFAULT
 
     if ns.ldb then
         ns.ldb.icon = ns.state.currentIcon
@@ -161,6 +168,12 @@ function ns.CastTracking(spellId)
         end
     end
 
+    --[[
+        Treating "on GCD" as "on cooldown" is acceptable here (no real-cooldown
+        vs GCD split): tracking casts are cheap refreshes, and every caller
+        either retries (TryRecastPersistent) or re-fires on its next tick (the
+        farm ticker), so a GCD-blocked attempt is never lost.
+    ]]
     local start, duration = GetSpellCooldown(spellId)
     if start and duration and start > 0 and duration > 0 then
         return
@@ -170,9 +183,12 @@ function ns.CastTracking(spellId)
         Do not write lastCastSpell or refresh the icon here — the cast
         can still fail silently (LOS, range, server reject). Let
         UNIT_SPELLCAST_SUCCEEDED be the single source of truth for a
-        successful cast; otherwise TryRecastPersistent would see a
-        matching lastCastSpell and skip a real recast.
+        successful cast; otherwise the farm cycle and persistent recast
+        would see a matching lastCastSpell and skip a real recast.
+        lastTrackingCastAt is set on the attempt (not the success) so a
+        burst of triggers can't hammer casts while one is in flight.
     ]]
+    ns.state.lastTrackingCastAt = GetTime()
     pcall(CastSpellByID, spellId)
 end
 
@@ -181,19 +197,68 @@ end
 --------------------------------------------------------------------------------
 
 --[[
-    TryRecastPersistent handles mid-play recasts triggered by
-    UPDATE_SHAPESHIFT_FORM (e.g. druid leaving cat form). It relies
-    on GetTrackingTexture to compare the active spell against the
-    saved one.
+    TryRecastPersistent handles mid-play recasts, triggered by
+    UPDATE_SHAPESHIFT_FORM (e.g. druid leaving cat form) and by
+    MINIMAP_UPDATE_TRACKING (tracking changed or cancelled outside the
+    addon). Post-death recasts are handled separately by PLAYER_UNGHOST,
+    which bypasses this function entirely.
 
-    If GetTrackingTexture returns nil, the tracking API is not ready
-    (happens for 10+ seconds during the Classic login/reload event
-    storm). Casting blindly here causes the login-recast bug. DO NOT
-    remove the nil bail — it is the fix. Post-death recasts are
-    handled separately by PLAYER_UNGHOST, which bypasses this
-    function entirely.
+    GetTrackingTexture CANNOT be trusted as a live "is my tracking up?"
+    source across clients:
+
+    - During the Classic login/reload event storm it returns nil for
+      10+ seconds. Casting blindly in that window causes the
+      long-standing login-recast bug.
+    - On the Vanilla-based client (Classic Era 1.15.x) nil is ALSO the
+      normal steady-state value for "no tracking active", and since
+      1.15.1 the whole tracking mirror (GetTrackingTexture and
+      MINIMAP_UPDATE_TRACKING) lags the real state, sometimes by
+      minutes — it only flushes when an unrelated buff update happens.
+      A nil bail therefore permanently blocks recasts on Era.
+
+    So the login problem is solved by TIME (LOGIN_GRACE_SECONDS after
+    PLAYER_ENTERING_WORLD), not by interpreting nil, and the mirror is
+    consulted only as a positive signal ("the selected spell is
+    provably active — skip"). Everything else recasts, debounced by
+    RECAST_DEBOUNCE_SECONDS so the MINIMAP_UPDATE_TRACKING echo of our
+    own successful cast cannot re-trigger a cast loop. Recasting an
+    already-active tracking spell is a harmless refresh, so erring on
+    the side of casting is safe.
 ]]
-local function TryRecastPersistent()
+--[[
+    10s covers the login/reload event storm. Erring short is safe: the
+    worst case is one redundant recast of an already-active spell
+    (a harmless refresh) if the mirror isn't populated yet — the
+    positive-mirror check below prevents it whenever the mirror IS ready.
+]]
+local LOGIN_GRACE_SECONDS = 10
+local RECAST_DEBOUNCE_SECONDS = 5
+
+--[[
+    Temporary bails (in combat, inside the debounce) must RETRY, never
+    swallow the trigger: on Era the client may fire no further tracking
+    event, ever — a swallowed trigger means the user cancels tracking a
+    second time within the debounce and persistent tracking simply stops
+    until the next login. ScheduleRecast coalesces retries so bursts
+    can't stack timers.
+]]
+local TryRecastPersistent
+local recastRetryPending = false
+local function ScheduleRecast(delay)
+    if recastRetryPending then
+        return
+    end
+    recastRetryPending = true
+    C_Timer.After(
+        delay,
+        function()
+            recastRetryPending = false
+            TryRecastPersistent()
+        end
+    )
+end
+
+TryRecastPersistent = function()
     if not TrackingEyeCharDB or not TrackingEyeCharDB.persistentTracking or not TrackingEyeCharDB.selectedSpellId then
         return
     end
@@ -208,31 +273,76 @@ local function TryRecastPersistent()
         return
     end
 
-    local currentTexture = GetTrackingTexture()
-
     --[[
-        If the tracking API hasn't initialized yet (returns nil during
-        login/reload), bail. We cannot tell whether the spell is already
-        active, so casting would be a guess. DO NOT remove this check.
+        Login/reload grace window: the tracking API may not be ready, so
+        we cannot tell whether the spell is already active. Wait it out;
+        the PLAYER_ENTERING_WORLD catch-up covers the gap afterwards.
     ]]
-    if not currentTexture then
+    if GetTime() - (ns.state.enteredWorldAt or 0) < LOGIN_GRACE_SECONDS then
         return
     end
 
-    local targetTexture = GetSpellTexture(spellId)
-
     --[[
-        If the correct spell is already active, sync lastCastSpell and
-        skip the cast
+        If the selected spell is provably active (Blizzard minimap icon
+        first, mirror as fallback — see ns.GetActiveTrackingSpell), sync
+        lastCastSpell and stop. This is also what terminates the retry
+        chain after a successful recast.
     ]]
-    if targetTexture and currentTexture == targetTexture then
+    if ns.GetActiveTrackingSpell() == spellId then
         ns.SetLastCast(spellId)
         return
     end
 
-    if ns.state.lastCastSpell ~= spellId then
-        ns.CastTracking(spellId)
+    --[[
+        Our own cast of this spell is still "in flight": UNIT_SPELLCAST_SUCCEEDED
+        confirmed it (lastCastSpell == spellId) but the laggy Era mirror hasn't
+        caught up, so the positive check above can't see it yet. Trust our own
+        confirmed cast and re-check after the window instead of recasting.
+
+        Without this, the constant UPDATE_SHAPESHIFT_FORM stream (a hunter's
+        aspects fire it every few seconds) drives a recast of the same spell
+        every ~5s until the mirror finally flushes — the "casting it 3 times"
+        symptom. This ALWAYS reschedules (never swallows), so a genuine
+        re-cancel still recasts once the window passes; it can never stop
+        persistent tracking permanently.
+    ]]
+    if ns.state.lastCastSpell == spellId then
+        local sinceCast = GetTime() - (ns.state.lastTrackingCastAt or 0)
+        if sinceCast < ns.CAST_IN_FLIGHT_SECONDS then
+            ScheduleRecast(ns.CAST_IN_FLIGHT_SECONDS - sinceCast + 0.5)
+            return
+        end
     end
+
+    --[[
+        Same cast hygiene as the farm ticker: never burn a GCD while
+        dead, stealthed, mid-cast, or in combat (a druid powershifting
+        in combat fires UPDATE_SHAPESHIFT_FORM constantly). Temporary
+        state, so retry.
+    ]]
+    if not ns.CanCast() then
+        ScheduleRecast(RECAST_DEBOUNCE_SECONDS)
+        return
+    end
+
+    -- On cooldown or GCD: temporary state, so retry rather than let CastTracking swallow it.
+    local start, duration = GetSpellCooldown(spellId)
+    if start and duration and start > 0 and duration > 0 then
+        ScheduleRecast(RECAST_DEBOUNCE_SECONDS)
+        return
+    end
+
+    --[[
+        Debounce the MINIMAP_UPDATE_TRACKING echo of our own cast — but
+        retry after it expires rather than dropping the trigger.
+    ]]
+    local sinceCast = GetTime() - (ns.state.lastTrackingCastAt or 0)
+    if sinceCast < RECAST_DEBOUNCE_SECONDS then
+        ScheduleRecast(RECAST_DEBOUNCE_SECONDS - sinceCast + 0.5)
+        return
+    end
+
+    ns.CastTracking(spellId)
 end
 
 --------------------------------------------------------------------------------
@@ -264,6 +374,33 @@ local function PollUntilTrackingReady(attempts)
     C_Timer.After(1, function() PollUntilTrackingReady(attempts + 1) end)
 end
 
+--[[
+    Brief flush-poll after a tracking change. The Era tracking mirror can settle
+    a beat or two after MINIMAP_UPDATE_TRACKING fires — sometimes without firing
+    a second event — so re-run UpdateIcon a few times over ~2s to catch the
+    flush the moment it happens instead of waiting for an unrelated buff tick.
+    This cannot make the mirror fresher; it only shaves tail latency. Coalesced
+    so a burst of tracking events can't stack overlapping polls.
+]]
+local iconFlushActive = false
+local function FlushIconAfterTrackingChange()
+    if iconFlushActive then
+        return
+    end
+    iconFlushActive = true
+    local attempts = 0
+    local function tick()
+        ns.UpdateIcon()
+        attempts = attempts + 1
+        if attempts >= 8 then
+            iconFlushActive = false
+            return
+        end
+        C_Timer.After(0.25, tick)
+    end
+    C_Timer.After(0.25, tick)
+end
+
 --------------------------------------------------------------------------------
 -- Event Handling
 --------------------------------------------------------------------------------
@@ -274,7 +411,7 @@ eventFrame:SetScript(
             ns:LogEvent(event, arg1, ...)
         end
 
-        if event == "ADDON_LOADED" and arg1 == addonName then
+        if event == "ADDON_LOADED" and arg1 == ADDON_NAME then
             if not TrackingEyeCharDB then
                 TrackingEyeCharDB = {}
             end
@@ -314,6 +451,9 @@ eventFrame:SetScript(
                 TrackingEyeCharDB[oldKey] = nil
             end
 
+            -- TODO: Remove this deprecated-key cleanup after 2026-09-17 (90 days from 2026-06-19).
+            TrackingEyeCharDB.lastCastSpell = nil
+
             for k, v in pairs(ns.CHAR_DEFAULTS) do
                 if TrackingEyeCharDB[k] == nil then
                     TrackingEyeCharDB[k] = v
@@ -336,11 +476,12 @@ eventFrame:SetScript(
             end
 
             --[[
-                Restore last-cast spell so the icon can render correctly
-                during the login API blackout, before GetTrackingTexture
-                is ready.
+                Never seed ns.state.lastCastSpell from anything but THIS
+                session's UNIT_SPELLCAST_SUCCEEDED casts or the live mirror —
+                a value carried over from last session makes the farm cycle
+                and persistent recast believe tracking is already up at login
+                and skip every cast.
             ]]
-            ns.state.lastCastSpell = TrackingEyeCharDB.lastCastSpell
 
             if ns.CreateFreeFrame then
                 ns.CreateFreeFrame()
@@ -405,12 +546,47 @@ eventFrame:SetScript(
                     ns.UpdateIcon()
                 end
             )
+        elseif event == "PLAYER_UPDATE_RESTING" then
+            --[[
+                Resting flipped (entered/left a city or inn). Re-run the farm
+                evaluation immediately instead of waiting up to a full ticker
+                interval: on entering it stops right away, on leaving it resumes
+                right away. Note this reacts the instant the CLIENT reports
+                resting — that flag can itself lag zone entry by several seconds,
+                and that latency is the game's, not the ticker's. Killing it
+                outright would need map-ID city detection, which the current
+                design deliberately avoids (see README-Technical → Restricted
+                Zones).
+            ]]
+            if ns.RunFarmLogic then
+                ns.RunFarmLogic()
+            end
         elseif
             event == "MINIMAP_UPDATE_TRACKING" or event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or
                 event == "UPDATE_SHAPESHIFT_FORM" or
                 event == "SPELLS_CHANGED"
          then
             ns.UpdateIcon()
+
+            if event == "PLAYER_ENTERING_WORLD" then
+                -- Anchor the recast grace window (login, reload, and zoning).
+                ns.state.enteredWorldAt = GetTime()
+                --[[
+                    Guaranteed catch-up recast once the grace window ends.
+                    Without this, a player who logs in with tracking down
+                    stays that way indefinitely: on Era the tracking events
+                    that would otherwise provide a trigger may simply never
+                    fire. If tracking is already up (mirror confirms it),
+                    TryRecastPersistent skips — so this cannot reintroduce
+                    the login-recast bug on clients with a working mirror.
+                ]]
+                C_Timer.After(
+                    LOGIN_GRACE_SECONDS + 1,
+                    function()
+                        TryRecastPersistent()
+                    end
+                )
+            end
 
             if event == "SPELLS_CHANGED" or event == "PLAYER_ENTERING_WORLD" then
                 if ns.UpdatePlacement then
@@ -428,6 +604,31 @@ eventFrame:SetScript(
                 ]]
                 C_Timer.After(
                     1.5,
+                    function()
+                        TryRecastPersistent()
+                    end
+                )
+            end
+
+            if event == "MINIMAP_UPDATE_TRACKING" then
+                --[[
+                    Catch the mirror the instant it flushes so an external
+                    cancel updates the icon without waiting for the next
+                    unrelated event. The UpdateIcon() at the top of this branch
+                    handles the case where the mirror was already fresh.
+                ]]
+                FlushIconAfterTrackingChange()
+
+                --[[
+                    Tracking state changed outside the addon — including
+                    the user cancelling it. This is the "excuse" the
+                    persistent recast needs. Delayed so the event burst
+                    settles; the function's own grace window and debounce
+                    make it safe to call from here (our own successful
+                    cast also fires this event).
+                ]]
+                C_Timer.After(
+                    2,
                     function()
                         TryRecastPersistent()
                     end
@@ -452,9 +653,20 @@ ns.EVENT_NAMES = {
     "UPDATE_SHAPESHIFT_FORM",
     "SPELLS_CHANGED",
     "PLAYER_UNGHOST",
+    "PLAYER_UPDATE_RESTING",
     "PLAYER_LOGOUT"
 }
 
+-- Unit-filtered events: register scoped to the player so the dispatcher isn't woken for other units' casts.
+local UNIT_FILTERED_EVENTS = {
+    UNIT_SPELLCAST_SUCCEEDED = "player"
+}
+
 for _, eventName in ipairs(ns.EVENT_NAMES) do
-    eventFrame:RegisterEvent(eventName)
+    local unit = UNIT_FILTERED_EVENTS[eventName]
+    if unit then
+        eventFrame:RegisterUnitEvent(eventName, unit)
+    else
+        eventFrame:RegisterEvent(eventName)
+    end
 end

@@ -6,23 +6,24 @@ local _, ns = ...
 
 --[[
     Derived color table and accessor. The raw hex palette lives in Data/Data.lua
-    (ns.HEX); this layer applies the |cff prefix. GetColor returns the prefixed
-    escape string — append |r at the point of use.
+    (ns.HEX); this layer bakes the |cff prefix into each value once at build
+    time. GetColor returns the prefixed escape string — append |r at the point
+    of use.
 ]]
 local COLOR_PREFIX = "|cff"
 local COLORS = {
-    TITLE = ns.HEX.TITLE,
-    INFO = ns.HEX.INFO,
-    BODY = ns.HEX.BODY,
-    TEXT = ns.HEX.TEXT,
-    ON = ns.HEX.ON,
-    OFF = ns.HEX.OFF,
-    SEPARATOR = ns.HEX.SEPARATOR,
-    MUTED = ns.HEX.MUTED
+    TITLE = COLOR_PREFIX .. ns.HEX.TITLE,
+    INFO = COLOR_PREFIX .. ns.HEX.INFO,
+    BODY = COLOR_PREFIX .. ns.HEX.BODY,
+    TEXT = COLOR_PREFIX .. ns.HEX.TEXT,
+    ON = COLOR_PREFIX .. ns.HEX.ON,
+    OFF = COLOR_PREFIX .. ns.HEX.OFF,
+    SEPARATOR = COLOR_PREFIX .. ns.HEX.SEPARATOR,
+    MUTED = COLOR_PREFIX .. ns.HEX.MUTED
 }
 
 function ns.GetColor(key)
-    return COLOR_PREFIX .. (COLORS[key] or "FFFFFF")
+    return COLORS[key] or COLORS.TEXT
 end
 
 --------------------------------------------------------------------------------
@@ -78,6 +79,39 @@ function ns.GetPlayerStates()
     end
 
     return isCat, isFarming and true or false
+end
+
+--[[
+    Live "which tracking is up right now?" check, returning the active
+    tracking spellId or nil. GetTrackingTexture alone cannot answer this:
+    on Classic Era 1.15.x it returns nil for several active trackers
+    (racials like Find Treasure) and lags state changes. The Blizzard
+    minimap tracking icon is authoritative there — the Vanilla client
+    hides it entirely when nothing is tracked, so it is only read while
+    visible (a hidden frame can retain a stale texture). Falls back to
+    GetTrackingTexture for clients where the icon shows a generic "None"
+    texture instead (TBC+).
+]]
+local function MatchTrackingTexture(tex)
+    if not tex then
+        return nil
+    end
+    for _, id in ipairs(ns.TRACKING_IDS) do
+        if GetSpellTexture(id) == tex then
+            return id
+        end
+    end
+    return nil
+end
+
+function ns.GetActiveTrackingSpell()
+    if MiniMapTrackingIcon and MiniMapTrackingIcon:IsVisible() then
+        local id = MatchTrackingTexture(MiniMapTrackingIcon:GetTexture())
+        if id then
+            return id
+        end
+    end
+    return MatchTrackingTexture(GetTrackingTexture())
 end
 
 function ns.CanCast()

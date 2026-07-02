@@ -33,6 +33,7 @@ L["ENABLED"] = "Abilitato"
 L["DISABLED"] = "Disabilitato"
 L["TOGGLE"] = "Attiva/Disattiva"
 
+L["OPEN"] = "Apri"
 L["LEFT_CLICK"] = "Clic Sinistro"
 L["RIGHT_CLICK"] = "Clic Destro"
 L["SHIFT_LEFT"] = "Maiusc + Clic Sinistro"
@@ -55,7 +56,7 @@ L["OPTIONS_ENABLE_MINIMAP_DESC"] = "Mostra il pulsante di Tracking Eye sulla min
 
 -- Slash Commands
 
-L["OPTIONS_COMMANDS_INTRO"] = "Comandi slash per Tracking Eye. Il pannello delle opzioni copre tutto ciò di cui hai bisogno; questi sono qui per chi preferisce la tastiera."
+L["OPTIONS_COMMANDS_INTRO"] = "Comandos slash per Tracking Eye. Il pannello delle opzioni copre tutto ciò di cui hai bisogno; questi sono qui per chi preferisce la tastiera."
 L["OPTIONS_COMMAND_TE"] = "Apre l'interfaccia delle opzioni di Tracking Eye."
 
 -- Persistent Tracking

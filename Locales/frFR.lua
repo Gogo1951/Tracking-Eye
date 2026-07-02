@@ -33,6 +33,7 @@ L["ENABLED"] = "Activé"
 L["DISABLED"] = "Désactivé"
 L["TOGGLE"] = "Basculer"
 
+L["OPEN"] = "Ouvrir"
 L["LEFT_CLICK"] = "Clic gauche"
 L["RIGHT_CLICK"] = "Clic droit"
 L["SHIFT_LEFT"] = "Maj + Clic gauche"
@@ -90,7 +91,7 @@ L["OPTIONS_SHAPE_SQUARE"] = "Carré"
 -- Reset
 
 L["OPTIONS_RESET_HEADER"] = "Réinitialiser"
-L["OPTIONS_RESET_DESC"] = "Restaure chaque paramètre de Tracking Eye à sa valeur par défaut."
+L["OPTIONS_RESET_DESC"] = "Restaura chaque paramètre de Tracking Eye à sa valeur par défaut."
 L["OPTIONS_RESET"] = "Réinitialiser toutes les options"
 L["OPTIONS_RESET_CONFIRM"] = "Réinitialiser toutes les options de Tracking Eye aux valeurs par défaut ?"
 

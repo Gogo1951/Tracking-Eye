@@ -111,16 +111,15 @@ local EVENT_LOG_MAX_ARGS = 8
 local EVENT_LOG_MAX_ARG_LENGTH = 255
 
 --[[
-    Firehose events flood the log in milliseconds and bury the signal, so the
-    logger skips them. Tracking Eye registers none of these today, but the set is
-    kept as a defensive default; tailor it if a high-frequency event is ever
-    added to Core's event list. The log only ever sees events routed through
-    Core's central dispatcher.
+    Events ns:LogEvent drops before recording — deliberately empty. The
+    dispatcher only ever hands LogEvent the events Tracking Eye registers (Core's
+    ns.EVENT_NAMES), and none of those is a sustained firehose worth dropping.
+    The lookup in LogEvent stays so a genuine no-signal firehose can be excluded
+    here if one is ever registered. Generic offenders
+    (COMBAT_LOG_EVENT_UNFILTERED, UNIT_AURA, ...) do not belong here unless
+    registered — the log never sees an event the add-on didn't register.
 ]]
-ns.DIAGNOSTIC_EVENT_EXCLUDE = {
-    COMBAT_LOG_EVENT_UNFILTERED = true,
-    UNIT_AURA = true
-}
+ns.DIAGNOSTIC_EVENT_EXCLUDE = {}
 
 function ns:StartEventLog()
     ns.diagnostics.log = {}
@@ -252,8 +251,12 @@ ns.DIAGNOSTIC_API_CHECKS = {
     {"UnitIsDeadOrGhost", function() return type(UnitIsDeadOrGhost) == "function" end},
     {"UnitClass", function() return type(UnitClass) == "function" end},
     {"IsInInstance", function() return type(IsInInstance) == "function" end},
+    {"GetInstanceInfo", function() return type(GetInstanceInfo) == "function" end},
     {"IsResting", function() return type(IsResting) == "function" end},
     {"IsShiftKeyDown", function() return type(IsShiftKeyDown) == "function" end},
+    {"MouseIsOver", function() return type(MouseIsOver) == "function" end},
+    {"GetCVar", function() return type(GetCVar) == "function" end},
+    {"SetCVar", function() return type(SetCVar) == "function" end},
     {"C_Timer.After", function() return type(C_Timer) == "table" and type(C_Timer.After) == "function" end},
     {"C_Timer.NewTicker", function() return type(C_Timer) == "table" and type(C_Timer.NewTicker) == "function" end},
     {"Settings.OpenToCategory", function() return type(Settings) == "table" and type(Settings.OpenToCategory) == "function" end},
@@ -377,6 +380,17 @@ function ns:BuildFarmContextReport()
     local isCat, isFarming = ns.GetPlayerStates()
     lines[#lines + 1] = string.format("GetPlayerStates -> isCat=%s isFarming=%s", tostring(isCat), tostring(isFarming))
     lines[#lines + 1] = string.format("CanCast=%s IsRestrictedZone=%s", tostring(ns.CanCast()), tostring(ns.IsRestrictedZone()))
+    --[[
+        Raw tracking-mirror vs bookkeeping values. On Classic Era 1.15.x
+        the mirror (GetTrackingTexture) can lag the real tracking state
+        by minutes; a mismatch against lastCastSpell here is how that
+        shows up in reports.
+    ]]
+    lines[#lines + 1] = string.format(
+        "GetTrackingTexture: %s // lastCastSpell: %s // secs since enteredWorld: %d // secs since last cast attempt: %d",
+        tostring(GetTrackingTexture()), tostring(ns.state.lastCastSpell),
+        GetTime() - (ns.state.enteredWorldAt or 0), GetTime() - (ns.state.lastTrackingCastAt or 0)
+    )
     lines[#lines + 1] = ""
 
     lines[#lines + 1] = "Farm cycle (enabled, known, excluding Druid Track Humanoids):"

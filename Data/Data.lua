@@ -121,10 +121,26 @@ for _, id in ipairs(ns.TRACKING_IDS) do
     ns.TRACKING_SET[id] = true
 end
 
+--[[
+    How long a cast attempt counts as "in flight": the window where our
+    confirmed cast is trusted over the (laggy) Blizzard tracking icon.
+
+    Two windows on purpose. The farm cycle uses the generous value to avoid
+    burning a GCD on redundant recasts while the mirror catches up. The icon
+    display uses a shorter one so an external cancel shortly after a cast stops
+    showing the stale icon sooner — and UpdateIcon additionally drops the
+    fallback the instant the mirror positively confirms the cast (see
+    mirrorConfirmedCast in Core.lua), which makes the common case near-instant.
+]]
+ns.CAST_IN_FLIGHT_SECONDS = 10
+ns.ICON_IN_FLIGHT_SECONDS = 4
+
+--------------------------------------------------------------------------------
 -- Restricted Zones
+--------------------------------------------------------------------------------
 
 ns.RESTRICTED_MAP_IDS = {
-    [369] = true,  -- Deeprun Tram
+    [369] = true -- Deeprun Tram
 }
 
 --------------------------------------------------------------------------------

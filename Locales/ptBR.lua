@@ -33,6 +33,7 @@ L["ENABLED"] = "Habilitado"
 L["DISABLED"] = "Deshabilitado"
 L["TOGGLE"] = "Alternar"
 
+L["OPEN"] = "Abrir"
 L["LEFT_CLICK"] = "Clique Esquerdo"
 L["RIGHT_CLICK"] = "Clique Direito"
 L["SHIFT_LEFT"] = "Shift + Clique Esquerdo"

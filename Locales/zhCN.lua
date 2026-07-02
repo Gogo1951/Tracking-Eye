@@ -33,6 +33,7 @@ L["ENABLED"] = "已开启"
 L["DISABLED"] = "已关闭"
 L["TOGGLE"] = "切换"
 
+L["OPEN"] = "打开"
 L["LEFT_CLICK"] = "左键"
 L["RIGHT_CLICK"] = "右键"
 L["SHIFT_LEFT"] = "Shift + 左键"

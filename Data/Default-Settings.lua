@@ -8,9 +8,9 @@ local _, ns = ...
     Per-character settings (TrackingEyeCharDB). Feature toggles and behaviors
     that belong to the individual character: persistent tracking, Farm Mode, the
     Farm Mode cycle interval, and which movement states activate Farm Mode.
-    selectedSpellId, lastCastSpell, and farmCycleSpells are intentionally absent
-    here — nil cannot be stored in a Lua table, and farmCycleSpells is a nested
-    table deep-copied on each init/reset (see ns.FARM_CYCLE_DEFAULTS below).
+    selectedSpellId and farmCycleSpells are intentionally absent here — nil
+    cannot be stored in a Lua table, and farmCycleSpells is a nested table
+    deep-copied on each init/reset (see ns.FARM_CYCLE_DEFAULTS below).
 ]]
 ns.CHAR_DEFAULTS = {
     persistentTracking = true,

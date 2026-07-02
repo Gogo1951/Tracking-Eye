@@ -20,25 +20,41 @@ end
 -- Registration
 --------------------------------------------------------------------------------
 local mainPanel
+local diagnosticsPanel
 
 function ns.InitOptions()
     AC:RegisterOptionsTable(ns.OPTIONS_REGISTRY.General, ns.BuildGeneralOptions)
     mainPanel = ACD:AddToBlizOptions(ns.OPTIONS_REGISTRY.General, ns.L["ADDON_TITLE"])
 
-    -- Pause Farm Mode while options panel is visible
-    if mainPanel then
-        mainPanel:HookScript("OnShow", function()
-            ns.optionsOpen = true
-        end)
-        mainPanel:HookScript("OnHide", function()
-            ns.optionsOpen = false
-        end)
-    end
-
     -- Diagnostic Tools panel, registered last so it sits at the bottom of the tree
     if ns.BuildDiagnosticsOptions and ns.OPTIONS_REGISTRY then
         AC:RegisterOptionsTable(ns.OPTIONS_REGISTRY.Diagnostics, ns.BuildDiagnosticsOptions)
-        ACD:AddToBlizOptions(ns.OPTIONS_REGISTRY.Diagnostics, ns.DiagnosticsStrings.TAB, ns.L["ADDON_TITLE"])
+        diagnosticsPanel = ACD:AddToBlizOptions(ns.OPTIONS_REGISTRY.Diagnostics, ns.DiagnosticsStrings.TAB, ns.L["ADDON_TITLE"])
+    end
+
+    --[[
+        Pause Farm Mode while any of our options panels is visible. Recompute on
+        every Show/Hide so the flag is correct regardless of the order Blizzard
+        fires Hide/Show when the user switches between the General and Diagnostic
+        Tools category panels.
+
+        Use IsVisible(), NOT IsShown(): the Settings canvas keeps its OWN shown
+        flag set when the parent Settings window closes, so IsShown() stays true
+        and would latch Farm Mode paused forever after the panel is opened once.
+        IsVisible() is true only when the frame and all ancestors are shown, so
+        it goes false the moment the Settings window closes.
+    ]]
+    local function UpdateOptionsOpen()
+        ns.optionsOpen = (mainPanel and mainPanel:IsVisible()) or (diagnosticsPanel and diagnosticsPanel:IsVisible()) or false
+    end
+
+    if mainPanel then
+        mainPanel:HookScript("OnShow", UpdateOptionsOpen)
+        mainPanel:HookScript("OnHide", UpdateOptionsOpen)
+    end
+    if diagnosticsPanel then
+        diagnosticsPanel:HookScript("OnShow", UpdateOptionsOpen)
+        diagnosticsPanel:HookScript("OnHide", UpdateOptionsOpen)
     end
 end
 
