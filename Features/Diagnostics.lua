@@ -387,8 +387,8 @@ function ns:BuildFarmContextReport()
         shows up in reports.
     ]]
     lines[#lines + 1] = string.format(
-        "GetTrackingTexture: %s // lastCastSpell: %s // secs since enteredWorld: %d // secs since last cast attempt: %d",
-        tostring(GetTrackingTexture()), tostring(ns.state.lastCastSpell),
+        "GetTrackingTexture: %s // GetActiveTrackingSpell: %s // lastCastSpell: %s // secs since enteredWorld: %d // secs since last cast attempt: %d",
+        tostring(GetTrackingTexture()), tostring(ns.GetActiveTrackingSpell()), tostring(ns.state.lastCastSpell),
         GetTime() - (ns.state.enteredWorldAt or 0), GetTime() - (ns.state.lastTrackingCastAt or 0)
     )
     lines[#lines + 1] = ""

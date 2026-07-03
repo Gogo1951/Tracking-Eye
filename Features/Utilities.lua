@@ -92,16 +92,42 @@ end
     GetTrackingTexture for clients where the icon shows a generic "None"
     texture instead (TBC+).
 ]]
+--[[
+    Lazily built reverse lookup (texture -> spellId) so every call isn't a
+    linear GetSpellTexture scan over ns.TRACKING_IDS. During the login event
+    storm GetSpellTexture can return nil for spells whose data isn't loaded
+    yet, so a cache built then would be permanently missing entries — track
+    completeness and rebuild once on a miss until every id resolved.
+]]
+local textureToSpellId = nil
+local textureCacheComplete = false
+
+local function BuildTextureCache()
+    textureToSpellId = {}
+    textureCacheComplete = true
+    for _, id in ipairs(ns.TRACKING_IDS) do
+        local tex = GetSpellTexture(id)
+        if tex then
+            textureToSpellId[tex] = id
+        else
+            textureCacheComplete = false
+        end
+    end
+end
+
 local function MatchTrackingTexture(tex)
     if not tex then
         return nil
     end
-    for _, id in ipairs(ns.TRACKING_IDS) do
-        if GetSpellTexture(id) == tex then
-            return id
-        end
+    if not textureToSpellId then
+        BuildTextureCache()
     end
-    return nil
+    local id = textureToSpellId[tex]
+    if not id and not textureCacheComplete then
+        BuildTextureCache()
+        id = textureToSpellId[tex]
+    end
+    return id
 end
 
 function ns.GetActiveTrackingSpell()

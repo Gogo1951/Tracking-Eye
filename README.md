@@ -53,7 +53,7 @@ The menu only ever shows spells your character actually knows, so it stays clean
 
 🟢 World of Warcraft Classic (🟡 Season of Discovery) // WoW 1.15.8
 
-🟢 Burning Crusade Anniversary // WoW 2.5.5
+🟢 Burning Crusade Anniversary // WoW 2.5.6
 
 🔴 Mists of Pandaria Classic // WoW 5.5.3
 
@@ -77,7 +77,7 @@ Please reach out if you would like to be involved!
 
 ## Related Add-ons
 
-🟢 Pairs With // gogo1951's [Come & Get It]([https://www.curseforge.com/wow/addons/tracking-eye-classic](https://www.curseforge.com/wow/addons/come-get-it))
+🟢 Pairs With // gogo1951's [Come & Get It](https://www.curseforge.com/wow/addons/come-get-it)
 
 🟢 Pairs With // hizuro\_de's [FarmHud](https://www.curseforge.com/wow/addons/farmhud)
 

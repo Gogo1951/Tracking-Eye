@@ -290,6 +290,12 @@ TryRecastPersistent = function()
     ]]
     if ns.GetActiveTrackingSpell() == spellId then
         ns.SetLastCast(spellId)
+        --[[
+            The mirror is positively reporting this spell right now, so it has
+            already caught up — re-latch the confirmation SetLastCast just
+            cleared, instead of leaving it false until the next UpdateIcon.
+        ]]
+        ns.state.mirrorConfirmedCast = true
         return
     end
 

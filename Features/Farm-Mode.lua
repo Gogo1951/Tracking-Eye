@@ -34,15 +34,18 @@ end
 -- Farm Cycle Logic
 --------------------------------------------------------------------------------
 --[[
-    Farm logic deliberately never reads GetTrackingTexture. On the
-    Vanilla-based client (Classic Era 1.15.x) the tracking mirror lags
-    the real state, sometimes by minutes (client bug since 1.15.1), so
-    comparing against it silently skips or misdirects casts. Our own
+    Farm logic deliberately avoids raw GetTrackingTexture comparisons.
+    On the Vanilla-based client (Classic Era 1.15.x) the tracking mirror
+    lags the real state, sometimes by minutes (client bug since 1.15.1),
+    so comparing against it silently skips or misdirects casts. Our own
     bookkeeping — ns.state.lastCastSpell, written only from
     UNIT_SPELLCAST_SUCCEEDED — is reliable on every client, so the
-    cycle compares against that instead. Recasting an already-active
-    tracking spell is a harmless refresh, so the comparison only exists
-    to avoid burning a GCD on a no-op.
+    cycle compares against that instead. ns.GetActiveTrackingSpell()
+    (which may fall back to GetTrackingTexture) is consulted only as a
+    positive confirmation of the currently active tracking, never as a
+    gate that blocks a cast. Recasting an already-active tracking spell
+    is a harmless refresh, so the comparison only exists to avoid
+    burning a GCD on a no-op.
 ]]
 function ns.RunFarmLogic()
     -- Pause while options panel is open
@@ -60,14 +63,21 @@ function ns.RunFarmLogic()
         Form-leave restore runs before the restricted-zone gate so a
         player who unmounts inside an instance or resting area still
         gets their persistent tracking spell back. Restore unless the
-        selected spell is already the last thing we successfully cast.
+        selected spell is provably active (Blizzard icon / mirror via
+        ns.GetActiveTrackingSpell) or our own cast of it is still in
+        flight — bookkeeping alone (lastCastSpell) cannot see tracking
+        cancelled outside the addon.
     ]]
     if not inForm and ns.state.wasFarming then
         ns.state.wasFarming = false
         if TrackingEyeCharDB.persistentTracking and TrackingEyeCharDB.selectedSpellId then
             local spellId = TrackingEyeCharDB.selectedSpellId
-            if ns.state.lastCastSpell ~= spellId then
-                ns.CastTracking(spellId)
+            if ns.GetActiveTrackingSpell() ~= spellId then
+                local inFlight = ns.state.lastCastSpell == spellId and
+                    (GetTime() - (ns.state.lastTrackingCastAt or 0)) < ns.CAST_IN_FLIGHT_SECONDS
+                if not inFlight then
+                    ns.CastTracking(spellId)
+                end
             end
         end
         return
