@@ -2,8 +2,7 @@ local _, ns = ...
 
 local Header, Desc, Spacer = ns.OptionsHeader, ns.OptionsDesc, ns.OptionsSpacer
 
-local function SpellLabel(spellId, suffix)
-    local name = GetSpellInfo(spellId) or "Unknown"
+local function SpellLabel(spellId, name, suffix)
     local texture = GetSpellTexture(spellId) or ns.ICON_DEFAULT
     local label = string.format("|T%s:16|t %s", texture, name)
     if suffix then
@@ -37,7 +36,7 @@ local function BuildFarmAbilityArgs()
 
         args[key] = {
             type = "toggle",
-            name = SpellLabel(id),
+            name = SpellLabel(id, data.name),
             order = order,
             width = "full",
             hidden = function() return not IsPlayerSpell(id) end,
@@ -395,10 +394,12 @@ function ns.BuildGeneralOptions()
                         --[[
                             Clear free-placement layout so the free icon
                             snaps back to center. The minimap subtable is
-                            preserved: it is LibDBIcon's payload and holds
-                            minimapPos, so wiping it would relocate the
-                            user's minimap button. UpdatePlacement sets its
-                            hide flag for the post-reset state.
+                            deliberately preserved: it is LibDBIcon's payload,
+                            holding both minimapPos (wiping it would relocate
+                            the user's button, per the SAVED VARIABLES rule)
+                            and the hide flag (so the Enable Mini-map Button
+                            preference survives reset). UpdatePlacement only
+                            reads minimap.hide to honor it.
                         ]]
                         TrackingEyeDB.freePos = nil
                         --[[

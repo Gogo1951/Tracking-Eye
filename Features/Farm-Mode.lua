@@ -8,6 +8,7 @@ local farmIndex = 0
 local cachedCycle = nil
 local farmTicker = nil
 
+
 --------------------------------------------------------------------------------
 -- Farm Cycle Cache
 --------------------------------------------------------------------------------
@@ -32,6 +33,20 @@ end
 --------------------------------------------------------------------------------
 -- Farm Cycle Logic
 --------------------------------------------------------------------------------
+--[[
+    Farm logic deliberately avoids raw GetTrackingTexture comparisons.
+    On the Vanilla-based client (Classic Era 1.15.x) the tracking mirror
+    lags the real state, sometimes by minutes (client bug since 1.15.1),
+    so comparing against it silently skips or misdirects casts. Our own
+    bookkeeping — ns.state.lastCastSpell, written only from
+    UNIT_SPELLCAST_SUCCEEDED — is reliable on every client, so the
+    cycle compares against that instead. ns.GetActiveTrackingSpell()
+    (which may fall back to GetTrackingTexture) is consulted only as a
+    positive confirmation of the currently active tracking, never as a
+    gate that blocks a cast. Recasting an already-active tracking spell
+    is a harmless refresh, so the comparison only exists to avoid
+    burning a GCD on a no-op.
+]]
 function ns.RunFarmLogic()
     -- Pause while options panel is open
     if ns.optionsOpen then
@@ -43,20 +58,26 @@ function ns.RunFarmLogic()
     end
 
     local _, inForm = ns.GetPlayerStates()
-    local currentTrackingTexture = GetTrackingTexture()
 
     --[[
         Form-leave restore runs before the restricted-zone gate so a
         player who unmounts inside an instance or resting area still
-        gets their persistent tracking spell back.
+        gets their persistent tracking spell back. Restore unless the
+        selected spell is provably active (Blizzard icon / mirror via
+        ns.GetActiveTrackingSpell) or our own cast of it is still in
+        flight — bookkeeping alone (lastCastSpell) cannot see tracking
+        cancelled outside the addon.
     ]]
     if not inForm and ns.state.wasFarming then
         ns.state.wasFarming = false
         if TrackingEyeCharDB.persistentTracking and TrackingEyeCharDB.selectedSpellId then
             local spellId = TrackingEyeCharDB.selectedSpellId
-            local targetTexture = GetSpellTexture(spellId)
-            if currentTrackingTexture ~= targetTexture then
-                ns.CastTracking(spellId)
+            if ns.GetActiveTrackingSpell() ~= spellId then
+                local inFlight = ns.state.lastCastSpell == spellId and
+                    (GetTime() - (ns.state.lastTrackingCastAt or 0)) < ns.CAST_IN_FLIGHT_SECONDS
+                if not inFlight then
+                    ns.CastTracking(spellId)
+                end
             end
         end
         return
@@ -82,27 +103,29 @@ function ns.RunFarmLogic()
 
     if #cachedCycle == 1 then
         local spellId = cachedCycle[1]
-        local spellTexture = GetSpellTexture(spellId)
 
         --[[
-            Only trust lastCastSpell when GetTrackingTexture is nil
-            (login/API lag). Outside that window, the live texture is
-            authoritative — if tracking was cleared or changed
-            externally, we want to re-cast, not skip.
+            Idle only while the spell is provably active (Blizzard icon /
+            mirror via ns.GetActiveTrackingSpell) or our own cast is still
+            in flight (the icon can lag the UNIT_SPELLCAST_SUCCEEDED by a
+            moment). Anything else — including tracking cancelled outside
+            the addon, which bookkeeping alone cannot see — recasts.
         ]]
-        if currentTrackingTexture == spellTexture
-            or (currentTrackingTexture == nil and ns.state.lastCastSpell == spellId) then
-            ns.state.wasFarming = true
-            return
+        if ns.GetActiveTrackingSpell() ~= spellId then
+            local inFlight = ns.state.lastCastSpell == spellId and
+                (GetTime() - (ns.state.lastTrackingCastAt or 0)) < ns.CAST_IN_FLIGHT_SECONDS
+            if not inFlight then
+                ns.CastTracking(spellId)
+            end
         end
-        farmIndex = 0
+        ns.state.wasFarming = true
+        return
     end
 
     farmIndex = (farmIndex % #cachedCycle) + 1
     local nextSpellId = cachedCycle[farmIndex]
-    local nextTexture = GetSpellTexture(nextSpellId)
 
-    if currentTrackingTexture ~= nextTexture then
+    if nextSpellId ~= ns.state.lastCastSpell then
         ns.CastTracking(nextSpellId)
     end
 

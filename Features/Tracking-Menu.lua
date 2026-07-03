@@ -1,10 +1,10 @@
-local addonName, ns = ...
+local ADDON_NAME, ns = ...
 local LibDD = LibStub("LibUIDropDownMenu-4.0")
 
 --------------------------------------------------------------------------------
 -- State
 --------------------------------------------------------------------------------
-local dropdown = LibDD:Create_UIDropDownMenu(addonName .. "TrackingMenu", UIParent)
+local dropdown = LibDD:Create_UIDropDownMenu(ADDON_NAME .. "TrackingMenu", UIParent)
 
 --------------------------------------------------------------------------------
 -- Menu Logic

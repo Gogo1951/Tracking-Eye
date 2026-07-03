@@ -33,6 +33,7 @@ L["ENABLED"] = "Включено"
 L["DISABLED"] = "Выключено"
 L["TOGGLE"] = "Переключить"
 
+L["OPEN"] = "Открыть"
 L["LEFT_CLICK"] = "ЛКМ"
 L["RIGHT_CLICK"] = "ПКМ"
 L["SHIFT_LEFT"] = "Shift + ЛКМ"

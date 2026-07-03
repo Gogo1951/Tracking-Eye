@@ -1,4 +1,4 @@
-local addonName, ns = ...
+local ADDON_NAME, ns = ...
 local LDB = LibStub("LibDataBroker-1.1")
 local LDBIcon = LibStub("LibDBIcon-1.0")
 
@@ -108,7 +108,7 @@ function ns.UpdatePlacement()
         if ns.freeFrame then
             ns.freeFrame:Hide()
         end
-        LDBIcon:Hide(addonName)
+        LDBIcon:Hide(ADDON_NAME)
         return
     end
 
@@ -123,7 +123,7 @@ function ns.UpdatePlacement()
             (TrackingEyeDB.minimap.hide), so the preference survives a Free
             Placement round-trip.
         ]]
-        LDBIcon:Hide(addonName)
+        LDBIcon:Hide(ADDON_NAME)
         if ns.freeFrame then
             --[[
                 Re-apply position on every show. Defends against any
@@ -140,9 +140,9 @@ function ns.UpdatePlacement()
         end
         -- Honor the Enable Mini-map Button preference (minimap.hide, inverted).
         if TrackingEyeDB.minimap.hide then
-            LDBIcon:Hide(addonName)
+            LDBIcon:Hide(ADDON_NAME)
         else
-            LDBIcon:Show(addonName)
+            LDBIcon:Show(ADDON_NAME)
         end
     end
 
@@ -159,7 +159,10 @@ function ns.BuildTooltip(tooltip)
     -- Tracking Menu
     tooltip:AddLine(ns.GetColor("TITLE") .. ns.L["TRACKING_MENU"] .. "|r")
     tooltip:AddLine(ns.GetColor("BODY") .. ns.L["TRACKING_MENU_DESC"] .. "|r", 1, 1, 1, true)
-    tooltip:AddLine(ns.GetColor("INFO") .. ns.L["LEFT_CLICK"] .. "|r")
+    tooltip:AddDoubleLine(
+        ns.GetColor("INFO") .. ns.L["LEFT_CLICK"] .. "|r",
+        ns.GetColor("INFO") .. ns.L["OPEN"] .. "|r"
+    )
     tooltip:AddLine(" ")
 
     -- Persistent Tracking Ability
@@ -233,7 +236,7 @@ function ns.RefreshTooltip()
         TryRefresh(ns.freeFrame)
     end
 
-    local minimapButton = LDBIcon:GetMinimapButton(addonName)
+    local minimapButton = LDBIcon:GetMinimapButton(ADDON_NAME)
     if minimapButton then
         TryRefresh(minimapButton)
     end
@@ -381,7 +384,7 @@ end
 function ns.InitMinimap()
     ns.ldb =
         LDB:NewDataObject(
-        addonName,
+        ADDON_NAME,
         {
             type = "launcher",
             icon = ns.state.currentIcon or ns.ICON_DEFAULT,
@@ -393,10 +396,10 @@ function ns.InitMinimap()
     )
 
     if TrackingEyeDB and TrackingEyeDB.minimap then
-        LDBIcon:Register(addonName, ns.ldb, TrackingEyeDB.minimap)
+        LDBIcon:Register(ADDON_NAME, ns.ldb, TrackingEyeDB.minimap)
     end
 
-    local button = LDBIcon:GetMinimapButton(addonName)
+    local button = LDBIcon:GetMinimapButton(ADDON_NAME)
     if button then
         button:SetScript(
             "OnEnter",
