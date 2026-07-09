@@ -12,18 +12,18 @@ local _, ns = ...
 ]]
 local COLOR_PREFIX = "|cff"
 local COLORS = {
-    TITLE = COLOR_PREFIX .. ns.HEX.TITLE,
-    INFO = COLOR_PREFIX .. ns.HEX.INFO,
-    BODY = COLOR_PREFIX .. ns.HEX.BODY,
-    TEXT = COLOR_PREFIX .. ns.HEX.TEXT,
-    ON = COLOR_PREFIX .. ns.HEX.ON,
-    OFF = COLOR_PREFIX .. ns.HEX.OFF,
-    SEPARATOR = COLOR_PREFIX .. ns.HEX.SEPARATOR,
-    MUTED = COLOR_PREFIX .. ns.HEX.MUTED
+	TITLE = COLOR_PREFIX .. ns.HEX.TITLE,
+	INFO = COLOR_PREFIX .. ns.HEX.INFO,
+	BODY = COLOR_PREFIX .. ns.HEX.BODY,
+	TEXT = COLOR_PREFIX .. ns.HEX.TEXT,
+	ON = COLOR_PREFIX .. ns.HEX.ON,
+	OFF = COLOR_PREFIX .. ns.HEX.OFF,
+	SEPARATOR = COLOR_PREFIX .. ns.HEX.SEPARATOR,
+	MUTED = COLOR_PREFIX .. ns.HEX.MUTED,
 }
 
 function ns.GetColor(key)
-    return COLORS[key] or COLORS.TEXT
+	return COLORS[key] or COLORS.TEXT
 end
 
 --------------------------------------------------------------------------------
@@ -38,47 +38,47 @@ end
     then plain on-foot.
 ]]
 function ns.GetPlayerStates()
-    if UnitOnTaxi("player") then
-        return false, false
-    end
+	if UnitOnTaxi("player") then
+		return false, false
+	end
 
-    local isCat = false
-    local hasTravelForm, hasCheetah, hasGhostWolf = false, false, false
-    for i = 1, 40 do
-        local name, _, _, _, _, _, _, _, _, id = UnitBuff("player", i)
-        if not name then
-            break
-        end
-        if id then
-            if id == ns.SPELLS.CAT then
-                isCat = true
-            elseif ns.FARM_FORMS[id] then
-                hasTravelForm = true
-            elseif ns.CHEETAH_BUFFS[id] then
-                hasCheetah = true
-            elseif id == ns.GHOST_WOLF then
-                hasGhostWolf = true
-            end
-        end
-    end
+	local isCat = false
+	local hasTravelForm, hasCheetah, hasGhostWolf = false, false, false
+	for i = 1, 40 do
+		local name, _, _, _, _, _, _, _, _, id = UnitBuff("player", i)
+		if not name then
+			break
+		end
+		if id then
+			if id == ns.SPELLS.CAT then
+				isCat = true
+			elseif ns.FARM_FORMS[id] then
+				hasTravelForm = true
+			elseif ns.CHEETAH_BUFFS[id] then
+				hasCheetah = true
+			elseif id == ns.GHOST_WOLF then
+				hasGhostWolf = true
+			end
+		end
+	end
 
-    local db = TrackingEyeCharDB
-    local isFarming = false
-    if db and db.farmMode then
-        if IsMounted() and not UnitAffectingCombat("player") then
-            isFarming = db.farmMounted
-        elseif hasTravelForm then
-            isFarming = db.farmTravelForms
-        elseif hasCheetah then
-            isFarming = db.farmCheetah
-        elseif hasGhostWolf then
-            isFarming = db.farmGhostWolf
-        else
-            isFarming = db.farmNotMounted
-        end
-    end
+	local db = ns.db and ns.db.profile
+	local isFarming = false
+	if db and db.farmMode then
+		if IsMounted() and not UnitAffectingCombat("player") then
+			isFarming = db.farmMounted
+		elseif hasTravelForm then
+			isFarming = db.farmTravelForms
+		elseif hasCheetah then
+			isFarming = db.farmCheetah
+		elseif hasGhostWolf then
+			isFarming = db.farmGhostWolf
+		else
+			isFarming = db.farmNotMounted
+		end
+	end
 
-    return isCat, isFarming and true or false
+	return isCat, isFarming and true or false
 end
 
 --[[
@@ -103,55 +103,59 @@ local textureToSpellId = nil
 local textureCacheComplete = false
 
 local function BuildTextureCache()
-    textureToSpellId = {}
-    textureCacheComplete = true
-    for _, id in ipairs(ns.TRACKING_IDS) do
-        local tex = GetSpellTexture(id)
-        if tex then
-            textureToSpellId[tex] = id
-        else
-            textureCacheComplete = false
-        end
-    end
+	textureToSpellId = {}
+	textureCacheComplete = true
+	for _, id in ipairs(ns.TRACKING_IDS) do
+		local tex = GetSpellTexture(id)
+		if tex then
+			textureToSpellId[tex] = id
+		else
+			textureCacheComplete = false
+		end
+	end
 end
 
 local function MatchTrackingTexture(tex)
-    if not tex then
-        return nil
-    end
-    if not textureToSpellId then
-        BuildTextureCache()
-    end
-    local id = textureToSpellId[tex]
-    if not id and not textureCacheComplete then
-        BuildTextureCache()
-        id = textureToSpellId[tex]
-    end
-    return id
+	if not tex then
+		return nil
+	end
+	if not textureToSpellId then
+		BuildTextureCache()
+	end
+	local id = textureToSpellId[tex]
+	if not id and not textureCacheComplete then
+		BuildTextureCache()
+		id = textureToSpellId[tex]
+	end
+	return id
 end
 
 function ns.GetActiveTrackingSpell()
-    if MiniMapTrackingIcon and MiniMapTrackingIcon:IsVisible() then
-        local id = MatchTrackingTexture(MiniMapTrackingIcon:GetTexture())
-        if id then
-            return id
-        end
-    end
-    return MatchTrackingTexture(GetTrackingTexture())
+	if MiniMapTrackingIcon and MiniMapTrackingIcon:IsVisible() then
+		local id = MatchTrackingTexture(MiniMapTrackingIcon:GetTexture())
+		if id then
+			return id
+		end
+	end
+	return MatchTrackingTexture(GetTrackingTexture())
 end
 
 function ns.CanCast()
-    return not (UnitIsDeadOrGhost("player") or IsStealthed() or UnitCastingInfo("player") or
-        UnitAffectingCombat("player"))
+	return not (
+		UnitIsDeadOrGhost("player")
+		or IsStealthed()
+		or UnitCastingInfo("player")
+		or UnitAffectingCombat("player")
+	)
 end
 
 function ns.HasTrackingAbility()
-    for _, id in ipairs(ns.TRACKING_IDS) do
-        if IsPlayerSpell(id) then
-            return true
-        end
-    end
-    return false
+	for _, id in ipairs(ns.TRACKING_IDS) do
+		if IsPlayerSpell(id) then
+			return true
+		end
+	end
+	return false
 end
 
 --[[
@@ -160,12 +164,16 @@ end
     level where the movement ability is learned.
 ]]
 function ns.IsPlayerClass(class)
-    return select(2, UnitClass("player")) == class
+	return select(2, UnitClass("player")) == class
 end
 
 function ns.IsRestrictedZone()
-    if IsInInstance() then return true end
-    local _, _, _, _, _, _, _, instanceMapID = GetInstanceInfo()
-    if instanceMapID and ns.RESTRICTED_MAP_IDS[instanceMapID] then return true end
-    return IsResting()
+	if IsInInstance() then
+		return true
+	end
+	local _, _, _, _, _, _, _, instanceMapID = GetInstanceInfo()
+	if instanceMapID and ns.RESTRICTED_MAP_IDS[instanceMapID] then
+		return true
+	end
+	return IsResting()
 end

@@ -1,4 +1,6 @@
 local ADDON_NAME, ns = ...
+local L = ns.L
+local GetColor = ns.GetColor
 local LDB = LibStub("LibDataBroker-1.1")
 local LDBIcon = LibStub("LibDBIcon-1.0")
 
@@ -15,66 +17,77 @@ local LDBIcon = LibStub("LibDBIcon-1.0")
     and Free Placement icon-scale changes without drifting.
 ]]
 local function SaveFreePosition(frame)
-    if not TrackingEyeDB or not frame then
-        return
-    end
-    local x, y = frame:GetCenter()
-    if not x or not y then
-        return
-    end
-    local scale = frame:GetEffectiveScale()
-    TrackingEyeDB.freePos = {x = x * scale, y = y * scale}
+	if not ns.db or not frame then
+		return
+	end
+	local x, y = frame:GetCenter()
+	if not x or not y then
+		return
+	end
+	local scale = frame:GetEffectiveScale()
+	ns.db.global.freePos = { x = x * scale, y = y * scale }
 end
 
 local function ApplyFreePosition(frame)
-    if not frame then
-        return
-    end
-    local pos = TrackingEyeDB and TrackingEyeDB.freePos
+	if not frame then
+		return
+	end
+	local pos = ns.db and ns.db.global.freePos
 
-    --[[
-        Migrate the legacy array format
-        ({point, relativePoint, xOffset, yOffset}) to the new
-        {x, y} screen-pixel format. Apply the old anchor briefly,
-        read the resulting screen-pixel center, re-anchor in the new
-        format, and overwrite the stored value.
+	-- MIGRATION (remove after 2026-09-17): convert legacy freePos array {point, relativePoint, x, y} to {x, y} screen pixels
+	--[[
+        Apply the old anchor briefly, read the resulting screen-pixel center,
+        re-anchor in the new format, and overwrite the stored value.
     ]]
-    if type(pos) == "table" and type(pos[1]) == "string" and type(pos[2]) == "string" then
-        frame:ClearAllPoints()
-        frame:SetPoint(pos[1], UIParent, pos[2], pos[3] or 0, pos[4] or 0)
-        SaveFreePosition(frame)
-        pos = TrackingEyeDB.freePos
-    end
+	if type(pos) == "table" and type(pos[1]) == "string" and type(pos[2]) == "string" then
+		frame:ClearAllPoints()
+		frame:SetPoint(pos[1], UIParent, pos[2], pos[3] or 0, pos[4] or 0)
+		SaveFreePosition(frame)
+		pos = ns.db.global.freePos
+	end
 
-    frame:ClearAllPoints()
-    if type(pos) == "table" and type(pos.x) == "number" and type(pos.y) == "number" then
-        local scale = frame:GetEffectiveScale()
-        frame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", pos.x / scale, pos.y / scale)
-    else
-        frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-    end
-    --[[
+	frame:ClearAllPoints()
+	if type(pos) == "table" and type(pos.x) == "number" and type(pos.y) == "number" then
+		local scale = frame:GetEffectiveScale()
+		frame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", pos.x / scale, pos.y / scale)
+	else
+		frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+	end
+	--[[
         Clear user-placed even on plain restore. WoW silently flags any
         frame that has been moved with StartMoving/StopMovingOrSizing as
         user-placed for the rest of the session, and a stale flag can
         cause the client to write a layout-local entry on logout that
         out-races our SavedVariables on next login.
     ]]
-    frame:SetUserPlaced(false)
+	frame:SetUserPlaced(false)
 end
 
+--[[
+    Backstop only — OnDragStop already saves after every drag. Bail unless the
+    frame is shown, because a hidden frame is never re-anchored: UpdatePlacement
+    returns early for characters with no tracking ability, skipping the
+    ApplyFreePosition that reconciles the frame with UIParent's settled effective
+    scale. Saving one then re-encodes stale offsets against the live scale and
+    writes a drifted freePos — which is account-wide, so it moves the icon for
+    every character. A never-dragged frame is likewise hidden, so this also stops
+    logout from materializing a freePos the player never set.
+]]
 ns.SaveFreeFramePosition = function()
-    SaveFreePosition(ns.freeFrame)
+	if not ns.freeFrame or not ns.freeFrame:IsShown() then
+		return
+	end
+	SaveFreePosition(ns.freeFrame)
 end
 
 --------------------------------------------------------------------------------
 -- Visuals & Placement
 --------------------------------------------------------------------------------
 function ns.UpdateFreeFrameScale()
-    if ns.freeFrame then
-        local scale = (TrackingEyeDB and TrackingEyeDB.freeIconScale) or ns.GLOBAL_DEFAULTS.freeIconScale
-        ns.freeFrame:SetScale(scale)
-        --[[
+	if ns.freeFrame then
+		local scale = (ns.db and ns.db.profile.freeIconScale) or ns.DATABASE_DEFAULTS.profile.freeIconScale
+		ns.freeFrame:SetScale(scale)
+		--[[
             SetPoint offsets are interpreted in the frame's *own* scale.
             After a scale change those offsets resolve to a different
             screen position, so the frame visually drifts. Re-applying
@@ -82,341 +95,300 @@ function ns.UpdateFreeFrameScale()
             absolute-pixel coords back into the new scale and pins the
             frame to its true location.
         ]]
-        ApplyFreePosition(ns.freeFrame)
-    end
+		ApplyFreePosition(ns.freeFrame)
+	end
 end
 
 function ns.UpdateFreeFrameShape()
-    if not ns.freeFrame then
-        return
-    end
-    local shape = (TrackingEyeDB and TrackingEyeDB.freeIconShape) or ns.GLOBAL_DEFAULTS.freeIconShape
-    local isSquare = (shape == ns.SHAPES.SQUARE)
+	if not ns.freeFrame then
+		return
+	end
+	local shape = (ns.db and ns.db.profile.freeIconShape) or ns.DATABASE_DEFAULTS.profile.freeIconShape
+	local isSquare = (shape == ns.SHAPES.SQUARE)
 
-    ns.freeFrame.circleBg:SetShown(not isSquare)
-    ns.freeFrame.circleBorder:SetShown(not isSquare)
-    ns.freeFrame.squareBg:SetShown(isSquare)
-    ns.freeFrame.squareBorder:SetShown(isSquare)
+	ns.freeFrame.circleBg:SetShown(not isSquare)
+	ns.freeFrame.circleBorder:SetShown(not isSquare)
+	ns.freeFrame.squareBg:SetShown(isSquare)
+	ns.freeFrame.squareBorder:SetShown(isSquare)
 end
 
 function ns.UpdatePlacement()
-    if not TrackingEyeDB then
-        return
-    end
+	if not ns.db then
+		return
+	end
 
-    if not ns.HasTrackingAbility() then
-        if ns.freeFrame then
-            ns.freeFrame:Hide()
-        end
-        LDBIcon:Hide(ADDON_NAME)
-        return
-    end
+	if not ns.HasTrackingAbility() then
+		if ns.freeFrame then
+			ns.freeFrame:Hide()
+		end
+		LDBIcon:Hide(ADDON_NAME)
+		return
+	end
 
-    if not TrackingEyeDB.minimap then
-        TrackingEyeDB.minimap = {}
-    end
+	if not ns.db.global.minimap then
+		ns.db.global.minimap = {}
+	end
 
-    if TrackingEyeDB.freePlacement then
-        --[[
+	if ns.db.profile.freePlacement then
+		--[[
             Free frame replaces the minimap button. Hide the button without
             touching the saved Enable Mini-map Button preference
-            (TrackingEyeDB.minimap.hide), so the preference survives a Free
+            (ns.db.global.minimap.hide), so the preference survives a Free
             Placement round-trip.
         ]]
-        LDBIcon:Hide(ADDON_NAME)
-        if ns.freeFrame then
-            --[[
+		LDBIcon:Hide(ADDON_NAME)
+		if ns.freeFrame then
+			--[[
                 Re-apply position on every show. Defends against any
                 other code path (LibDBIcon callbacks, addon-on-addon
                 conflicts, layout-local replay) that might have
                 silently re-anchored the frame while it was hidden.
             ]]
-            ApplyFreePosition(ns.freeFrame)
-            ns.freeFrame:Show()
-        end
-    else
-        if ns.freeFrame then
-            ns.freeFrame:Hide()
-        end
-        -- Honor the Enable Mini-map Button preference (minimap.hide, inverted).
-        if TrackingEyeDB.minimap.hide then
-            LDBIcon:Hide(ADDON_NAME)
-        else
-            LDBIcon:Show(ADDON_NAME)
-        end
-    end
+			ApplyFreePosition(ns.freeFrame)
+			ns.freeFrame:Show()
+		end
+	else
+		if ns.freeFrame then
+			ns.freeFrame:Hide()
+		end
+		-- Honor the Enable Mini-map Button preference (minimap.hide, inverted).
+		if ns.db.global.minimap.hide then
+			LDBIcon:Hide(ADDON_NAME)
+		else
+			LDBIcon:Show(ADDON_NAME)
+		end
+	end
 
-    ns.UpdateFreeFrameScale()
-    ns.UpdateFreeFrameShape()
+	ns.UpdateFreeFrameScale()
+	ns.UpdateFreeFrameShape()
 end
 
 function ns.BuildTooltip(tooltip)
-    -- Header
-    tooltip:AddDoubleLine(ns.GetColor("TITLE") .. ns.L["ADDON_TITLE"] .. "|r", ns.GetColor("MUTED") .. ns.Version .. "|r")
-    tooltip:AddLine(" ")
-    tooltip:AddLine(" ")
+	tooltip:AddDoubleLine(GetColor("TITLE") .. L["ADDON_TITLE"] .. "|r", GetColor("MUTED") .. ns.Version .. "|r")
+	tooltip:AddLine(" ")
+	tooltip:AddLine(" ")
 
-    -- Tracking Menu
-    tooltip:AddLine(ns.GetColor("TITLE") .. ns.L["TRACKING_MENU"] .. "|r")
-    tooltip:AddLine(ns.GetColor("BODY") .. ns.L["TRACKING_MENU_DESC"] .. "|r", 1, 1, 1, true)
-    tooltip:AddDoubleLine(
-        ns.GetColor("INFO") .. ns.L["LEFT_CLICK"] .. "|r",
-        ns.GetColor("INFO") .. ns.L["OPEN"] .. "|r"
-    )
-    tooltip:AddLine(" ")
+	tooltip:AddLine(GetColor("TITLE") .. L["TRACKING_MENU"] .. "|r")
+	tooltip:AddLine(GetColor("BODY") .. L["TRACKING_MENU_DESC"] .. "|r", 1, 1, 1, true)
+	tooltip:AddDoubleLine(GetColor("INFO") .. L["LEFT_CLICK"] .. "|r", GetColor("INFO") .. L["OPEN"] .. "|r")
+	tooltip:AddLine(" ")
 
-    -- Persistent Tracking Ability
-    tooltip:AddLine(ns.GetColor("TITLE") .. ns.L["PERSISTENT_ABILITY"] .. "|r")
-    local selectedSpellId = TrackingEyeCharDB and TrackingEyeCharDB.selectedSpellId
-    if selectedSpellId then
-        local name = GetSpellInfo(selectedSpellId) or ns.L["NONE_SET"]
-        tooltip:AddLine("|T" .. (GetSpellTexture(selectedSpellId) or "") .. ":16|t " .. ns.GetColor("TEXT") .. name .. "|r")
-    else
-        tooltip:AddLine("|TInterface\\Icons\\inv_misc_map_01:16|t " .. ns.GetColor("BODY") .. ns.L["NONE_SET"] .. "|r")
-    end
-    tooltip:AddDoubleLine(
-        ns.GetColor("INFO") .. ns.L["RIGHT_CLICK"] .. "|r",
-        ns.GetColor("INFO") .. ns.L["CLEAR_TRACKING"] .. "|r"
-    )
-    tooltip:AddLine(" ")
+	tooltip:AddLine(GetColor("TITLE") .. L["PERSISTENT_ABILITY"] .. "|r")
+	local selectedSpellId = ns.db and ns.db.profile.selectedSpellId
+	if selectedSpellId then
+		local name = GetSpellInfo(selectedSpellId) or L["NONE_SET"]
+		tooltip:AddLine(
+			"|T" .. (GetSpellTexture(selectedSpellId) or "") .. ":16|t " .. GetColor("TEXT") .. name .. "|r"
+		)
+	else
+		tooltip:AddLine("|TInterface\\Icons\\inv_misc_map_01:16|t " .. GetColor("BODY") .. L["NONE_SET"] .. "|r")
+	end
+	tooltip:AddDoubleLine(GetColor("INFO") .. L["RIGHT_CLICK"] .. "|r", GetColor("INFO") .. L["CLEAR_TRACKING"] .. "|r")
+	tooltip:AddLine(" ")
 
-    -- Persistent Tracking Toggle
-    local persistentState =
-        (TrackingEyeCharDB and TrackingEyeCharDB.persistentTracking) and (ns.GetColor("ON") .. ns.L["ENABLED"] .. "|r") or
-        (ns.GetColor("OFF") .. ns.L["DISABLED"] .. "|r")
-    tooltip:AddDoubleLine(ns.GetColor("TITLE") .. ns.L["PERSISTENT_TRACKING"] .. "|r", persistentState)
-    tooltip:AddLine(ns.GetColor("BODY") .. ns.L["PERSISTENT_DESC"] .. "|r", 1, 1, 1, true)
-    tooltip:AddDoubleLine(
-        ns.GetColor("INFO") .. ns.L["SHIFT_LEFT"] .. "|r",
-        ns.GetColor("INFO") .. ns.L["TOGGLE"] .. "|r"
-    )
-    tooltip:AddLine(" ")
+	local persistentState = (ns.db and ns.db.profile.persistentTracking) and (GetColor("ON") .. L["ENABLED"] .. "|r")
+		or (GetColor("OFF") .. L["DISABLED"] .. "|r")
+	tooltip:AddDoubleLine(GetColor("TITLE") .. L["PERSISTENT_TRACKING"] .. "|r", persistentState)
+	tooltip:AddLine(GetColor("BODY") .. L["PERSISTENT_DESC"] .. "|r", 1, 1, 1, true)
+	tooltip:AddDoubleLine(GetColor("INFO") .. L["SHIFT_LEFT"] .. "|r", GetColor("INFO") .. L["TOGGLE"] .. "|r")
+	tooltip:AddLine(" ")
 
-    -- Farm Mode Toggle
-    local farmState =
-        (TrackingEyeCharDB and TrackingEyeCharDB.farmMode) and (ns.GetColor("ON") .. ns.L["ENABLED"] .. "|r") or
-        (ns.GetColor("OFF") .. ns.L["DISABLED"] .. "|r")
-    tooltip:AddDoubleLine(ns.GetColor("TITLE") .. ns.L["FARM_MODE"] .. "|r", farmState)
-    tooltip:AddLine(ns.GetColor("BODY") .. ns.L["FARM_MODE_DESC"] .. "|r", 1, 1, 1, true)
-    tooltip:AddDoubleLine(
-        ns.GetColor("INFO") .. ns.L["SHIFT_RIGHT"] .. "|r",
-        ns.GetColor("INFO") .. ns.L["TOGGLE"] .. "|r"
-    )
-    tooltip:AddLine(" ")
+	local farmState = (ns.db and ns.db.profile.farmMode) and (GetColor("ON") .. L["ENABLED"] .. "|r")
+		or (GetColor("OFF") .. L["DISABLED"] .. "|r")
+	tooltip:AddDoubleLine(GetColor("TITLE") .. L["FARM_MODE"] .. "|r", farmState)
+	tooltip:AddLine(GetColor("BODY") .. L["FARM_MODE_DESC"] .. "|r", 1, 1, 1, true)
+	tooltip:AddDoubleLine(GetColor("INFO") .. L["SHIFT_RIGHT"] .. "|r", GetColor("INFO") .. L["TOGGLE"] .. "|r")
+	tooltip:AddLine(" ")
 
-    -- Free Placement Mode
-    local freePlacementState =
-        (TrackingEyeDB and TrackingEyeDB.freePlacement) and
-        (ns.GetColor("ON") .. ns.L["ENABLED"] .. "|r") or
-        (ns.GetColor("OFF") .. ns.L["DISABLED"] .. "|r")
-    tooltip:AddDoubleLine(ns.GetColor("TITLE") .. ns.L["PLACEMENT_MODE"] .. "|r", freePlacementState)
-    tooltip:AddLine(ns.GetColor("BODY") .. ns.L["PLACEMENT_DESC"] .. "|r", 1, 1, 1, true)
-    tooltip:AddDoubleLine(
-        ns.GetColor("INFO") .. ns.L["SHIFT_MIDDLE"] .. "|r",
-        ns.GetColor("INFO") .. ns.L["TOGGLE"] .. "|r"
-    )
-    tooltip:AddLine(" ")
-    tooltip:AddLine(ns.GetColor("BODY") .. ns.L["TOOLTIP_OPTIONS_HINT"] .. "|r", 1, 1, 1, true)
+	-- Options (Shift + Middle-Click opens the options panel)
+	tooltip:AddLine(GetColor("TITLE") .. L["TOOLTIP_OPTIONS"] .. "|r")
+	tooltip:AddLine(GetColor("INFO") .. L["SHIFT_MIDDLE"] .. "|r")
 end
 
 function ns.RefreshTooltip()
-    local function TryRefresh(frame)
-        if frame and frame:IsVisible() then
-            if MouseIsOver(frame) or GameTooltip:GetOwner() == frame then
-                local onEnter = frame:GetScript("OnEnter")
-                if onEnter then
-                    GameTooltip:Hide()
-                    onEnter(frame)
-                end
-            end
-        end
-    end
+	local function TryRefresh(frame)
+		if frame and frame:IsVisible() then
+			if MouseIsOver(frame) or GameTooltip:GetOwner() == frame then
+				local onEnter = frame:GetScript("OnEnter")
+				if onEnter then
+					GameTooltip:Hide()
+					onEnter(frame)
+				end
+			end
+		end
+	end
 
-    if ns.freeFrame then
-        TryRefresh(ns.freeFrame)
-    end
+	if ns.freeFrame then
+		TryRefresh(ns.freeFrame)
+	end
 
-    local minimapButton = LDBIcon:GetMinimapButton(ADDON_NAME)
-    if minimapButton then
-        TryRefresh(minimapButton)
-    end
+	local minimapButton = LDBIcon:GetMinimapButton(ADDON_NAME)
+	if minimapButton then
+		TryRefresh(minimapButton)
+	end
 end
 
 --------------------------------------------------------------------------------
 -- Interaction
 --------------------------------------------------------------------------------
 local function OnClick(self, button)
-    if not TrackingEyeCharDB then
-        return
-    end
+	--[[
+        Shift + Middle-Click always opens the options panel. This runs first,
+        before the ns.db guard, so it works regardless of saved-variable state
+        (the same behavior in every add-on). Free Placement Mode is toggled from
+        the options panel, not here.
+    ]]
+	if IsShiftKeyDown() and button == "MiddleButton" then
+		ns:OpenOptionsPanel()
+		return
+	end
 
-    local updateNeeded = false
+	if not ns.db then
+		return
+	end
 
-    if IsShiftKeyDown() then
-        if button == "MiddleButton" then
-            if TrackingEyeDB then
-                TrackingEyeDB.freePlacement = not TrackingEyeDB.freePlacement
-                ns.UpdatePlacement()
-                updateNeeded = true
-            end
-        elseif button == "LeftButton" then
-            TrackingEyeCharDB.persistentTracking = not TrackingEyeCharDB.persistentTracking
-            updateNeeded = true
-        elseif button == "RightButton" then
-            TrackingEyeCharDB.farmMode = not TrackingEyeCharDB.farmMode
-            updateNeeded = true
-        end
-    else
-        if button == "LeftButton" then
-            ns.ToggleMenu(self)
-        elseif button == "RightButton" then
-            ns.ClearTracking()
-            updateNeeded = true
-        end
-    end
+	local updateNeeded = false
 
-    if updateNeeded then
-        ns.RefreshTooltip()
-    end
+	if IsShiftKeyDown() then
+		if button == "LeftButton" then
+			ns.db.profile.persistentTracking = not ns.db.profile.persistentTracking
+			updateNeeded = true
+		elseif button == "RightButton" then
+			ns.db.profile.farmMode = not ns.db.profile.farmMode
+			updateNeeded = true
+		end
+	else
+		if button == "LeftButton" then
+			ns.ToggleMenu(self)
+		elseif button == "RightButton" then
+			ns.ClearTracking()
+			updateNeeded = true
+		end
+	end
+
+	if updateNeeded then
+		ns.RefreshTooltip()
+	end
 end
 
 --------------------------------------------------------------------------------
 -- Initialization
 --------------------------------------------------------------------------------
 function ns.CreateFreeFrame()
-    --[[
+	--[[
         Anonymous frame (nil name) on purpose. WoW's per-character
         layout-local.txt cache keys on frame name — if this frame has
         any name, WoW will look it up there at creation time and apply
         the per-character cached position, overriding the account-wide
-        TrackingEyeDB.freePos. SetUserPlaced(false) from Lua does NOT
+        ns.db.global.freePos. SetUserPlaced(false) from Lua does NOT
         prevent that lookup. Making the frame anonymous removes it from
         the layout-local system entirely, so positioning is owned
-        100% by TrackingEyeDB.freePos.
+        100% by ns.db.global.freePos.
     ]]
-    local frame = CreateFrame("Button", nil, UIParent)
-    frame:SetSize(37, 37)
-    frame:SetMovable(true)
-    frame:EnableMouse(true)
-    frame:RegisterForDrag("LeftButton")
-    frame:RegisterForClicks("AnyUp")
-    frame:SetClampedToScreen(true)
-    frame:SetFrameStrata("HIGH")
+	local frame = CreateFrame("Button", nil, UIParent)
+	frame:SetSize(37, 37)
+	frame:SetMovable(true)
+	frame:EnableMouse(true)
+	frame:RegisterForDrag("LeftButton")
+	frame:RegisterForClicks("AnyUp")
+	frame:SetClampedToScreen(true)
+	frame:SetFrameStrata("HIGH")
 
-    -- Circle elements
-    frame.circleBg = frame:CreateTexture(nil, "BACKGROUND")
-    frame.circleBg:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
-    frame.circleBg:SetSize(24, 24)
-    frame.circleBg:SetPoint("CENTER")
-    frame.circleBg:SetVertexColor(0, 0, 0, 0.6)
+	-- Circle elements
+	frame.circleBg = frame:CreateTexture(nil, "BACKGROUND")
+	frame.circleBg:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
+	frame.circleBg:SetSize(24, 24)
+	frame.circleBg:SetPoint("CENTER")
+	frame.circleBg:SetVertexColor(0, 0, 0, 0.6)
 
-    frame.circleBorder = frame:CreateTexture(nil, "OVERLAY")
-    frame.circleBorder:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-    frame.circleBorder:SetSize(62, 62)
-    frame.circleBorder:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
+	frame.circleBorder = frame:CreateTexture(nil, "OVERLAY")
+	frame.circleBorder:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
+	frame.circleBorder:SetSize(62, 62)
+	frame.circleBorder:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
 
-    -- Square elements
-    frame.squareBorder = frame:CreateTexture(nil, "BACKGROUND")
-    frame.squareBorder:SetColorTexture(0, 0, 0, 0.8)
-    frame.squareBorder:SetSize(27, 27)
-    frame.squareBorder:SetPoint("CENTER")
+	-- Square elements
+	frame.squareBorder = frame:CreateTexture(nil, "BACKGROUND")
+	frame.squareBorder:SetColorTexture(0, 0, 0, 0.8)
+	frame.squareBorder:SetSize(27, 27)
+	frame.squareBorder:SetPoint("CENTER")
 
-    frame.squareBg = frame:CreateTexture(nil, "BACKGROUND")
-    frame.squareBg:SetColorTexture(0, 0, 0, 0)
-    frame.squareBg:SetSize(1, 1)
-    frame.squareBg:SetPoint("CENTER")
+	frame.squareBg = frame:CreateTexture(nil, "BACKGROUND")
+	frame.squareBg:SetColorTexture(0, 0, 0, 0)
+	frame.squareBg:SetSize(1, 1)
+	frame.squareBg:SetPoint("CENTER")
 
-    -- Shared icon
-    frame.icon = frame:CreateTexture(nil, "ARTWORK")
-    frame.icon:SetSize(24, 24)
-    frame.icon:SetPoint("CENTER")
+	-- Shared icon
+	frame.icon = frame:CreateTexture(nil, "ARTWORK")
+	frame.icon:SetSize(24, 24)
+	frame.icon:SetPoint("CENTER")
 
-    frame:SetScript("OnDragStart", frame.StartMoving)
-    frame:SetScript(
-        "OnDragStop",
-        function(self)
-            self:StopMovingOrSizing()
-            --[[
+	frame:SetScript("OnDragStart", frame.StartMoving)
+	frame:SetScript("OnDragStop", function(self)
+		self:StopMovingOrSizing()
+		--[[
                 StartMoving / StopMovingOrSizing implicitly flag the
                 frame as user-placed. Clear the flag so WoW does not
                 write a layout-local entry that out-races our
                 SavedVariables on next login.
             ]]
-            self:SetUserPlaced(false)
-            SaveFreePosition(self)
-            --[[
+		self:SetUserPlaced(false)
+		SaveFreePosition(self)
+		--[[
                 Re-anchor immediately. After a drag the live anchor is
                 whatever WoW chose during the move, which is not the
                 stable CENTER -> UIParent BOTTOMLEFT anchor we
                 serialize. Normalizing now means a Show/Hide cycle or a
                 scale change does not shift the icon.
             ]]
-            ApplyFreePosition(self)
-        end
-    )
-    frame:SetScript("OnClick", OnClick)
-    frame:SetScript(
-        "OnEnter",
-        function(self)
-            GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
-            ns.BuildTooltip(GameTooltip)
-            GameTooltip:Show()
-        end
-    )
-    frame:SetScript(
-        "OnLeave",
-        function()
-            GameTooltip:Hide()
-        end
-    )
+		ApplyFreePosition(self)
+	end)
+	frame:SetScript("OnClick", OnClick)
+	frame:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
+		ns.BuildTooltip(GameTooltip)
+		GameTooltip:Show()
+	end)
+	frame:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
 
-    ns.freeFrame = frame
-    --[[
+	ns.freeFrame = frame
+	--[[
         ApplyFreePosition does its own ClearAllPoints, handles the
         legacy {point, relativePoint, x, y} array migration, and pins
         the frame to its saved screen-pixel coordinates via the stable
         CENTER -> UIParent BOTTOMLEFT anchor.
     ]]
-    ApplyFreePosition(frame)
-    ns.UpdatePlacement()
+	ApplyFreePosition(frame)
+	ns.UpdatePlacement()
 end
 
 function ns.InitMinimap()
-    ns.ldb =
-        LDB:NewDataObject(
-        ADDON_NAME,
-        {
-            type = "launcher",
-            icon = ns.state.currentIcon or ns.ICON_DEFAULT,
-            OnClick = OnClick,
-            OnTooltipShow = function(tooltip)
-                ns.BuildTooltip(tooltip)
-            end
-        }
-    )
+	ns.ldb = LDB:NewDataObject(ADDON_NAME, {
+		type = "launcher",
+		icon = ns.state.currentIcon or ns.ICON_DEFAULT,
+		OnClick = OnClick,
+		OnTooltipShow = function(tooltip)
+			ns.BuildTooltip(tooltip)
+		end,
+	})
 
-    if TrackingEyeDB and TrackingEyeDB.minimap then
-        LDBIcon:Register(ADDON_NAME, ns.ldb, TrackingEyeDB.minimap)
-    end
+	if ns.db and ns.db.global.minimap then
+		LDBIcon:Register(ADDON_NAME, ns.ldb, ns.db.global.minimap)
+	end
 
-    local button = LDBIcon:GetMinimapButton(ADDON_NAME)
-    if button then
-        button:SetScript(
-            "OnEnter",
-            function(self)
-                GameTooltip:SetOwner(self, "ANCHOR_NONE")
-                GameTooltip:SetPoint("TOPRIGHT", self, "BOTTOMLEFT")
-                ns.BuildTooltip(GameTooltip)
-                GameTooltip:Show()
-            end
-        )
-        button:SetScript(
-            "OnLeave",
-            function()
-                GameTooltip:Hide()
-            end
-        )
-    end
+	local button = LDBIcon:GetMinimapButton(ADDON_NAME)
+	if button then
+		button:SetScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_NONE")
+			GameTooltip:SetPoint("TOPRIGHT", self, "BOTTOMLEFT")
+			ns.BuildTooltip(GameTooltip)
+			GameTooltip:Show()
+		end)
+		button:SetScript("OnLeave", function()
+			GameTooltip:Hide()
+		end)
+	end
 
-    ns.UpdatePlacement()
+	ns.UpdatePlacement()
 end

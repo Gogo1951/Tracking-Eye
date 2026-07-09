@@ -40,7 +40,7 @@ L["SHIFT_LEFT"] = "Shift + 左鍵"
 L["SHIFT_RIGHT"] = "Shift + 右鍵"
 L["SHIFT_MIDDLE"] = "Shift + 中鍵"
 
-L["TOOLTIP_OPTIONS_HINT"] = "更多設定可以在 選項 > 插件 > Tracking Eye 中找到。"
+L["TOOLTIP_OPTIONS"] = "Tracking Eye 選項"
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -88,16 +88,10 @@ L["OPTIONS_ICON_SHAPE_DESC"] = "使用自由移動模式時追蹤圖示邊框的
 L["OPTIONS_SHAPE_CIRCLE"] = "圓形"
 L["OPTIONS_SHAPE_SQUARE"] = "方形"
 
--- Reset
-
-L["OPTIONS_RESET_HEADER"] = "重置"
-L["OPTIONS_RESET_DESC"] = "將每一個 Tracking Eye 設定還原為預設值。"
-L["OPTIONS_RESET"] = "重置所有選項"
-L["OPTIONS_RESET_CONFIRM"] = "將所有 Tracking Eye 選項重置為預設值？"
-
 -- Feedback & Support
 
 L["OPTIONS_LINKS"] = "回饋與支援"
 L["OPTIONS_CURSEFORGE"] = "CurseForge"
 L["OPTIONS_GITHUB"] = "GitHub"
 L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_WAGO"] = "Wago"

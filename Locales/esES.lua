@@ -40,7 +40,7 @@ L["SHIFT_LEFT"] = "Mayús + Clic Izquierdo"
 L["SHIFT_RIGHT"] = "Mayús + Clic Derecho"
 L["SHIFT_MIDDLE"] = "Mayús + Clic Central"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Se pueden encontrar ajustes adicionales en Opciones > Accesorios > Tracking Eye."
+L["TOOLTIP_OPTIONS"] = "Opciones de Tracking Eye"
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -88,16 +88,10 @@ L["OPTIONS_ICON_SHAPE_DESC"] = "Forma del borde del icono de rastreo al usar el 
 L["OPTIONS_SHAPE_CIRCLE"] = "Círculo"
 L["OPTIONS_SHAPE_SQUARE"] = "Cuadrado"
 
--- Reset
-
-L["OPTIONS_RESET_HEADER"] = "Restablecer"
-L["OPTIONS_RESET_DESC"] = "Restaura todos los ajustes de Tracking Eye a sus valores predeterminados."
-L["OPTIONS_RESET"] = "Restablecer todas las opciones"
-L["OPTIONS_RESET_CONFIRM"] = "¿Restablecer todas las opciones de Tracking Eye a los valores predeterminados?"
-
 -- Feedback & Support
 
 L["OPTIONS_LINKS"] = "Comentarios y soporte"
 L["OPTIONS_CURSEFORGE"] = "CurseForge"
 L["OPTIONS_GITHUB"] = "GitHub"
 L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_WAGO"] = "Wago"

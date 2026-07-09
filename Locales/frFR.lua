@@ -40,7 +40,7 @@ L["SHIFT_LEFT"] = "Maj + Clic gauche"
 L["SHIFT_RIGHT"] = "Maj + Clic droit"
 L["SHIFT_MIDDLE"] = "Maj + Clic milieu"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Des paramètres supplémentaires se trouvent dans Options > Addons > Tracking Eye."
+L["TOOLTIP_OPTIONS"] = "Options de Tracking Eye"
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -88,16 +88,10 @@ L["OPTIONS_ICON_SHAPE_DESC"] = "Forme de la bordure de l'icône de pistage lors 
 L["OPTIONS_SHAPE_CIRCLE"] = "Cercle"
 L["OPTIONS_SHAPE_SQUARE"] = "Carré"
 
--- Reset
-
-L["OPTIONS_RESET_HEADER"] = "Réinitialiser"
-L["OPTIONS_RESET_DESC"] = "Restaure chaque paramètre de Tracking Eye à sa valeur par défaut."
-L["OPTIONS_RESET"] = "Réinitialiser toutes les options"
-L["OPTIONS_RESET_CONFIRM"] = "Réinitialiser toutes les options de Tracking Eye aux valeurs par défaut ?"
-
 -- Feedback & Support
 
 L["OPTIONS_LINKS"] = "Commentaires et assistance"
 L["OPTIONS_CURSEFORGE"] = "CurseForge"
 L["OPTIONS_GITHUB"] = "GitHub"
 L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_WAGO"] = "Wago"
