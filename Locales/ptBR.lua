@@ -30,7 +30,7 @@ L["PLACEMENT_MODE"] = "Modo de Posicionamento Livre"
 L["PLACEMENT_DESC"] = "Substitui o botão do minimapa por um ícone independente que você pode mover para qualquer lugar."
 
 L["ENABLED"] = "Habilitado"
-L["DISABLED"] = "Deshabilitado"
+L["DISABLED"] = "Desabilitado"
 L["TOGGLE"] = "Alternar"
 
 L["OPEN"] = "Abrir"
@@ -40,7 +40,7 @@ L["SHIFT_LEFT"] = "Shift + Clique Esquerdo"
 L["SHIFT_RIGHT"] = "Shift + Clique Direito"
 L["SHIFT_MIDDLE"] = "Shift + Clique do Meio"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Configurações adicionais podem ser encontradas em Opções > AddOns > Tracking Eye."
+L["TOOLTIP_OPTIONS"] = "Opções do Tracking Eye"
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -88,16 +88,10 @@ L["OPTIONS_ICON_SHAPE_DESC"] = "Forma da borda do ícone de rastreamento ao usar
 L["OPTIONS_SHAPE_CIRCLE"] = "Círculo"
 L["OPTIONS_SHAPE_SQUARE"] = "Quadrado"
 
--- Reset
-
-L["OPTIONS_RESET_HEADER"] = "Redefinir"
-L["OPTIONS_RESET_DESC"] = "Restaura todas as configurações do Tracking Eye para seus valores padrão."
-L["OPTIONS_RESET"] = "Redefinir todas as opções"
-L["OPTIONS_RESET_CONFIRM"] = "Redefinir todas as opções do Tracking Eye para os padrões?"
-
 -- Feedback & Support
 
 L["OPTIONS_LINKS"] = "Feedback e Suporte"
 L["OPTIONS_CURSEFORGE"] = "CurseForge"
 L["OPTIONS_GITHUB"] = "GitHub"
 L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_WAGO"] = "Wago"

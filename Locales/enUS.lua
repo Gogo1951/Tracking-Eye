@@ -1,5 +1,7 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "enUS", true)
-if not L then return end
+if not L then
+	return
+end
 
 L["ADDON_TITLE"] = "Tracking Eye"
 
@@ -7,7 +9,8 @@ L["ADDON_TITLE"] = "Tracking Eye"
 -- Printed Messages
 --------------------------------------------------------------------------------
 
-L["CHAT_LOADED"] = "Version %s. Settings (including the option to disable this message) can be found under Options > AddOns > Tracking Eye. Enjoying the add-on? Tell a friend about it! (="
+L["CHAT_LOADED"] =
+	"Version %s. Settings (including the option to disable this message) can be found under Options > AddOns > Tracking Eye. Enjoying the add-on? Tell a friend about it! (="
 
 --------------------------------------------------------------------------------
 -- Minimap Button Tooltip
@@ -40,7 +43,7 @@ L["SHIFT_LEFT"] = "Shift + Left-Click"
 L["SHIFT_RIGHT"] = "Shift + Right-Click"
 L["SHIFT_MIDDLE"] = "Shift + Middle-Click"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Additional settings can be found under Options > AddOns > Tracking Eye."
+L["TOOLTIP_OPTIONS"] = "Tracking Eye Options"
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -48,15 +51,18 @@ L["TOOLTIP_OPTIONS_HINT"] = "Additional settings can be found under Options > Ad
 
 -- General
 
-L["OPTIONS_DESC"] = "Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs and Find Minerals while farming and reapplies tracking after death. Supports every tracking ability. Never lose track of the resources you're hunting."
+L["OPTIONS_DESC"] =
+	"Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs and Find Minerals while farming and reapplies tracking after death. Supports every tracking ability. Never lose track of the resources you're hunting."
 L["OPTIONS_ENABLE_WELCOME"] = "Enable Welcome Message"
 L["OPTIONS_WELCOME_DESC"] = "Print a one-line greeting in chat when Tracking Eye loads."
-L["OPTIONS_ENABLE_MINIMAP"] = "Enable Mini-map Button"
-L["OPTIONS_ENABLE_MINIMAP_DESC"] = "Shows the Tracking Eye button on the minimap; Farm Mode and Persistent Tracking still run when it's hidden."
+L["OPTIONS_ENABLE_MINIMAP"] = "Enable Minimap Button"
+L["OPTIONS_ENABLE_MINIMAP_DESC"] =
+	"Shows the Tracking Eye button on the minimap; Farm Mode and Persistent Tracking still run when it's hidden."
 
 -- Slash Commands
 
-L["OPTIONS_COMMANDS_INTRO"] = "Slash commands for Tracking Eye. The options panel covers everything you need; these are here for the keyboard-first folks."
+L["OPTIONS_COMMANDS_INTRO"] =
+	"Slash commands for Tracking Eye. The options panel covers everything you need; these are here for the keyboard-first folks."
 L["OPTIONS_COMMAND_TE"] = "Opens the Tracking Eye options interface."
 
 -- Persistent Tracking
@@ -73,7 +79,8 @@ L["OPTIONS_FARM_CHEETAH"] = "Aspect of the Cheetah"
 L["OPTIONS_FARM_GHOST_WOLF"] = "Ghost Wolf"
 L["OPTIONS_FARM_NOT_MOUNTED"] = "Not Mounted"
 L["OPTIONS_FARM_NOT_MOUNTED_DESC"] = "Cycle even without a mount or movement form."
-L["OPTIONS_FARM_NOTE"] = "Note: Farm Mode only runs while you're out of combat, not casting, and outside towns, inns, and instances."
+L["OPTIONS_FARM_NOTE"] =
+	"Note: Farm Mode only runs while you're out of combat, not casting, and outside towns, inns, and instances."
 L["OPTIONS_FARM_ABILITIES"] = "Farm Mode Abilities"
 L["OPTIONS_CYCLE_SPEED"] = "Cycle Speed"
 L["OPTIONS_CYCLE_SPEED_DESC"] = "How often Farm Mode switches between tracking abilities (in seconds)."
@@ -88,16 +95,10 @@ L["OPTIONS_ICON_SHAPE_DESC"] = "Shape of the tracking icon border when using Fre
 L["OPTIONS_SHAPE_CIRCLE"] = "Circle"
 L["OPTIONS_SHAPE_SQUARE"] = "Square"
 
--- Reset
-
-L["OPTIONS_RESET_HEADER"] = "Reset"
-L["OPTIONS_RESET_DESC"] = "Restore every Tracking Eye setting to its default value."
-L["OPTIONS_RESET"] = "Reset All Tracking Eye Options"
-L["OPTIONS_RESET_CONFIRM"] = "Reset all Tracking Eye options to defaults?"
-
 -- Feedback & Support
 
 L["OPTIONS_LINKS"] = "Feedback & Support"
 L["OPTIONS_CURSEFORGE"] = "CurseForge"
 L["OPTIONS_GITHUB"] = "GitHub"
 L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_WAGO"] = "Wago"

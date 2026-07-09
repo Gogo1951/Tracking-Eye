@@ -1,6 +1,6 @@
 # Tracking Eye
 
-A tracking menu and tracking switcher for the minimap. Auto-cycles Find Herbs and Find Minerals while mounted, recasts your tracking spell after death, and supports every Hunter, Druid, Warlock, Paladin, and gathering tracking. Never miss a node.
+Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs and Find Minerals while farming and reapplies tracking after death. Supports every tracking ability. Never lose track of the resources you're hunting.
 
 <img width="375" src="https://github.com/user-attachments/assets/f8627a30-8188-4691-bab8-75b5d82eaee1" /> <img width="175" src="https://github.com/user-attachments/assets/de98982b-d787-4fa3-ac6f-00aca4d637e8" />
 
@@ -16,7 +16,7 @@ A tracking menu and tracking switcher for the minimap. Auto-cycles Find Herbs an
 
 ## Setup
 
-1. Install the add-on, ideally using [CurseForge](https://www.curseforge.com/wow/addons/tracking-eye-classic).
+1. Install the add-on, ideally using [CurseForge](https://www.curseforge.com/wow/addons/tracking-eye-classic) or [Wago](https://addons.wago.io/addons/tracking-eye).
 2. Log in.
 3. Left-click the new minimap button and pick a tracking spell.
 4. Mount up — Farm Mode handles the herb-and-ore cycling for you.
@@ -43,7 +43,7 @@ The menu only ever shows spells your character actually knows, so it stays clean
 | Right-click | Clear current tracking |
 | Shift + Left-click | Toggle Persistent Tracking |
 | Shift + Right-click | Toggle Farm Mode |
-| Shift + Middle-click | Toggle Free Placement Mode |
+| Shift + Middle-click | Open the options panel |
 
 ### Slash Commands
 
@@ -55,9 +55,9 @@ The menu only ever shows spells your character actually knows, so it stays clean
 
 🟢 Burning Crusade Anniversary // WoW 2.5.6
 
-🔴 Mists of Pandaria Classic // WoW 5.5.3
+🔴 Mists of Pandaria Classic // WoW 5.5.4
 
-🔴 World of Warcraft // WoW 12.0.5
+🔴 World of Warcraft // WoW 12.1.0
 
 **Localization Status** // Works with all Classic WoW Locales (enUS, deDE, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW).
 
@@ -65,7 +65,6 @@ Please reach out if you would like to be involved!
 
 ## Links
 
-* [CurseForge](https://www.curseforge.com/wow/addons/tracking-eye-classic)
 * [GitHub](https://github.com/Gogo1951/Tracking-Eye)
 * [Discord](https://discord.gg/eh8hKq992Q)
 
@@ -95,16 +94,16 @@ Please reach out if you would like to be involved!
 
 🔴 Direct Alternative // IceDNicco's [AutoTracker](https://www.curseforge.com/wow/addons/autotracker)
 
-🔴 Direct Alternative // mmx428's [Hunter Tracks](https://www.curseforge.com/wow/addons/hunter-tracks)
-
 🔴 Direct Alternative // Petazo's [GatherTracker](https://www.curseforge.com/wow/addons/gather-tracker)
+
+🔴 Direct Alternative // mmx428's [Hunter Tracks](https://www.curseforge.com/wow/addons/hunter-tracks)
 
 🔴 Direct Alternative // a14st0r's [nOde: the Omnitracker](https://www.curseforge.com/wow/addons/node)
 
 🔴 Direct Alternative // mxiii's [Track Everything](https://www.wowinterface.com/downloads/info25637-TrackEverything.html)
 
-🔴 Direct Alternative // datagutten's [TrackingMenu](https://www.curseforge.com/wow/addons/trackingmenu)
-
 🔴 Direct Alternative // Epenance's [Tracking Switcher](https://www.curseforge.com/wow/addons/tracking-switcher)
 
 🔴 Direct Alternative // executedpoorly's [Tracking Switcher X](https://www.curseforge.com/wow/addons/tracking-switcher-x)
+
+🔴 Direct Alternative // datagutten's [TrackingMenu](https://www.curseforge.com/wow/addons/trackingmenu)

@@ -40,7 +40,7 @@ L["SHIFT_LEFT"] = "Shift + 왼쪽 클릭"
 L["SHIFT_RIGHT"] = "Shift + 오른쪽 클릭"
 L["SHIFT_MIDDLE"] = "Shift + 휠 클릭"
 
-L["TOOLTIP_OPTIONS_HINT"] = "추가 설정은 설정 > 애드온 > Tracking Eye에서 찾을 수 있습니다."
+L["TOOLTIP_OPTIONS"] = "Tracking Eye 옵션"
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -88,16 +88,10 @@ L["OPTIONS_ICON_SHAPE_DESC"] = "자유 배치 모드를 사용할 때 추적 아
 L["OPTIONS_SHAPE_CIRCLE"] = "원형"
 L["OPTIONS_SHAPE_SQUARE"] = "사각형"
 
--- Reset
-
-L["OPTIONS_RESET_HEADER"] = "초기화"
-L["OPTIONS_RESET_DESC"] = "모든 Tracking Eye 설정을 기본값으로 복원합니다."
-L["OPTIONS_RESET"] = "모든 설정 초기화"
-L["OPTIONS_RESET_CONFIRM"] = "모든 Tracking Eye 설정을 기본값으로 초기화하시겠습니까?"
-
 -- Feedback & Support
 
 L["OPTIONS_LINKS"] = "피드백 및 지원"
 L["OPTIONS_CURSEFORGE"] = "CurseForge"
 L["OPTIONS_GITHUB"] = "GitHub"
 L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_WAGO"] = "Wago"

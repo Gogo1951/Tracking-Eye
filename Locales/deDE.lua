@@ -40,7 +40,7 @@ L["SHIFT_LEFT"] = "Umschalt + Linksklick"
 L["SHIFT_RIGHT"] = "Umschalt + Rechtsklick"
 L["SHIFT_MIDDLE"] = "Umschalt + Mittelklick"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Zusätzliche Einstellungen finden Sie unter Optionen > AddOns > Tracking Eye."
+L["TOOLTIP_OPTIONS"] = "Tracking Eye-Optionen"
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -88,16 +88,10 @@ L["OPTIONS_ICON_SHAPE_DESC"] = "Form des Rahmens des Aufspürungssymbols bei Ver
 L["OPTIONS_SHAPE_CIRCLE"] = "Kreis"
 L["OPTIONS_SHAPE_SQUARE"] = "Quadrat"
 
--- Reset
-
-L["OPTIONS_RESET_HEADER"] = "Zurücksetzen"
-L["OPTIONS_RESET_DESC"] = "Jede Einstellung von Tracking Eye auf den Standardwert zurücksetzen."
-L["OPTIONS_RESET"] = "Alle Optionen von Tracking Eye zurücksetzen"
-L["OPTIONS_RESET_CONFIRM"] = "Alle Optionen von Tracking Eye auf Standard zurücksetzen?"
-
 -- Feedback & Support
 
-L["OPTIONS_LINKS"] = "Feedback & Support"
+L["OPTIONS_LINKS"] = "Feedback & Unterstützung"
 L["OPTIONS_CURSEFORGE"] = "CurseForge"
 L["OPTIONS_GITHUB"] = "GitHub"
 L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_WAGO"] = "Wago"

@@ -1,27 +1,43 @@
 ## Title: Tracking Eye
-## Notes: Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs and Find Minerals while farming and reapplies tracking after death. Supports every tracking ability. Never lose track of the resources you’re hunting.
+## Notes: Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs and Find Minerals while farming and reapplies tracking after death. Supports every tracking ability. Never lose track of the resources you're hunting.
 ## Author: Gogo1951
 
 ## IconTexture: Interface/AddOns/TrackingEye/Includes/Images/Tracking-Eye.tga
-## Category-enUS: Map & Minimap
+
+## Category-enUS: Professions
+## Category-deDE: Berufe
+## Category-esES: Profesiones
+## Category-esMX: Profesiones
+## Category-frFR: Métiers
+## Category-itIT: Professioni
+## Category-koKR: 전문 기술
+## Category-ptBR: Profissões
+## Category-ruRU: Профессии
+## Category-zhCN: 专业
+## Category-zhTW: 專業技能
 ## X-License: MIT
 
 ## Interface: 11508, 20506
 ## Version: @project-version@
+
 ## X-Curse-Project-ID: 1129680
+## X-Wago-ID: qGZOMXNd
 
 ## SavedVariables: TrackingEyeDB
+# MIGRATION (remove after 2026-10-07): drop TrackingEyeCharDB once window closes
 ## SavedVariablesPerCharacter: TrackingEyeCharDB
 
 # Includes
 Includes/Libraries/LibStub/LibStub.lua
 Includes/Libraries/CallbackHandler-1.0/CallbackHandler-1.0.lua
 Includes/Libraries/AceLocale-3.0/AceLocale-3.0.lua
+Includes/Libraries/AceDB-3.0/AceDB-3.0.lua
 Includes/Libraries/AceGUI-3.0/AceGUI-3.0.xml
 Includes/Libraries/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
 Includes/Libraries/AceConfig-3.0/AceConfigCmd-3.0/AceConfigCmd-3.0.lua
 Includes/Libraries/AceConfig-3.0/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
 Includes/Libraries/AceConfig-3.0/AceConfig-3.0.lua
+Includes/Libraries/AceDBOptions-3.0/AceDBOptions-3.0.lua
 Includes/Libraries/LibDataBroker-1.1/LibDataBroker-1.1.lua
 Includes/Libraries/LibDBIcon-1.0/LibDBIcon-1.0.lua
 Includes/Libraries/LibUIDropDownMenu/LibUIDropDownMenu.xml
@@ -53,10 +69,10 @@ Features/Diagnostics.lua
 Features/Minimap-Button.lua
 Options/Options-Utilities.lua
 Options/Options-General.lua
+Options/Options-Profiles.lua
 Options/Options-Diagnostics.lua
 Options/Options.lua
 
 # Feedback Welcome! (=
-# Tracking Eye on CurseForge // https://www.curseforge.com/wow/addons/tracking-eye-classic
 # Tracking Eye on GitHub // https://github.com/Gogo1951/Tracking-Eye
 # Tracking Eye on Discord // https://discord.gg/eh8hKq992Q

@@ -40,7 +40,7 @@ L["SHIFT_LEFT"] = "Shift + ЛКМ"
 L["SHIFT_RIGHT"] = "Shift + ПКМ"
 L["SHIFT_MIDDLE"] = "Shift + СКМ"
 
-L["TOOLTIP_OPTIONS_HINT"] = "Дополнительные настройки можно найти в Настройки > Модификации > Tracking Eye."
+L["TOOLTIP_OPTIONS"] = "Настройки Tracking Eye"
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -88,16 +88,10 @@ L["OPTIONS_ICON_SHAPE_DESC"] = "Форма рамки значка отслеж�
 L["OPTIONS_SHAPE_CIRCLE"] = "Круг"
 L["OPTIONS_SHAPE_SQUARE"] = "Квадрат"
 
--- Reset
-
-L["OPTIONS_RESET_HEADER"] = "Сброс"
-L["OPTIONS_RESET_DESC"] = "Восстановить все настройки Tracking Eye по умолчанию."
-L["OPTIONS_RESET"] = "Сбросить все настройки"
-L["OPTIONS_RESET_CONFIRM"] = "Сбросить все настройки Tracking Eye по умолчанию?"
-
 -- Feedback & Support
 
 L["OPTIONS_LINKS"] = "Отзывы и поддержка"
 L["OPTIONS_CURSEFORGE"] = "CurseForge"
 L["OPTIONS_GITHUB"] = "GitHub"
 L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_WAGO"] = "Wago"

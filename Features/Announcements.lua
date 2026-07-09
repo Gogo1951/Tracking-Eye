@@ -16,7 +16,15 @@ local GetColor = ns.GetColor
 
 -- Format: |cff[INFO]Add-on Name|r |cff[SEPARATOR]//|r |cff[TEXT]Message|r
 function ns:PrintMessage(message)
-    print(GetColor("INFO") .. L["ADDON_TITLE"] .. "|r "
-       .. GetColor("SEPARATOR") .. "//" .. "|r "
-       .. GetColor("TEXT") .. message .. "|r")
+	print(
+		GetColor("INFO")
+			.. L["ADDON_TITLE"]
+			.. "|r "
+			.. GetColor("SEPARATOR")
+			.. "//"
+			.. "|r "
+			.. GetColor("TEXT")
+			.. message
+			.. "|r"
+	)
 end
