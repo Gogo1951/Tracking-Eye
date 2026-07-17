@@ -47,11 +47,14 @@ The menu only ever shows spells your character actually knows, so it stays clean
 
 ### Slash Commands
 
-`/te` or `/trackingeye` // Open the options panel.
+`/te` // Open the options panel.
+
+<img width="800" src="https://github.com/user-attachments/assets/0ed1b25e-cc9c-48b6-828a-8d1d7320c424" />
+
 
 ## Testing & Localization Status
 
-🟢 World of Warcraft Classic (🟡 Season of Discovery) // WoW 1.15.8
+🟢 World of Warcraft Classic (🟡 Season of Discovery) // WoW 1.15.9
 
 🟢 Burning Crusade Anniversary // WoW 2.5.6
 
@@ -76,34 +79,30 @@ Please reach out if you would like to be involved!
 
 ## Related Add-ons
 
-🟢 Pairs With // gogo1951's [Come & Get It](https://www.curseforge.com/wow/addons/come-get-it)
+🟢 Pairs With // Gogo1951's [Come & Get It](https://www.curseforge.com/wow/addons/come-get-it)
 
 🟢 Pairs With // hizuro\_de's [FarmHud](https://www.curseforge.com/wow/addons/farmhud)
 
 🟢 Pairs With // Noshei's [Gathering Tracker](https://www.curseforge.com/wow/addons/gathering-tracker)
 
-🟢 Pairs With // The GatherLite Team's [GatherLite](https://www.curseforge.com/wow/addons/gatherlite)
+🟢 Pairs With // Wuild's [GatherLite](https://www.curseforge.com/wow/addons/gatherlite)
 
 🟢 Pairs With // nevcairiel's [GatherMate2 Classic](https://www.curseforge.com/wow/addons/gathermate2-classic)
+
+🟢 Pairs With // BetterAddons' [GatherProClassic](https://www.curseforge.com/wow/addons/gatherproclassic)
 
 🟢 Pairs With // Xinhuan's [HandyNotes](https://www.curseforge.com/wow/addons/handynotes)
 
 🟢 Pairs With // Xinhuan's [Routes](https://www.curseforge.com/wow/addons/routes)
 
-🔴 Direct Alternative // GenericBox's [Automatic Tracking Switcher](https://www.curseforge.com/wow/addons/automatic-tracking-switcher)
+🔴 Direct Alternative // IceDNicco's [Auto Tracker](https://www.curseforge.com/wow/addons/autotracker)
 
-🔴 Direct Alternative // IceDNicco's [AutoTracker](https://www.curseforge.com/wow/addons/autotracker)
+🔴 Direct Alternative // Petazo's [Gather Tracker](https://www.curseforge.com/wow/addons/gather-tracker)
 
-🔴 Direct Alternative // Petazo's [GatherTracker](https://www.curseforge.com/wow/addons/gather-tracker)
-
-🔴 Direct Alternative // mmx428's [Hunter Tracks](https://www.curseforge.com/wow/addons/hunter-tracks)
+🔴 Direct Alternative // fuba82's [MinimapTrackingMenu_Classic](https://www.curseforge.com/wow/addons/minimaptrackingmenu_classic)
 
 🔴 Direct Alternative // a14st0r's [nOde: the Omnitracker](https://www.curseforge.com/wow/addons/node)
 
-🔴 Direct Alternative // mxiii's [Track Everything](https://www.wowinterface.com/downloads/info25637-TrackEverything.html)
-
-🔴 Direct Alternative // Epenance's [Tracking Switcher](https://www.curseforge.com/wow/addons/tracking-switcher)
+🔴 Direct Alternative // react\_1337's [TrackerSwapper](https://www.curseforge.com/wow/addons/trackerswapper)
 
 🔴 Direct Alternative // executedpoorly's [Tracking Switcher X](https://www.curseforge.com/wow/addons/tracking-switcher-x)
-
-🔴 Direct Alternative // datagutten's [TrackingMenu](https://www.curseforge.com/wow/addons/trackingmenu)
