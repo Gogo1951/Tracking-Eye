@@ -29,11 +29,12 @@ function ns.OptionsSpacer(order)
 	}
 end
 
-function ns.OptionsSubHeader(text, order)
+function ns.OptionsSubHeader(text, order, hidden)
 	return {
 		type = "description",
 		name = "\n" .. ns.GetColor("TITLE") .. text .. "|r",
 		fontSize = "medium",
 		order = order,
+		hidden = hidden,
 	}
 end

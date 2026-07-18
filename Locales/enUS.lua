@@ -17,7 +17,7 @@ L["CHAT_LOADED"] =
 --------------------------------------------------------------------------------
 
 L["TRACKING_MENU"] = "Tracking Menu"
-L["TRACKING_MENU_DESC"] = "See a list of your tracking abilities, and set Persistent Tracking Ability."
+L["TRACKING_MENU_DESC"] = "Lists your tracking abilities and lets you set your Persistent Tracking Ability."
 
 L["PERSISTENT_ABILITY"] = "Persistent Tracking Ability"
 L["NONE_SET"] = "None Set"
@@ -30,7 +30,7 @@ L["FARM_MODE"] = "Farm Mode"
 L["FARM_MODE_DESC"] = "Cycles between your selected tracking abilities while you're on the move."
 
 L["PLACEMENT_MODE"] = "Free Placement Mode"
-L["PLACEMENT_DESC"] = "Replace the minimap button with a standalone icon you can move anywhere."
+L["PLACEMENT_DESC"] = "Replaces the mini-map button with a standalone icon you can move anywhere."
 
 L["ENABLED"] = "Enabled"
 L["DISABLED"] = "Disabled"
@@ -54,10 +54,10 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye Options"
 L["OPTIONS_DESC"] =
 	"Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs and Find Minerals while farming and reapplies tracking after death. Supports every tracking ability. Never lose track of the resources you're hunting."
 L["OPTIONS_ENABLE_WELCOME"] = "Enable Welcome Message"
-L["OPTIONS_WELCOME_DESC"] = "Print a one-line greeting in chat when Tracking Eye loads."
-L["OPTIONS_ENABLE_MINIMAP"] = "Enable Minimap Button"
+L["OPTIONS_WELCOME_DESC"] = "Prints a one-line greeting in chat when Tracking Eye loads."
+L["OPTIONS_ENABLE_MINIMAP"] = "Enable Mini-map Button"
 L["OPTIONS_ENABLE_MINIMAP_DESC"] =
-	"Shows the Tracking Eye button on the minimap; Farm Mode and Persistent Tracking still run when it's hidden."
+	"Shows the Tracking Eye button on the mini-map; Farm Mode and Persistent Tracking still run when it's hidden."
 
 -- Slash Commands
 
@@ -78,7 +78,7 @@ L["OPTIONS_FARM_TRAVEL_FORMS"] = "Travel & Flight Forms"
 L["OPTIONS_FARM_CHEETAH"] = "Aspect of the Cheetah"
 L["OPTIONS_FARM_GHOST_WOLF"] = "Ghost Wolf"
 L["OPTIONS_FARM_NOT_MOUNTED"] = "Not Mounted"
-L["OPTIONS_FARM_NOT_MOUNTED_DESC"] = "Cycle even without a mount or movement form."
+L["OPTIONS_FARM_NOT_MOUNTED_DESC"] = "Cycles even without a mount or movement form."
 L["OPTIONS_FARM_NOTE"] =
 	"Note: Farm Mode only runs while you're out of combat, not casting, and outside towns, inns, and instances."
 L["OPTIONS_FARM_ABILITIES"] = "Farm Mode Abilities"

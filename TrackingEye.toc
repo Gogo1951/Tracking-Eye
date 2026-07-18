@@ -2,8 +2,6 @@
 ## Notes: Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs and Find Minerals while farming and reapplies tracking after death. Supports every tracking ability. Never lose track of the resources you're hunting.
 ## Author: Gogo1951
 
-## IconTexture: Interface/AddOns/TrackingEye/Includes/Images/Tracking-Eye.tga
-
 ## Category-enUS: Professions
 ## Category-deDE: Berufe
 ## Category-esES: Profesiones
@@ -15,9 +13,11 @@
 ## Category-ruRU: Профессии
 ## Category-zhCN: 专业
 ## Category-zhTW: 專業技能
+
+## IconTexture: Interface/AddOns/TrackingEye/Includes/Images/Tracking-Eye.tga
 ## X-License: MIT
 
-## Interface: 11508, 20506
+## Interface: 11509, 20506
 ## Version: @project-version@
 
 ## X-Curse-Project-ID: 1129680
@@ -69,6 +69,8 @@ Features/Diagnostics.lua
 Features/Minimap-Button.lua
 Options/Options-Utilities.lua
 Options/Options-General.lua
+Options/Options-Farm-Mode.lua
+Options/Options-Free-Placement.lua
 Options/Options-Profiles.lua
 Options/Options-Diagnostics.lua
 Options/Options.lua

@@ -33,18 +33,11 @@ end
 -- Farm Cycle Logic
 --------------------------------------------------------------------------------
 --[[
-    Farm logic deliberately avoids raw GetTrackingTexture comparisons.
-    On the Vanilla-based client (Classic Era 1.15.x) the tracking mirror
-    lags the real state, sometimes by minutes (client bug since 1.15.1),
-    so comparing against it silently skips or misdirects casts. Our own
-    bookkeeping — ns.state.lastCastSpell, written only from
-    UNIT_SPELLCAST_SUCCEEDED — is reliable on every client, so the
-    cycle compares against that instead. ns.GetActiveTrackingSpell()
-    (which may fall back to GetTrackingTexture) is consulted only as a
-    positive confirmation of the currently active tracking, never as a
-    gate that blocks a cast. Recasting an already-active tracking spell
-    is a harmless refresh, so the comparison only exists to avoid
-    burning a GCD on a no-op.
+    Avoids raw GetTrackingTexture comparisons: the Era mirror lags real state by
+    up to minutes, so it's consulted only as positive confirmation, never as a
+    gate. The cycle compares against ns.state.lastCastSpell (written only from
+    UNIT_SPELLCAST_SUCCEEDED), reliable on every client. Recasting an active
+    spell is a harmless refresh, so the check only avoids burning a GCD on a no-op.
 ]]
 function ns.RunFarmLogic()
 	if ns.optionsOpen then

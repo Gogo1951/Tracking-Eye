@@ -1,5 +1,7 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "zhCN")
-if not L then return end
+if not L then
+	return
+end
 
 L["ADDON_TITLE"] = "Tracking Eye"
 
@@ -7,14 +9,15 @@ L["ADDON_TITLE"] = "Tracking Eye"
 -- Printed Messages
 --------------------------------------------------------------------------------
 
-L["CHAT_LOADED"] = "版本 %s。设置（包含禁用此消息的选项）可以在 选项 > 插件 > Tracking Eye 中找到。喜欢这个插件？告诉你的朋友吧！(="
+L["CHAT_LOADED"] =
+	"版本 %s。设置（包含禁用此消息的选项）可以在 选项 > 插件 > Tracking Eye 中找到。喜欢这个插件？告诉你的朋友吧！(="
 
 --------------------------------------------------------------------------------
 -- Minimap Button Tooltip
 --------------------------------------------------------------------------------
 
 L["TRACKING_MENU"] = "追踪菜单"
-L["TRACKING_MENU_DESC"] = "查看追踪技能列表，并设置持久追踪能力。"
+L["TRACKING_MENU_DESC"] = "显示您的追踪技能列表，并可设置持久追踪能力。"
 
 L["PERSISTENT_ABILITY"] = "持久追踪能力"
 L["NONE_SET"] = "未设置"
@@ -48,15 +51,18 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye 选项"
 
 -- General
 
-L["OPTIONS_DESC"] = "改进的追踪菜单和自动追踪切换器，在采集时循环寻找草药和寻找矿物，并在死亡后重新应用追踪。支持所有追踪技能。绝不会跟丢您正在寻找的资源。"
+L["OPTIONS_DESC"] =
+	"改进的追踪菜单和自动追踪切换器，在采集时循环寻找草药和寻找矿物，并在死亡后重新应用追踪。支持所有追踪技能。绝不会跟丢您正在寻找的资源。"
 L["OPTIONS_ENABLE_WELCOME"] = "启用欢迎消息"
 L["OPTIONS_WELCOME_DESC"] = "在 Tracking Eye 加载时，于聊天窗口打印一行问候语。"
 L["OPTIONS_ENABLE_MINIMAP"] = "启用小地图按钮"
-L["OPTIONS_ENABLE_MINIMAP_DESC"] = "在小地图上显示 Tracking Eye 按钮；当其隐藏时，采集模式和持久追踪仍在运行。"
+L["OPTIONS_ENABLE_MINIMAP_DESC"] =
+	"在小地图上显示 Tracking Eye 按钮；当其隐藏时，采集模式和持久追踪仍在运行。"
 
 -- Slash Commands
 
-L["OPTIONS_COMMANDS_INTRO"] = "Tracking Eye 的斜杠命令。选项面板涵盖了您需要的一切；这些是为喜欢使用键盘的玩家准备的。"
+L["OPTIONS_COMMANDS_INTRO"] =
+	"Tracking Eye 的斜杠命令。选项面板涵盖了您需要的一切；这些是为喜欢使用键盘的玩家准备的。"
 L["OPTIONS_COMMAND_TE"] = "打开 Tracking Eye 选项界面。"
 
 -- Persistent Tracking
@@ -73,7 +79,8 @@ L["OPTIONS_FARM_CHEETAH"] = "猎豹守护"
 L["OPTIONS_FARM_GHOST_WOLF"] = "幽魂之狼"
 L["OPTIONS_FARM_NOT_MOUNTED"] = "未骑乘"
 L["OPTIONS_FARM_NOT_MOUNTED_DESC"] = "即使没有坐骑或移动形态也会循环。"
-L["OPTIONS_FARM_NOTE"] = "注意：采集模式仅在您脱离战斗、未施法，且位于城镇、旅店和副本之外时运行。"
+L["OPTIONS_FARM_NOTE"] =
+	"注意：采集模式仅在您脱离战斗、未施法，且位于城镇、旅店和副本之外时运行。"
 L["OPTIONS_FARM_ABILITIES"] = "采集模式技能"
 L["OPTIONS_CYCLE_SPEED"] = "循环速度"
 L["OPTIONS_CYCLE_SPEED_DESC"] = "采集模式在追踪技能之间切换的频率（秒）。"

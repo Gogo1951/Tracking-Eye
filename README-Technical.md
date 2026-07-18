@@ -24,11 +24,13 @@ TrackingEye/
     Minimap-Button.lua         LibDataBroker launcher, LibDBIcon, anonymous free-placement frame, tooltip, OnClick
 
   Options/
-    Options-Utilities.lua      OptionsHeader / OptionsDesc / OptionsSpacer / OptionsSubHeader widget helpers
-    Options-General.lua        BuildGeneralOptions — the main AceConfig panel; BuildFarmAbilityArgs
-    Options-Profiles.lua       BuildProfilesOptions — the stock AceDBOptions-3.0 profiles table
-    Options-Diagnostics.lua    BuildDiagnosticsOptions — the gated Diagnostic Tools panel
-    Options.lua                InitOptions, OpenOptionsPanel, slash commands, optionsOpen hooks
+    Options-Utilities.lua       OptionsHeader / OptionsDesc / OptionsSpacer / OptionsSubHeader widget helpers
+    Options-General.lua         BuildGeneralOptions — root panel; composes the two feature fragments below into its args
+    Options-Farm-Mode.lua       BuildFarmModeOptions + BuildFarmAbilityArgs — Farm Mode settings fragment
+    Options-Free-Placement.lua  BuildFreePlacementOptions — Free Placement settings fragment
+    Options-Profiles.lua        BuildProfilesOptions — the stock AceDBOptions-3.0 profiles table
+    Options-Diagnostics.lua     BuildDiagnosticsOptions — the gated Diagnostic Tools panel
+    Options.lua                 InitOptions, OpenOptionsPanel, /te slash command, optionsOpen hooks
 
   Locales/
     enUS.lua                   Source-of-truth locale (sets the AceLocale `true` default flag)
@@ -149,7 +151,7 @@ Farm logic never reads `GetTrackingTexture()` directly. The multi-spell cycle co
 | Ghost Wolf | buff ID `ns.GHOST_WOLF` | `farmGhostWolf` | `SHAMAN` |
 | On foot (none of the above) | fallthrough | `farmNotMounted` (off by default) | all |
 
-`isFarming` is true only when the master `farmMode` toggle is on **and** the current state's toggle is enabled. States are mutually exclusive in practice (mounting cancels forms and aspects), so the checks are ordered mounted → travel form → cheetah → ghost wolf → on-foot. The class gates live only in the options UI (`ns.IsPlayerClass`, [Options/Options-General.lua](Options/Options-General.lua)) so a low-level character can pre-configure a toggle before learning the ability; detection itself is class-agnostic.
+`isFarming` is true only when the master `farmMode` toggle is on **and** the current state's toggle is enabled. States are mutually exclusive in practice (mounting cancels forms and aspects), so the checks are ordered mounted → travel form → cheetah → ghost wolf → on-foot. The class gates live only in the options UI (`ns.IsPlayerClass`, [Options/Options-Farm-Mode.lua](Options/Options-Farm-Mode.lua)) so a low-level character can pre-configure a toggle before learning the ability; detection itself is class-agnostic.
 
 `isCat` is reported separately because Cat Form is not a farm state — it gates Druid Track Humanoids, which is mutually exclusive with the travel forms that put the player into farm state (see below).
 
@@ -159,7 +161,7 @@ Farm logic never reads `GetTrackingTexture()` directly. The multi-spell cycle co
 
 ### Why Druid Track Humanoids Is Excluded
 
-`ns.SPELLS.DRUID_HUMANOIDS` (5225) requires Cat Form, which is mutually exclusive with the travel forms that put the player into farm state. Including it in the cycle would mean casting a Cat-Form-gated spell from a non-Cat-Form context, which always fails. The exclusion lives in three places: `BuildCycleCache()` ([Features/Farm-Mode.lua](Features/Farm-Mode.lua)) skips the ID, `BuildFarmAbilityArgs()` ([Options/Options-General.lua](Options/Options-General.lua)) hides the toggle, and `ns.CastTracking()` ([Features/Core.lua](Features/Core.lua)) guards on `isCat`. The tracking menu ([Features/Tracking-Menu.lua](Features/Tracking-Menu.lua)) likewise hides the entry unless the player is currently in Cat Form.
+`ns.SPELLS.DRUID_HUMANOIDS` (5225) requires Cat Form, which is mutually exclusive with the travel forms that put the player into farm state. Including it in the cycle would mean casting a Cat-Form-gated spell from a non-Cat-Form context, which always fails. The exclusion lives in three places: `BuildCycleCache()` ([Features/Farm-Mode.lua](Features/Farm-Mode.lua)) skips the ID, `BuildFarmAbilityArgs()` ([Options/Options-Farm-Mode.lua](Options/Options-Farm-Mode.lua)) hides the toggle, and `ns.CastTracking()` ([Features/Core.lua](Features/Core.lua)) guards on `isCat`. The tracking menu ([Features/Tracking-Menu.lua](Features/Tracking-Menu.lua)) likewise hides the entry unless the player is currently in Cat Form.
 
 ### Restricted Zones
 
@@ -264,7 +266,7 @@ Reset is entirely stock: the AceDBOptions **Reset Profile** on the Profiles pane
 
 1. Add a row to `SPELL_DATA` in [Data/Data.lua](Data/Data.lua) under the appropriate source (`{spellId, key, source}`). The constructor populates `ns.SPELLS`, `ns.TRACKING_IDS`, and `ns.TRACKING_SET` automatically; form spells (listed in `FORM_KEYS`) are excluded from the tracking sets.
 2. If the spell should be on by default in Farm Mode, add it to `ns.FARM_CYCLE_DEFAULTS` in [Data/Default-Settings.lua](Data/Default-Settings.lua).
-3. If the spell has special form gating (like Druid Track Humanoids), add a guard in `ns.CastTracking` ([Features/Core.lua](Features/Core.lua)), exclude it from `cachedCycle` in `BuildCycleCache` ([Features/Farm-Mode.lua](Features/Farm-Mode.lua)), and exclude it from the Farm Mode Abilities list in `BuildFarmAbilityArgs` ([Options/Options-General.lua](Options/Options-General.lua)).
+3. If the spell has special form gating (like Druid Track Humanoids), add a guard in `ns.CastTracking` ([Features/Core.lua](Features/Core.lua)), exclude it from `cachedCycle` in `BuildCycleCache` ([Features/Farm-Mode.lua](Features/Farm-Mode.lua)), and exclude it from the Farm Mode Abilities list in `BuildFarmAbilityArgs` ([Options/Options-Farm-Mode.lua](Options/Options-Farm-Mode.lua)).
 4. No new locale strings are needed — the spell name and icon come from `GetSpellInfo` / `GetSpellTexture` at runtime, so they localize automatically. Only add a locale key if you also need a custom label or description.
 5. Verify the menu and options correctly hide the spell on characters that don't know it. The `IsPlayerSpell(id)` checks inside `BuildFarmAbilityArgs`'s `hidden` and inside `Tracking-Menu.lua`'s row loop are what gate visibility.
 

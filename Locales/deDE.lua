@@ -1,5 +1,7 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "deDE")
-if not L then return end
+if not L then
+	return
+end
 
 L["ADDON_TITLE"] = "Tracking Eye"
 
@@ -7,7 +9,8 @@ L["ADDON_TITLE"] = "Tracking Eye"
 -- Printed Messages
 --------------------------------------------------------------------------------
 
-L["CHAT_LOADED"] = "Version %s. Einstellungen (einschließlich der Option, diese Nachricht zu deaktivieren) finden Sie unter Optionen > AddOns > Tracking Eye. Gefällt Euch das AddOn? Erzählt es einem Freund! (="
+L["CHAT_LOADED"] =
+	"Version %s. Einstellungen (einschließlich der Option, diese Nachricht zu deaktivieren) findet Ihr unter Optionen > AddOns > Tracking Eye. Gefällt Euch das AddOn? Erzählt es einem Freund! (="
 
 --------------------------------------------------------------------------------
 -- Minimap Button Tooltip
@@ -27,7 +30,8 @@ L["FARM_MODE"] = "Farming-Modus"
 L["FARM_MODE_DESC"] = "Wechselt zwischen Euren ausgewählten Aufspürfähigkeiten, während Ihr in Bewegung seid."
 
 L["PLACEMENT_MODE"] = "Freie Platzierung"
-L["PLACEMENT_DESC"] = "Ersetzt den Minimap-Button durch ein eigenständiges Symbol, das überall hin bewegt werden kann."
+L["PLACEMENT_DESC"] =
+	"Ersetzt den Minimap-Button durch ein eigenständiges Symbol, das überall hin bewegt werden kann."
 
 L["ENABLED"] = "Aktiviert"
 L["DISABLED"] = "Deaktiviert"
@@ -48,15 +52,18 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye-Optionen"
 
 -- General
 
-L["OPTIONS_DESC"] = "Verbessertes Aufspürungsmenü und automatischer Aufspürungs-Wechsler, der während des Farmens zwischen Kräuter- und Erzsuche wechselt und die Aufspürung nach dem Tod wiederherstellt. Unterstützt jede Aufspürfähigkeit. Verliert nie die Ressourcen aus den Augen, die Ihr jagt."
+L["OPTIONS_DESC"] =
+	"Verbessertes Aufspürungsmenü und automatischer Aufspürungs-Wechsler, der während des Farmens zwischen Kräuter- und Erzsuche wechselt und die Aufspürung nach dem Tod wiederherstellt. Unterstützt jede Aufspürfähigkeit. Verliert nie die Ressourcen aus den Augen, die Ihr jagt."
 L["OPTIONS_ENABLE_WELCOME"] = "Begrüßungsnachricht aktivieren"
 L["OPTIONS_WELCOME_DESC"] = "Gibt eine einzeilige Begrüßung im Chat aus, wenn Tracking Eye geladen wird."
 L["OPTIONS_ENABLE_MINIMAP"] = "Minimap-Button aktivieren"
-L["OPTIONS_ENABLE_MINIMAP_DESC"] = "Zeigt den Tracking Eye-Button an der Minimap; Farming-Modus und Dauerhafte Aufspürung laufen weiterhin, wenn er versteckt ist."
+L["OPTIONS_ENABLE_MINIMAP_DESC"] =
+	"Zeigt den Tracking Eye-Button an der Minimap; Farming-Modus und Dauerhafte Aufspürung laufen weiterhin, wenn er versteckt ist."
 
 -- Slash Commands
 
-L["OPTIONS_COMMANDS_INTRO"] = "Slash-Befehle für Tracking Eye. Das Optionsfenster deckt alles ab, was du brauchst; diese hier sind für diejenigen, die lieber die Tastatur benutzen."
+L["OPTIONS_COMMANDS_INTRO"] =
+	"Slash-Befehle für Tracking Eye. Das Optionsfenster deckt alles ab, was Ihr braucht; diese hier sind für diejenigen, die lieber die Tastatur benutzen."
 L["OPTIONS_COMMAND_TE"] = "Öffnet die Benutzeroberfläche für Tracking Eye-Optionen."
 
 -- Persistent Tracking
@@ -73,8 +80,9 @@ L["OPTIONS_FARM_CHEETAH"] = "Aspekt des Geparden"
 L["OPTIONS_FARM_GHOST_WOLF"] = "Geisterwolf"
 L["OPTIONS_FARM_NOT_MOUNTED"] = "Nicht reitend"
 L["OPTIONS_FARM_NOT_MOUNTED_DESC"] = "Wechselt auch ohne Reittier oder Bewegungsgestalt."
-L["OPTIONS_FARM_NOTE"] = "Hinweis: Der Farming-Modus läuft nur, wenn Ihr Euch außerhalb des Kampfes befindet, nicht zaubert und außerhalb von Städten, Gasthäusern und Instanzen seid."
-L["OPTIONS_FARM_ABILITIES"] = "Farming-Modus Fähigkeiten"
+L["OPTIONS_FARM_NOTE"] =
+	"Hinweis: Der Farming-Modus läuft nur, wenn Ihr Euch außerhalb des Kampfes befindet, nicht zaubert und außerhalb von Städten, Gasthäusern und Instanzen seid."
+L["OPTIONS_FARM_ABILITIES"] = "Farming-Modus-Fähigkeiten"
 L["OPTIONS_CYCLE_SPEED"] = "Wechselgeschwindigkeit"
 L["OPTIONS_CYCLE_SPEED_DESC"] = "Wie oft der Farming-Modus zwischen Aufspürfähigkeiten wechselt (in Sekunden)."
 
