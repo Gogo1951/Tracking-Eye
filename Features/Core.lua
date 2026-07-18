@@ -61,14 +61,10 @@ end
 -- Icon Management
 --------------------------------------------------------------------------------
 --[[
-    Display resolution uses the SAME single source of truth as the cast
-    logic — ns.GetActiveTrackingSpell() (Blizzard minimap icon while
-    visible, GetTrackingTexture as fallback; see Utilities.lua). Never
-    read MiniMapTrackingIcon or GetTrackingTexture directly here: a
-    hidden frame retains its last texture, and a raw read resurrects a
-    cleared tracking icon (and, worse, re-poisons lastCastSpell through
-    the adoption branch). Every past icon bug on Era came from a second
-    reader of the mirror with slightly different rules.
+    Single source of truth for the displayed icon: ns.GetActiveTrackingSpell()
+    (see Utilities.lua). Never read MiniMapTrackingIcon or GetTrackingTexture
+    directly here — a hidden frame keeps its last texture, and a raw read
+    resurrects a cleared icon and re-poisons lastCastSpell via the adopt branch.
 ]]
 function ns.UpdateIcon()
 	local isCat = ns.GetPlayerStates()
@@ -102,13 +98,11 @@ function ns.UpdateIcon()
 	end
 
 	--[[
-        THE ICON SHOWS WHAT THE GAME IS TRACKING — nothing tracked means
-        the default icon. No fallback to saved or selected spells: every
-        such fallback has produced a stale icon (e.g. showing last
-        session's spell at login with nothing up). Single exception: for
-        a few seconds after our own CONFIRMED cast — and only until the mirror
-        confirms it — show that spell while the laggy Blizzard icon catches up.
-        The cast succeeded, so that is still the game's real state.
+        The icon shows what the game is tracking; nothing tracked means the
+        default icon. No fallback to saved or selected spells — those show a
+        stale icon (e.g. last session's spell at login with nothing up). Only
+        exception: for a few seconds after our own confirmed cast, and only
+        until the mirror confirms it, show that spell while the icon catches up.
     ]]
 	local iconSpell = activeSpell
 	if
@@ -198,34 +192,18 @@ end
 --------------------------------------------------------------------------------
 
 --[[
-    TryRecastPersistent handles mid-play recasts, triggered by
-    UPDATE_SHAPESHIFT_FORM (e.g. druid leaving cat form) and by
-    MINIMAP_UPDATE_TRACKING (tracking changed or cancelled outside the
-    addon). Post-resurrection recasts are handled separately by
-    RecastAfterResurrection (PLAYER_UNGHOST / PLAYER_ALIVE), which bypasses this
-    function entirely.
+    Mid-play recasts, triggered by UPDATE_SHAPESHIFT_FORM and
+    MINIMAP_UPDATE_TRACKING. Post-resurrection recasts go through
+    RecastAfterResurrection instead.
 
-    GetTrackingTexture CANNOT be trusted as a live "is my tracking up?"
-    source across clients:
-
-    - During the Classic login/reload event storm it returns nil for
-      10+ seconds. Casting blindly in that window causes the
-      long-standing login-recast bug.
-    - On the Vanilla-based client (Classic Era 1.15.x) nil is ALSO the
-      normal steady-state value for "no tracking active", and since
-      1.15.1 the whole tracking mirror (GetTrackingTexture and
-      MINIMAP_UPDATE_TRACKING) lags the real state, sometimes by
-      minutes — it only flushes when an unrelated buff update happens.
-      A nil bail therefore permanently blocks recasts on Era.
-
-    So the login problem is solved by TIME (LOGIN_GRACE_SECONDS after
-    PLAYER_ENTERING_WORLD), not by interpreting nil, and the mirror is
-    consulted only as a positive signal ("the selected spell is
-    provably active — skip"). Everything else recasts, debounced by
-    RECAST_DEBOUNCE_SECONDS so the MINIMAP_UPDATE_TRACKING echo of our
-    own successful cast cannot re-trigger a cast loop. Recasting an
-    already-active tracking spell is a harmless refresh, so erring on
-    the side of casting is safe.
+    GetTrackingTexture cannot be trusted as a live "is tracking up?" source:
+    during the login/reload storm it returns nil for 10+ seconds, and on Era
+    (1.15.x) nil is also the normal "nothing tracked" value while the whole
+    mirror lags real state by up to minutes. So the login case is solved by
+    TIME (LOGIN_GRACE_SECONDS), never by interpreting nil, and the mirror is a
+    positive signal only ("provably active — skip"); everything else recasts (a
+    harmless refresh), debounced by RECAST_DEBOUNCE_SECONDS so our own cast's
+    MINIMAP_UPDATE_TRACKING echo cannot loop.
 ]]
 -- 10s covers the login/reload event storm. Erring short only risks one harmless redundant recast.
 local LOGIN_GRACE_SECONDS = 10
@@ -294,17 +272,12 @@ TryRecastPersistent = function()
 	end
 
 	--[[
-        Our own cast of this spell is still "in flight": UNIT_SPELLCAST_SUCCEEDED
-        confirmed it (lastCastSpell == spellId) but the laggy Era mirror hasn't
-        caught up, so the positive check above can't see it yet. Trust our own
-        confirmed cast and re-check after the window instead of recasting.
-
-        Without this, the constant UPDATE_SHAPESHIFT_FORM stream (a hunter's
-        aspects fire it every few seconds) drives a recast of the same spell
-        every ~5s until the mirror finally flushes — the "casting it 3 times"
-        symptom. This ALWAYS reschedules (never swallows), so a genuine
-        re-cancel still recasts once the window passes; it can never stop
-        persistent tracking permanently.
+        Our own cast is still in flight: UNIT_SPELLCAST_SUCCEEDED confirmed it but
+        the laggy Era mirror hasn't caught up, so the positive check above can't
+        see it yet. Reschedule and re-check instead of recasting — otherwise the
+        constant UPDATE_SHAPESHIFT_FORM stream (a hunter's aspects) drives a
+        redundant recast every ~5s until the mirror flushes. Always reschedules,
+        never swallows, so a genuine re-cancel still recasts once the window passes.
     ]]
 	if ns.state.lastCastSpell == spellId then
 		local sinceCast = GetTime() - (ns.state.lastTrackingCastAt or 0)
@@ -349,7 +322,7 @@ end
 -- Welcome Message
 --------------------------------------------------------------------------------
 local function PrintWelcome()
-	if not ns.db or not ns.db.profile.showWelcome then
+	if not ns.db or not ns.db.global.showWelcome then
 		return
 	end
 	ns:PrintMessage(L["CHAT_LOADED"]:format(ns.Version))
@@ -464,7 +437,15 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
 	end
 
 	if event == "ADDON_LOADED" and arg1 == ADDON_NAME then
-		ns.db = LibStub("AceDB-3.0"):New("TrackingEyeDB", ns.DATABASE_DEFAULTS, true)
+		--[[
+                No shared "Default" profile (the third AceDB:New argument is omitted):
+                each character defaults to its own profile keyed by name-realm, so
+                tracking and Farm Mode settings are per-character. Account-wide layout
+                and the login greeting live in ns.db.global, which is profile-independent.
+                Per-character-by-default is a deliberate exemption for this add-on
+                (tracking is class-specific); see the split migration below.
+            ]]
+		ns.db = LibStub("AceDB-3.0"):New("TrackingEyeDB", ns.DATABASE_DEFAULTS)
 
 		--[[
                 MIGRATION (remove after 2026-10-07): fold the pre-AceDB layout into
@@ -479,10 +460,11 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
                 table, so the pre-AceDB root keys are still readable off it.
             ]]
 		local root = ns.db.sv
-		local rootProfileKeys = { "showWelcome", "freePlacement", "freeIconScale", "freeIconShape" }
-		for _, key in ipairs(rootProfileKeys) do
+		-- Layout + welcome are account-wide now, so legacy root copies land in global, not the profile.
+		local rootGlobalKeys = { "showWelcome", "freePlacement", "freeIconScale", "freeIconShape" }
+		for _, key in ipairs(rootGlobalKeys) do
 			if root[key] ~= nil then
-				ns.db.profile[key] = root[key]
+				ns.db.global[key] = root[key]
 				root[key] = nil
 			end
 		end
@@ -539,6 +521,47 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
 				ns.db.profile.farmCycleSpells = moved
 			end
 			wipe(char)
+		end
+
+		--[[
+                MIGRATION (remove after 2026-10-15): split the former shared "Default"
+                profile into per-character profiles + account-wide layout. The prior
+                release put every character on one shared "Default" profile, so a
+                persistent tracking ability set on one character appeared on all of
+                them. Lift the free-placement layout and login greeting into global
+                once, then move each character still on "Default" onto its own
+                name-realm profile (seeded from the shared settings via CopyProfile),
+                clear the now-global keys, and reset selectedSpellId so no character
+                inherits another's tracking ability. Runs before the profile callbacks
+                register, so SetProfile fires nothing; new characters start on their
+                own profile and skip this entirely.
+            ]]
+		if not ns.db.global.perCharSplitDone then
+			local shared = ns.db.sv.profiles and ns.db.sv.profiles["Default"]
+			if shared then
+				for _, key in ipairs({ "freePlacement", "freeIconScale", "freeIconShape", "showWelcome" }) do
+					if shared[key] ~= nil then
+						ns.db.global[key] = shared[key]
+					end
+				end
+			end
+			ns.db.global.perCharSplitDone = true
+		end
+		if ns.db:GetCurrentProfile() == "Default" then
+			local charKey = ns.db.keys.char
+			if charKey and charKey ~= "Default" then
+				ns.db:SetProfile(charKey)
+				ns.db:CopyProfile("Default", true)
+				for _, key in ipairs({
+					"freePlacement",
+					"freeIconScale",
+					"freeIconShape",
+					"showWelcome",
+					"selectedSpellId",
+				}) do
+					ns.db.profile[key] = nil
+				end
+			end
 		end
 
 		--[[

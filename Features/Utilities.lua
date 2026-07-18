@@ -6,21 +6,15 @@ local _, ns = ...
 
 --[[
     Derived color table and accessor. The raw hex palette lives in Data/Data.lua
-    (ns.HEX); this layer bakes the |cff prefix into each value once at build
+    (ns.PALETTE); this layer bakes the |cff prefix into each value once at build
     time. GetColor returns the prefixed escape string — append |r at the point
     of use.
 ]]
 local COLOR_PREFIX = "|cff"
-local COLORS = {
-	TITLE = COLOR_PREFIX .. ns.HEX.TITLE,
-	INFO = COLOR_PREFIX .. ns.HEX.INFO,
-	BODY = COLOR_PREFIX .. ns.HEX.BODY,
-	TEXT = COLOR_PREFIX .. ns.HEX.TEXT,
-	ON = COLOR_PREFIX .. ns.HEX.ON,
-	OFF = COLOR_PREFIX .. ns.HEX.OFF,
-	SEPARATOR = COLOR_PREFIX .. ns.HEX.SEPARATOR,
-	MUTED = COLOR_PREFIX .. ns.HEX.MUTED,
-}
+local COLORS = {}
+for key, hex in pairs(ns.PALETTE) do
+	COLORS[key] = COLOR_PREFIX .. hex
+end
 
 function ns.GetColor(key)
 	return COLORS[key] or COLORS.TEXT

@@ -8,6 +8,26 @@ local LibDD = LibStub("LibUIDropDownMenu-4.0")
 --------------------------------------------------------------------------------
 local dropdown = LibDD:Create_UIDropDownMenu(ADDON_NAME .. "TrackingMenu", UIParent)
 
+-- Larger font for the menu. LibDD only honours info.fontObject on enabled
+-- buttons, so both the title and the ability rows are rendered as enabled
+-- (non-functional) entries to pick this up. Text colour comes from the inline
+-- colour codes already embedded in the button text.
+local menuFont = CreateFont(ADDON_NAME .. "TrackingMenuFont")
+do
+	local file, _, flags = _G.GameFontHighlightSmallLeft:GetFont()
+	menuFont:SetFont(file, 14, flags)
+	menuFont:SetJustifyH("LEFT")
+end
+
+-- Add an empty, non-interactive row to create vertical spacing.
+local function AddSpacer(level)
+	local spacer = LibDD:UIDropDownMenu_CreateInfo()
+	spacer.text = ""
+	spacer.notClickable = true
+	spacer.notCheckable = true
+	LibDD:UIDropDownMenu_AddButton(spacer, level)
+end
+
 --------------------------------------------------------------------------------
 -- Menu Logic
 --------------------------------------------------------------------------------
@@ -16,11 +36,16 @@ local function InitMenu(_, level)
 		return
 	end
 
+	-- Rendered as an enabled (but func-less) button: LibDD ignores fontObject on
+	-- disabled/isTitle rows, so this is the only way to enlarge the title font.
 	local titleInfo = LibDD:UIDropDownMenu_CreateInfo()
 	titleInfo.text = GetColor("TITLE") .. L["TRACKING_MENU"] .. "|r"
-	titleInfo.isTitle = true
 	titleInfo.notCheckable = true
+	titleInfo.fontObject = menuFont
 	LibDD:UIDropDownMenu_AddButton(titleInfo, level)
+
+	-- Spacer under the title.
+	AddSpacer(level)
 
 	local list = {}
 	for _, id in ipairs(ns.TRACKING_IDS) do
@@ -36,11 +61,19 @@ local function InitMenu(_, level)
 
 	local isCat = ns.GetPlayerStates()
 
+	local addedAbility = false
 	for _, data in ipairs(list) do
 		-- Hide DRUID_HUMANOIDS unless the player is currently in cat form
 		if IsPlayerSpell(data.id) and (data.id ~= ns.SPELLS.DRUID_HUMANOIDS or isCat) then
+			-- Spacer row between abilities (not before the first one).
+			if addedAbility then
+				AddSpacer(level)
+			end
+			addedAbility = true
+
 			local info = LibDD:UIDropDownMenu_CreateInfo()
 			info.text = string.format("|T%s:16|t %s", GetSpellTexture(data.id) or "", data.name)
+			info.fontObject = menuFont
 			info.value = data.id
 			info.checked = (ns.db and ns.db.profile.selectedSpellId == data.id)
 			info.func = function(button)

@@ -13,7 +13,6 @@ local ACD = LibStub("AceConfigDialog-3.0")
 -- Slash Command
 --------------------------------------------------------------------------------
 SLASH_TRACKINGEYE1 = "/te"
-SLASH_TRACKINGEYE2 = "/trackingeye"
 SlashCmdList["TRACKINGEYE"] = function()
 	ns:OpenOptionsPanel()
 end

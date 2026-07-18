@@ -124,15 +124,11 @@ for _, id in ipairs(ns.TRACKING_IDS) do
 end
 
 --[[
-    How long a cast attempt counts as "in flight": the window where our
-    confirmed cast is trusted over the (laggy) Blizzard tracking icon.
-
-    Two windows on purpose. The farm cycle uses the generous value to avoid
-    burning a GCD on redundant recasts while the mirror catches up. The icon
-    display uses a shorter one so an external cancel shortly after a cast stops
-    showing the stale icon sooner — and UpdateIcon additionally drops the
-    fallback the instant the mirror positively confirms the cast (see
-    mirrorConfirmedCast in Core.lua), which makes the common case near-instant.
+    How long a confirmed cast is trusted over the laggy Blizzard tracking icon.
+    Two windows: the farm cycle uses the generous value to avoid redundant
+    recasts; the icon display uses a shorter one so an external cancel clears the
+    stale icon sooner (UpdateIcon also drops it the instant mirrorConfirmedCast
+    latches — see Core.lua).
 ]]
 ns.CAST_IN_FLIGHT_SECONDS = 10
 ns.ICON_IN_FLIGHT_SECONDS = 4
@@ -153,10 +149,11 @@ ns.RESTRICTED_MAP_IDS = {
     Raw hex palette. The derived COLORS table, the |cff prefix, and the GetColor
     accessor live in Features/Utilities.lua (Data files hold no logic).
 ]]
-ns.HEX = {
+ns.PALETTE = {
 	TITLE = "FFD100", -- Gold: Titles, Headers, Section Names
 	INFO = "00BBFF", -- Blue: Interactions, Toggles, Links, Keybinds, Slash Commands
-	BODY = "CCCCCC", -- Silver: Descriptions, Help Text
+	BODY = "FFFFFF", -- White: Descriptions, Options Body Text
+	HELP = "CCCCCC", -- Silver: Pro Tips, Helper Text
 	TEXT = "FFFFFF", -- White: Messages, Values, Spell Names
 	ON = "33CC33", -- Green: On
 	OFF = "CC3333", -- Red: Off

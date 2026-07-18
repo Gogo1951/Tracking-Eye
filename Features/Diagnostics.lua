@@ -477,7 +477,7 @@ function ns:BuildDisplayContextReport()
 	lines[#lines + 1] = ""
 	local profile = ns.db and ns.db.profile
 	local global = ns.db and ns.db.global
-	lines[#lines + 1] = string.format("freePlacement: %s", tostring(profile and profile.freePlacement))
+	lines[#lines + 1] = string.format("freePlacement: %s", tostring(global and global.freePlacement))
 	if global and type(global.freePos) == "table" then
 		lines[#lines + 1] = string.format("freePos: x=%s y=%s", tostring(global.freePos.x), tostring(global.freePos.y))
 	else

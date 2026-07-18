@@ -15,17 +15,18 @@ ns.FARM_CYCLE_DEFAULTS = {
 --------------------------------------------------------------------------------
 
 --[[
-    The single AceDB-3.0 defaults table. Every user setting lives under profile,
-    so it follows the active profile and behaves account-wide on the shared
-    Default profile. Only profile-independent placement data lives under global:
-    the LibDBIcon minimap payload and the free-frame position (freePos, written
-    only once the user drags, so it has no default entry here).
+    The AceDB-3.0 defaults table. profile holds the per-character tracking and
+    Farm Mode settings — each character owns its profile (see Core.lua), so a
+    hunter and a priest never share a persistent tracking ability. global holds
+    the account-wide UI: the LibDBIcon minimap payload, the free-frame position
+    (freePos, written only on drag, so no default here), the free-placement
+    layout, and the login greeting — identical on every character.
 
     selectedSpellId is intentionally absent: it is nil until the user picks a
     tracking ability, and nil cannot be stored as a default. farmCycleSpells is a
     settings map, not a re-seedable list — AceDB copies its concrete defaults with
     rawset, so the map iterates correctly for new users, and a user who turns
-    every entry off (stored as explicit false) keeps that state across logins.
+    every entry off keeps that state across logins.
 ]]
 ns.DATABASE_DEFAULTS = {
 	profile = {
@@ -39,13 +40,13 @@ ns.DATABASE_DEFAULTS = {
 		farmGhostWolf = true,
 		farmNotMounted = false,
 		farmCycleSpells = ns.FARM_CYCLE_DEFAULTS,
-		-- UI placement and visual preferences.
+	},
+	global = {
+		minimap = {},
+		-- Account-wide UI: free-placement layout and the login greeting stay identical on every character.
 		freePlacement = false,
 		freeIconScale = 1.1,
 		freeIconShape = ns.SHAPES.CIRCLE,
 		showWelcome = true,
-	},
-	global = {
-		minimap = {},
 	},
 }

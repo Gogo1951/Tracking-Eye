@@ -1,5 +1,7 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "esMX")
-if not L then return end
+if not L then
+	return
+end
 
 L["ADDON_TITLE"] = "Tracking Eye"
 
@@ -7,14 +9,16 @@ L["ADDON_TITLE"] = "Tracking Eye"
 -- Printed Messages
 --------------------------------------------------------------------------------
 
-L["CHAT_LOADED"] = "Versión %s. Los ajustes (incluyendo la opción de desactivar este mensaje) se pueden encontrar en Opciones > Accesorios > Tracking Eye. ¿Te gusta el addon? ¡Cuéntaselo a un amigo! (="
+L["CHAT_LOADED"] =
+	"Versión %s. Los ajustes (incluyendo la opción de desactivar este mensaje) se pueden encontrar en Opciones > Accesorios > Tracking Eye. ¿Te gusta el addon? ¡Cuéntaselo a un amigo! (="
 
 --------------------------------------------------------------------------------
 -- Minimap Button Tooltip
 --------------------------------------------------------------------------------
 
 L["TRACKING_MENU"] = "Menú de rastreo"
-L["TRACKING_MENU_DESC"] = "Muestra una lista de tus habilidades de rastreo y establece la habilidad de rastreo persistente."
+L["TRACKING_MENU_DESC"] =
+	"Muestra una lista de tus habilidades de rastreo y establece la habilidad de rastreo persistente."
 
 L["PERSISTENT_ABILITY"] = "Habilidad de rastreo persistente"
 L["NONE_SET"] = "Ninguno establecido"
@@ -34,11 +38,11 @@ L["DISABLED"] = "Deshabilitado"
 L["TOGGLE"] = "Alternar"
 
 L["OPEN"] = "Abrir"
-L["LEFT_CLICK"] = "Clic Izquierdo"
-L["RIGHT_CLICK"] = "Clic Derecho"
-L["SHIFT_LEFT"] = "Mayús + Clic Izquierdo"
-L["SHIFT_RIGHT"] = "Mayús + Clic Derecho"
-L["SHIFT_MIDDLE"] = "Mayús + Clic Central"
+L["LEFT_CLICK"] = "Clic izquierdo"
+L["RIGHT_CLICK"] = "Clic derecho"
+L["SHIFT_LEFT"] = "Mayús + Clic izquierdo"
+L["SHIFT_RIGHT"] = "Mayús + Clic derecho"
+L["SHIFT_MIDDLE"] = "Mayús + Clic central"
 
 L["TOOLTIP_OPTIONS"] = "Opciones de Tracking Eye"
 
@@ -48,15 +52,18 @@ L["TOOLTIP_OPTIONS"] = "Opciones de Tracking Eye"
 
 -- General
 
-L["OPTIONS_DESC"] = "Menú de rastreo mejorado y cambio automático de rastreo que alterna entre Buscar hierbas y Buscar minerales mientras recolectas y vuelve a aplicar el rastreo después de morir. Soporta todas las habilidades de rastreo. Nunca pierdas el rastro de los recursos que estás cazando."
+L["OPTIONS_DESC"] =
+	"Menú de rastreo mejorado y cambio automático de rastreo que alterna entre Buscar hierbas y Buscar minerales mientras recolectas y vuelve a aplicar el rastreo después de morir. Soporta todas las habilidades de rastreo. Nunca pierdas el rastro de los recursos que estás cazando."
 L["OPTIONS_ENABLE_WELCOME"] = "Habilitar mensaje de bienvenida"
 L["OPTIONS_WELCOME_DESC"] = "Imprime un saludo de una línea en el chat cuando Tracking Eye se carga."
 L["OPTIONS_ENABLE_MINIMAP"] = "Habilitar botón del minimapa"
-L["OPTIONS_ENABLE_MINIMAP_DESC"] = "Muestra el botón de Tracking Eye en el minimapa; el Modo de recolección y el Rastreo persistente siguen funcionando cuando está oculto."
+L["OPTIONS_ENABLE_MINIMAP_DESC"] =
+	"Muestra el botón de Tracking Eye en el minimapa; el Modo de recolección y el Rastreo persistente siguen funcionando cuando está oculto."
 
 -- Slash Commands
 
-L["OPTIONS_COMMANDS_INTRO"] = "Comandos de barra para Tracking Eye. El panel de opciones cubre todo lo que necesitas; estos están aquí para los que prefieren usar el teclado."
+L["OPTIONS_COMMANDS_INTRO"] =
+	"Comandos de barra para Tracking Eye. El panel de opciones cubre todo lo que necesitas; estos están aquí para los que prefieren usar el teclado."
 L["OPTIONS_COMMAND_TE"] = "Abre la interfaz de opciones de Tracking Eye."
 
 -- Persistent Tracking
@@ -73,10 +80,12 @@ L["OPTIONS_FARM_CHEETAH"] = "Aspecto del guepardo"
 L["OPTIONS_FARM_GHOST_WOLF"] = "Lobo fantasmal"
 L["OPTIONS_FARM_NOT_MOUNTED"] = "No montado"
 L["OPTIONS_FARM_NOT_MOUNTED_DESC"] = "Alterna incluso sin montura o forma de movimiento."
-L["OPTIONS_FARM_NOTE"] = "Nota: El Modo de recolección solo funciona cuando estás fuera de combate, sin lanzar hechizos y fuera de ciudades, posadas y estancias."
+L["OPTIONS_FARM_NOTE"] =
+	"Nota: El Modo de recolección solo funciona cuando estás fuera de combate, sin lanzar hechizos y fuera de ciudades, posadas y estancias."
 L["OPTIONS_FARM_ABILITIES"] = "Habilidades del Modo de recolección"
 L["OPTIONS_CYCLE_SPEED"] = "Velocidad de ciclo"
-L["OPTIONS_CYCLE_SPEED_DESC"] = "Con qué frecuencia el Modo de recolección cambia entre las habilidades de rastreo (en segundos)."
+L["OPTIONS_CYCLE_SPEED_DESC"] =
+	"Con qué frecuencia el Modo de recolección cambia entre las habilidades de rastreo (en segundos)."
 
 -- Free Placement Mode
 

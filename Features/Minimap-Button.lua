@@ -85,7 +85,7 @@ end
 --------------------------------------------------------------------------------
 function ns.UpdateFreeFrameScale()
 	if ns.freeFrame then
-		local scale = (ns.db and ns.db.profile.freeIconScale) or ns.DATABASE_DEFAULTS.profile.freeIconScale
+		local scale = (ns.db and ns.db.global.freeIconScale) or ns.DATABASE_DEFAULTS.global.freeIconScale
 		ns.freeFrame:SetScale(scale)
 		--[[
             SetPoint offsets are interpreted in the frame's *own* scale.
@@ -103,7 +103,7 @@ function ns.UpdateFreeFrameShape()
 	if not ns.freeFrame then
 		return
 	end
-	local shape = (ns.db and ns.db.profile.freeIconShape) or ns.DATABASE_DEFAULTS.profile.freeIconShape
+	local shape = (ns.db and ns.db.global.freeIconShape) or ns.DATABASE_DEFAULTS.global.freeIconShape
 	local isSquare = (shape == ns.SHAPES.SQUARE)
 
 	ns.freeFrame.circleBg:SetShown(not isSquare)
@@ -129,7 +129,7 @@ function ns.UpdatePlacement()
 		ns.db.global.minimap = {}
 	end
 
-	if ns.db.profile.freePlacement then
+	if ns.db.global.freePlacement then
 		--[[
             Free frame replaces the minimap button. Hide the button without
             touching the saved Enable Mini-map Button preference
@@ -276,14 +276,10 @@ end
 --------------------------------------------------------------------------------
 function ns.CreateFreeFrame()
 	--[[
-        Anonymous frame (nil name) on purpose. WoW's per-character
-        layout-local.txt cache keys on frame name — if this frame has
-        any name, WoW will look it up there at creation time and apply
-        the per-character cached position, overriding the account-wide
-        ns.db.global.freePos. SetUserPlaced(false) from Lua does NOT
-        prevent that lookup. Making the frame anonymous removes it from
-        the layout-local system entirely, so positioning is owned
-        100% by ns.db.global.freePos.
+        Anonymous frame (nil name) on purpose: WoW's per-character layout-local
+        cache keys on frame name and would apply a cached position over our
+        account-wide freePos (SetUserPlaced(false) doesn't prevent the lookup).
+        No name removes the frame from that system, so freePos owns placement.
     ]]
 	local frame = CreateFrame("Button", nil, UIParent)
 	frame:SetSize(37, 37)

@@ -1,5 +1,7 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("TrackingEye", "koKR")
-if not L then return end
+if not L then
+	return
+end
 
 L["ADDON_TITLE"] = "Tracking Eye"
 
@@ -7,7 +9,8 @@ L["ADDON_TITLE"] = "Tracking Eye"
 -- Printed Messages
 --------------------------------------------------------------------------------
 
-L["CHAT_LOADED"] = "버전 %s. 설정(이 메시지를 비활성화하는 옵션 포함)은 설정 > 애드온 > Tracking Eye에서 찾을 수 있습니다. 애드온이 마음에 드시나요? 친구에게 알려주세요! (="
+L["CHAT_LOADED"] =
+	"버전 %s. 설정(이 메시지를 비활성화하는 옵션 포함)은 설정 > 애드온 > Tracking Eye에서 찾을 수 있습니다. 애드온이 마음에 드시나요? 친구에게 알려주세요! (="
 
 --------------------------------------------------------------------------------
 -- Minimap Button Tooltip
@@ -48,15 +51,18 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye 옵션"
 
 -- General
 
-L["OPTIONS_DESC"] = "개선된 추적 메뉴와 자동 추적 전환기로, 파밍 중에 약초 찾기와 광물 찾기를 순환하고 사망 후 추적을 다시 적용합니다. 모든 추적 능력을 지원합니다. 사냥 중인 자원을 절대 놓치지 마세요."
+L["OPTIONS_DESC"] =
+	"개선된 추적 메뉴와 자동 추적 전환기로, 파밍 중에 약초 찾기와 광물 찾기를 순환하고 사망 후 추적을 다시 적용합니다. 모든 추적 능력을 지원합니다. 사냥 중인 자원을 절대 놓치지 마세요."
 L["OPTIONS_ENABLE_WELCOME"] = "환영 메시지 활성화"
 L["OPTIONS_WELCOME_DESC"] = "Tracking Eye가 로드될 때 대화창에 한 줄 인사말을 출력합니다."
 L["OPTIONS_ENABLE_MINIMAP"] = "미니맵 버튼 활성화"
-L["OPTIONS_ENABLE_MINIMAP_DESC"] = "미니맵에 Tracking Eye 버튼을 표시합니다. 숨겨져 있을 때도 파밍 모드와 지속적인 추적은 계속 실행됩니다."
+L["OPTIONS_ENABLE_MINIMAP_DESC"] =
+	"미니맵에 Tracking Eye 버튼을 표시합니다. 숨겨져 있을 때도 파밍 모드와 지속적인 추적은 계속 실행됩니다."
 
 -- Slash Commands
 
-L["OPTIONS_COMMANDS_INTRO"] = "Tracking Eye 슬래시 명령어. 옵션 패널에 필요한 모든 것이 있습니다. 키보드 사용을 선호하는 분들을 위한 명령어입니다."
+L["OPTIONS_COMMANDS_INTRO"] =
+	"Tracking Eye 슬래시 명령어. 옵션 패널에 필요한 모든 것이 있습니다. 키보드 사용을 선호하는 분들을 위한 명령어입니다."
 L["OPTIONS_COMMAND_TE"] = "Tracking Eye 옵션 인터페이스를 엽니다."
 
 -- Persistent Tracking
@@ -73,7 +79,8 @@ L["OPTIONS_FARM_CHEETAH"] = "치타의 상"
 L["OPTIONS_FARM_GHOST_WOLF"] = "늑대 정령"
 L["OPTIONS_FARM_NOT_MOUNTED"] = "탈것 미탑승"
 L["OPTIONS_FARM_NOT_MOUNTED_DESC"] = "탈것이나 이동 변신 상태가 아니어도 순환합니다."
-L["OPTIONS_FARM_NOTE"] = "참고: 파밍 모드는 전투 중이 아니고, 주문을 시전하지 않으며, 마을, 여관, 인스턴스 외부에 있을 때만 실행됩니다."
+L["OPTIONS_FARM_NOTE"] =
+	"참고: 파밍 모드는 전투 중이 아니고, 주문을 시전하지 않으며, 마을, 여관, 인스턴스 외부에 있을 때만 실행됩니다."
 L["OPTIONS_FARM_ABILITIES"] = "파밍 모드 능력"
 L["OPTIONS_CYCLE_SPEED"] = "순환 속도"
 L["OPTIONS_CYCLE_SPEED_DESC"] = "파밍 모드가 추적 능력 사이를 전환하는 빈도입니다(초 단위)."
