@@ -21,12 +21,20 @@ end
 -- Registration
 --------------------------------------------------------------------------------
 local mainPanel
+local mainCategoryID
 local profilesPanel
 local diagnosticsPanel
 
 function ns.InitOptions()
 	AC:RegisterOptionsTable(ns.OPTIONS_REGISTRY.General, ns.BuildGeneralOptions)
-	mainPanel = ACD:AddToBlizOptions(ns.OPTIONS_REGISTRY.General, L["ADDON_TITLE"])
+	--[[
+        AddToBlizOptions returns (frame, categoryID). Capture the ID: it is what
+        Settings.OpenToCategory expects. Looking the category up by localized name
+        instead is fragile, because AceConfigDialog only aliases category.ID to the
+        display name on clients that lack C_SettingsUtil.OpenSettingsPanel. Clients
+        that have that API keep a generated ID, so a name lookup returns nil.
+    ]]
+	mainPanel, mainCategoryID = ACD:AddToBlizOptions(ns.OPTIONS_REGISTRY.General, L["ADDON_TITLE"])
 
 	-- Profiles panel, registered second-to-last (the stock AceDBOptions table).
 	if ns.BuildProfilesOptions then
@@ -76,17 +84,16 @@ function ns.InitOptions()
 end
 
 function ns:OpenOptionsPanel()
-	if Settings and Settings.GetCategory then
-		local category = Settings.GetCategory(L["ADDON_TITLE"])
-		if category then
-			Settings.OpenToCategory(category.ID)
-			return
-		end
+	if Settings and Settings.OpenToCategory and mainCategoryID then
+		Settings.OpenToCategory(mainCategoryID)
+		return
 	end
 	if InterfaceOptionsFrame_OpenToCategory then
 		InterfaceOptionsFrame_OpenToCategory(mainPanel)
+		-- Called twice for Classic compatibility
 		InterfaceOptionsFrame_OpenToCategory(mainPanel)
 		return
 	end
+	-- Last resort only: a standalone window, not the in-game Settings panel.
 	ACD:Open(ns.OPTIONS_REGISTRY.General)
 end
