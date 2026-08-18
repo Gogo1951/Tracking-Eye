@@ -4,10 +4,16 @@ local _, ns = ...
 -- Farm Cycle Defaults
 --------------------------------------------------------------------------------
 
--- Only Herbs and Minerals enabled by default; all others off.
+--[[
+    The gathering trio is on by default; every other tracking ability is off.
+    Find Treasure is a Dwarf racial, so it only ever reaches the cycle on a
+    character that knows it — BuildCycleCache requires IsPlayerSpell, and the
+    options toggle hides itself the same way.
+]]
 ns.FARM_CYCLE_DEFAULTS = {
 	[ns.SPELLS.HERBS] = true,
 	[ns.SPELLS.MINERALS] = true,
+	[ns.SPELLS.TREASURE] = true,
 }
 
 --------------------------------------------------------------------------------
@@ -33,13 +39,24 @@ ns.DATABASE_DEFAULTS = {
 		persistentTracking = true,
 		farmMode = true,
 		farmInterval = 3.5,
-		-- Movement states that activate Farm Mode (farmNotMounted off by default).
+		--[[
+			Movement states that activate Farm Mode. Aspect of the Cheetah and
+			Pack are off by default: they are combat and travel utility a hunter
+			flips on constantly, so cycling off the back of them fires the tracking
+			casts well outside actual farming.
+		]]
 		farmMounted = true,
 		farmTravelForms = true,
-		farmCheetah = true,
+		farmCheetah = false,
 		farmGhostWolf = true,
 		farmNotMounted = false,
 		farmCycleSpells = ns.FARM_CYCLE_DEFAULTS,
+		-- On by default: the ability the player picked belongs in the rotation.
+		farmIncludePersistent = true,
+		-- Opt-in: borrows the tracking slot to match the creature you target.
+		targetTracking = false,
+		-- On by default: the cycle's repeated cast sound is the add-on's own noise.
+		muteCycleSound = true,
 	},
 	global = {
 		minimap = {},
@@ -48,5 +65,7 @@ ns.DATABASE_DEFAULTS = {
 		freeIconScale = 1.1,
 		freeIconShape = ns.SHAPES.CIRCLE,
 		showWelcome = true,
+		-- Opt-in: takes over Blizzard's own mini-map tracking button to open our menu.
+		hookBlizzardTracking = false,
 	},
 }

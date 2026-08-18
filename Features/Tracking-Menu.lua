@@ -8,10 +8,12 @@ local LibDD = LibStub("LibUIDropDownMenu-4.0")
 --------------------------------------------------------------------------------
 local dropdown = LibDD:Create_UIDropDownMenu(ADDON_NAME .. "TrackingMenu", UIParent)
 
--- Larger font for the menu. LibDD only honours info.fontObject on enabled
--- buttons, so both the title and the ability rows are rendered as enabled
--- (non-functional) entries to pick this up. Text colour comes from the inline
--- colour codes already embedded in the button text.
+--[[
+    Larger font for the menu. LibDD only honours info.fontObject on enabled
+    buttons, so both the title and the ability rows are rendered as enabled
+    (non-functional) entries to pick this up. Text colour comes from the inline
+    colour codes already embedded in the button text.
+]]
 local menuFont = CreateFont(ADDON_NAME .. "TrackingMenuFont")
 do
 	local file, _, flags = _G.GameFontHighlightSmallLeft:GetFont()
@@ -36,8 +38,10 @@ local function InitMenu(_, level)
 		return
 	end
 
-	-- Rendered as an enabled (but func-less) button: LibDD ignores fontObject on
-	-- disabled/isTitle rows, so this is the only way to enlarge the title font.
+	--[[
+	    Rendered as an enabled (but func-less) button: LibDD ignores fontObject on
+	    disabled/isTitle rows, so this is the only way to enlarge the title font.
+	]]
 	local titleInfo = LibDD:UIDropDownMenu_CreateInfo()
 	titleInfo.text = GetColor("TITLE") .. L["TRACKING_MENU"] .. "|r"
 	titleInfo.notCheckable = true
@@ -79,6 +83,8 @@ local function InitMenu(_, level)
 			info.func = function(button)
 				if ns.db then
 					ns.db.profile.selectedSpellId = button.value
+					-- The cycle can include this ability, so the cache is now stale.
+					ns.InvalidateFarmCache()
 				end
 				ns.state.wasFarming = false
 				ns.CastTracking(button.value)
