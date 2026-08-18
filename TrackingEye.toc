@@ -24,8 +24,6 @@
 ## X-Wago-ID: qGZOMXNd
 
 ## SavedVariables: TrackingEyeDB
-# MIGRATION (remove after 2026-10-07): drop TrackingEyeCharDB once window closes
-## SavedVariablesPerCharacter: TrackingEyeCharDB
 
 # Includes
 Includes/Libraries/LibStub/LibStub.lua
@@ -64,13 +62,16 @@ Features/Core.lua
 Features/Utilities.lua
 Features/Announcements.lua
 Features/Farm-Mode.lua
+Features/Target-Tracking.lua
+Features/Key-Bindings.lua
 Features/Tracking-Menu.lua
 Features/Diagnostics.lua
 Features/Minimap-Button.lua
 Options/Options-Utilities.lua
+Options/Options-Target-Tracking.lua
+Options/Options-Free-Placement.lua
 Options/Options-General.lua
 Options/Options-Farm-Mode.lua
-Options/Options-Free-Placement.lua
 Options/Options-Profiles.lua
 Options/Options-Diagnostics.lua
 Options/Options.lua

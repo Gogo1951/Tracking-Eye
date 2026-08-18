@@ -1,0 +1,5 @@
+<Bindings>
+	<Binding name="TRACKINGEYE_CYCLE_FARM_ABILITY" category="Tracking Eye">
+		TrackingEye_CycleFarmAbility()
+	</Binding>
+</Bindings>

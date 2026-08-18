@@ -34,18 +34,6 @@ local function ApplyFreePosition(frame)
 	end
 	local pos = ns.db and ns.db.global.freePos
 
-	-- MIGRATION (remove after 2026-09-17): convert legacy freePos array {point, relativePoint, x, y} to {x, y} screen pixels
-	--[[
-        Apply the old anchor briefly, read the resulting screen-pixel center,
-        re-anchor in the new format, and overwrite the stored value.
-    ]]
-	if type(pos) == "table" and type(pos[1]) == "string" and type(pos[2]) == "string" then
-		frame:ClearAllPoints()
-		frame:SetPoint(pos[1], UIParent, pos[2], pos[3] or 0, pos[4] or 0)
-		SaveFreePosition(frame)
-		pos = ns.db.global.freePos
-	end
-
 	frame:ClearAllPoints()
 	if type(pos) == "table" and type(pos.x) == "number" and type(pos.y) == "number" then
 		local scale = frame:GetEffectiveScale()
@@ -168,21 +156,48 @@ function ns.BuildTooltip(tooltip)
 	tooltip:AddLine(" ")
 	tooltip:AddLine(" ")
 
+	--[[
+        Farm Mode status leads the tooltip because it is the only block that
+        answers "why is nothing happening?". It appears only while Farm Mode is
+        enabled — with the feature off the section has nothing to report, and the
+        Farm Mode block further down already shows Disabled.
+    ]]
+	if ns.db and ns.db.profile.farmMode then
+		local pauseReason = ns.GetFarmPauseReason and ns.GetFarmPauseReason()
+		-- Gray for paused, matching the house three-way: OFF red, paused gray, ON green.
+		local statusText = pauseReason and (GetColor("SEPARATOR") .. L["FARM_STATUS_PAUSED"] .. "|r")
+			or (GetColor("ON") .. L["FARM_STATUS_ACTIVE"] .. "|r")
+		tooltip:AddDoubleLine(GetColor("TITLE") .. L["FARM_STATUS"] .. "|r", statusText)
+		if pauseReason then
+			tooltip:AddLine(GetColor("BODY") .. L[pauseReason] .. "|r", 1, 1, 1, true)
+		end
+		tooltip:AddLine(" ")
+	end
+
 	tooltip:AddLine(GetColor("TITLE") .. L["TRACKING_MENU"] .. "|r")
 	tooltip:AddLine(GetColor("BODY") .. L["TRACKING_MENU_DESC"] .. "|r", 1, 1, 1, true)
 	tooltip:AddDoubleLine(GetColor("INFO") .. L["LEFT_CLICK"] .. "|r", GetColor("INFO") .. L["OPEN"] .. "|r")
 	tooltip:AddLine(" ")
 
-	tooltip:AddLine(GetColor("TITLE") .. L["PERSISTENT_ABILITY"] .. "|r")
+	--[[
+        Label and ability share one row, matching the Farm Mode Status block and
+        the house pattern of feature name on the left, its current value on the
+        right. The icon travels with the name so the pair never splits.
+    ]]
 	local selectedSpellId = ns.db and ns.db.profile.selectedSpellId
+	local abilityText
 	if selectedSpellId then
 		local name = GetSpellInfo(selectedSpellId) or L["NONE_SET"]
-		tooltip:AddLine(
-			"|T" .. (GetSpellTexture(selectedSpellId) or "") .. ":16|t " .. GetColor("TEXT") .. name .. "|r"
-		)
+		abilityText = "|T"
+			.. (GetSpellTexture(selectedSpellId) or ns.ICON_DEFAULT)
+			.. ":16|t "
+			.. GetColor("TEXT")
+			.. name
+			.. "|r"
 	else
-		tooltip:AddLine("|TInterface\\Icons\\inv_misc_map_01:16|t " .. GetColor("BODY") .. L["NONE_SET"] .. "|r")
+		abilityText = "|T" .. ns.ICON_DEFAULT .. ":16|t " .. GetColor("BODY") .. L["NONE_SET"] .. "|r"
 	end
+	tooltip:AddDoubleLine(GetColor("TITLE") .. L["PERSISTENT_ABILITY"] .. "|r", abilityText)
 	tooltip:AddDoubleLine(GetColor("INFO") .. L["RIGHT_CLICK"] .. "|r", GetColor("INFO") .. L["CLEAR_TRACKING"] .. "|r")
 	tooltip:AddLine(" ")
 
@@ -193,12 +208,38 @@ function ns.BuildTooltip(tooltip)
 	tooltip:AddDoubleLine(GetColor("INFO") .. L["SHIFT_LEFT"] .. "|r", GetColor("INFO") .. L["TOGGLE"] .. "|r")
 	tooltip:AddLine(" ")
 
+	--[[
+        Status-only teaser: name and state, no description and no click hint. These
+        rows surface settings that live in the options panel rather than offering to
+        operate them from here, and each follows the feature it belongs to. Each one
+        draws only while its setting is actually reachable, so the tooltip never
+        advertises something the player cannot act on — this one needs Persistent
+        Tracking on and a character that can track at least one creature type,
+        exactly what the options section hides on.
+    ]]
+	if ns.db and ns.db.profile.persistentTracking and ns.HasCreatureTypeTracking and ns.HasCreatureTypeTracking() then
+		local targetState = ns.db.profile.targetTracking and (GetColor("ON") .. L["ENABLED"] .. "|r")
+			or (GetColor("OFF") .. L["DISABLED"] .. "|r")
+		tooltip:AddDoubleLine(GetColor("TITLE") .. L["OPTIONS_TARGET_TRACKING"] .. "|r", targetState)
+		tooltip:AddLine(GetColor("BODY") .. L["OPTIONS_TARGET_TRACKING_DESC"] .. "|r", 1, 1, 1, true)
+		tooltip:AddLine(" ")
+	end
+
 	local farmState = (ns.db and ns.db.profile.farmMode) and (GetColor("ON") .. L["ENABLED"] .. "|r")
 		or (GetColor("OFF") .. L["DISABLED"] .. "|r")
 	tooltip:AddDoubleLine(GetColor("TITLE") .. L["FARM_MODE"] .. "|r", farmState)
 	tooltip:AddLine(GetColor("BODY") .. L["FARM_MODE_DESC"] .. "|r", 1, 1, 1, true)
 	tooltip:AddDoubleLine(GetColor("INFO") .. L["SHIFT_RIGHT"] .. "|r", GetColor("INFO") .. L["TOGGLE"] .. "|r")
 	tooltip:AddLine(" ")
+
+	-- Second status-only teaser; hides with Farm Mode, matching its options row.
+	if ns.db and ns.db.profile.farmMode then
+		local muteState = ns.db.profile.muteCycleSound and (GetColor("ON") .. L["ENABLED"] .. "|r")
+			or (GetColor("OFF") .. L["DISABLED"] .. "|r")
+		tooltip:AddDoubleLine(GetColor("TITLE") .. L["SILENCE_TRACKING_SOUNDS"] .. "|r", muteState)
+		tooltip:AddLine(GetColor("BODY") .. L["SILENCE_TRACKING_SOUNDS_DESC"] .. "|r", 1, 1, 1, true)
+		tooltip:AddLine(" ")
+	end
 
 	-- Options (Shift + Middle-Click opens the options panel)
 	tooltip:AddLine(GetColor("TITLE") .. L["TOOLTIP_OPTIONS"] .. "|r")
@@ -268,6 +309,61 @@ local function OnClick(self, button)
 
 	if updateNeeded then
 		ns.RefreshTooltip()
+	end
+end
+
+--------------------------------------------------------------------------------
+-- Blizzard Tracking Button Hook
+--------------------------------------------------------------------------------
+
+--[[
+    Optional take-over of Blizzard's own mini-map tracking icon, which is inert on
+    these clients. Off by default: it reaches into a frame the add-on does not own,
+    and some UIs already bind that button.
+
+    Take-over rather than HookScript, because a hook would leave Blizzard's handler
+    running and open two menus at once. Exactly ONE script is replaced — OnClick
+    where the widget supports it, OnMouseUp otherwise — since replacing both fires
+    the handler twice on a single click, which opens the menu and immediately
+    closes it again. The original is saved so turning the option off puts the frame
+    back exactly as found. Neither frame is secure or protected on Classic Era or
+    TBC Anniversary, so replacing their scripts raises no taint.
+]]
+local blizzardHookedScript = nil
+local blizzardSavedHandler = nil
+
+local function GetBlizzardTrackingButton()
+	return MiniMapTrackingButton or MiniMapTracking
+end
+
+function ns.HasBlizzardTrackingButton()
+	return GetBlizzardTrackingButton() ~= nil
+end
+
+function ns.ApplyBlizzardTrackingHook()
+	local button = GetBlizzardTrackingButton()
+	if not button or not button.SetScript or not button.HasScript then
+		return
+	end
+
+	local enabled = ns.db and ns.db.global.hookBlizzardTracking or false
+
+	if enabled and not blizzardHookedScript then
+		local scriptName = (button:HasScript("OnClick") and "OnClick")
+			or (button:HasScript("OnMouseUp") and "OnMouseUp")
+			or nil
+		if not scriptName then
+			return
+		end
+		blizzardHookedScript = scriptName
+		blizzardSavedHandler = button:GetScript(scriptName)
+		button:SetScript(scriptName, function()
+			ns.ToggleMenu(button)
+		end)
+	elseif not enabled and blizzardHookedScript then
+		button:SetScript(blizzardHookedScript, blizzardSavedHandler)
+		blizzardHookedScript = nil
+		blizzardSavedHandler = nil
 	end
 end
 
@@ -350,9 +446,8 @@ function ns.CreateFreeFrame()
 
 	ns.freeFrame = frame
 	--[[
-        ApplyFreePosition does its own ClearAllPoints, handles the
-        legacy {point, relativePoint, x, y} array migration, and pins
-        the frame to its saved screen-pixel coordinates via the stable
+        ApplyFreePosition does its own ClearAllPoints and pins the frame
+        to its saved screen-pixel coordinates via the stable
         CENTER -> UIParent BOTTOMLEFT anchor.
     ]]
 	ApplyFreePosition(frame)
@@ -374,6 +469,8 @@ function ns.InitMinimap()
 	end
 
 	local button = LDBIcon:GetMinimapButton(ADDON_NAME)
+	-- Kept so ns.IsTooltipShowing can tell our own tooltip from everyone else's.
+	ns.minimapButton = button
 	if button then
 		button:SetScript("OnEnter", function(self)
 			GameTooltip:SetOwner(self, "ANCHOR_NONE")
@@ -387,4 +484,5 @@ function ns.InitMinimap()
 	end
 
 	ns.UpdatePlacement()
+	ns.ApplyBlizzardTrackingHook()
 end

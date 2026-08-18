@@ -3,6 +3,7 @@ local _, ns = ...
 local L = ns.L
 local GetColor = ns.GetColor
 local Header, Desc, Spacer = ns.OptionsHeader, ns.OptionsDesc, ns.OptionsSpacer
+local RowLabel = ns.OptionsRowLabel
 
 --------------------------------------------------------------------------------
 -- General Options Panel
@@ -51,12 +52,63 @@ function ns.BuildGeneralOptions()
 			end,
 		},
 
+		--[[
+			Sits with the other two mini-map controls rather than down among the
+			feature settings: it is a third toggle for the same button, and the
+			player reads the three as one group.
+		]]
+		spaceHookBlizzard0 = Spacer(3.55),
+		hookBlizzardTracking = {
+			type = "toggle",
+			name = L["OPTIONS_HOOK_BLIZZARD"],
+			desc = L["OPTIONS_HOOK_BLIZZARD_DESC"],
+			order = 3.6,
+			width = "full",
+			hidden = function()
+				return not (ns.HasBlizzardTrackingButton and ns.HasBlizzardTrackingButton())
+			end,
+			get = function()
+				return ns.db and ns.db.global.hookBlizzardTracking
+			end,
+			set = function(_, value)
+				if ns.db then
+					ns.db.global.hookBlizzardTracking = value
+					ns.ApplyBlizzardTrackingHook()
+				end
+			end,
+		},
+		descHookBlizzardNote = {
+			type = "description",
+			name = GetColor("HELP") .. L["OPTIONS_HOOK_BLIZZARD_NOTE"] .. "|r",
+			fontSize = "medium",
+			order = 3.65,
+			hidden = function()
+				return not (ns.HasBlizzardTrackingButton and ns.HasBlizzardTrackingButton())
+			end,
+		},
+
 		spaceCommands0 = Spacer(4),
-		headerCommands = Header("/Commands", 5),
+		headerCommands = Header(L["OPTIONS_COMMANDS_HEADER"], 5),
 		spaceCommands1 = Spacer(6),
 		descCommandsIntro = Desc(L["OPTIONS_COMMANDS_INTRO"], 7),
 		spaceCommands2 = Spacer(7.1),
-		descCommandTE = Desc(GetColor("INFO") .. "/te|r" .. "  " .. L["OPTIONS_COMMAND_TE"], 7.2),
+		descCommands = Desc(
+			GetColor("INFO") .. L["OPTIONS_COMMAND"] .. "|r" .. "  " .. L["OPTIONS_COMMAND_DESCRIPTION"],
+			7.2
+		),
+
+		--[[
+			A binding cannot be set from an AceConfig panel, so this section is a
+			pointer: without it the binding exists but nothing in the add-on ever
+			mentions it. The name matches the Key Bindings entry exactly.
+		]]
+		spaceKeyBinds0 = Spacer(7.5),
+		headerKeyBinds = Header(L["OPTIONS_KEYBINDS"], 7.6),
+		spaceKeyBinds1 = Spacer(7.7),
+		descKeyBinds = Desc(
+			GetColor("INFO") .. L["BINDING_CYCLE_FARM_ABILITY"] .. "|r" .. "  " .. L["OPTIONS_KEYBINDS_DESC"],
+			7.8
+		),
 
 		spacePT0 = Spacer(9),
 		headerPersistent = Header(L["PERSISTENT_TRACKING"], 10),
@@ -82,48 +134,48 @@ function ns.BuildGeneralOptions()
 		spaceLinks0 = Spacer(69),
 		headerLinks = Header(L["OPTIONS_LINKS"], 70),
 		spaceLinks1 = Spacer(71),
-		discordLabel = Desc(GetColor("TITLE") .. L["OPTIONS_DISCORD"] .. "|r", 72),
+		discordLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_DISCORD"] .. "|r", 72),
 		discordURL = {
 			type = "input",
 			name = "",
 			order = 73,
-			width = "double",
+			width = ns.OPTIONS_CONTROL_WIDTH,
 			get = function()
 				return ns.DISCORD_URL
 			end,
 			set = function() end,
 		},
 		spaceLinks2 = Spacer(74),
-		githubLabel = Desc(GetColor("TITLE") .. L["OPTIONS_GITHUB"] .. "|r", 75),
+		githubLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_GITHUB"] .. "|r", 75),
 		githubURL = {
 			type = "input",
 			name = "",
 			order = 76,
-			width = "double",
+			width = ns.OPTIONS_CONTROL_WIDTH,
 			get = function()
 				return ns.GITHUB_URL
 			end,
 			set = function() end,
 		},
 		spaceLinks3 = Spacer(77),
-		curseforgeLabel = Desc(GetColor("TITLE") .. L["OPTIONS_CURSEFORGE"] .. "|r", 78),
+		curseforgeLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_CURSEFORGE"] .. "|r", 78),
 		curseforgeURL = {
 			type = "input",
 			name = "",
 			order = 79,
-			width = "double",
+			width = ns.OPTIONS_CONTROL_WIDTH,
 			get = function()
 				return ns.CURSEFORGE_URL
 			end,
 			set = function() end,
 		},
 		spaceLinks4 = Spacer(80),
-		wagoLabel = Desc(GetColor("TITLE") .. L["OPTIONS_WAGO"] .. "|r", 81),
+		wagoLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_WAGO"] .. "|r", 81),
 		wagoURL = {
 			type = "input",
 			name = "",
 			order = 82,
-			width = "double",
+			width = ns.OPTIONS_CONTROL_WIDTH,
 			get = function()
 				return ns.WAGO_URL
 			end,
@@ -144,12 +196,13 @@ function ns.BuildGeneralOptions()
 	}
 
 	--[[
-		Farm Mode and Free Placement each own their widgets in their own file and
-		return an args fragment; merge them into the General page so the layout is
-		a single scrolling panel. Order values are unique across fragments, so the
-		page renders in the same order regardless of merge sequence.
+		Target Tracking and Free Placement are small enough to live on this page:
+		each owns its widgets in its own file and returns an args fragment, merged
+		in here. Order values are unique across fragments, so the page renders the
+		same regardless of merge sequence. Farm Mode is not among them — it carries
+		enough controls to have earned its own child panel.
 	]]
-	for key, entry in pairs(ns.BuildFarmModeOptions()) do
+	for key, entry in pairs(ns.BuildTargetTrackingOptions()) do
 		args[key] = entry
 	end
 	for key, entry in pairs(ns.BuildFreePlacementOptions()) do

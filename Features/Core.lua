@@ -6,9 +6,17 @@ local eventFrame = CreateFrame("Frame")
 --------------------------------------------------------------------------------
 -- Version
 --------------------------------------------------------------------------------
+--[[
+    The nil branch is load-bearing: an unpackaged working copy reads the metadata
+    back as nil, and testing for "@" first would error on exactly the local-dev
+    path this exists for.
+]]
 local function GetVersion()
-	local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
-	local version = GetAddOnMetadata(ADDON_NAME, "Version")
+	local getMetadata = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
+	if not getMetadata then
+		return "Dev"
+	end
+	local version = getMetadata(ADDON_NAME, "Version")
 	if not version or version:find("@") then
 		return "Dev"
 	end
@@ -34,15 +42,21 @@ ns.state = {
 	enteredWorldAt = GetTime(),
 	lastTrackingCastAt = 0,
 	--[[
+        Tracked from LOOT_OPENED / LOOT_CLOSED rather than by reading LootFrame:
+        Speedy-Loot-style add-ons hide that frame while looting is still open, so
+        the events are the only reliable source. Read by ns.CanCast.
+    ]]
+	lootWindowOpen = false,
+	--[[
         Flipped true by UpdateIcon once the tracking mirror positively reports
         our own lastCastSpell — i.e. the mirror has caught up. After that, a nil
         mirror reading is a genuine external cancel (not lag), so the icon's
         in-flight fallback stops overriding it. Reset to false on every new cast.
     ]]
 	mirrorConfirmedCast = false,
+	-- Locale key for why Farm Mode is idle, or nil. Written only by UpdateIcon.
+	farmPauseReason = nil,
 }
-
-ns.optionsOpen = false
 
 --[[
     Single write-site for the runtime-only lastCastSpell bookkeeping,
@@ -116,11 +130,29 @@ function ns.UpdateIcon()
 
 	ns.state.currentIcon = iconSpell and GetSpellTexture(iconSpell) or ns.ICON_DEFAULT
 
+	--[[
+        Dim the icon while Farm Mode is idle for a settled reason (a town, an
+        instance, a taxi, an empty cycle, a movement state that isn't switched
+        on). Transient reasons — combat, casting, looting — are reported in the
+        tooltip but never dim, or the icon strobes through every fight. Tint
+        values are written as numbers, never nil: LibDBIcon feeds iconR/G/B
+        straight into SetVertexColor, which errors on a nil component.
+    ]]
+	local pauseReason, isTransient
+	if ns.GetFarmPauseReason then
+		pauseReason, isTransient = ns.GetFarmPauseReason()
+	end
+	ns.state.farmPauseReason = pauseReason
+	local tint = (pauseReason and not isTransient) and ns.ICON_PAUSED_TINT or 1
+
 	if ns.ldb then
 		ns.ldb.icon = ns.state.currentIcon
+		ns.ldb.iconR, ns.ldb.iconG, ns.ldb.iconB = tint, tint, tint
 	end
 	if ns.freeFrame and ns.freeFrame.icon then
 		ns.freeFrame.icon:SetTexture(ns.state.currentIcon)
+		ns.freeFrame.icon:SetDesaturated(tint ~= 1)
+		ns.freeFrame.icon:SetVertexColor(tint, tint, tint)
 	end
 
 	if ns.RefreshTooltip then
@@ -132,6 +164,8 @@ function ns.ClearTracking()
 	ns.SetLastCast(nil)
 	if ns.db then
 		ns.db.profile.selectedSpellId = nil
+		-- The cycle can include this ability, so the cache is now stale.
+		ns.InvalidateFarmCache()
 	end
 	CancelTrackingBuff()
 
@@ -151,15 +185,16 @@ end
 --------------------------------------------------------------------------------
 -- Casting
 --------------------------------------------------------------------------------
+-- Returns true when a cast was actually attempted, false on every early bail.
 function ns.CastTracking(spellId)
 	if not spellId or not IsPlayerSpell(spellId) then
-		return
+		return false
 	end
 
 	if spellId == ns.SPELLS.DRUID_HUMANOIDS then
 		local isCat = ns.GetPlayerStates()
 		if not isCat then
-			return
+			return false
 		end
 	end
 
@@ -171,7 +206,7 @@ function ns.CastTracking(spellId)
     ]]
 	local start, duration = GetSpellCooldown(spellId)
 	if start and duration and start > 0 and duration > 0 then
-		return
+		return false
 	end
 
 	--[[
@@ -185,6 +220,7 @@ function ns.CastTracking(spellId)
     ]]
 	ns.state.lastTrackingCastAt = GetTime()
 	pcall(CastSpellByID, spellId)
+	return true
 end
 
 --------------------------------------------------------------------------------
@@ -429,6 +465,52 @@ local function RecastAfterResurrection()
 end
 
 --------------------------------------------------------------------------------
+-- Profile Apply
+--------------------------------------------------------------------------------
+
+--[[
+    Re-applies everything that is not read live from the database, whenever the
+    active profile changes, is copied over, or is reset. Registered by name
+    against the three AceDB callbacks, so it is invoked as a method with the
+    callback's own arguments, which it ignores.
+
+    Anything applied imperatively has to be repeated here — the placement, the
+    scale and shape, the ticker interval, the Blizzard button hook, and the Target
+    Tracking hold, none of which re-read themselves. It ends in NotifyChange for
+    every registered panel: without that, an options panel already on screen keeps
+    rendering the previous profile's values until the player clicks away and back.
+]]
+function ns:ApplyProfile()
+	-- The new profile's per-state toggles change what isFarming resolves to.
+	if ns.InvalidatePlayerStates then
+		ns.InvalidatePlayerStates()
+	end
+	if ns.InvalidateFarmCache then
+		ns.InvalidateFarmCache()
+	end
+	if ns.RestartFarmTicker then
+		ns.RestartFarmTicker()
+	end
+	if ns.UpdatePlacement then
+		ns.UpdatePlacement()
+	end
+	if ns.UpdateFreeFrameScale then
+		ns.UpdateFreeFrameScale()
+	end
+	if ns.UpdateFreeFrameShape then
+		ns.UpdateFreeFrameShape()
+	end
+	if ns.ApplyBlizzardTrackingHook then
+		ns.ApplyBlizzardTrackingHook()
+	end
+	ns.UpdateIcon()
+
+	if ns.RefreshOptionsPanels then
+		ns.RefreshOptionsPanels()
+	end
+end
+
+--------------------------------------------------------------------------------
 -- Event Handling
 --------------------------------------------------------------------------------
 eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
@@ -438,158 +520,29 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
 
 	if event == "ADDON_LOADED" and arg1 == ADDON_NAME then
 		--[[
-                No shared "Default" profile (the third AceDB:New argument is omitted):
-                each character defaults to its own profile keyed by name-realm, so
-                tracking and Farm Mode settings are per-character. Account-wide layout
-                and the login greeting live in ns.db.global, which is profile-independent.
-                Per-character-by-default is a deliberate exemption for this add-on
-                (tracking is class-specific); see the split migration below.
+                The third AceDB:New argument is omitted, so there is no shared
+                "Default" profile: each character lands on its own profile keyed by
+                name-realm. Per-character tracking state (the selected ability, the
+                farm cycle) lives in ns.db.profile; account-wide layout and
+                presentation live in ns.db.global, which is profile-independent.
             ]]
 		ns.db = LibStub("AceDB-3.0"):New("TrackingEyeDB", ns.DATABASE_DEFAULTS)
 
-		--[[
-                MIGRATION (remove after 2026-10-07): fold the pre-AceDB layout into
-                the AceDB profile/global. Older versions stored account-wide settings
-                at the root of TrackingEyeDB and per-character settings in the separate
-                TrackingEyeCharDB table; AceDB now owns TrackingEyeDB, so the legacy
-                root keys and the whole TrackingEyeCharDB are read once, copied into
-                the profile (or global, for placement), and cleared. The legacy field
-                renames (autoTracking -> persistentTracking, farmingMode -> farmMode),
-                the dropped runtime-only lastCastSpell, and the retired cross-character
-                resetGeneration marker are all handled here. ns.db.sv is the raw saved
-                table, so the pre-AceDB root keys are still readable off it.
-            ]]
-		local root = ns.db.sv
-		-- Layout + welcome are account-wide now, so legacy root copies land in global, not the profile.
-		local rootGlobalKeys = { "showWelcome", "freePlacement", "freeIconScale", "freeIconShape" }
-		for _, key in ipairs(rootGlobalKeys) do
-			if root[key] ~= nil then
-				ns.db.global[key] = root[key]
-				root[key] = nil
-			end
-		end
-		if type(root.minimap) == "table" then
-			ns.db.global.minimap = root.minimap
-			root.minimap = nil
-		end
-		if root.freePos ~= nil then
-			ns.db.global.freePos = root.freePos
-			root.freePos = nil
-		end
-		root.resetGeneration = nil
+		-- MIGRATION (remove after 2026-09-17): clear the retired per-character split marker
+		ns.db.global.perCharSplitDone = nil
 
-		local char = TrackingEyeCharDB
-		if char then
-			if char.autoTracking ~= nil and char.persistentTracking == nil then
-				char.persistentTracking = char.autoTracking
-			end
-			if char.farmingMode ~= nil and char.farmMode == nil then
-				char.farmMode = char.farmingMode
-			end
-			local charKeys = {
-				"persistentTracking",
-				"farmMode",
-				"farmInterval",
-				"farmMounted",
-				"farmTravelForms",
-				"farmCheetah",
-				"farmGhostWolf",
-				"farmNotMounted",
-				"selectedSpellId",
-			}
-			for _, key in ipairs(charKeys) do
-				if char[key] ~= nil then
-					ns.db.profile[key] = char[key]
-				end
-			end
-			if type(char.farmCycleSpells) == "table" then
-				local moved = {}
-				for id, enabled in pairs(char.farmCycleSpells) do
-					moved[id] = enabled and true or false
-				end
-				--[[
-                        The old model stored a disabled cycle spell as an absent key.
-                        AceDB re-adds default-true for any absent default key on every
-                        login, so pin the user's off state to an explicit false or the
-                        default Herbs/Minerals would resurrect after migration.
-                    ]]
-				for id in pairs(ns.FARM_CYCLE_DEFAULTS) do
-					if moved[id] == nil then
-						moved[id] = false
-					end
-				end
-				ns.db.profile.farmCycleSpells = moved
-			end
-			wipe(char)
+		for _, message in ipairs({ "OnProfileChanged", "OnProfileCopied", "OnProfileReset" }) do
+			ns.db.RegisterCallback(ns, message, "ApplyProfile")
 		end
 
 		--[[
-                MIGRATION (remove after 2026-10-15): split the former shared "Default"
-                profile into per-character profiles + account-wide layout. The prior
-                release put every character on one shared "Default" profile, so a
-                persistent tracking ability set on one character appeared on all of
-                them. Lift the free-placement layout and login greeting into global
-                once, then move each character still on "Default" onto its own
-                name-realm profile (seeded from the shared settings via CopyProfile),
-                clear the now-global keys, and reset selectedSpellId so no character
-                inherits another's tracking ability. Runs before the profile callbacks
-                register, so SetProfile fires nothing; new characters start on their
-                own profile and skip this entirely.
+                Registered here rather than at PLAYER_LOGIN: the Profiles builder
+                reads ns.db, so registration has to follow AceDB:New, and file-scope
+                registration would crash on load.
             ]]
-		if not ns.db.global.perCharSplitDone then
-			local shared = ns.db.sv.profiles and ns.db.sv.profiles["Default"]
-			if shared then
-				for _, key in ipairs({ "freePlacement", "freeIconScale", "freeIconShape", "showWelcome" }) do
-					if shared[key] ~= nil then
-						ns.db.global[key] = shared[key]
-					end
-				end
-			end
-			ns.db.global.perCharSplitDone = true
+		if ns.RegisterOptionsPanels then
+			ns.RegisterOptionsPanels()
 		end
-		if ns.db:GetCurrentProfile() == "Default" then
-			local charKey = ns.db.keys.char
-			if charKey and charKey ~= "Default" then
-				ns.db:SetProfile(charKey)
-				ns.db:CopyProfile("Default", true)
-				for _, key in ipairs({
-					"freePlacement",
-					"freeIconScale",
-					"freeIconShape",
-					"showWelcome",
-					"selectedSpellId",
-				}) do
-					ns.db.profile[key] = nil
-				end
-			end
-		end
-
-		--[[
-                AceDB owns every setting under ns.db.profile and the minimap / free
-                position under ns.db.global; refresh the runtime views whenever the
-                active profile changes, is copied over, or is reset.
-            ]]
-		local function OnProfileChange()
-			if ns.InvalidateFarmCache then
-				ns.InvalidateFarmCache()
-			end
-			if ns.RestartFarmTicker then
-				ns.RestartFarmTicker()
-			end
-			if ns.UpdatePlacement then
-				ns.UpdatePlacement()
-			end
-			if ns.UpdateFreeFrameScale then
-				ns.UpdateFreeFrameScale()
-			end
-			if ns.UpdateFreeFrameShape then
-				ns.UpdateFreeFrameShape()
-			end
-			ns.UpdateIcon()
-		end
-		ns.db.RegisterCallback(ns, "OnProfileChanged", OnProfileChange)
-		ns.db.RegisterCallback(ns, "OnProfileCopied", OnProfileChange)
-		ns.db.RegisterCallback(ns, "OnProfileReset", OnProfileChange)
 
 		-- Deliberately no lastCastSpell seed here: it is runtime-only (see ns.SetLastCast).
 
@@ -604,9 +557,6 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
 		if ns.InitFarmMode then
 			ns.InitFarmMode()
 		end
-		if ns.InitOptions then
-			ns.InitOptions()
-		end
 		ns.UpdateIcon()
 		PollUntilTrackingReady()
 		PrintWelcome()
@@ -614,6 +564,14 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
 		local spellId = select(2, ...)
 		if ns.TRACKING_SET[spellId] then
 			ns.SetLastCast(spellId)
+			--[[
+                The server has confirmed the cast, which is when its audio fires.
+                Lets the cycle sound mute lift as soon as the sound has been
+                swallowed rather than waiting out its full backstop window.
+            ]]
+			if ns.NotifyTrackingCastSucceeded then
+				ns.NotifyTrackingCastSucceeded()
+			end
 			ns.UpdateIcon()
 		end
 	elseif event == "PLAYER_LOGOUT" then
@@ -628,8 +586,29 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
 		if ns.SaveFreeFramePosition then
 			ns.SaveFreeFramePosition()
 		end
+		--[[
+                Sound_EnableSFX survives the session, but the timer that would
+                restore it does not — /reload and logout both land here, so an
+                in-flight cycle mute has to be put back now or the player keeps
+                sound effects switched off with nothing to connect it to.
+            ]]
+		if ns.RestoreCycleSoundNow then
+			ns.RestoreCycleSoundNow()
+		end
 	elseif event == "PLAYER_UNGHOST" or event == "PLAYER_ALIVE" then
 		RecastAfterResurrection()
+	elseif event == "PLAYER_TARGET_CHANGED" then
+		if ns.HandleTargetChanged then
+			ns.HandleTargetChanged()
+		end
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		if ns.HandleRegenEnabled then
+			ns.HandleRegenEnabled()
+		end
+	elseif event == "LOOT_OPENED" then
+		ns.state.lootWindowOpen = true
+	elseif event == "LOOT_CLOSED" then
+		ns.state.lootWindowOpen = false
 	elseif event == "PLAYER_UPDATE_RESTING" then
 		--[[
                 Resting flipped (entered/left a city or inn). Re-run the farm
@@ -677,6 +656,10 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
 			end
 			if ns.InvalidateFarmCache then
 				ns.InvalidateFarmCache()
+			end
+			-- New spell data may have arrived; let the texture lookup rebuild once.
+			if ns.InvalidateTextureCache then
+				ns.InvalidateTextureCache()
 			end
 		end
 
@@ -729,6 +712,10 @@ ns.EVENT_NAMES = {
 	"PLAYER_ALIVE",
 	"PLAYER_UPDATE_RESTING",
 	"PLAYER_LOGOUT",
+	"LOOT_OPENED",
+	"LOOT_CLOSED",
+	"PLAYER_TARGET_CHANGED",
+	"PLAYER_REGEN_ENABLED",
 }
 
 -- Unit-filtered events: register scoped to the player so the dispatcher isn't woken for other units' casts.

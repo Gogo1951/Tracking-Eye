@@ -237,17 +237,11 @@ end
     Tracking-Menu.lua, Minimap-Button.lua, and Options.lua.
 ]]
 ns.DIAGNOSTIC_API_CHECKS = {
-	-- { label, testFunction }
+	-- { label, testFunction, optional }
 	{
 		"C_AddOns.GetAddOnMetadata",
 		function()
 			return type(C_AddOns) == "table" and type(C_AddOns.GetAddOnMetadata) == "function"
-		end,
-	},
-	{
-		"GetAddOnMetadata (legacy)",
-		function()
-			return type(GetAddOnMetadata) == "function"
 		end,
 	},
 	{
@@ -359,6 +353,24 @@ ns.DIAGNOSTIC_API_CHECKS = {
 		end,
 	},
 	{
+		"InCombatLockdown",
+		function()
+			return type(InCombatLockdown) == "function"
+		end,
+	},
+	{
+		"UnitCreatureType",
+		function()
+			return type(UnitCreatureType) == "function"
+		end,
+	},
+	{
+		"GetCursorInfo",
+		function()
+			return type(GetCursorInfo) == "function"
+		end,
+	},
+	{
 		"IsShiftKeyDown",
 		function()
 			return type(IsShiftKeyDown) == "function"
@@ -395,22 +407,50 @@ ns.DIAGNOSTIC_API_CHECKS = {
 		end,
 	},
 	{
+		"C_AddOns.GetAddOnInfo",
+		function()
+			return type(C_AddOns) == "table" and type(C_AddOns.GetAddOnInfo) == "function"
+		end,
+	},
+	{
+		"C_AddOns.GetNumAddOns",
+		function()
+			return type(C_AddOns) == "table" and type(C_AddOns.GetNumAddOns) == "function"
+		end,
+	},
+	{
+		"GetAddOnMetadata (legacy)",
+		function()
+			return type(GetAddOnMetadata) == "function"
+		end,
+		true,
+	},
+	{
+		"GetAddOnInfo (legacy)",
+		function()
+			return type(GetAddOnInfo) == "function"
+		end,
+		true,
+	},
+	{
+		"GetNumAddOns (legacy)",
+		function()
+			return type(GetNumAddOns) == "function"
+		end,
+		true,
+	},
+	{
 		"Settings.OpenToCategory",
 		function()
 			return type(Settings) == "table" and type(Settings.OpenToCategory) == "function"
 		end,
 	},
 	{
-		"Settings.GetCategory",
-		function()
-			return type(Settings) == "table" and type(Settings.GetCategory) == "function"
-		end,
-	},
-	{
-		"InterfaceOptionsFrame_OpenToCategory (legacy)",
+		"InterfaceOptionsFrame_OpenToCategory",
 		function()
 			return type(InterfaceOptionsFrame_OpenToCategory) == "function"
 		end,
+		true,
 	},
 	{
 		"C_EventUtils.IsEventValid",
@@ -426,11 +466,30 @@ ns.DIAGNOSTIC_API_CHECKS = {
 	},
 }
 
+--[[
+    Every entry is an API the add-on genuinely calls. A row flagged optional is the
+    legacy half of a compatibility guard, absent on a modern client by design: it
+    renders [n/a] and never counts as a failure. Any other miss is a real problem.
+]]
 function ns:RunApiChecks()
 	local lines = { GetClientHeader(), "" }
+	local failures = 0
 	for _, check in ipairs(ns.DIAGNOSTIC_API_CHECKS) do
 		local ok, result = pcall(check[2])
-		lines[#lines + 1] = ((ok and result) and "[PASS] " or "[FAIL] ") .. check[1]
+		if ok and result then
+			lines[#lines + 1] = "[PASS] " .. check[1]
+		elseif check[3] then
+			lines[#lines + 1] = "[n/a] " .. check[1]
+		else
+			lines[#lines + 1] = "[FAIL] " .. check[1]
+			failures = failures + 1
+		end
+	end
+	lines[#lines + 1] = ""
+	if failures == 0 then
+		lines[#lines + 1] = "Every required API is present on this client."
+	else
+		lines[#lines + 1] = string.format("%d required API(s) missing.", failures)
 	end
 	return table.concat(lines, "\n")
 end
@@ -452,9 +511,18 @@ function ns:BuildPlayerContextReport()
 	lines[#lines + 1] = string.format("Class: %s // Level: %d", tostring(class), UnitLevel("player"))
 	lines[#lines + 1] = ""
 	for _, spellId in ipairs(ns.DIAGNOSTIC_SPELLS or {}) do
-		local name = GetSpellInfo(spellId) or "?"
-		lines[#lines + 1] =
-			string.format("%d %s [%s]", spellId, name, IsPlayerSpell(spellId) and "known" or "not known")
+		--[[
+            A nil name means the spell is not in THIS client's database at all,
+            which is a different thing from the player not having learned it.
+            Find Fish (43308) is TBC-only and reads that way on Era.
+        ]]
+		local name = GetSpellInfo(spellId)
+		if not name then
+			lines[#lines + 1] = string.format("%d (not on this client)", spellId)
+		else
+			lines[#lines + 1] =
+				string.format("%d %s [%s]", spellId, name, IsPlayerSpell(spellId) and "known" or "not known")
+		end
 	end
 	return table.concat(lines, "\n")
 end
@@ -528,6 +596,14 @@ function ns:BuildFarmContextReport()
 		tostring(db.farmGhostWolf),
 		tostring(db.farmNotMounted)
 	)
+	local global = (ns.db and ns.db.global) or {}
+	lines[#lines + 1] = string.format(
+		"targetTracking=%s muteCycleSound=%s hookBlizzardTracking=%s Sound_EnableSFX=%s",
+		tostring(db.targetTracking),
+		tostring(db.muteCycleSound),
+		tostring(global.hookBlizzardTracking),
+		tostring(GetCVar("Sound_EnableSFX"))
+	)
 	lines[#lines + 1] = ""
 
 	local hasTravelForm, hasCheetah, hasGhostWolf = false, false, false
@@ -573,6 +649,37 @@ function ns:BuildFarmContextReport()
 		GetTime() - (ns.state.enteredWorldAt or 0),
 		GetTime() - (ns.state.lastTrackingCastAt or 0)
 	)
+	--[[
+        The pause reason is printed as its raw locale key, never the translated
+        string: a report pasted from a zhTW client has to be readable here.
+    ]]
+	lines[#lines + 1] = string.format(
+		"pause reason (live): %s // cached: %s",
+		tostring(ns.GetFarmPauseReason()),
+		tostring(ns.state.farmPauseReason)
+	)
+	lines[#lines + 1] =
+		string.format("lootWindowOpen=%s cursor=%s", tostring(ns.state.lootWindowOpen), tostring((GetCursorInfo())))
+	lines[#lines + 1] = ""
+
+	--[[
+        Answers "Target Tracking does nothing" and "the setting isn't there": the
+        known-tracker count is the exact condition the options section hides on.
+    ]]
+	local creatureType = UnitExists("target") and UnitCreatureType("target") or nil
+	local knownCreatureTrackers = 0
+	for candidateType in pairs(ns.CREATURE_TYPE_SPELLS) do
+		if ns.GetCreatureTypeSpell(candidateType) then
+			knownCreatureTrackers = knownCreatureTrackers + 1
+		end
+	end
+
+	lines[#lines + 1] = string.format(
+		"target creature type: %s // resolves to: %s // creature types covered: %d",
+		creatureType or "(no target)",
+		tostring(ns.GetCreatureTypeSpell(creatureType)),
+		knownCreatureTrackers
+	)
 	lines[#lines + 1] = ""
 
 	lines[#lines + 1] = "Farm cycle (enabled, known, excluding Druid Track Humanoids):"
@@ -597,12 +704,16 @@ end
 
 function ns:BuildAddOnReport()
 	local lines = { GetClientHeader(), "" }
+	local getNum = (C_AddOns and C_AddOns.GetNumAddOns) or GetNumAddOns
 	local getInfo = (C_AddOns and C_AddOns.GetAddOnInfo) or GetAddOnInfo
-	local getMeta = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
-	local count = (C_AddOns and C_AddOns.GetNumAddOns and C_AddOns.GetNumAddOns()) or GetNumAddOns()
-	for index = 1, count do
+	local getMetadata = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
+	if not getNum or not getInfo then
+		lines[#lines + 1] = "Add-on list API unavailable on this client."
+		return table.concat(lines, "\n")
+	end
+	for index = 1, getNum() do
 		local name, _, _, loadable = getInfo(index)
-		local version = getMeta(index, "Version") or "?"
+		local version = (getMetadata and getMetadata(index, "Version")) or "?"
 		lines[#lines + 1] = string.format("%s v%s [%s]", name, version, loadable and "loadable" or "disabled")
 	end
 	return table.concat(lines, "\n")
@@ -639,10 +750,6 @@ end
 function ns:BuildSavedVariablesReport()
 	local lines = { GetClientHeader(), "", "TrackingEyeDB = {" }
 	DumpTable(TrackingEyeDB or {}, "    ", 1, lines)
-	lines[#lines + 1] = "}"
-	lines[#lines + 1] = ""
-	lines[#lines + 1] = "TrackingEyeCharDB = {"
-	DumpTable(TrackingEyeCharDB or {}, "    ", 1, lines)
 	lines[#lines + 1] = "}"
 	return table.concat(lines, "\n")
 end
