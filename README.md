@@ -2,9 +2,7 @@
 
 Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs and Find Minerals while farming and reapplies tracking after death. Supports every tracking ability. Never lose track of the resources you're hunting.
 
-<img width="260" src="https://github.com/user-attachments/assets/a3d4e72b-b782-49a9-b4b8-c8b2c11acc5f" />
- 
-<img width="200" src="https://github.com/user-attachments/assets/7f5308bd-7e7a-4a5c-8691-62431c3758ac" />
+<img width="360" src="https://github.com/user-attachments/assets/261247f9-3e3c-4d6d-9028-a07e70e75f95" />
 
 ## Features
 
