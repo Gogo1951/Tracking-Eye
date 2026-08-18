@@ -50,13 +50,9 @@ The menu only ever shows spells your character actually knows, so it stays clean
 
 Hover the button and the tooltip shows what you're tracking right now, whether Farm Mode is running, and — when it isn't — exactly why. Rather keep using Blizzard's own tracking icon? Switch on **Use the Default Tracking Button** and it opens the Tracking Eye menu instead.
 
-### Farm Mode
-
-Tick the abilities that belong in the rotation, set how fast it cycles, and pick which travel states switch it on: mounted, Druid Travel and Flight Forms, Ghost Wolf, Aspect of the Cheetah, or plain old on foot. It pauses itself in combat, mid-cast, in towns and inns, inside instances, on flight paths, while looting, and whenever a window is open — so it never fires a cast out from under you. The repeated cycling sound is silenced by default, and your own casts are left alone.
-
 ### Key Bindings
 
-**Cycle Farm Mode Ability** lives under Key Bindings in the game menu, in the Tracking Eye section. Tap it to jump the rotation forward on demand — handy for flipping straight to Find Minerals when a vein catches your eye. It works with Farm Mode switched off, too.
+**Cycle Farm Mode Ability** lives under Key Bindings in the game menu, in the Tracking Eye section. Tap it to jump the rotation forward on demand. It works with Farm Mode switched off, for those who prefer driving with a manual transmission.
 
 ### Slash Commands
 
