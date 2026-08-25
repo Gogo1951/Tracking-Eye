@@ -1,9 +1,5 @@
 .DS_Store
 .claude/
-.release/
-*.zip
 .idea/
 .vscode/
-
-# Packager-generated; pipeline deletes the dev copy anyway
-CHANGELOG.md
+*.bak
