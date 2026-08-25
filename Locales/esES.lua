@@ -100,9 +100,9 @@ L["OPTIONS_ENABLE_MINIMAP_DESC"] =
 	"Muestra el botón de Tracking Eye en el minimapa; el Modo de recolección y el Rastreo persistente siguen funcionando cuando está oculto."
 L["OPTIONS_HOOK_BLIZZARD"] = "Usar el botón de rastreo predeterminado"
 L["OPTIONS_HOOK_BLIZZARD_NOTE"] =
-	"Mientras esto esté activado, el icono de rastreo de Blizzard abre el menú de Tracking Eye, que solo cambia lo que estás rastreando. Todo lo demás permanece aquí, en la Interfaz de Opciones."
+	"Mientras esto esté activado, el botón de rastreo de Blizzard abre el Menú de rastreo, que solo cambia lo que estás rastreando. Todo lo demás permanece aquí, en la Interfaz de Opciones."
 L["OPTIONS_HOOK_BLIZZARD_DESC"] =
-	"Abre el Menú de rastreo al hacer clic en el icono de rastreo de Blizzard en el minimapa. Déjalo desactivado si otro complemento ya usa ese botón."
+	"Abre el Menú de rastreo al hacer clic en el botón de rastreo de Blizzard en el minimapa. Déjalo desactivado si otro complemento ya usa ese botón."
 L["OPTIONS_KEYBINDS"] = "Asignación de teclas"
 L["OPTIONS_KEYBINDS_DESC"] =
 	"Avanza el Modo de recolección a su siguiente habilidad cuando lo pidas. Configúralo en Asignación de teclas dentro del menú del juego, en la sección Tracking Eye."

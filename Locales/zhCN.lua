@@ -99,9 +99,9 @@ L["OPTIONS_ENABLE_MINIMAP_DESC"] =
 	"在小地图上显示 Tracking Eye 按钮；当其隐藏时，采集模式和持久追踪仍在运行。"
 L["OPTIONS_HOOK_BLIZZARD"] = "使用默认追踪按钮"
 L["OPTIONS_HOOK_BLIZZARD_NOTE"] =
-	"启用此选项后，暴雪的追踪图标将打开 Tracking Eye 菜单，该菜单仅更改您追踪的内容。其余设置仍保留在选项界面中。"
+	"启用此选项后，暴雪的追踪按钮将打开追踪菜单，该菜单仅更改您追踪的内容。其余设置仍保留在选项界面中。"
 L["OPTIONS_HOOK_BLIZZARD_DESC"] =
-	"点击小地图上暴雪的追踪图标时打开追踪菜单。如果其他插件已使用该按钮，请保持关闭。"
+	"点击小地图上暴雪的追踪按钮时打开追踪菜单。如果其他插件已使用该按钮，请保持关闭。"
 L["OPTIONS_KEYBINDS"] = "按键设置"
 L["OPTIONS_KEYBINDS_DESC"] =
 	"按需将采集模式切换至下一个技能。请在游戏菜单的按键设置中，于 Tracking Eye 分类下进行绑定。"

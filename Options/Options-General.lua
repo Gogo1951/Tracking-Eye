@@ -5,6 +5,18 @@ local GetColor = ns.GetColor
 local Header, Desc, Spacer = ns.OptionsHeader, ns.OptionsDesc, ns.OptionsSpacer
 local RowLabel = ns.OptionsRowLabel
 
+--[[
+    The Feedback & Support rows override the default half-and-half label/control
+    split. Their labels are one short word each, so the standard
+    ns.OPTIONS_LABEL_WIDTH leaves a wide gap after "Wago" and spends half the row
+    on nothing, while the URL beside it — the part the player is there to copy —
+    truncates mid-address. Giving the label only what a word needs and the rest to
+    the input fits every URL but the longest, and the two still total
+    ns.OPTIONS_ROW_WIDTH, so the rows end where every other row ends.
+]]
+local LINK_LABEL_WIDTH = 0.6
+local LINK_URL_WIDTH = ns.OPTIONS_ROW_WIDTH - LINK_LABEL_WIDTH
+
 --------------------------------------------------------------------------------
 -- General Options Panel
 --------------------------------------------------------------------------------
@@ -134,48 +146,48 @@ function ns.BuildGeneralOptions()
 		spaceLinks0 = Spacer(69),
 		headerLinks = Header(L["OPTIONS_LINKS"], 70),
 		spaceLinks1 = Spacer(71),
-		discordLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_DISCORD"] .. "|r", 72),
+		discordLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_DISCORD"] .. "|r", 72, LINK_LABEL_WIDTH),
 		discordURL = {
 			type = "input",
 			name = "",
 			order = 73,
-			width = ns.OPTIONS_CONTROL_WIDTH,
+			width = LINK_URL_WIDTH,
 			get = function()
 				return ns.DISCORD_URL
 			end,
 			set = function() end,
 		},
 		spaceLinks2 = Spacer(74),
-		githubLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_GITHUB"] .. "|r", 75),
+		githubLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_GITHUB"] .. "|r", 75, LINK_LABEL_WIDTH),
 		githubURL = {
 			type = "input",
 			name = "",
 			order = 76,
-			width = ns.OPTIONS_CONTROL_WIDTH,
+			width = LINK_URL_WIDTH,
 			get = function()
 				return ns.GITHUB_URL
 			end,
 			set = function() end,
 		},
 		spaceLinks3 = Spacer(77),
-		curseforgeLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_CURSEFORGE"] .. "|r", 78),
+		curseforgeLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_CURSEFORGE"] .. "|r", 78, LINK_LABEL_WIDTH),
 		curseforgeURL = {
 			type = "input",
 			name = "",
 			order = 79,
-			width = ns.OPTIONS_CONTROL_WIDTH,
+			width = LINK_URL_WIDTH,
 			get = function()
 				return ns.CURSEFORGE_URL
 			end,
 			set = function() end,
 		},
 		spaceLinks4 = Spacer(80),
-		wagoLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_WAGO"] .. "|r", 81),
+		wagoLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_WAGO"] .. "|r", 81, LINK_LABEL_WIDTH),
 		wagoURL = {
 			type = "input",
 			name = "",
 			order = 82,
-			width = ns.OPTIONS_CONTROL_WIDTH,
+			width = LINK_URL_WIDTH,
 			get = function()
 				return ns.WAGO_URL
 			end,

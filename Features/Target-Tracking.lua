@@ -26,6 +26,14 @@ local _, ns = ...
     It never casts in combat: a tracking spell costs a global cooldown, which is
     least affordable mid-fight, so a switch asked for during combat is remembered
     and applied on PLAYER_REGEN_ENABLED instead.
+
+    It stays out of instances entirely. A dungeon, raid, battleground, or arena is
+    a stream of hostile targets, so the feature would fire on nearly every target
+    change and spend a global cooldown each time — a distraction exactly where the
+    player can least afford one, and one that tells them nothing: the pack is
+    already in front of them. Nothing is queued from inside an instance either. A
+    switch asked for there is dropped rather than saved for the zone-out, so
+    walking back out never applies a stale pick from the last pull.
 ]]
 
 -- The switch a target change asked for while the player was in combat, or nil.
@@ -34,6 +42,12 @@ local pendingSpellId = nil
 function ns.HandleTargetChanged()
 	-- Off, or the parent is off: drop any stored switch rather than applying it later.
 	if not ns.db or not ns.db.profile.targetTracking or not ns.db.profile.persistentTracking then
+		pendingSpellId = nil
+		return
+	end
+
+	-- Instanced content is the one place this is noise rather than help; see above.
+	if IsInInstance() then
 		pendingSpellId = nil
 		return
 	end

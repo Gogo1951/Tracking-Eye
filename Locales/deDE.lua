@@ -100,9 +100,9 @@ L["OPTIONS_ENABLE_MINIMAP_DESC"] =
 	"Zeigt den Tracking Eye-Button an der Minimap; Farming-Modus und Dauerhafte Aufspürung laufen weiterhin, wenn er versteckt ist."
 L["OPTIONS_HOOK_BLIZZARD"] = "Standard-Aufspürungsbutton verwenden"
 L["OPTIONS_HOOK_BLIZZARD_NOTE"] =
-	"Während dies aktiviert ist, öffnet das Aufspürungssymbol von Blizzard das Tracking Eye-Menü, welches nur ändert, was Ihr aufspürt. Alles Weitere bleibt hier in der Optionsoberfläche."
+	"Während dies aktiviert ist, öffnet der Aufspürungsbutton von Blizzard das Aufspürungsmenü, welches nur ändert, was Ihr aufspürt. Alles Weitere bleibt hier in der Optionsoberfläche."
 L["OPTIONS_HOOK_BLIZZARD_DESC"] =
-	"Öffnet das Aufspürungsmenü, wenn Ihr auf das Aufspürungssymbol von Blizzard an der Minimap klickt. Lasst dies deaktiviert, wenn ein anderes AddOn diesen Button bereits verwendet."
+	"Öffnet das Aufspürungsmenü, wenn Ihr auf den Aufspürungsbutton von Blizzard an der Minimap klickt. Lasst dies deaktiviert, wenn ein anderes AddOn diesen Button bereits verwendet."
 L["OPTIONS_KEYBINDS"] = "Tastenbelegungen"
 L["OPTIONS_KEYBINDS_DESC"] =
 	"Schaltet den Farming-Modus auf Befehl zur nächsten Fähigkeit weiter. Legt sie unter Tastenbelegung im Spielmenü im Bereich Tracking Eye fest."

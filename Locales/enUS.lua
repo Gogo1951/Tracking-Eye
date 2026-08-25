@@ -99,9 +99,9 @@ L["OPTIONS_ENABLE_MINIMAP_DESC"] =
 	"Shows the Tracking Eye button on the mini-map; Farm Mode and Persistent Tracking still run when it's hidden."
 L["OPTIONS_HOOK_BLIZZARD"] = "Use the Default Tracking Button"
 L["OPTIONS_HOOK_BLIZZARD_NOTE"] =
-	"While this is on, Blizzard's tracking icon opens the Tracking Eye menu, which only changes what you're tracking. Everything else stays here in the Options Interface."
+	"While this is on, Blizzard's tracking button opens the Tracking Menu, which only changes what you're tracking. Everything else stays here in the Options Interface."
 L["OPTIONS_HOOK_BLIZZARD_DESC"] =
-	"Opens the Tracking Menu when you click Blizzard's tracking icon on the mini-map. Leave this off if another add-on already uses that button."
+	"Opens the Tracking Menu when you click Blizzard's tracking button on the mini-map. Leave this off if another add-on already uses that button."
 L["OPTIONS_KEYBINDS"] = "Key Bindings"
 L["OPTIONS_KEYBINDS_DESC"] =
 	"Advances Farm Mode to its next ability on demand. Set it under Key Bindings in the game menu, in the Tracking Eye section."

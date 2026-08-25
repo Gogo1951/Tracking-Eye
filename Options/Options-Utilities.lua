@@ -1,5 +1,7 @@
 local _, ns = ...
 
+local GetColor = ns.GetColor
+
 --------------------------------------------------------------------------------
 -- Shared Options Helpers
 --------------------------------------------------------------------------------
@@ -7,7 +9,7 @@ local _, ns = ...
 function ns.OptionsHeader(text, order, hidden)
 	return {
 		type = "header",
-		name = ns.GetColor("TITLE") .. text .. "|r",
+		name = GetColor("TITLE") .. text .. "|r",
 		order = order,
 		hidden = hidden,
 	}
@@ -43,7 +45,7 @@ end
     members, or the indent is left behind when the section collapses.
 ]]
 function ns.OptionsSubLabel(text)
-	return ns.GetColor("HELP") .. text .. "|r"
+	return GetColor("HELP") .. text .. "|r"
 end
 
 function ns.OptionsSubRow(order, hidden, controls)

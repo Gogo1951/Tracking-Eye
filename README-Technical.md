@@ -381,7 +381,7 @@ Defaults come from `ns.DATABASE_DEFAULTS` and are applied by AceDB-3.0 when a sc
 
 There is deliberately **no refill-on-empty logic**. `farmCycleSpells` is a settings map, not a re-seedable list: AceDB copies its concrete defaults with `rawset`, so the map iterates correctly for new users, and the options toggle stores an explicit `false` for a disabled spell. A user who turns every entry off keeps that state across logins. Storing `nil` instead would let AceDB re-add the default `true` on the next login and resurrect a spell the user turned off. `selectedSpellId` is likewise absent from the defaults — `nil` is its "unset" value and cannot be stored as a default, and `freePos` is absent because it is written only once the player drags.
 
-One dated migration currently ships, inline in the `ADDON_LOADED` branch of [Features/Core.lua](Features/Core.lua): it clears the retired `global.perCharSplitDone` marker and is tagged for removal after 2026-09-17. Delete it on sight past that date.
+No migration code ships. All migrations are retired: a stale key left behind by a long-gone storage shape simply lingers in that install's SavedVariables, harmlessly, and a returning player whose data predates the current shape falls back to defaults.
 
 ### Profile Apply
 
