@@ -6,21 +6,21 @@ Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs an
 
 ## Features
 
-🎯 **Tracking Menu** // Left-click the minimap button to pick from every tracking spell your character knows in one alphabetical list.
+🎯 **Tracking Menu** // Left-click the mini-map button to pick from every tracking spell your character knows in one alphabetical list.
 
-🚜 **Farm Mode** // Mounted, in Travel Form, or running with Ghost Wolf, it cycles between your selected tracking abilities so both herbs and ore show up on the minimap — pausing on its own in combat, towns, instances, and flight paths.
+🚜 **Farm Mode** // Mounted, in Travel Form, or running with Ghost Wolf, it cycles between your selected tracking abilities so both herbs and ore show up on the mini-map — pausing on its own in combat, towns, instances, and flight paths.
 
 🔁 **Persistent Tracking** // Auto-recasts your tracking spell after death, shapeshifts, and loading screens, so Find Herbs is already back before you finish your corpse run.
 
-🐾 **Automatic Target Tracking** // Target a beast and you're tracking beasts, target an undead and you're tracking undead — the rest of the pack lights up your minimap while you quest.
+🐾 **Automatic Target Tracking** // Switch it on and targeting a beast tracks beasts, targeting an undead tracks undead — the rest of the pack lights up your mini-map while you quest.
 
-📍 **Free Placement Mode** // Detach the tracking icon from the minimap and drag it anywhere on screen, with circular or square borders and adjustable size.
+📍 **Free Placement Mode** // Detach the tracking icon from the mini-map and drag it anywhere on screen, with circular or square borders and adjustable size.
 
 ## Setup
 
 1. Install the add-on, ideally using [CurseForge](https://www.curseforge.com/wow/addons/tracking-eye-classic) or [Wago](https://addons.wago.io/addons/tracking-eye).
 2. Log in.
-3. Left-click the new minimap button and pick a tracking spell.
+3. Left-click the new mini-map button and pick a tracking spell.
 4. Mount up — Farm Mode handles the herb-and-ore cycling for you.
 5. Type `/te` to tweak which abilities cycle, the cycle speed, target tracking, or icon placement.
 6. All your nodes are belong to us. (=
@@ -48,7 +48,11 @@ The menu only ever shows spells your character actually knows, so it stays clean
 | Shift + Right-click | Toggle Farm Mode |
 | Shift + Middle-click | Open the options panel |
 
-Hover the button and the tooltip shows what you're tracking right now, whether Farm Mode is running, and — when it isn't — exactly why. Rather keep using Blizzard's own tracking icon? Switch on **Use the Default Tracking Button** and it opens the Tracking Eye menu instead.
+Hover the button and the tooltip shows what you're tracking right now, whether Farm Mode is running, and — when it isn't — exactly why. The icon dims while Farm Mode is paused, so you can tell at a glance without reading anything. Rather keep using Blizzard's own tracking icon? Switch on **Use the Default Tracking Button** and it opens the Tracking Eye menu instead.
+
+### Silence Tracking Sounds
+
+Farm Mode recasts a tracking spell every few seconds, and every cast makes a noise. **Silence Tracking Sounds** is on by default, so those casts stay quiet: it switches the game's sound effects off for a split second around each automatic cast and switches them straight back on. Only Farm Mode's own casts are muted — anything you cast yourself keeps its sound. Because the game gives add-ons one master switch rather than a per-spell one, another sound landing in that same split second can get clipped, which is why it's a toggle you can turn off in the options.
 
 ### Key Bindings
 
@@ -99,14 +103,18 @@ Please reach out if you would like to be involved!
 
 🟢 Pairs With // Xinhuan's [Routes](https://www.curseforge.com/wow/addons/routes)
 
+🟡 Some Overlap // Rivare123's [Classic Tracker](https://www.curseforge.com/wow/addons/classic-tracker)
+
+🟡 Some Overlap // BetterAddons' [GatherProClassic](https://www.curseforge.com/wow/addons/gatherproclassic)
+
 🟡 Some Overlap // ilvec90's [NodeCounter](https://www.curseforge.com/wow/addons/nodecounter)
 
 🔴 Direct Alternative // IceDNicco's [Auto Tracker](https://www.curseforge.com/wow/addons/autotracker)
 
+🔴 Direct Alternative // cyanokaze's [GatherBot](https://www.curseforge.com/wow/addons/gatherbot)
+
 🔴 Direct Alternative // Petazo's [Gather Tracker](https://www.curseforge.com/wow/addons/gather-tracker)
 
 🔴 Direct Alternative // fuba82's [MinimapTrackingMenu\_Classic](https://www.curseforge.com/wow/addons/minimaptrackingmenu_classic)
-
-🔴 Direct Alternative // x\_Raven\_x's [Track Master](https://www.curseforge.com/wow/addons/track-master)
 
 🔴 Direct Alternative // executedpoorly's [Tracking Switcher X](https://www.curseforge.com/wow/addons/tracking-switcher-x)

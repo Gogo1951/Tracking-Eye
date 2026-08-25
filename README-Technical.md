@@ -10,6 +10,8 @@ TrackingEye/
 │   └── workflows/
 │       └── package.yml              CurseForge release and library vendoring
 ├── .gitattributes                   Line-ending normalization
+├── .gitignore                       Dev-clutter ignore list
+├── .luacheckrc                      Lint config
 ├── .pkgmeta                         Externals and ignore list
 ├── TrackingEye.toc                  Metadata, SavedVariables, load order
 ├── Bindings.xml                     Key binding, auto-discovered from the root and never listed in the TOC
@@ -44,7 +46,8 @@ TrackingEye/
 │   └── Options.lua                  Registration, open routing, the /te command
 ├── LICENSE                          MIT
 ├── README.md                        End-user documentation
-└── README-Technical.md              This file
+├── README-Technical.md              This file
+└── README-Testing.md                Manual test plan
 ```
 
 Files load in TOC order: `Includes/` → `Locales/` → `Data/` → `Features/` → `Options/`. Order matters. `Data/Data.lua` populates the shared namespace (spell tables, constants, palette) and `Data/Default-Settings.lua` adds the defaults table before any feature reads them; `Features/Core.lua` defines the dispatcher and `Features/Utilities.lua` the game-state predicates the later files call at runtime. Inside `Options/`, the two merged fragments load **before** `Options-General.lua`, which reads their builders while composing its own args.
@@ -95,7 +98,7 @@ Steady-state events:
 Nothing here drives secure or protected UI, so there is no taint surface to defer around. Combat still shapes three behaviors, and they are deliberately different from one another:
 
 - **The options opener refuses outright.** `ns:OpenOptionsPanel` ([Options/Options.lua](Options/Options.lua)) checks `InCombatLockdown()` before anything else and returns after printing `CHAT_OPTIONS_IN_COMBAT`. Blizzard's Settings panel is protected in combat, and without that gate `/te` or Shift + Middle-Click hands the player an `ADDON_ACTION_BLOCKED` error naming Tracking Eye. It **never queues** the open for later, and it is the single call site of that locale key.
-- **Target Tracking defers.** A creature-type switch asked for during combat is stored in the `pendingSpellId` file-local in [Features/Target-Tracking.lua](Features/Target-Tracking.lua) rather than cast, because a tracking cast costs a global cooldown and mid-fight is when that is least affordable. `PLAYER_REGEN_ENABLED` replays it through `ns.HandleRegenEnabled`, which re-runs the whole decision instead of casting the stored ID (see *Target Tracking*).
+- **Target Tracking defers.** A creature-type switch asked for during combat is stored in the `pendingSpellId` file-local in [Features/Target-Tracking.lua](Features/Target-Tracking.lua) rather than cast, because a tracking cast costs a global cooldown and mid-fight is when that is least affordable. `PLAYER_REGEN_ENABLED` replays it through `ns.HandleRegenEnabled`, which re-runs the whole decision instead of casting the stored ID (see *Target Tracking*). Deferral is the *out-of-instance* behavior only — inside an instance the switch is dropped rather than stored.
 - **Automatic casts refuse and retry.** `ns.CanCast()` is false while `UnitAffectingCombat("player")` is true, so the farm ticker, the persistent recast, and the cycle binding all decline. No queue is needed because every caller re-fires on its own: the ticker on its next tick, the recast through `ScheduleRecast`.
 
 Two smaller combat facts follow from the same reasoning. `ComputePlayerStates` classifies the player as `mounted` only while `UnitAffectingCombat("player")` is false, so a fight that begins while mounted drops the state at once rather than leaving the cycle armed behind `ns.CanCast()`. And combat is reported as a Farm Mode pause reason but flagged **transient**, so the icon does not dim for it (see *Pause Reporting*).
@@ -236,7 +239,7 @@ It also appends `ns.db.profile.selectedSpellId` when `farmIncludePersistent` is 
 
 **The window is the whole trick.** The audio does *not* fire inside `CastSpellByID` — it fires when the server confirms the cast, a round trip later — so muting and restoring around the call silences nothing. The mute is held until `UNIT_SPELLCAST_SUCCEEDED` reports our spell (`ns.NotifyTrackingCastSucceeded`, the usual path, typically well under 200ms) and lifted `ns.CYCLE_MUTE_TAIL_SECONDS` (0.1) after that, with `ns.CYCLE_MUTE_SECONDS` (0.6) as the ceiling for a cast the server never confirms. Restores are generation-stamped so overlapping casts cannot restore each other early.
 
-This is a **write to a game-wide user CVar for a convenience**, which WRITING USER CVARS otherwise forbids, and it carries no `PrintMessage` notice because one on every cycle tick would be unusable. Four safeguards make it safe to ship:
+This is a **write to a game-wide user CVar with no chat notice**, which the house rule on user CVars otherwise forbids. It is a deliberate, signed-off carve-out on one ground: the sound being silenced is one the add-on itself creates on every cycle tick, so this suppresses its own side effect rather than buying a convenience, and a chat notice every few seconds would be noise rather than information. Four safeguards make it safe to ship:
 
 - **The mute is armed only after a cast was actually attempted.** `ns.CastTracking` returns `true` when it reached `CastSpellByID` and `false` on each early bail (spell unknown, Cat Form gate, cooldown or GCD), and `CastCycleSpell` casts first and arms second. Arming afterwards is safe precisely because the audio plays on server confirmation, not inside the call.
 - **`ns.RestoreCycleSoundNow()` restores unconditionally on teardown**, called from the `PLAYER_LOGOUT` handler in `Features/Core.lua` (which covers `/reload` as well as logout) and from the `muteCycleSound` toggle's `set` handler when the player switches the option off. `Sound_EnableSFX` persists across sessions, so a mute whose timer died with the UI would otherwise leave the player with sound effects off and nothing to connect it to.
@@ -266,6 +269,7 @@ Each type maps to a **list** of candidate spells, not one: Undead is covered by 
 `ns.HandleTargetChanged()` runs on `PLAYER_TARGET_CHANGED`. The bail chain:
 
 - `ns.db` missing, `targetTracking` off, **or `persistentTracking` off** → clear any pending switch and stop. The parent gate is load-bearing: the options panel hides this control while Persistent Tracking is off, so a feature that kept acting would rewrite the saved ability and burn a GCD for something the player believes is switched off. Its own `targetTracking` key is never written by that gate — the setting survives and resumes when the parent comes back on.
+- `IsInInstance()` → clear any pending switch and stop. A dungeon, raid, battleground, or arena is a stream of hostile targets, so the feature would fire on nearly every target change and spend a global cooldown each time — a distraction exactly where the player can least afford one, and one that tells them nothing, since the pack is already in front of them. **Nothing is queued from inside an instance:** clearing `pendingSpellId` here rather than storing it is what stops a stale pick from the last pull being applied on the way out.
 - No target, or `UnitCanAttack("player", "target")` is false → stop. Friendly units never drive a switch; targeting a city guard is not a hunt.
 - `UnitCreatureType("target")` has no entry in `ns.CREATURE_TYPE_SPELLS`, or no candidate spell is known → stop.
 - It is already the selected ability → clear any pending switch and stop.
@@ -285,6 +289,8 @@ Picking a row writes `ns.db.profile.selectedSpellId`, invalidates the farm cache
 ## Minimap Button & Free-Placement Frame
 
 `ns.InitMinimap()` ([Features/Minimap-Button.lua](Features/Minimap-Button.lua)) registers a `LibDataBroker-1.1` launcher and hands it to `LibDBIcon-1.0` with the saved `ns.db.global.minimap` payload. `ns.CreateFreeFrame()` builds the standalone `Button` used when Free Placement Mode is on. `ns.UpdatePlacement()` toggles visibility between the two based on `ns.db.global.freePlacement`, honors the Enable Mini-map Button preference (`ns.db.global.minimap.hide`), and hides both when the player has no tracking abilities at all (`ns.HasTrackingAbility()`). Free Placement hides the LibDBIcon button without touching `minimap.hide`, so the preference survives a round trip through Free Placement and back.
+
+Free Placement has no `Features/` file of its own: its frame, position pipeline, and shape/scale appliers all live in `Minimap-Button.lua` because they are the same button drawn somewhere else. Only its options fragment is split out, into [Options/Options-Free-Placement.lua](Options/Options-Free-Placement.lua).
 
 ### Tooltip
 
@@ -346,7 +352,7 @@ The binding cannot be *set* from an AceConfig panel, so the General panel carrie
 
 Both supported flavors — Classic Era 1.15.x and TBC Anniversary 2.5.x — run the modern client, so the modern API is what actually executes in practice. Every modern call is still **reached through an availability guard** with its legacy global behind it, per COMPATIBILITY ("Check the API exists, then call exactly one"). The guards cost nothing on a healthy client and turn a hard Lua error into a graceful degrade on one that is missing something.
 
-- `C_AddOns.GetAddOnMetadata`, `C_AddOns.GetAddOnInfo`, and `C_AddOns.GetNumAddOns` resolve through `(C_AddOns and C_AddOns.X) or X`, falling back to the pre-`C_AddOns` globals. `GetVersion` returns `Dev` when neither resolves or when the value still carries the `@project-version@` token; `ns:BuildAddOnReport` emits a single "unavailable" line.
+- `C_AddOns.GetAddOnMetadata`, `C_AddOns.GetAddOnInfo`, and `C_AddOns.GetNumAddOns` resolve through `(C_AddOns and C_AddOns.X) or X`, falling back to the pre-`C_AddOns` globals. `GetVersion` returns `Dev` when neither resolves, when the metadata read comes back nil, or when the value still contains `@` — an unsubstituted `@project-version@` token, which is what a working copy carries until the packager builds it. The nil test runs first on purpose: an unpackaged read is nil, and calling `:find` on it would error on exactly the local-dev path the branch exists for. `ns:BuildAddOnReport` emits a single "unavailable" line.
 - `ns:OpenOptionsPanel` runs the full chain: combat gate, then `Settings.OpenToCategory(<captured categoryID>)` behind a `Settings and Settings.OpenToCategory` guard, then `InterfaceOptionsFrame_OpenToCategory(<captured frame>)` called twice, then `AceConfigDialog:Open` as a genuine last resort. Every route uses handles captured at registration, never a name or title lookup.
 - Rows in `ns.DIAGNOSTIC_API_CHECKS` carry an optional third element. A row flagged optional is the legacy half of a guard, absent on a modern client by design: it renders `[n/a]` and never counts as a failure. Any other miss is a real problem.
 - `ns.CastTracking` treats an active GCD as "on cooldown" rather than splitting the two. That is acceptable here and says so at the call site: tracking casts are cheap refreshes and every caller retries, so a GCD-blocked attempt is never lost.
@@ -360,9 +366,9 @@ The Diagnostic Tools system ([Features/Diagnostics.lua](Features/Diagnostics.lua
 - **Runtime-only state.** `ns.diagnostics = { enabled, logging, log }` is a plain namespace table, **not** a SavedVariable, so file-scope initialization is correct here. Nothing about diagnostics persists across sessions; it always starts off.
 - **English-only strings.** Diagnostics text lives in `ns.DiagnosticsStrings`, intentionally **not** localized — it is developer-facing troubleshooting output. The only localized value it uses is the add-on's own display name (`ns.L["ADDON_TITLE"]`).
 - **Enable gate.** A single runtime toggle (`ns:SetDiagnosticsEnabled`) shows the panel body; turning it off also stops any running event log. Because every gated widget shares that one condition, the panel bakes it into local `SectionHeader` / `ReportOutput` builders rather than repeating the predicate.
-- **Reports.** Event Log, Event Registration (`ns.EVENT_NAMES` validated via `C_EventUtils.IsEventValid` plus a register/unregister round trip on a probe frame), API Endpoints (`ns.DIAGNOSTIC_API_CHECKS` existence and shape checks), Player & Spell Context (`ns.DIAGNOSTIC_SPELLS`, which is `ns.TRACKING_IDS`), Display Context, Farm Mode Context, Other Add-ons, Saved Variables dump, and Library Versions. Every report is prefixed with a client header (version, build, TOC, locale, `WOW_PROJECT_ID`).
+- **Reports.** Eleven sections in panel order: Event Log, Event Registration (`ns.EVENT_NAMES` validated via `C_EventUtils.IsEventValid` plus a register/unregister round trip on a probe frame), API Endpoints (`ns.DIAGNOSTIC_API_CHECKS` existence and shape checks), Player & Spell Context (`ns.DIAGNOSTIC_SPELLS`, which is `ns.TRACKING_IDS`), Display Context, Farm Mode Context, Other Add-ons, Saved Variables dump, Library Versions, Taint Log, and External Tools. Every report is prefixed with a client header (version, build, TOC, locale, `WOW_PROJECT_ID`).
 - **The Farm Mode Context report is the add-on's own context probe** and answers most "it stopped cycling" reports in one paste: every toggle, the live movement inputs, the resulting `ns.GetPlayerStates()` classification, `CanCast` / `IsRestrictedZone`, the raw mirror value next to `lastCastSpell`, and the pause reason. The reason is printed as its **raw locale key**, never the translated string, so a report pasted from a zhTW client is still readable.
-- **Event Log.** A 500-entry ring buffer fed by `ns:LogEvent` from the Core dispatcher, capped at 8 arguments of 255 bytes each, with pipes escaped **after** the length cut so a truncated argument cannot leave a dangling pipe. `ns.DIAGNOSTIC_EVENT_EXCLUDE` is deliberately empty: the log only ever sees events the add-on registered, and none of those is a firehose.
+- **Event Log.** A 500-entry ring buffer fed by `ns:LogEvent` from the Core dispatcher, capped at 8 arguments of 255 bytes each, with pipes escaped **after** the length cut so a truncated argument cannot leave a dangling pipe. `ns.DIAGNOSTIC_EVENT_EXCLUDE` is deliberately empty: the log only ever sees events the add-on registered, and none of those is a firehose, so there is no per-message-id filter and no suppressed-traffic block to read.
 - **Taint Log.** `ns:SetTaintLog` writes the `taintLog` CVar (0 = off, 2 = verbose). This is the only state the panel ever writes.
 - **External tools.** Rather than reimplement them, the panel points at `/console scriptErrors 1`, BugSack/!BugGrabber, and `/etrace`.
 
@@ -379,9 +385,9 @@ Profiles are switched from the Profiles panel ([Options/Options-Profiles.lua](Op
 
 Defaults come from `ns.DATABASE_DEFAULTS` and are applied by AceDB-3.0 when a scope is first accessed — explicit user values, including `false`, are never overridden. Note that scalar and table defaults are physically copied into the saved table (`copyDefaults` via `rawset`); only `*`/`**` wildcard defaults resolve through metatables.
 
-There is deliberately **no refill-on-empty logic**. `farmCycleSpells` is a settings map, not a re-seedable list: AceDB copies its concrete defaults with `rawset`, so the map iterates correctly for new users, and the options toggle stores an explicit `false` for a disabled spell. A user who turns every entry off keeps that state across logins. Storing `nil` instead would let AceDB re-add the default `true` on the next login and resurrect a spell the user turned off. `selectedSpellId` is likewise absent from the defaults — `nil` is its "unset" value and cannot be stored as a default, and `freePos` is absent because it is written only once the player drags.
+There is deliberately **no refill-on-empty logic**. `farmCycleSpells` is a settings map, not a re-seedable list: AceDB copies its concrete defaults with `rawset`, so the map iterates correctly for new users, and the options toggle stores an explicit `false` for a disabled spell. A user who turns every entry off keeps that state across logins. Storing `nil` instead would let AceDB re-add the default `true` on the next login and resurrect a spell the user turned off. `selectedSpellId` is likewise absent from the defaults — `nil` is its "unset" value and cannot be stored as a default — and `freePos` is absent because it is written only once the player drags.
 
-No migration code ships. All migrations are retired: a stale key left behind by a long-gone storage shape simply lingers in that install's SavedVariables, harmlessly, and a returning player whose data predates the current shape falls back to defaults.
+No migration code ships and none is to be added: the shared migration window has expired, so every `MIGRATION` tag and migration branch is deleted on sight. A stale key left behind by a long-gone storage shape simply lingers in that install's SavedVariables, harmlessly, and a returning player whose data predates the current shape falls back to defaults.
 
 ### Profile Apply
 
@@ -406,6 +412,7 @@ Reset is entirely stock: the AceDBOptions **Reset Profile** control on the Profi
 2. If the event is unit-filtered, add it to the `UNIT_FILTERED_EVENTS` map in the same file so it registers via `RegisterUnitEvent` rather than waking the dispatcher for every unit.
 3. Add a branch to the `OnEvent` handler. Keep the branch ordering intact — `ADDON_LOADED` and `PLAYER_LOGIN` must stay ahead of the steady-state events.
 4. Do not register the event on a second frame. One dispatcher, one registration list.
+5. Add the event to `ns.DIAGNOSTIC_EVENT_EXCLUDE` only if it is a genuine no-signal firehose. The table is empty today and should stay that way unless a new registration proves otherwise.
 
 ## Adding a New Farm Mode Pause Reason
 
@@ -420,7 +427,7 @@ Player-visible strings live in `Locales/<locale>.lua`, each registered through A
 
 This is **maintenance, not expansion** — WoW ships a fixed locale set and all eleven files already exist (`enUS, deDE, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW`). There is no "add a new locale" step.
 
-- **Keeping locales in sync.** Every locale carries a translation of the same key set, and AceLocale falls back to English via `__index` for anything missing at runtime. Translating each `enUS.lua` key and keeping the files aligned is the job of the Localization pass (`3 - Copy Cleanup & Localization Prompt.md`); do not hand-edit the other locales during ordinary work.
+- **Keeping locales in sync.** Every locale carries a translation of the same key set, and AceLocale falls back to English via `__index` for anything missing at runtime. Translating each `enUS.lua` key and keeping the files aligned is the job of the Localization pass (`3 - Copy Cleanup & Localization Prompt.md`); do not hand-edit the other locales during ordinary work. A reworded `enUS` string therefore reads as the old translation in the other ten locales until that pass runs, which is expected rather than a bug.
 - **Placeholders.** `%s` / `%d` count, type, and order must match `enUS` per key in every locale, or the string crashes at runtime. Two keys carry one today: `CHAT_LOADED` takes the version (formatted in `PrintWelcome`, [Features/Core.lua](Features/Core.lua)) and `OPTIONS_CYCLE_EVERY` takes the interval (formatted while building the dropdown values, [Options/Options-Farm-Mode.lua](Options/Options-Farm-Mode.lua)).
 - **Spanish.** `esES.lua` and `esMX.lua` are two separate, self-contained files. Identical strings in both is correct and expected.
 - **Locale overflow.** Neither 255-byte ceiling applies here: Tracking Eye writes no macros and calls `SendChatMessage` never — `ns:PrintMessage` is a plain `print`. The real constraint is layout, so the strings to eyeball are the long ones — the pause reasons, the option notes, and the welcome line — in the locales that render widest, usually deDE and ruRU.
@@ -448,10 +455,11 @@ This is **maintenance, not expansion** — WoW ships a fixed locale set and all 
 - **Saving the free-frame position from a frame that was never re-anchored** — `GetCenter()` returns frame-space coordinates, so `SaveFreePosition` is only correct when the frame's effective scale matches the one `ApplyFreePosition` last used. A character with no tracking ability never re-anchors (`UpdatePlacement` early-returns), so an unguarded save at `PLAYER_LOGOUT` re-encoded stale offsets against a different scale and corrupted the account-wide `freePos` for every character. Keep the `IsShown()` guard, and never add a new unconditional caller of `SaveFreePosition`.
 - **Caching the options-open state, or reading it with `IsShown()`** — closing the Settings window hides the *window*, not our canvas, so the canvas keeps its own shown flag and its `OnHide` never fires. A flag cached behind Show/Hide hooks keeps the last value it saw (true) and pauses Farm Mode until the next reload, and `IsShown()` fails the same way. `ns.IsOptionsPanelOpen()` evaluates `IsVisible()` live on every call, which also requires every ancestor to be shown.
 - **Deferring Target Tracking's cast to the farm cycle** — `ns.HandleTargetChanged` must cast immediately, not bail on `isFarming`. Handing the cast to the cycle looks correct on paper but is the same as not implementing the feature while mounted: the pick is one entry in a rotation and is overwritten within seconds. The cycle reclaiming the slot a tick later is the intended, harmless outcome.
+- **Queueing a Target Tracking switch from inside an instance** — the instance bail must clear `pendingSpellId`, not store it. Storing it means walking out of a dungeon applies a pick made from whatever was targeted on the last pull, minutes earlier and nowhere near the player.
 - **Reusing a retired locale key name** — when a key is dropped from `enUS.lua` its translations stay behind in the other ten files, and AceLocale only falls back to enUS for keys a locale does *not* define. Reusing the name silently serves every non-English player the old string. Grep `Locales/` for any new key name before adding it; if it hits, pick a different name rather than editing the other locales, which the Localization pass owns.
 - **Localizing Diagnostics strings** — they belong only in `ns.DiagnosticsStrings`, never in `Locales/`.
 - **Reading `ns.db` before `ADDON_LOADED`** — AceDB creates `ns.db` inside the `ADDON_LOADED` handler in `Core.lua`. Any file-scope read of `ns.db` (or a bare `TrackingEyeDB`) runs before that and sees `nil`; every access is guarded (`ns.db and …`) and happens from runtime handlers, never at load.
-- **Renaming a profile field without a migration** — AceDB's defaults only supply absent fields, so a rename leaves the old value stranded under the old key. Add a dated `MIGRATION` block in `ADDON_LOADED` that moves the value, and delete it when the date passes.
+- **Renaming a saved field and expecting the old value to follow** — AceDB's defaults only supply *absent* fields, so a rename strands the old value under the old key while the new key falls back to its default. Migration code is retired, so a rename simply costs affected players that one setting: say so in the release notes, and clear the dead key explicitly (`ns.db.profile.oldField = nil`) rather than leaving it to accumulate.
 - **Storing `nil` to disable a `farmCycleSpells` entry** — AceDB re-adds the default `true` for any absent default key on the next login, so a disabled Herbs or Minerals would resurrect. The options toggle writes an explicit `false`; keep it that way.
 - **Adding a setting that only `ns:ApplyProfile` would apply, and forgetting to add it there** — anything applied imperatively rather than read live from the database stays stale after a profile switch until the next `/reload`.
 
@@ -461,10 +469,10 @@ This is **maintenance, not expansion** — WoW ships a fixed locale set and all 
 - **Discord:** [discord.gg/eh8hKq992Q](https://discord.gg/eh8hKq992Q) for discussion, screenshots, and quick questions.
 - **Pull requests:**
     - Keep scope tight — one feature or fix per PR.
-    - Run StyLua with its default configuration over every Lua file you touched. There is no `.stylua.toml`; the formatter owns whitespace.
+    - Run StyLua with its default configuration over every Lua file you touched, and a clean `luacheck .` alongside `luac -p`. There is no `.stylua.toml`; the formatter owns whitespace.
     - Follow the style guide: no hardcoded user-facing strings (every player-visible string belongs in `Locales/enUS.lua`; Diagnostics strings are the deliberate English-only exception), `#` rather than `##` for TOC file-group headers, and comments only where the code cannot speak for itself.
     - Respect the Persistent Tracking and icon-resolution guards — read *Persistent Tracking* and *Icon Resolution* before touching those code paths.
-    - Migration discipline: every field rename or storage-shape change ships with a dated `MIGRATION` tag, and tags past their date are deleted on sight.
+    - Migration discipline: no migration code ships. The shared migration window has expired, so a storage-shape change lets the affected data fall back to defaults — note it in the release notes rather than writing a migration branch, and delete any `MIGRATION` tag you come across.
     - Check output length for any string change that reaches chat or a macro. Tracking Eye currently has neither, so the check is a formality — but the moment a `SendChatMessage` call appears, the 255-**byte** ceiling applies and the canary is whichever supported locale encodes widest, usually ruRU rather than deDE.
     - When the architecture or file map changes, update this document in the same PR.
 
