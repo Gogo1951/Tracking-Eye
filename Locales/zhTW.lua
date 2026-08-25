@@ -99,9 +99,9 @@ L["OPTIONS_ENABLE_MINIMAP_DESC"] =
 	"在小地圖上顯示 Tracking Eye 按鈕；當其隱藏時，採集模式和持久追蹤仍在運行。"
 L["OPTIONS_HOOK_BLIZZARD"] = "使用預設追蹤按鈕"
 L["OPTIONS_HOOK_BLIZZARD_NOTE"] =
-	"啟用此選項後，暴雪的追蹤圖示將開啟 Tracking Eye 選單，該選單僅更改您追蹤的內容。其餘設定仍保留在選項介面中。"
+	"啟用此選項後，暴雪的追蹤按鈕將開啟追蹤選單，該選單僅更改您追蹤的內容。其餘設定仍保留在選項介面中。"
 L["OPTIONS_HOOK_BLIZZARD_DESC"] =
-	"點擊小地圖上暴雪的追蹤圖示時開啟追蹤選單。如果其他插件已使用該按鈕，請保持關閉。"
+	"點擊小地圖上暴雪的追蹤按鈕時開啟追蹤選單。如果其他插件已使用該按鈕，請保持關閉。"
 L["OPTIONS_KEYBINDS"] = "按鍵設定"
 L["OPTIONS_KEYBINDS_DESC"] =
 	"按需將採集模式切換至下一個技能。請在遊戲選單的按鍵設定中，於 Tracking Eye 分類下進行綁定。"

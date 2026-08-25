@@ -101,9 +101,9 @@ L["OPTIONS_ENABLE_MINIMAP_DESC"] =
 	"Mostra il pulsante di Tracking Eye sulla minimappa; la Modalità Raccolta e il Tracciamento Persistente funzionano ancora quando è nascosto."
 L["OPTIONS_HOOK_BLIZZARD"] = "Usa il Pulsante di Tracciamento Predefinito"
 L["OPTIONS_HOOK_BLIZZARD_NOTE"] =
-	"Mentre questa opzione è attiva, l'icona di tracciamento di Blizzard apre il menu di Tracking Eye, che cambia soltanto ciò che stai tracciando. Tutto il resto resta qui, nell'Interfaccia Opzioni."
+	"Mentre questa opzione è attiva, il pulsante di tracciamento di Blizzard apre il Menu Tracciamento, che cambia soltanto ciò che stai tracciando. Tutto il resto resta qui, nell'Interfaccia Opzioni."
 L["OPTIONS_HOOK_BLIZZARD_DESC"] =
-	"Apre il Menu Tracciamento quando fai clic sull'icona di tracciamento di Blizzard sulla minimappa. Lascia questa opzione disattivata se un altro addon usa già quel pulsante."
+	"Apre il Menu Tracciamento quando fai clic sul pulsante di tracciamento di Blizzard sulla minimappa. Lascia questa opzione disattivata se un altro addon usa già quel pulsante."
 L["OPTIONS_KEYBINDS"] = "Assegnazione Tasti"
 L["OPTIONS_KEYBINDS_DESC"] =
 	"Fa avanzare la Modalità Raccolta alla sua abilità successiva su richiesta. Impostala in Assegnazione Tasti nel menu di gioco, nella sezione Tracking Eye."

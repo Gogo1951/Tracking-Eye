@@ -192,12 +192,11 @@ local CREATURE_TYPE_DATA = {
 }
 
 --[[
-    Both the client's localized global AND the English literal are registered as
-    keys. The globals are what make this work in every locale, but they cannot be
-    relied on to exist: a missing one used to drop its whole entry at build time,
-    and the feature then failed silently for that creature type. The English
-    fallback means an enUS client works no matter what, and a localized client
-    still resolves through its global.
+    The localized globals cannot be relied on to exist, and skipping a missing one
+    silently drops its whole creature type — so every entry registers BOTH the
+    client's localized global and the English literal as keys. The globals are
+    what make this work in every locale; the English fallback keeps an enUS
+    client working no matter what.
 ]]
 ns.CREATURE_TYPE_SPELLS = {}
 for _, row in ipairs(CREATURE_TYPE_DATA) do

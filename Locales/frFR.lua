@@ -101,9 +101,9 @@ L["OPTIONS_ENABLE_MINIMAP_DESC"] =
 	"Affiche le bouton Tracking Eye sur la mini-carte ; le Mode de collecte et le Pistage persistant continuent de fonctionner lorsqu'il est masqué."
 L["OPTIONS_HOOK_BLIZZARD"] = "Utiliser le bouton de pistage par défaut"
 L["OPTIONS_HOOK_BLIZZARD_NOTE"] =
-	"Lorsque cette option est activée, l'icône de pistage de Blizzard ouvre le menu de Tracking Eye, qui change uniquement ce que vous pistez. Tout le reste demeure ici, dans l'interface des options."
+	"Lorsque cette option est activée, le bouton de pistage de Blizzard ouvre le Menu de pistage, qui change uniquement ce que vous pistez. Tout le reste demeure ici, dans l'interface des options."
 L["OPTIONS_HOOK_BLIZZARD_DESC"] =
-	"Ouvre le menu de pistage lorsque vous cliquez sur l'icône de pistage de Blizzard sur la mini-carte. Laissez cette option désactivée si un autre addon utilise déjà ce bouton."
+	"Ouvre le menu de pistage lorsque vous cliquez sur le bouton de pistage de Blizzard sur la mini-carte. Laissez cette option désactivée si un autre addon utilise déjà ce bouton."
 L["OPTIONS_KEYBINDS"] = "Raccourcis clavier"
 L["OPTIONS_KEYBINDS_DESC"] =
 	"Fait passer le mode de collecte à sa capacité suivante à la demande. Définissez-le dans Raccourcis clavier depuis le menu du jeu, dans la section Tracking Eye."

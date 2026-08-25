@@ -528,9 +528,6 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
             ]]
 		ns.db = LibStub("AceDB-3.0"):New("TrackingEyeDB", ns.DATABASE_DEFAULTS)
 
-		-- MIGRATION (remove after 2026-09-17): clear the retired per-character split marker
-		ns.db.global.perCharSplitDone = nil
-
 		for _, message in ipairs({ "OnProfileChanged", "OnProfileCopied", "OnProfileReset" }) do
 			ns.db.RegisterCallback(ns, message, "ApplyProfile")
 		end

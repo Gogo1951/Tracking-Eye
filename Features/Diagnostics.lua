@@ -543,7 +543,6 @@ function ns:BuildDisplayContextReport()
 	lines[#lines + 1] = string.format("UIParent scale: %s", tostring(UIParent:GetScale()))
 	lines[#lines + 1] = string.format("uiScale CVar: %s", tostring(GetCVar("uiScale")))
 	lines[#lines + 1] = ""
-	local profile = ns.db and ns.db.profile
 	local global = ns.db and ns.db.global
 	lines[#lines + 1] = string.format("freePlacement: %s", tostring(global and global.freePlacement))
 	if global and type(global.freePos) == "table" then
