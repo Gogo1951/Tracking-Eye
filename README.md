@@ -2,7 +2,7 @@
 
 Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs and Find Minerals while farming and reapplies tracking after death. Supports every tracking ability. Never lose track of the resources you're hunting.
 
-<img width="360" src="https://github.com/user-attachments/assets/261247f9-3e3c-4d6d-9028-a07e70e75f95" />
+<img width="360" src="https://github.com/user-attachments/assets/55885552-ffc2-4509-a97c-15045dbda499" />
 
 ## Features
 
@@ -62,7 +62,8 @@ Farm Mode recasts a tracking spell every few seconds, and every cast makes a noi
 
 `/te` // Open the options panel.
 
-<img width="800" src="https://github.com/user-attachments/assets/0ed1b25e-cc9c-48b6-828a-8d1d7320c424" />
+<img width="800" src="https://github.com/user-attachments/assets/639f1f38-26d5-4dce-b555-0bc2942623ab" />
+
 
 Your tracking ability and Farm Mode setup are saved per character, so your hunter and your herbalist never trade settings.
 
