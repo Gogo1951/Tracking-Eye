@@ -17,7 +17,7 @@
 ## IconTexture: Interface/AddOns/TrackingEye/Includes/Images/Tracking-Eye.tga
 ## X-License: MIT
 
-## Interface: 11509, 20506
+## Interface: 11509, 16001, 20506
 ## Version: @project-version@
 
 ## X-Curse-Project-ID: 1129680

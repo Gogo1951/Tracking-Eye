@@ -67,7 +67,7 @@ ORDER BY FIELD(source,'Druid','Hunter','Warlock','Paladin','Herbalism','Mining',
 
 ]]
 
--- Names and icons are resolved at runtime (GetSpellInfo/GetSpellTexture) so they localize automatically; only the stable IDs are stored here.
+-- Names and icons are resolved at runtime (ns.GetSpellName/ns.GetSpellTexture) so they localize automatically; only the stable IDs are stored here.
 -- { spellId, key, source }
 local SPELL_DATA = {
 	-- Druid Forms

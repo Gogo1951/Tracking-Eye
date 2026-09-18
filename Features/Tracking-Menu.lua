@@ -53,7 +53,7 @@ local function InitMenu(_, level)
 
 	local list = {}
 	for _, id in ipairs(ns.TRACKING_IDS) do
-		local name = GetSpellInfo(id)
+		local name = ns.GetSpellName(id)
 		if name then
 			table.insert(list, { id = id, name = name })
 		end
@@ -76,7 +76,7 @@ local function InitMenu(_, level)
 			addedAbility = true
 
 			local info = LibDD:UIDropDownMenu_CreateInfo()
-			info.text = string.format("|T%s:16|t %s", GetSpellTexture(data.id) or "", data.name)
+			info.text = string.format("|T%s:16|t %s", ns.GetSpellTexture(data.id) or "", data.name)
 			info.fontObject = menuFont
 			info.value = data.id
 			info.checked = (ns.db and ns.db.profile.selectedSpellId == data.id)

@@ -187,9 +187,9 @@ function ns.BuildTooltip(tooltip)
 	local selectedSpellId = ns.db and ns.db.profile.selectedSpellId
 	local abilityText
 	if selectedSpellId then
-		local name = GetSpellInfo(selectedSpellId) or L["NONE_SET"]
+		local name = ns.GetSpellName(selectedSpellId) or L["NONE_SET"]
 		abilityText = "|T"
-			.. (GetSpellTexture(selectedSpellId) or ns.ICON_DEFAULT)
+			.. (ns.GetSpellTexture(selectedSpellId) or ns.ICON_DEFAULT)
 			.. ":16|t "
 			.. GetColor("TEXT")
 			.. name
@@ -249,7 +249,7 @@ end
 function ns.RefreshTooltip()
 	local function TryRefresh(frame)
 		if frame and frame:IsVisible() then
-			if MouseIsOver(frame) or GameTooltip:GetOwner() == frame then
+			if frame:IsMouseOver() or GameTooltip:GetOwner() == frame then
 				local onEnter = frame:GetScript("OnEnter")
 				if onEnter then
 					GameTooltip:Hide()

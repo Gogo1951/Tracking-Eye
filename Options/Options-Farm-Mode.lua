@@ -55,7 +55,7 @@ local function FarmOffOrNotShaman()
 end
 
 local function SpellLabel(spellId, name, suffix)
-	local texture = GetSpellTexture(spellId) or ns.ICON_DEFAULT
+	local texture = ns.GetSpellTexture(spellId) or ns.ICON_DEFAULT
 	local label = string.format("|T%s:16|t %s", texture, name)
 	if suffix then
 		label = label .. "  " .. GetColor("MUTED") .. suffix .. "|r"
@@ -100,7 +100,7 @@ local function BuildFarmAbilityArgs()
 	local allSpells = {}
 	for _, id in ipairs(ns.TRACKING_IDS) do
 		if id ~= ns.SPELLS.DRUID_HUMANOIDS then
-			local name = GetSpellInfo(id)
+			local name = ns.GetSpellName(id)
 			if name then
 				table.insert(allSpells, { id = id, name = name })
 			end

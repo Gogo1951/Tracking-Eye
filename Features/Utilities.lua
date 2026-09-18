@@ -21,8 +21,110 @@ function ns.GetColor(key)
 end
 
 --------------------------------------------------------------------------------
+-- API Compatibility
+--------------------------------------------------------------------------------
+--[[
+    Spell data resolves through C_Spell where the client ships it and through the
+    legacy globals otherwise, picked by availability once at load (COMPATIBILITY).
+    WoW Forever has only the C_Spell half. Name and texture keep the legacy shape,
+    so every call site reads them exactly as it did the globals.
+]]
+ns.GetSpellName = (C_Spell and C_Spell.GetSpellName) or function(spellId)
+	return (GetSpellInfo(spellId))
+end
+
+ns.GetSpellTexture = (C_Spell and C_Spell.GetSpellTexture) or GetSpellTexture
+
+--[[
+    WoW Forever carries Midnight's secret values. While a restriction is in force
+    (combat, in practice) aura reads from add-on code throw, the player's own buffs
+    included, and cooldown, casting, and identity reads return values add-on code
+    may not test or compare. C_Secrets reports each restriction ahead of the read,
+    so every read that can go secret asks first. All three supported clients ship
+    C_Secrets, so it is called directly.
+]]
+
+--[[
+    Start and duration, or nil while cooldowns are secret: callers read nil as "not
+    known to be cooling down" and let the cast attempt decide. C_Spell packs the
+    pair into one table; the legacy global returns them loose.
+]]
+local GetSpellCooldownInfo = C_Spell and C_Spell.GetSpellCooldown
+
+function ns.GetSpellCooldown(spellId)
+	if C_Secrets.ShouldCooldownsBeSecret() then
+		return nil
+	end
+	if GetSpellCooldownInfo then
+		local info = GetSpellCooldownInfo(spellId)
+		if not info then
+			return nil
+		end
+		return info.startTime, info.duration
+	end
+	return GetSpellCooldown(spellId)
+end
+
+-- While casting reads are secret the answer is unknowable, so it errs toward yes: every caller holds an automatic cast and retries.
+function ns.IsPlayerCasting()
+	if C_Secrets.ShouldUnitSpellCastingBeSecret("player") then
+		return true
+	end
+	return UnitCastingInfo("player") ~= nil
+end
+
+-- The unit's localized creature type, or nil while its identity is secret.
+function ns.GetUnitCreatureType(unit)
+	if C_Secrets.ShouldUnitIdentityBeSecret(unit) then
+		return nil
+	end
+	return UnitCreatureType(unit)
+end
+
+--------------------------------------------------------------------------------
 -- Game-State Predicates
 --------------------------------------------------------------------------------
+--[[
+    The movement-relevant buffs on the player: Cat Form, a travel form, a
+    Cheetah-style aspect, Ghost Wolf. C_UnitAuras is called directly with no legacy
+    fallback, since every supported client ships it (COMPATIBILITY).
+
+    While auras are secret the last readable scan stands in: forms rarely change
+    mid-fight, Farm Mode is paused for combat anyway, and the first scan after the
+    restriction lifts refreshes it.
+]]
+local lastIsCat, lastTravelForm, lastCheetah, lastGhostWolf = false, false, false, false
+
+local function ScanMovementBuffs()
+	if C_Secrets.ShouldAurasBeSecret() then
+		return lastIsCat, lastTravelForm, lastCheetah, lastGhostWolf
+	end
+
+	local isCat = false
+	local hasTravelForm, hasCheetah, hasGhostWolf = false, false, false
+	for i = 1, 40 do
+		local aura = C_UnitAuras.GetBuffDataByIndex("player", i)
+		if not aura then
+			break
+		end
+		local id = aura.spellId
+		if id then
+			if id == ns.SPELLS.CAT then
+				isCat = true
+			elseif ns.FARM_FORMS[id] then
+				hasTravelForm = true
+			elseif ns.CHEETAH_BUFFS[id] then
+				hasCheetah = true
+			elseif id == ns.GHOST_WOLF then
+				hasGhostWolf = true
+			end
+		end
+	end
+
+	lastIsCat, lastTravelForm, lastCheetah, lastGhostWolf = isCat, hasTravelForm, hasCheetah, hasGhostWolf
+	return isCat, hasTravelForm, hasCheetah, hasGhostWolf
+end
+
 --[[
     Returns isCat (Cat Form, for Track Humanoids gating), isFarming (Farm Mode is
     active right now), and movementState — the state the player is actually in,
@@ -37,25 +139,7 @@ local function ComputePlayerStates()
 		return false, false, "taxi"
 	end
 
-	local isCat = false
-	local hasTravelForm, hasCheetah, hasGhostWolf = false, false, false
-	for i = 1, 40 do
-		local name, _, _, _, _, _, _, _, _, id = UnitBuff("player", i)
-		if not name then
-			break
-		end
-		if id then
-			if id == ns.SPELLS.CAT then
-				isCat = true
-			elseif ns.FARM_FORMS[id] then
-				hasTravelForm = true
-			elseif ns.CHEETAH_BUFFS[id] then
-				hasCheetah = true
-			elseif id == ns.GHOST_WOLF then
-				hasGhostWolf = true
-			end
-		end
-	end
+	local isCat, hasTravelForm, hasCheetah, hasGhostWolf = ScanMovementBuffs()
 
 	local movementState = "foot"
 	if IsMounted() and not UnitAffectingCombat("player") then
@@ -118,7 +202,8 @@ end
     hides it entirely when nothing is tracked, so it is only read while
     visible (a hidden frame can retain a stale texture). Falls back to
     GetTrackingTexture for clients where the icon shows a generic "None"
-    texture instead (TBC+).
+    texture instead (TBC+). WoW Forever ships neither the icon nor
+    GetTrackingTexture and reads the C_Minimap tracking list instead.
 ]]
 --[[
     Lazily built reverse lookup (texture -> spellId) so every call isn't a linear
@@ -144,7 +229,7 @@ end
 local function BuildTextureCache()
 	textureToSpellId = {}
 	for _, id in ipairs(ns.TRACKING_IDS) do
-		local tex = GetSpellTexture(id)
+		local tex = ns.GetSpellTexture(id)
 		if tex then
 			textureToSpellId[tex] = id
 		end
@@ -162,6 +247,26 @@ local function MatchTrackingTexture(tex)
 	return textureToSpellId[tex]
 end
 
+--[[
+    The tracking spell an active C_Minimap entry stands for, or nil. Only entries
+    backed by one of this add-on's spells count, so a town service switched on in
+    the minimap menu is never mistaken for tracking. A spell entry without a spell
+    ID is matched by its texture instead.
+]]
+local function GetMinimapEntrySpell(index)
+	local info = C_Minimap.GetTrackingInfo(index)
+	if not info or not info.active then
+		return nil
+	end
+	if info.spellID then
+		return ns.TRACKING_SET[info.spellID] and info.spellID or nil
+	end
+	if info.type == "spell" then
+		return MatchTrackingTexture(info.texture)
+	end
+	return nil
+end
+
 function ns.GetActiveTrackingSpell()
 	if MiniMapTrackingIcon and MiniMapTrackingIcon:IsVisible() then
 		local id = MatchTrackingTexture(MiniMapTrackingIcon:GetTexture())
@@ -169,7 +274,34 @@ function ns.GetActiveTrackingSpell()
 			return id
 		end
 	end
-	return MatchTrackingTexture(GetTrackingTexture())
+	if GetTrackingTexture then
+		return MatchTrackingTexture(GetTrackingTexture())
+	end
+	for index = 1, C_Minimap.GetNumTrackingTypes() do
+		local id = GetMinimapEntrySpell(index)
+		if id then
+			return id
+		end
+	end
+	return nil
+end
+
+--[[
+    Drops the add-on's tracking. CancelTrackingBuff covers Era and TBC. On WoW
+    Forever every active entry backed by one of this add-on's spells is switched
+    off, and any town service beside them is left alone. Never ClearAllTracking:
+    it also clears Blizzard's own quest and target filters.
+]]
+function ns.CancelActiveTracking()
+	if CancelTrackingBuff then
+		CancelTrackingBuff()
+		return
+	end
+	for index = 1, C_Minimap.GetNumTrackingTypes() do
+		if GetMinimapEntrySpell(index) then
+			C_Minimap.SetTracking(index, false)
+		end
+	end
 end
 
 --[[
@@ -183,7 +315,7 @@ function ns.CanCast()
 	return not (
 		UnitIsDeadOrGhost("player")
 		or IsStealthed()
-		or UnitCastingInfo("player")
+		or ns.IsPlayerCasting()
 		or UnitAffectingCombat("player")
 		or ns.state.lootWindowOpen
 		or GetCursorInfo()
@@ -429,7 +561,7 @@ function ns.GetFarmPauseReason()
 	if UnitAffectingCombat("player") then
 		return "FARM_PAUSED_COMBAT", true
 	end
-	if UnitCastingInfo("player") then
+	if ns.IsPlayerCasting() then
 		return "FARM_PAUSED_CASTING", true
 	end
 	if IsStealthed() then

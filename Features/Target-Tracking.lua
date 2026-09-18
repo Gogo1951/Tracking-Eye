@@ -57,7 +57,7 @@ function ns.HandleTargetChanged()
 		return
 	end
 
-	local spellId = ns.GetCreatureTypeSpell(UnitCreatureType("target"))
+	local spellId = ns.GetCreatureTypeSpell(ns.GetUnitCreatureType("target"))
 	if not spellId then
 		return
 	end

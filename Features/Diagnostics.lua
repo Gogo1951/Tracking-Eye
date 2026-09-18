@@ -233,8 +233,8 @@ end
 
 --[[
     Existence and shape checks only: read-only, no side effects, no protected
-    calls. Kept aligned with the API guards in Core.lua, Farm-Mode.lua,
-    Tracking-Menu.lua, Minimap-Button.lua, and Options.lua.
+    calls. Kept aligned with the API guards in Utilities.lua, Core.lua,
+    Farm-Mode.lua, Tracking-Menu.lua, Minimap-Button.lua, and Options.lua.
 ]]
 ns.DIAGNOSTIC_API_CHECKS = {
 	-- { label, testFunction, optional }
@@ -245,15 +245,21 @@ ns.DIAGNOSTIC_API_CHECKS = {
 		end,
 	},
 	{
-		"GetTrackingTexture",
+		"C_Minimap.GetNumTrackingTypes",
 		function()
-			return type(GetTrackingTexture) == "function"
+			return type(C_Minimap) == "table" and type(C_Minimap.GetNumTrackingTypes) == "function"
 		end,
 	},
 	{
-		"CancelTrackingBuff",
+		"C_Minimap.GetTrackingInfo",
 		function()
-			return type(CancelTrackingBuff) == "function"
+			return type(C_Minimap) == "table" and type(C_Minimap.GetTrackingInfo) == "function"
+		end,
+	},
+	{
+		"C_Minimap.SetTracking",
+		function()
+			return type(C_Minimap) == "table" and type(C_Minimap.SetTracking) == "function"
 		end,
 	},
 	{
@@ -269,27 +275,51 @@ ns.DIAGNOSTIC_API_CHECKS = {
 		end,
 	},
 	{
-		"GetSpellInfo",
+		"C_Spell.GetSpellName",
 		function()
-			return type(GetSpellInfo) == "function"
+			return type(C_Spell) == "table" and type(C_Spell.GetSpellName) == "function"
 		end,
 	},
 	{
-		"GetSpellTexture",
+		"C_Spell.GetSpellTexture",
 		function()
-			return type(GetSpellTexture) == "function"
+			return type(C_Spell) == "table" and type(C_Spell.GetSpellTexture) == "function"
 		end,
 	},
 	{
-		"GetSpellCooldown",
+		"C_Spell.GetSpellCooldown",
 		function()
-			return type(GetSpellCooldown) == "function"
+			return type(C_Spell) == "table" and type(C_Spell.GetSpellCooldown) == "function"
 		end,
 	},
 	{
-		"UnitBuff",
+		"C_UnitAuras.GetBuffDataByIndex",
 		function()
-			return type(UnitBuff) == "function"
+			return type(C_UnitAuras) == "table" and type(C_UnitAuras.GetBuffDataByIndex) == "function"
+		end,
+	},
+	{
+		"C_Secrets.ShouldAurasBeSecret",
+		function()
+			return type(C_Secrets) == "table" and type(C_Secrets.ShouldAurasBeSecret) == "function"
+		end,
+	},
+	{
+		"C_Secrets.ShouldCooldownsBeSecret",
+		function()
+			return type(C_Secrets) == "table" and type(C_Secrets.ShouldCooldownsBeSecret) == "function"
+		end,
+	},
+	{
+		"C_Secrets.ShouldUnitSpellCastingBeSecret",
+		function()
+			return type(C_Secrets) == "table" and type(C_Secrets.ShouldUnitSpellCastingBeSecret) == "function"
+		end,
+	},
+	{
+		"C_Secrets.ShouldUnitIdentityBeSecret",
+		function()
+			return type(C_Secrets) == "table" and type(C_Secrets.ShouldUnitIdentityBeSecret) == "function"
 		end,
 	},
 	{
@@ -377,12 +407,6 @@ ns.DIAGNOSTIC_API_CHECKS = {
 		end,
 	},
 	{
-		"MouseIsOver",
-		function()
-			return type(MouseIsOver) == "function"
-		end,
-	},
-	{
 		"GetCVar",
 		function()
 			return type(GetCVar) == "function"
@@ -440,6 +464,41 @@ ns.DIAGNOSTIC_API_CHECKS = {
 		true,
 	},
 	{
+		"GetSpellInfo (legacy)",
+		function()
+			return type(GetSpellInfo) == "function"
+		end,
+		true,
+	},
+	{
+		"GetSpellTexture (legacy)",
+		function()
+			return type(GetSpellTexture) == "function"
+		end,
+		true,
+	},
+	{
+		"GetSpellCooldown (legacy)",
+		function()
+			return type(GetSpellCooldown) == "function"
+		end,
+		true,
+	},
+	{
+		"GetTrackingTexture (legacy)",
+		function()
+			return type(GetTrackingTexture) == "function"
+		end,
+		true,
+	},
+	{
+		"CancelTrackingBuff (legacy)",
+		function()
+			return type(CancelTrackingBuff) == "function"
+		end,
+		true,
+	},
+	{
 		"Settings.OpenToCategory",
 		function()
 			return type(Settings) == "table" and type(Settings.OpenToCategory) == "function"
@@ -463,6 +522,7 @@ ns.DIAGNOSTIC_API_CHECKS = {
 		function()
 			return type(MiniMapTrackingIcon) == "table"
 		end,
+		true,
 	},
 }
 
@@ -501,7 +561,7 @@ end
 --[[
     Most "nothing shows up" reports are "the player doesn't know the spell" or
     "the API returned nil." This lists class, level, and IsPlayerSpell /
-    GetSpellInfo over every tracking spell the add-on gates on. Read-only.
+    spell name over every tracking spell the add-on gates on. Read-only.
 ]]
 ns.DIAGNOSTIC_SPELLS = ns.TRACKING_IDS
 
@@ -516,7 +576,7 @@ function ns:BuildPlayerContextReport()
             which is a different thing from the player not having learned it.
             Find Fish (43308) is TBC-only and reads that way on Era.
         ]]
-		local name = GetSpellInfo(spellId)
+		local name = ns.GetSpellName(spellId)
 		if not name then
 			lines[#lines + 1] = string.format("%d (not on this client)", spellId)
 		else
@@ -605,19 +665,24 @@ function ns:BuildFarmContextReport()
 	)
 	lines[#lines + 1] = ""
 
-	local hasTravelForm, hasCheetah, hasGhostWolf = false, false, false
-	for i = 1, 40 do
-		local name, _, _, _, _, _, _, _, _, id = UnitBuff("player", i)
-		if not name then
-			break
-		end
-		if id then
-			if ns.FARM_FORMS[id] then
-				hasTravelForm = true
-			elseif ns.CHEETAH_BUFFS[id] then
-				hasCheetah = true
-			elseif id == ns.GHOST_WOLF then
-				hasGhostWolf = true
+	-- Auras are locked for add-on code while secret (WoW Forever, in combat), so the buff columns say so instead of throwing.
+	local hasTravelForm, hasCheetah, hasGhostWolf = "secret", "secret", "secret"
+	if not C_Secrets.ShouldAurasBeSecret() then
+		hasTravelForm, hasCheetah, hasGhostWolf = false, false, false
+		for i = 1, 40 do
+			local aura = C_UnitAuras.GetBuffDataByIndex("player", i)
+			if not aura then
+				break
+			end
+			local id = aura.spellId
+			if id then
+				if ns.FARM_FORMS[id] then
+					hasTravelForm = true
+				elseif ns.CHEETAH_BUFFS[id] then
+					hasCheetah = true
+				elseif id == ns.GHOST_WOLF then
+					hasGhostWolf = true
+				end
 			end
 		end
 	end
@@ -642,12 +707,32 @@ function ns:BuildFarmContextReport()
     ]]
 	lines[#lines + 1] = string.format(
 		"GetTrackingTexture: %s // GetActiveTrackingSpell: %s // lastCastSpell: %s // secs since enteredWorld: %d // secs since last cast attempt: %d",
-		tostring(GetTrackingTexture()),
+		GetTrackingTexture and tostring(GetTrackingTexture()) or "n/a",
 		tostring(ns.GetActiveTrackingSpell()),
 		tostring(ns.state.lastCastSpell),
 		GetTime() - (ns.state.enteredWorldAt or 0),
 		GetTime() - (ns.state.lastTrackingCastAt or 0)
 	)
+	--[[
+        Every C_Minimap tracking entry, active or not. On WoW Forever this list is
+        the only tracking surface, and the raw rows show which entries are spells,
+        which are town services, and how many can be active at once.
+    ]]
+	lines[#lines + 1] = "C_Minimap tracking entries:"
+	for index = 1, C_Minimap.GetNumTrackingTypes() do
+		local info = C_Minimap.GetTrackingInfo(index)
+		if info then
+			lines[#lines + 1] = string.format(
+				"  %d %s [%s] type=%s subType=%s spellID=%s",
+				index,
+				tostring(info.name),
+				info.active and "active" or "off",
+				tostring(info.type),
+				tostring(info.subType),
+				tostring(info.spellID)
+			)
+		end
+	end
 	--[[
         The pause reason is printed as its raw locale key, never the translated
         string: a report pasted from a zhTW client has to be readable here.
@@ -665,7 +750,7 @@ function ns:BuildFarmContextReport()
         Answers "Target Tracking does nothing" and "the setting isn't there": the
         known-tracker count is the exact condition the options section hides on.
     ]]
-	local creatureType = UnitExists("target") and UnitCreatureType("target") or nil
+	local creatureType = UnitExists("target") and ns.GetUnitCreatureType("target") or nil
 	local knownCreatureTrackers = 0
 	for candidateType in pairs(ns.CREATURE_TYPE_SPELLS) do
 		if ns.GetCreatureTypeSpell(candidateType) then
@@ -687,7 +772,7 @@ function ns:BuildFarmContextReport()
 	for id, enabled in pairs(cycle) do
 		if enabled and id ~= ns.SPELLS.DRUID_HUMANOIDS and IsPlayerSpell(id) then
 			count = count + 1
-			lines[#lines + 1] = string.format("  %d %s", id, GetSpellInfo(id) or "?")
+			lines[#lines + 1] = string.format("  %d %s", id, ns.GetSpellName(id) or "?")
 		end
 	end
 	if count == 0 then
