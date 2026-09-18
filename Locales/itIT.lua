@@ -18,11 +18,9 @@ L["CHAT_OPTIONS_IN_COMBAT"] = "Per precauzione, l'Interfaccia Opzioni non può e
 --------------------------------------------------------------------------------
 
 L["TRACKING_MENU"] = "Menu Tracciamento"
-L["TRACKING_MENU_DESC"] =
-	"Elenca le tue abilità di tracciamento e ti permette di impostare la tua Abilità di Tracciamento Persistente."
+L["TRACKING_MENU_DESC"] = "Scegli la tua Abilità di Tracciamento Persistente."
 L["PERSISTENT_TRACKING"] = "Tracciamento Persistente"
-L["PERSISTENT_DESC"] =
-	"Rilancia automaticamente la tua abilità di tracciamento dopo la resurrezione e il mutamento di forma."
+L["PERSISTENT_DESC"] = "Rilancia la tua abilità di tracciamento dopo la resurrezione."
 L["FARM_MODE"] = "Modalità Raccolta"
 L["FARM_MODE_DESC"] = "Cicla tra le tue abilità di tracciamento selezionate mentre sei in movimento."
 

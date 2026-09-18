@@ -18,9 +18,9 @@ L["CHAT_OPTIONS_IN_COMBAT"] = "As a safety precaution, the Options Interface can
 --------------------------------------------------------------------------------
 
 L["TRACKING_MENU"] = "Tracking Menu"
-L["TRACKING_MENU_DESC"] = "Lists your tracking abilities and lets you set your Persistent Tracking Ability."
+L["TRACKING_MENU_DESC"] = "Choose your Persistent Tracking Ability."
 L["PERSISTENT_TRACKING"] = "Persistent Tracking"
-L["PERSISTENT_DESC"] = "Automatically recasts your tracking ability after resurrection and shapeshifting."
+L["PERSISTENT_DESC"] = "Recasts your tracking after resurrection."
 L["FARM_MODE"] = "Farm Mode"
 L["FARM_MODE_DESC"] = "Cycles between your selected tracking abilities while you're on the move."
 
