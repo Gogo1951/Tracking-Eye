@@ -18,11 +18,9 @@ L["CHAT_OPTIONS_IN_COMBAT"] = "Par mesure de sécurité, l'interface des options
 --------------------------------------------------------------------------------
 
 L["TRACKING_MENU"] = "Menu de pistage"
-L["TRACKING_MENU_DESC"] =
-	"Affiche la liste de vos capacités de pistage et vous permet de définir votre Capacité de pistage persistant."
+L["TRACKING_MENU_DESC"] = "Choisissez votre Capacité de pistage persistant."
 L["PERSISTENT_TRACKING"] = "Pistage persistant"
-L["PERSISTENT_DESC"] =
-	"Relance automatiquement votre capacité de pistage après une résurrection et un changement de forme."
+L["PERSISTENT_DESC"] = "Relance votre capacité de pistage après une résurrection."
 L["FARM_MODE"] = "Mode de collecte"
 L["FARM_MODE_DESC"] = "Alterne entre vos capacités de pistage sélectionnées lorsque vous êtes en mouvement."
 

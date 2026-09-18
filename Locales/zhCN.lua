@@ -18,9 +18,9 @@ L["CHAT_OPTIONS_IN_COMBAT"] = "出于安全考虑，战斗中无法打开选项�
 --------------------------------------------------------------------------------
 
 L["TRACKING_MENU"] = "追踪菜单"
-L["TRACKING_MENU_DESC"] = "列出您的追踪技能，并可设置持久追踪技能。"
+L["TRACKING_MENU_DESC"] = "选择您的持久追踪技能。"
 L["PERSISTENT_TRACKING"] = "持久追踪"
-L["PERSISTENT_DESC"] = "复活和变形后自动重新施放追踪技能。"
+L["PERSISTENT_DESC"] = "复活后重新施放追踪技能。"
 L["FARM_MODE"] = "采集模式"
 L["FARM_MODE_DESC"] = "在移动时，在您选择的追踪技能之间循环。"
 

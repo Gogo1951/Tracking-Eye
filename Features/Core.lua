@@ -128,7 +128,7 @@ function ns.UpdateIcon()
 		iconSpell = ns.state.lastCastSpell
 	end
 
-	ns.state.currentIcon = iconSpell and GetSpellTexture(iconSpell) or ns.ICON_DEFAULT
+	ns.state.currentIcon = iconSpell and ns.GetSpellTexture(iconSpell) or ns.ICON_DEFAULT
 
 	--[[
         Dim the icon while Farm Mode is idle for a settled reason (a town, an
@@ -167,9 +167,9 @@ function ns.ClearTracking()
 		-- The cycle can include this ability, so the cache is now stale.
 		ns.InvalidateFarmCache()
 	end
-	CancelTrackingBuff()
+	ns.CancelActiveTracking()
 
-	-- Force the default icon now: CancelTrackingBuff is async, so the mirror still reads the old texture for a frame.
+	-- Force the default icon now: the cancel is async, so the mirror still reads the old texture for a frame.
 	ns.state.currentIcon = ns.ICON_DEFAULT
 	if ns.ldb then
 		ns.ldb.icon = ns.ICON_DEFAULT
@@ -204,7 +204,7 @@ function ns.CastTracking(spellId)
         either retries (TryRecastPersistent) or re-fires on its next tick (the
         farm ticker), so a GCD-blocked attempt is never lost.
     ]]
-	local start, duration = GetSpellCooldown(spellId)
+	local start, duration = ns.GetSpellCooldown(spellId)
 	if start and duration and start > 0 and duration > 0 then
 		return false
 	end
@@ -335,7 +335,7 @@ TryRecastPersistent = function()
 	end
 
 	-- On cooldown or GCD: temporary state, so retry rather than let CastTracking swallow it.
-	local start, duration = GetSpellCooldown(spellId)
+	local start, duration = ns.GetSpellCooldown(spellId)
 	if start and duration and start > 0 and duration > 0 then
 		ScheduleRecast(RECAST_DEBOUNCE_SECONDS)
 		return

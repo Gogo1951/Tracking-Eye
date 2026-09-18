@@ -180,16 +180,17 @@ function ns.BuildTooltip(tooltip)
 	tooltip:AddLine(" ")
 
 	--[[
-        Label and ability share one row, matching the Farm Mode Status block and
-        the house pattern of feature name on the left, its current value on the
-        right. The icon travels with the name so the pair never splits.
+        The label takes its own row and the ability sits right-aligned beneath it,
+        the house layout for a current-item value. States such as the Farm Mode
+        Status stay on their label's row. The icon travels with the name so the
+        pair never splits.
     ]]
 	local selectedSpellId = ns.db and ns.db.profile.selectedSpellId
 	local abilityText
 	if selectedSpellId then
-		local name = GetSpellInfo(selectedSpellId) or L["NONE_SET"]
+		local name = ns.GetSpellName(selectedSpellId) or L["NONE_SET"]
 		abilityText = "|T"
-			.. (GetSpellTexture(selectedSpellId) or ns.ICON_DEFAULT)
+			.. (ns.GetSpellTexture(selectedSpellId) or ns.ICON_DEFAULT)
 			.. ":16|t "
 			.. GetColor("TEXT")
 			.. name
@@ -197,7 +198,8 @@ function ns.BuildTooltip(tooltip)
 	else
 		abilityText = "|T" .. ns.ICON_DEFAULT .. ":16|t " .. GetColor("BODY") .. L["NONE_SET"] .. "|r"
 	end
-	tooltip:AddDoubleLine(GetColor("TITLE") .. L["PERSISTENT_ABILITY"] .. "|r", abilityText)
+	tooltip:AddLine(GetColor("TITLE") .. L["PERSISTENT_ABILITY"] .. "|r")
+	tooltip:AddDoubleLine(" ", abilityText)
 	tooltip:AddDoubleLine(GetColor("INFO") .. L["RIGHT_CLICK"] .. "|r", GetColor("INFO") .. L["CLEAR_TRACKING"] .. "|r")
 	tooltip:AddLine(" ")
 
@@ -209,11 +211,10 @@ function ns.BuildTooltip(tooltip)
 	tooltip:AddLine(" ")
 
 	--[[
-        Status-only teaser: name and state, no description and no click hint. These
-        rows surface settings that live in the options panel rather than offering to
-        operate them from here, and each follows the feature it belongs to. Each one
-        draws only while its setting is actually reachable, so the tooltip never
-        advertises something the player cannot act on — this one needs Persistent
+        Status-only teaser: name, state, and description, with no click hint. It
+        surfaces a setting that lives in the options panel rather than offering to
+        operate it from here, and draws only while that setting is reachable, so the
+        tooltip never advertises something the player cannot act on: Persistent
         Tracking on and a character that can track at least one creature type,
         exactly what the options section hides on.
     ]]
@@ -232,15 +233,6 @@ function ns.BuildTooltip(tooltip)
 	tooltip:AddDoubleLine(GetColor("INFO") .. L["SHIFT_RIGHT"] .. "|r", GetColor("INFO") .. L["TOGGLE"] .. "|r")
 	tooltip:AddLine(" ")
 
-	-- Second status-only teaser; hides with Farm Mode, matching its options row.
-	if ns.db and ns.db.profile.farmMode then
-		local muteState = ns.db.profile.muteCycleSound and (GetColor("ON") .. L["ENABLED"] .. "|r")
-			or (GetColor("OFF") .. L["DISABLED"] .. "|r")
-		tooltip:AddDoubleLine(GetColor("TITLE") .. L["SILENCE_TRACKING_SOUNDS"] .. "|r", muteState)
-		tooltip:AddLine(GetColor("BODY") .. L["SILENCE_TRACKING_SOUNDS_DESC"] .. "|r", 1, 1, 1, true)
-		tooltip:AddLine(" ")
-	end
-
 	-- Options (Shift + Middle-Click opens the options panel)
 	tooltip:AddLine(GetColor("TITLE") .. L["TOOLTIP_OPTIONS"] .. "|r")
 	tooltip:AddLine(GetColor("INFO") .. L["SHIFT_MIDDLE"] .. "|r")
@@ -249,7 +241,7 @@ end
 function ns.RefreshTooltip()
 	local function TryRefresh(frame)
 		if frame and frame:IsVisible() then
-			if MouseIsOver(frame) or GameTooltip:GetOwner() == frame then
+			if frame:IsMouseOver() or GameTooltip:GetOwner() == frame then
 				local onEnter = frame:GetScript("OnEnter")
 				if onEnter then
 					GameTooltip:Hide()

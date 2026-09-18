@@ -18,11 +18,9 @@ L["CHAT_OPTIONS_IN_COMBAT"] = "Por precaução, a Interface de Opções não pod
 --------------------------------------------------------------------------------
 
 L["TRACKING_MENU"] = "Menu de Rastreamento"
-L["TRACKING_MENU_DESC"] =
-	"Lista as suas habilidades de rastreamento e permite definir a sua Habilidade de Rastreamento Persistente."
+L["TRACKING_MENU_DESC"] = "Escolha a sua Habilidade de Rastreamento Persistente."
 L["PERSISTENT_TRACKING"] = "Rastreamento Persistente"
-L["PERSISTENT_DESC"] =
-	"Relança automaticamente a sua habilidade de rastreamento após a ressurreição e mudança de forma."
+L["PERSISTENT_DESC"] = "Relança a sua habilidade de rastreamento após a ressurreição."
 L["FARM_MODE"] = "Modo de Coleta"
 L["FARM_MODE_DESC"] = "Alterna entre suas habilidades de rastreamento selecionadas enquanto você está em movimento."
 

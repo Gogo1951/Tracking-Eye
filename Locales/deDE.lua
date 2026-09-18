@@ -18,10 +18,9 @@ L["CHAT_OPTIONS_IN_COMBAT"] = "Aus Sicherheitsgründen kann die Optionsoberfläc
 --------------------------------------------------------------------------------
 
 L["TRACKING_MENU"] = "Aufspürungsmenü"
-L["TRACKING_MENU_DESC"] =
-	"Listet Eure Aufspürfähigkeiten auf und lässt Euch Eure Dauerhafte Aufspürungsfähigkeit festlegen."
+L["TRACKING_MENU_DESC"] = "Wählt Eure Dauerhafte Aufspürungsfähigkeit."
 L["PERSISTENT_TRACKING"] = "Dauerhafte Aufspürung"
-L["PERSISTENT_DESC"] = "Wirkt Eure Aufspürfähigkeit nach Wiederbelebung und Gestaltwandel automatisch erneut."
+L["PERSISTENT_DESC"] = "Wirkt Eure Aufspürfähigkeit nach Wiederbelebung erneut."
 L["FARM_MODE"] = "Farming-Modus"
 L["FARM_MODE_DESC"] = "Wechselt zwischen Euren ausgewählten Aufspürfähigkeiten, während Ihr in Bewegung seid."
 

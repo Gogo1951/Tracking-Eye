@@ -18,9 +18,9 @@ L["CHAT_OPTIONS_IN_COMBAT"] = "基於安全考量，戰鬥中無法開啟選項�
 --------------------------------------------------------------------------------
 
 L["TRACKING_MENU"] = "追蹤選單"
-L["TRACKING_MENU_DESC"] = "列出您的追蹤技能，並可設定持久追蹤技能。"
+L["TRACKING_MENU_DESC"] = "選擇您的持久追蹤技能。"
 L["PERSISTENT_TRACKING"] = "持久追蹤"
-L["PERSISTENT_DESC"] = "復活和變形後自動重新施放追蹤技能。"
+L["PERSISTENT_DESC"] = "復活後重新施放追蹤技能。"
 L["FARM_MODE"] = "採集模式"
 L["FARM_MODE_DESC"] = "在移動時，在您選擇的追蹤技能之間循環。"
 

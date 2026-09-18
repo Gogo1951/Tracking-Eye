@@ -18,9 +18,9 @@ L["CHAT_OPTIONS_IN_COMBAT"] = "안전을 위해 전투 중에는 옵션 인터�
 --------------------------------------------------------------------------------
 
 L["TRACKING_MENU"] = "추적 메뉴"
-L["TRACKING_MENU_DESC"] = "추적 능력 목록을 표시하고 지속 추적 능력을 설정할 수 있습니다."
+L["TRACKING_MENU_DESC"] = "지속 추적 능력을 선택하세요."
 L["PERSISTENT_TRACKING"] = "지속적인 추적"
-L["PERSISTENT_DESC"] = "부활 및 변신 후 추적 능력을 자동으로 다시 시전합니다."
+L["PERSISTENT_DESC"] = "부활 후 추적 능력을 다시 시전합니다."
 L["FARM_MODE"] = "파밍 모드"
 L["FARM_MODE_DESC"] = "이동 중일 때 선택한 추적 능력 사이를 순환합니다."
 
