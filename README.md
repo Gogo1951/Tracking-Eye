@@ -61,6 +61,8 @@ Drafts open in Local (/1), and nothing goes out until you press Enter.
 
 The icon shows what you're tracking, and hovering it tells you exactly why Farm Mode is paused. Crowded mini-map? Free Placement Mode lets you park the icon anywhere on screen.
 
+<img width="300" src="https://github.com/user-attachments/assets/ca1d9801-20eb-4b35-9593-6c9e30685554" />
+
 ### Options
 
 Type `/te`, or find it under **Options > AddOns > Tracking Eye**.
@@ -70,6 +72,8 @@ Type `/te`, or find it under **Options > AddOns > Tracking Eye**.
 * **Come & Get It** // Where your callouts go.
 * **Profiles** // Copy one character's setup to another.
 * **Diagnostic Tools** // Reports to paste into a bug report.
+
+<img width="800" src="https://github.com/user-attachments/assets/fbaf3a78-3cbe-49b5-978a-43efd6ee43ae" />
 
 ## Testing & Localization Status
 
