@@ -1,5 +1,12 @@
-.DS_Store
+# Folders
 .claude/
 .idea/
+.release/
 .vscode/
-*.bak
+
+# File Types
+*.zip
+
+# Files
+.DS_Store
+CHANGELOG.md
