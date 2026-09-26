@@ -6,12 +6,13 @@ local L = ns.L
 -- Options Registration (AceConfig-3.0)
 --------------------------------------------------------------------------------
 
-local AC = LibStub("AceConfigRegistry-3.0")
-local ACD = LibStub("AceConfigDialog-3.0")
+local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
 --------------------------------------------------------------------------------
 -- Slash Command
 --------------------------------------------------------------------------------
+
 SLASH_TRACKINGEYE1 = "/te"
 SlashCmdList["TRACKINGEYE"] = function()
 	ns:OpenOptionsPanel()
@@ -20,14 +21,16 @@ end
 --------------------------------------------------------------------------------
 -- Registration
 --------------------------------------------------------------------------------
+
 local mainPanel
 local mainCategoryID
 local farmModePanel
+local comeAndGetItPanel
 local profilesPanel
 local diagnosticsPanel
 
 function ns.RegisterOptionsPanels()
-	AC:RegisterOptionsTable(ns.OPTIONS_REGISTRY.General, ns.BuildGeneralOptions)
+	AceConfigRegistry:RegisterOptionsTable(ns.OPTIONS_REGISTRY.General, ns.BuildGeneralOptions)
 	--[[
         AddToBlizOptions returns (frame, categoryID). Capture the ID: it is what
         Settings.OpenToCategory expects. Looking the category up by localized name
@@ -35,26 +38,41 @@ function ns.RegisterOptionsPanels()
         display name on clients that lack C_SettingsUtil.OpenSettingsPanel. Clients
         that have that API keep a generated ID, so a name lookup returns nil.
     ]]
-	mainPanel, mainCategoryID = ACD:AddToBlizOptions(ns.OPTIONS_REGISTRY.General, L["ADDON_TITLE"])
+	mainPanel, mainCategoryID = AceConfigDialog:AddToBlizOptions(ns.OPTIONS_REGISTRY.General, L["ADDON_TITLE"])
 
 	-- Farm Mode panel, registered after General so it sits directly beneath it.
 	if ns.BuildFarmModeOptions then
-		AC:RegisterOptionsTable(ns.OPTIONS_REGISTRY.FarmMode, ns.BuildFarmModeOptions)
-		farmModePanel = ACD:AddToBlizOptions(ns.OPTIONS_REGISTRY.FarmMode, L["TAB_FARM_MODE"], L["ADDON_TITLE"])
+		AceConfigRegistry:RegisterOptionsTable(ns.OPTIONS_REGISTRY.FarmMode, ns.BuildFarmModeOptions)
+		farmModePanel =
+			AceConfigDialog:AddToBlizOptions(ns.OPTIONS_REGISTRY.FarmMode, L["TAB_FARM_MODE"], L["ADDON_TITLE"])
+	end
+
+	-- Come & Get It panel, registered after Farm Mode so it sits directly beneath it.
+	if ns.BuildComeAndGetItOptions then
+		AceConfigRegistry:RegisterOptionsTable(ns.OPTIONS_REGISTRY.ComeAndGetIt, ns.BuildComeAndGetItOptions)
+		comeAndGetItPanel = AceConfigDialog:AddToBlizOptions(
+			ns.OPTIONS_REGISTRY.ComeAndGetIt,
+			L["TAB_COME_AND_GET_IT"],
+			L["ADDON_TITLE"]
+		)
 	end
 
 	-- Profiles panel, registered second-to-last (the stock AceDBOptions table).
 	if ns.BuildProfilesOptions then
 		local profilesTable = ns.BuildProfilesOptions()
-		AC:RegisterOptionsTable(ns.OPTIONS_REGISTRY.Profiles, profilesTable)
-		profilesPanel = ACD:AddToBlizOptions(ns.OPTIONS_REGISTRY.Profiles, profilesTable.name, L["ADDON_TITLE"])
+		AceConfigRegistry:RegisterOptionsTable(ns.OPTIONS_REGISTRY.Profiles, profilesTable)
+		profilesPanel =
+			AceConfigDialog:AddToBlizOptions(ns.OPTIONS_REGISTRY.Profiles, profilesTable.name, L["ADDON_TITLE"])
 	end
 
 	-- Diagnostic Tools panel, registered last so it sits at the bottom of the tree
 	if ns.BuildDiagnosticsOptions and ns.OPTIONS_REGISTRY then
-		AC:RegisterOptionsTable(ns.OPTIONS_REGISTRY.Diagnostics, ns.BuildDiagnosticsOptions)
-		diagnosticsPanel =
-			ACD:AddToBlizOptions(ns.OPTIONS_REGISTRY.Diagnostics, ns.DiagnosticsStrings.TAB, L["ADDON_TITLE"])
+		AceConfigRegistry:RegisterOptionsTable(ns.OPTIONS_REGISTRY.Diagnostics, ns.BuildDiagnosticsOptions)
+		diagnosticsPanel = AceConfigDialog:AddToBlizOptions(
+			ns.OPTIONS_REGISTRY.Diagnostics,
+			ns.DiagnosticsStrings.TAB,
+			L["ADDON_TITLE"]
+		)
 	end
 end
 
@@ -74,6 +92,7 @@ end
 function ns.IsOptionsPanelOpen()
 	return (mainPanel and mainPanel:IsVisible())
 		or (farmModePanel and farmModePanel:IsVisible())
+		or (comeAndGetItPanel and comeAndGetItPanel:IsVisible())
 		or (profilesPanel and profilesPanel:IsVisible())
 		or (diagnosticsPanel and diagnosticsPanel:IsVisible())
 		or false
@@ -109,27 +128,19 @@ function ns:OpenOptionsPanel()
 	end
 
 	--[[
-        Both routes run on handles captured at registration, never on a name or
-        title lookup, which returns nil on any client carrying the Settings API and
-        drops the panel into a floating standalone window. Availability is checked
-        before each call rather than inferred from the other's result.
+        Routed by the category ID captured at registration, never by a name or
+        title lookup, which returns nil wherever AceConfigDialog keeps a generated
+        category ID and drops the panel into a floating standalone window.
     ]]
 	if Settings and Settings.OpenToCategory and mainCategoryID then
 		Settings.OpenToCategory(mainCategoryID)
 		return
 	end
 
-	if InterfaceOptionsFrame_OpenToCategory and mainPanel then
-		InterfaceOptionsFrame_OpenToCategory(mainPanel)
-		-- Called twice: legacy clients need the repeat to scroll to the panel.
-		InterfaceOptionsFrame_OpenToCategory(mainPanel)
-		return
-	end
-
 	--[[
-        Last resort, reached only when registration failed or neither route is
-        available. Opens a standalone window rather than the in-game Settings
-        panel, so it is a visible symptom rather than a silent no-op.
+        Last resort, reached only when registration failed to return a category
+        ID. Opens a standalone window rather than the in-game Settings panel, so it
+        is a visible symptom rather than a silent no-op.
     ]]
-	ACD:Open(ns.OPTIONS_REGISTRY.General)
+	AceConfigDialog:Open(ns.OPTIONS_REGISTRY.General)
 end

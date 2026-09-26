@@ -47,8 +47,41 @@ local function ReportOutput(field, order)
 	}
 end
 
+--[[
+    One section per entry in ns.DIAGNOSTIC_DATA_SOURCES, so a new data file
+    reaches the panel through its manifest row alone. Each section has its own run
+    button and output box; the run publishes its own progress, so the button does
+    not Refresh. The hint prints once, below the last.
+]]
+local function AddValidateDataSections(args, startOrder)
+	local order = startOrder
+	for index, entry in ipairs(ns.DIAGNOSTIC_DATA_SOURCES) do
+		local file = ns.DataValidationFile(entry)
+		args["headerValidate" .. index] = SectionHeader(string.format(D.VALIDATE_TITLE, file), order)
+		args["buttonValidate" .. index] = {
+			type = "execute",
+			name = string.format(D.VALIDATE_BUTTON, file),
+			width = "double",
+			order = order + 0.1,
+			hidden = Hidden,
+			func = function()
+				ns:StartDataValidation(index)
+			end,
+		}
+		args["outputValidate" .. index] = ReportOutput(ns.DataValidationField(index), order + 0.2)
+		order = order + 1
+	end
+	args.descValidateHint = {
+		type = "description",
+		name = GetColor("HELP") .. D.VALIDATE_HINT .. "|r",
+		fontSize = "medium",
+		order = order,
+		hidden = Hidden,
+	}
+end
+
 function ns.BuildDiagnosticsOptions()
-	return {
+	local group = {
 		type = "group",
 		name = D.TAB,
 		args = {
@@ -179,6 +212,21 @@ function ns.BuildDiagnosticsOptions()
 			},
 			outputFarmContext = ReportOutput("farmReport", 29.7),
 
+			-- Come & Get It Context
+			headerComeAndGetIt = SectionHeader(D.CGI_TITLE, 29.8),
+			buttonComeAndGetIt = {
+				type = "execute",
+				name = D.CGI_BUTTON,
+				width = "double",
+				order = 29.85,
+				hidden = Hidden,
+				func = function()
+					ns.diagnostics.comeAndGetItReport = ns:BuildComeAndGetItContextReport()
+					Refresh()
+				end,
+			},
+			outputComeAndGetIt = ReportOutput("comeAndGetItReport", 29.9),
+
 			-- Other Add-ons
 			headerAddons = SectionHeader(D.ADDONS_TITLE, 30),
 			buttonAddons = {
@@ -283,4 +331,6 @@ function ns.BuildDiagnosticsOptions()
 			},
 		},
 	}
+	AddValidateDataSections(group.args, 53)
+	return group
 end

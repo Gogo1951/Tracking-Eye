@@ -1,121 +1,131 @@
 # Tracking Eye
 
-Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs and Find Minerals while farming and reapplies tracking after death. Supports every tracking ability. Never lose track of the resources you're hunting.
+Improved Tracking Menu and automatic switcher that cycles Find Herbs and Find Minerals while farming, restores tracking after death, and tracks targeted creatures while questing. Supports every tracking ability. Never lose track of what you're hunting.
 
-<img width="360" src="https://github.com/user-attachments/assets/55885552-ffc2-4509-a97c-15045dbda499" />
+**TL;DR**: Work smarter, not harder. Farm Mode keeps both gathering types covered as you move, Automatic Target Tracking helps you stay on top of kill quests, and Come & Get It turns unusable nodes into opportunities for other players.
 
 ## Features
 
-🎯 **Tracking Menu** // Left-click the mini-map button to pick from every tracking spell your character knows in one alphabetical list.
+🎯 **Tracking Menu & Persistent Tracking** // Keep every tracking ability in one place, with automatic swaps when needed and tracking restored after death.
 
-🚜 **Farm Mode** // Mounted, in Travel Form, or running with Ghost Wolf, it cycles between your selected tracking abilities so both herbs and ore show up on the mini-map — pausing on its own in combat, towns, instances, and flight paths.
+🚜 **Farm Mode** // Automatically cycle between herb and ore tracking while you're moving, so you don't miss nodes hidden by the wrong tracking type.
 
-🔁 **Persistent Tracking** // Auto-recasts your tracking spell after death, shapeshifts, and loading screens, so Find Herbs is already back before you finish your corpse run.
+🐾 **Automatic Target Tracking** // Target a creature and automatically track its kind, making kill quests faster and easier to follow.
 
-🐾 **Automatic Target Tracking** // Switch it on and targeting a beast tracks beasts, targeting an undead tracks undead — the rest of the pack lights up your mini-map while you quest.
+📣 **Come & Get It** // Right-click an herb, vein, or chest you can't use and generate a ready-to-send chat callout with its coordinates. Let someone else come get it.
 
-📍 **Free Placement Mode** // Detach the tracking icon from the mini-map and drag it anywhere on screen, with circular or square borders and adjustable size.
+⚙️ **Highly Configurable** // Customize tracking, automation, and callouts to fit the way you play, quest, and farm.
 
 ## Setup
 
 1. Install the add-on, ideally using [CurseForge](https://www.curseforge.com/wow/addons/tracking-eye-classic) or [Wago](https://addons.wago.io/addons/tracking-eye).
 2. Log in.
-3. Left-click the new mini-map button and pick a tracking spell.
-4. Mount up — Farm Mode handles the herb-and-ore cycling for you.
-5. Type `/te` to tweak which abilities cycle, the cycle speed, target tracking, or icon placement.
-6. All your nodes are belong to us. (=
+3. Left-click the mini-map button and pick your tracking.
+4. Mount up and ride. Farm Mode does the rest.
+5. Questing? Type `/te` and switch on Automatic Target Tracking.
+6. _"All your nodes are belong to us."_
 
 ## How It Works
 
-### Supported Tracking Spells
+### Tracking Menu & Persistent Tracking
 
-The menu only ever shows spells your character actually knows, so it stays clean across alts and levels.
+Hunters, Druids, Warlocks, Paladins, Dwarves, and anyone with Herbalism, Mining, or Fishing: it all lives in one menu. Persistent Tracking can even swap in the right tracking for the moment:
 
-- **Hunters** // All tracking spells — Beasts, Demons, Dragonkin, Elementals, Giants, Hidden, Humanoids, and Undead.
-- **Druids** // Track Humanoids, listed while you're in Cat Form.
-- **Warlocks** // Sense Demons.
-- **Paladins** // Sense Undead.
-- **Gatherers** // Find Herbs, Find Minerals, and Find Fish.
-- **Dwarves** // Find Treasure.
+* **Equip a fishing pole** // Find Fish takes over until you put it away.
+* **Druids in Cat Form** // Track Humanoids takes over.
+* **Hunters in battlegrounds** // Track Humanoids takes over, so enemy players show up on your mini-map.
 
-### Minimap Button
+### Farm Mode
+
+* **Stays out of your way** // No casts in combat, while you gather or loot, or while you're standing still, and it sits out towns, instances, and flights.
+* **Quiet** // Every switch makes a sound, so Farm Mode mutes game sound effects for a split second around each one. Turn that off if another sound ever gets clipped.
+* **Sees farther** // Your mini-map zooms all the way out when a farming run starts, so more nodes fit on it.
+
+### Come & Get It
+
+You don't need the profession to use this, you need to *not* have it.
+
+> Hey Miners! Rich Thorium Vein at 25, 54 in Eastern Plaguelands.
+
+Drafts open in Local (/1), and nothing goes out until you press Enter.
+
+### Mini-Map Button
 
 | Action | Effect |
 | --- | --- |
-| Left-click | Open the tracking menu |
-| Right-click | Clear current tracking |
-| Shift + Left-click | Toggle Persistent Tracking |
-| Shift + Right-click | Toggle Farm Mode |
-| Shift + Middle-click | Open the options panel |
+| Left-Click | Open the Tracking Menu |
+| Right-Click | Clear Tracking |
+| Shift + Left-Click | Toggle Farm Mode |
+| Shift + Right-Click | Toggle Automatic Target Tracking |
+| Shift + Middle-Click | Open the Options Interface |
 
-Hover the button and the tooltip shows what you're tracking right now, whether Farm Mode is running, and — when it isn't — exactly why. The icon dims while Farm Mode is paused, so you can tell at a glance without reading anything. Rather keep using Blizzard's own tracking icon? Switch on **Use the Default Tracking Button** and it opens the Tracking Eye menu instead.
+The icon shows what you're tracking, and hovering it tells you exactly why Farm Mode is paused. Crowded mini-map? Free Placement Mode lets you park the icon anywhere on screen.
 
-### Silence Tracking Sounds
+### Options
 
-Farm Mode recasts a tracking spell every few seconds, and every cast makes a noise. **Silence Tracking Sounds** is on by default, so those casts stay quiet: it switches the game's sound effects off for a split second around each automatic cast and switches them straight back on. Only Farm Mode's own casts are muted — anything you cast yourself keeps its sound. Because the game gives add-ons one master switch rather than a per-spell one, another sound landing in that same split second can get clipped, which is why it's a toggle you can turn off in the options.
+Type `/te`, or find it under **Options > AddOns > Tracking Eye**.
 
-### Key Bindings
-
-**Cycle Farm Mode Ability** lives under Key Bindings in the game menu, in the Tracking Eye section. Tap it to jump the rotation forward on demand. It works with Farm Mode switched off, for those who prefer driving with a manual transmission.
-
-### Slash Commands
-
-`/te` // Open the options panel.
-
-<img width="800" src="https://github.com/user-attachments/assets/639f1f38-26d5-4dce-b555-0bc2942623ab" />
-
-
-Your tracking ability and Farm Mode setup are saved per character, so your hunter and your herbalist never trade settings.
+* **Tracking Eye** // Persistent Tracking and its swaps, Automatic Target Tracking, Free Placement Mode, and the mini-map button.
+* **Farm Mode** // What cycles, when, and how fast.
+* **Come & Get It** // Where your callouts go.
+* **Profiles** // Copy one character's setup to another.
+* **Diagnostic Tools** // Reports to paste into a bug report.
 
 ## Testing & Localization Status
 
-🟢 World of Warcraft Classic (🟡 Season of Discovery) // WoW 1.15.9
+🟢 World of Warcraft // 12.1.0
 
-🟢 Burning Crusade Anniversary // WoW 2.5.6
+🟢 Mists of Pandaria Classic // 5.5.4
 
-🔴 Mists of Pandaria Classic // WoW 5.5.4
+🟢 Burning Crusade Anniversary // 2.5.6
 
-🔴 World of Warcraft // WoW 12.1.0
+🟢 World of Warcraft: Forever // 1.60.1
 
-**Localization Status** // Works with all Classic WoW Locales (enUS, deDE, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW).
+🟢 World of Warcraft: Season of Discovery // 1.15.9
 
-Please reach out if you would like to be involved!
+🟢 World of Warcraft: Classic // 1.15.9
 
-## Links
+**Available Locales** // enUS, deDE, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW
 
-- [GitHub](https://github.com/Gogo1951/Tracking-Eye)
-- [Discord](https://discord.gg/eh8hKq992Q)
-
-## History
+## Appreciation & History
 
 👾 **I didn't create this add-on, I just updated it.**
 
-- LindenRyuujin's [Tracking Eye](https://www.curseforge.com/wow/addons/tracking-eye)
+* LindenRyuujin's [Tracking Eye](https://www.curseforge.com/wow/addons/tracking-eye)
+
+🚀 **This add-on stands on the shoulders of those that came before.**
+
+* Gogo1951's [Come & Get It](https://www.curseforge.com/wow/addons/come-get-it)
+
+## Get Involved
+
+❤️ **You can help make this better!** Feedback, code contributions, testing, and localization assistance are always appreciated. If you'd like to get involved, please reach out.
+
+* [GitHub](https://github.com/Gogo1951/Tracking-Eye)
+* [Discord](https://discord.gg/eh8hKq992Q)
 
 ## Related Add-ons
 
-🟢 Pairs With // Gogo1951's [Come & Get It](https://www.curseforge.com/wow/addons/come-get-it)
+### 🟢 Pairs With
 
-🟢 Pairs With // hizuro\_de's [FarmHud](https://www.curseforge.com/wow/addons/farmhud)
+* hizuro\_de's [FarmHud](https://www.curseforge.com/wow/addons/farmhud)
+* moonfann's [GatherMate2](https://www.curseforge.com/wow/addons/gathermate2)
+* nevcairiel's [GatherMate2 Classic](https://www.curseforge.com/wow/addons/gathermate2-classic)
+* Xinhuan's [HandyNotes](https://www.curseforge.com/wow/addons/handynotes)
+* Xinhuan's [Routes](https://www.curseforge.com/wow/addons/routes)
 
-🟢 Pairs With // nevcairiel's [GatherMate2 Classic](https://www.curseforge.com/wow/addons/gathermate2-classic)
+### 🟡 Overlaps
 
-🟢 Pairs With // Xinhuan's [HandyNotes](https://www.curseforge.com/wow/addons/handynotes)
+* kvakvs's [Buffomat Classic](https://www.curseforge.com/wow/addons/buffomat-classic)
+* Rivare123's [Classic Tracker](https://www.curseforge.com/wow/addons/classic-tracker)
+* Epicstrike's [ForeverPlus](https://www.curseforge.com/wow/addons/foreverplus)
+* BetterAddons' [GatherProClassic](https://www.curseforge.com/wow/addons/gatherproclassic)
+* ilvec90's [NodeCounter](https://www.curseforge.com/wow/addons/nodecounter)
 
-🟢 Pairs With // Xinhuan's [Routes](https://www.curseforge.com/wow/addons/routes)
+### 🔴 Alternatives
 
-🟡 Some Overlap // Rivare123's [Classic Tracker](https://www.curseforge.com/wow/addons/classic-tracker)
-
-🟡 Some Overlap // BetterAddons' [GatherProClassic](https://www.curseforge.com/wow/addons/gatherproclassic)
-
-🟡 Some Overlap // ilvec90's [NodeCounter](https://www.curseforge.com/wow/addons/nodecounter)
-
-🔴 Direct Alternative // IceDNicco's [Auto Tracker](https://www.curseforge.com/wow/addons/autotracker)
-
-🔴 Direct Alternative // cyanokaze's [GatherBot](https://www.curseforge.com/wow/addons/gatherbot)
-
-🔴 Direct Alternative // Petazo's [Gather Tracker](https://www.curseforge.com/wow/addons/gather-tracker)
-
-🔴 Direct Alternative // fuba82's [MinimapTrackingMenu\_Classic](https://www.curseforge.com/wow/addons/minimaptrackingmenu_classic)
-
-🔴 Direct Alternative // executedpoorly's [Tracking Switcher X](https://www.curseforge.com/wow/addons/tracking-switcher-x)
+* IceDNicco's [Auto Tracker](https://www.curseforge.com/wow/addons/autotracker)
+* shadowstride's [AutoTrackers](https://www.curseforge.com/wow/addons/auto-trackers)
+* Petazo's [Gather Tracker](https://www.curseforge.com/wow/addons/gather-tracker)
+* cyanokaze's [GatherBot](https://www.curseforge.com/wow/addons/gatherbot)
+* executedpoorly's [Tracking Switcher X](https://www.curseforge.com/wow/addons/tracking-switcher-x)

@@ -1,4 +1,4 @@
-# Tracking Eye — Technical Reference
+# Tracking Eye // Technical Reference
 
 This document combines architecture notes and contribution guidance for developers working on Tracking Eye. For end-user documentation, see [README.md](https://github.com/Gogo1951/Tracking-Eye/blob/main/README.md).
 
@@ -8,480 +8,693 @@ This document combines architecture notes and contribution guidance for develope
 TrackingEye/
 ├── .github/
 │   └── workflows/
-│       └── package.yml              CurseForge release and library vendoring
+│       └── package.yml              CurseForge and Wago release plus library vendoring, no GitHub token by design
 ├── .gitattributes                   Line-ending normalization
 ├── .gitignore                       Dev-clutter ignore list
-├── .luacheckrc                      Lint config
-├── .pkgmeta                         Externals and ignore list
-├── TrackingEye.toc                  Metadata, SavedVariables, load order
-├── Bindings.xml                     Key binding, auto-discovered from the root and never listed in the TOC
+├── .luacheckrc                      Lint config, skips Includes/ and .claude/
+├── .pkgmeta                         Externals and the packager ignore list
+├── TrackingEye_Vanilla.toc          Classic Era
+├── TrackingEye_TBC.toc              TBC Anniversary
+├── TrackingEye_Camelot.toc          WoW Forever
+├── TrackingEye_Mists.toc            MoP Classic
+├── TrackingEye_Mainline.toc         Retail
+├── Bindings.xml                     The one key binding, found at the root by the client and never listed in a TOC
 ├── Data/
-│   ├── Data.lua                     Locale handle, spell tables, creature-type map, timing constants, palette
-│   └── Default-Settings.lua         ns.DATABASE_DEFAULTS and ns.FARM_CYCLE_DEFAULTS
+│   ├── Flavor.lua                   Flavor identity and the data folder to load, the canonical copy
+│   ├── Data.lua                     Locale handle, palette, movement-state tables, timings, Come & Get It's channels
+│   ├── {Game}/                      One complete data set per flavor: Vanilla, Discovery, TBC, Camelot, Wrath, Mists, Mainline
+│   │   ├── Spells-{Game}.lua        Tracking spells, creature types, movement buffs, Farm Mode's default abilities
+│   │   └── Zones-{Game}.lua         Maps outside an instance that count as restricted
+│   └── Default-Settings.lua         The AceDB defaults, profile and global scopes
 ├── Features/
-│   ├── Core.lua                     State, icon resolution, the cast primitive, persistent recast, dispatcher
-│   ├── Utilities.lua                Colors and every shared game-state predicate
-│   ├── Announcements.lua            ns:PrintMessage, the add-on's only chat output
-│   ├── Farm-Mode.lua                Cycle cache, ticker, RunFarmLogic, the cycle sound mute
-│   ├── Target-Tracking.lua          Sets the persistent ability from the targeted creature
-│   ├── Key-Bindings.lua             The two globals WoW's binding system demands
-│   ├── Tracking-Menu.lua            LibUIDropDownMenu spell picker
-│   ├── Diagnostics.lua              Read-only reports and the event log buffer
-│   └── Minimap-Button.lua           LDB launcher, free-placement frame, tooltip, click map
+│   ├── Core.lua                     Version, welcome message, AceDB init, profile apply, the event dispatcher
+│   ├── Utilities.lua                Spell lookups, colors, secret-value accessors, tracking reads, game-state predicates
+│   ├── Announcements.lua            Branded print and the Come & Get It draft builder
+│   ├── Tracking-State.lua           Runtime state, icon resolution, Clear Tracking, the cast primitive, icon pollers
+│   ├── Persistent-Tracking.lua      The resolver, mid-play recasts, login catch-up, post-resurrection recast
+│   ├── Farm-Mode.lua                Cycle cache, the farm tick, form-leave restore, manual advance, the ticker
+│   ├── Farm-Pause-Reporting.lua     Why Farm Mode is idle, and the window and tooltip checks behind it
+│   ├── Cycle-Sound-Mute.lua         The cycle's cast seam and its momentary sound-effects mute
+│   ├── Target-Tracking.lua          The hunt: the targeted creature's kind stands in for the player's pick
+│   ├── Come-and-Get-It.lua          A chat draft for a node the player can't gather or a chest they can't open
+│   ├── Key-Bindings.lua             The two globals the binding system requires
+│   ├── Tracking-Menu.lua            The LibUIDropDownMenu picker and the Blizzard tracking-button takeover
+│   ├── Free-Placement.lua           The free-placement frame, its position pipeline, scale and shape
+│   ├── Diagnostics.lua              Reports, event log and its noise filter, API probes, Validate Data, taint log
+│   └── Minimap-Button.lua           LDB launcher, placement, tooltip, click map
 ├── Includes/
 │   ├── Images/
-│   │   └── Tracking-Eye.tga         Add-on icon, referenced by the TOC IconTexture
-│   └── Libraries/                   Vendored libraries, never hand-edited
-├── Locales/
-│   ├── enUS.lua                     Source of truth, the only file passing AceLocale's default flag
-│   └── deDE.lua … zhTW.lua          Ten translations
+│   │   └── Tracking-Eye.tga         Add-on icon, the TOCs' IconTexture
+│   └── Libraries/                   Vendored libraries, never edited by hand
+├── Locales/                         AceLocale strings
 ├── Options/
 │   ├── Options-Utilities.lua        Widget helpers and the sub-option row builder
-│   ├── Options-Target-Tracking.lua  Fragment merged into the General panel
-│   ├── Options-Free-Placement.lua   Fragment merged into the General panel
-│   ├── Options-General.lua          Root panel, composing both fragments above
-│   ├── Options-Farm-Mode.lua        The Farm Mode child panel
-│   ├── Options-Profiles.lua         Stock AceDBOptions-3.0 table, unmodified
-│   ├── Options-Diagnostics.lua      The gated Diagnostic Tools panel
-│   └── Options.lua                  Registration, open routing, the /te command
+│   ├── Options-Target-Tracking.lua  Automatic Target Tracking section, merged into General
+│   ├── Options-Free-Placement.lua   Free Placement Mode section, merged into General
+│   ├── Options-General.lua          Root panel, composing the two sections above
+│   ├── Options-Farm-Mode.lua        Farm Mode child panel
+│   ├── Options-Come-and-Get-It.lua  Come & Get It child panel, directly beneath Farm Mode
+│   ├── Options-Profiles.lua         Stock AceDBOptions-3.0 table, returned unmodified
+│   ├── Options-Diagnostics.lua      Diagnostic Tools panel, registered last
+│   └── Options.lua                  Registration, the options opener, the /te command
+├── tools/                           Dev-only: no TOC lists it and .pkgmeta strips it
+│   └── Test-Event-Log-Noise.lua     Offline tests for the event log's noise filter
 ├── LICENSE                          MIT
 ├── README.md                        End-user documentation
-├── README-Technical.md              This file
+├── README-Notes.md                  The maintainer's settled exceptions and decisions
+├── README-Technical.md              This document
 └── README-Testing.md                Manual test plan
 ```
 
-Files load in TOC order: `Includes/` → `Locales/` → `Data/` → `Features/` → `Options/`. Order matters. `Data/Data.lua` populates the shared namespace (spell tables, constants, palette) and `Data/Default-Settings.lua` adds the defaults table before any feature reads them; `Features/Core.lua` defines the dispatcher and `Features/Utilities.lua` the game-state predicates the later files call at runtime. Inside `Options/`, the two merged fragments load **before** `Options-General.lua`, which reads their builders while composing its own args.
+Within each folder, files are listed in TOC load order, which is dependency-first. Locales load before `Data/Data.lua` calls `GetLocale`. `Data/Flavor.lua` opens the data block because every later file may read the flavor, the TOC's own flavor folder follows `Data/Data.lua`, and `Data/Default-Settings.lua` closes the block because Farm Mode's default abilities come from that folder. `Features/Utilities.lua` builds the spell lookups once at load from the flavor data: `ns.SPELLS`, `ns.TRACKING_IDS`, `ns.TRACKING_SET`, `ns.TRACKING_SOURCE`, `ns.FARM_FORMS`, `ns.CAT_FORM_ONLY`, the movement-buff sets, and `ns.CREATURE_TYPE_SPELLS`. The two merged option sections load before `Options-General.lua`, which composes them.
 
-`Bindings.xml` carries no TOC line on purpose — see *Key Bindings*.
+There are five TOCs, one per flavor, identical line for line except `## Interface`, `## X-Flavor`, and the data-folder lines. There is deliberately no unsuffixed `TrackingEye.toc`, and one must never come back (see *Common Pitfalls*).
+
+**Static game data lives in seven flavor folders, one complete copy per flavor** (Style Guide → DATA → Flavor Folders). Every folder declares the same five tables, in `Spells-{Game}.lua` (`ns.TRACKING_SPELLS`, `ns.CREATURE_TYPE_DATA`, `ns.MOVEMENT_BUFF_SPELLS`, `ns.FARM_CYCLE_DEFAULTS`) and `Zones-{Game}.lua` (`ns.RESTRICTED_MAP_IDS`), so feature code never checks which flavor built a table. Each TOC lists only its own folder, except that the Vanilla TOC lists `Data/Vanilla/` and then `Data/Discovery/`, whose files open with opposite `ns.IS_DISCOVERY` guards, so a Season of Discovery realm builds only Discovery's tables. No TOC lists `Data/Wrath/`, which is forward-prep for a flavor with no live client. A file copied from another folder says so at the top until Validate Data passes on its client. Game IDs live only in these folders; `Data/Data.lua` holds none.
+
+The folders differ where the clients do. Classic Era has no Find Fish, and neither it nor WoW Forever has Flight Form or Swift Flight Form. MoP Classic has no Sense Demons, Sense Undead, or Find Treasure, and adds Track Pets. Retail adds Track Mechanicals, the druid's Cat Form Track Beasts, and Track Pets, keeps Sense Undead but not Sense Demons or Find Treasure, and has no buff row for Aspect of the Cheetah or Aspect of the Pack.
+
+`.pkgmeta`'s ignore list strips the repo scaffolding, `LICENSE`, `tools`, and `Data/Wrath`, so a copy installed from CurseForge or Wago carries none of them. The release workflow re-exports `Includes/Libraries/` from `.pkgmeta`'s externals on every tag, so a hand edit there is lost at the next release. `Bindings.xml` has no TOC line on purpose; see *Key Bindings*.
 
 ## Architecture
 
 ### Shared Namespace
 
-Every Lua file receives `(addonName, ns)` via the `...` vararg. The `ns` table is the add-on's shared namespace — all public functions, constants, and state live on it. There are no global functions beyond the ones something outside the add-on's own Lua must reach:
+Every file receives `(ADDON_NAME, ns)` through the `...` vararg, and everything the add-on shares hangs off `ns`. The only globals are the ones something outside the add-on's own Lua must reach:
 
 | Global | Why it exists |
 | --- | --- |
-| `TrackingEyeDB` | The SavedVariables table, owned by AceDB-3.0. Read through `ns.db`, never directly. |
-| `SLASH_TRACKINGEYE1` / `SlashCmdList["TRACKINGEYE"]` | WoW's slash registration ([Options/Options.lua](Options/Options.lua)). |
-| `TrackingEye_CycleFarmAbility` | `Bindings.xml` can only call a global function. |
-| `BINDING_NAME_TRACKINGEYE_CYCLE_FARM_ABILITY` | The binding's display name, matching the element's `name` attribute. |
-| `TrackingEyeTrackingMenu` (+ its font object) | The named dropdown frame LibUIDropDownMenu creates. |
+| `TrackingEyeDB` | The SavedVariables table, owned by AceDB-3.0 and read through `ns.db` everywhere but the Diagnostics dump, which prints the raw table |
+| `SLASH_TRACKINGEYE1`, `SlashCmdList["TRACKINGEYE"]` | The `/te` registration in `Options/Options.lua` |
+| `TrackingEye_CycleFarmAbility` | `Bindings.xml` can only call a global function |
+| `BINDING_NAME_TRACKINGEYE_CYCLE_FARM_ABILITY` | The binding's display name, matching the element's `name` attribute |
+| `TrackingEyeTrackingMenu`, `TrackingEyeTrackingMenuFont` | The Tracking Menu's LibUIDropDownMenu frame and the larger font object (`CreateFont`) its rows use |
+| `TrackingEyeScanTooltip` | Validate Data's hidden tooltip, created only on a client without `C_TooltipInfo.GetSpellByID`, because `GameTooltipTemplate` names its text lines after the frame |
 
-Because features are split across files that load in a fixed order, a file may *define* a function the earlier-loaded files *call* — safe as long as the call happens at runtime, not at file scope. `Core.lua` loads before `Utilities.lua` yet calls `ns.GetPlayerStates` and `ns.GetColor`; that works because those calls only ever fire from event handlers and timers, long after every file has loaded. Calls into optional-by-load-order modules are still guarded (`if ns.RunFarmLogic then …`), so a partially loaded add-on degrades instead of erroring.
+An earlier file may call a function a later file defines, as long as the call happens at runtime. `Core.lua` loads first yet calls into nearly every feature, and that is safe because every call comes from an event handler and `ADDON_LOADED` fires only after all of the add-on's files have run. Most of those calls are guarded (`if ns.RunFarmLogic then`), so a feature left out of a flavor's TOC (Style Guide → COMPATIBILITY) would degrade instead of erroring. The icon, recast, and restricted-zone calls are not guarded, since every feature depends on those files.
 
 ### Event Loop
 
-`Core.lua` registers a single hidden frame (`eventFrame`) and routes every event through one `OnEvent` handler. The registered list lives in `ns.EVENT_NAMES` — a single source of truth the Diagnostics *Event Registration* check reads back, so the two can never drift. `UNIT_FILTERED_EVENTS` maps the events that register through `RegisterUnitEvent` instead; `UNIT_SPELLCAST_SUCCEEDED` is the only entry, scoped to `"player"`, so the dispatcher is never woken for other units' casts.
+`Core.lua` owns one hidden frame and routes every event through its `OnEvent` handler; no feature file listens for events on a frame of its own. `ns.EVENT_NAMES` is the single list: the dispatcher registers from it, and the Diagnostic Tools Event Registration check reads it back, so the two can never drift. `UNIT_FILTERED_EVENTS` registers `UNIT_SPELLCAST_SUCCEEDED` through `RegisterUnitEvent` for `"player"` only, so other units' casts never wake the dispatcher. While the diagnostics event log is running, every event passes through `ns:LogEvent` before its handler, behind one boolean check, so logging costs nothing when it is off.
 
-Every event first passes through `ns:LogEvent` when the diagnostics event log is active (see *Diagnostics*), behind a plain boolean read so nothing is allocated when logging is off. Initialization then happens in two passes:
+| Event | Handling |
+| --- | --- |
+| `ADDON_LOADED` (own name only) | Creates `ns.db`, wires the three profile callbacks to `ns:ApplyProfile`, registers the options panels, creates the free-placement frame, refreshes the icon |
+| `PLAYER_LOGIN` | `ns.InitMinimap()`, `ns.InitFarmMode()` (starts the farm ticker), icon refresh, `ns.PollUntilTrackingReady()`, the welcome message |
+| `UNIT_SPELLCAST_SUCCEEDED` (player) | For a spell in `ns.TRACKING_SET`: `ns.SetLastCast`, `ns.NotifyTrackingCastSucceeded()` for the cycle mute, icon refresh |
+| `MINIMAP_UPDATE_TRACKING` | Icon refresh, `ns.FlushIconAfterTrackingChange()`, `ns.ScheduleEventRecast(2)` |
+| `PLAYER_ENTERING_WORLD` | Icon refresh, `ns.StartLoginGrace()`, ends a hunt in a restricted zone, placement, farm and texture cache invalidation |
+| `ZONE_CHANGED_NEW_AREA` | Icon refresh, ends a hunt in a restricted zone |
+| `UPDATE_SHAPESHIFT_FORM` | Icon refresh, `ns.ScheduleEventRecast(1.5)` |
+| `SPELLS_CHANGED` | Icon refresh, placement, farm and texture cache invalidation |
+| `PLAYER_UNGHOST`, `PLAYER_ALIVE` | `ns.RecastAfterResurrection()` |
+| `PLAYER_STARTED_MOVING` | `ns.OnPlayerStartedMoving()`, which wakes parked recasts |
+| `PLAYER_EQUIPMENT_CHANGED` (main hand only) | Farm cache invalidation, icon refresh, `ns.ScheduleEventRecast(1.5)` |
+| `PLAYER_UPDATE_RESTING` | Ends a hunt when resting starts, then runs `ns.RunFarmLogic()` at once |
+| `PLAYER_LOGOUT` | `ns.SaveFreeFramePosition()`, then `ns.RestoreCycleSoundNow()` |
+| `LOOT_OPENED`, `LOOT_CLOSED` | Set and clear `ns.state.lootWindowOpen` |
+| `PLAYER_TARGET_CHANGED` | `ns.OnPlayerTargetChanged()` |
+| `UI_ERROR_MESSAGE` | `ns.OnUIErrorMessage(messageID, message)`, Come & Get It's entry point |
 
-- `ADDON_LOADED` (when `arg1 == addonName`) creates the database (`ns.db = LibStub("AceDB-3.0"):New("TrackingEyeDB", ns.DATABASE_DEFAULTS)` — no third argument, so each character gets its own profile), registers `ns:ApplyProfile` against the `OnProfileChanged` / `OnProfileCopied` / `OnProfileReset` callbacks, calls `ns.RegisterOptionsPanels()` (it must follow `AceDB:New`, since the Profiles builder reads `ns.db`), calls `ns.CreateFreeFrame()`, and runs the first `ns.UpdateIcon()`.
-- `PLAYER_LOGIN` calls `ns.InitMinimap()`, `ns.InitFarmMode()`, refreshes the icon, starts `PollUntilTrackingReady()`, and prints the welcome message (gated on `ns.db.global.showWelcome`).
+Four timing decisions carry most of the weight:
 
-Steady-state events:
-
-- `UNIT_SPELLCAST_SUCCEEDED` (player) — if the cast spell ID is in `ns.TRACKING_SET`, call `ns.SetLastCast(spellId)`, notify the cycle sound mute, and refresh the icon. This is the **only** writer of `ns.state.lastCastSpell`.
-- `MINIMAP_UPDATE_TRACKING` — refresh the icon, run `FlushIconAfterTrackingChange()`, then `C_Timer.After(2, TryRecastPersistent)`. Tracking changed or was cancelled outside the add-on; this is the trigger that re-applies a cancelled persistent spell. Safe to fire from our own casts — the recast function's grace window and debounce absorb the echo.
-- `ZONE_CHANGED_NEW_AREA` — refresh the icon.
-- `PLAYER_ENTERING_WORLD`, `SPELLS_CHANGED` — refresh the icon, then `ns.UpdatePlacement()`, `ns.InvalidateFarmCache()`, and `ns.InvalidateTextureCache()`. `PLAYER_ENTERING_WORLD` also records `ns.state.enteredWorldAt` (anchoring the recast grace window) and schedules the **login catch-up**: one `TryRecastPersistent()` call at grace-expiry (+11s). Without it, a player who logs in with tracking down stays that way — on Era no tracking event may ever fire to provide a trigger. If tracking survived logout, the positive-mirror check inside `TryRecastPersistent` skips the cast.
-- `UPDATE_SHAPESHIFT_FORM` — refresh the icon, then `C_Timer.After(1.5, TryRecastPersistent)`.
-- `PLAYER_UNGHOST` and `PLAYER_ALIVE` — both call `RecastAfterResurrection()` (see *Persistent Tracking*).
-- `PLAYER_UPDATE_RESTING` — call `ns.RunFarmLogic()` immediately so Farm Mode stops the instant the resting flag is set (entering a city or inn) and resumes the instant it clears, instead of waiting up to a full ticker interval. The resting flag itself can lag zone entry by several seconds; that latency is the client's, not the ticker's.
-- `PLAYER_LOGOUT` — call `ns.SaveFreeFramePosition()` so the free frame's live position is captured before WoW serializes SavedVariables, then `ns.RestoreCycleSoundNow()` so an in-flight sound mute can never outlive the session.
-- `PLAYER_TARGET_CHANGED` — call `ns.HandleTargetChanged()` (see *Target Tracking*).
-- `PLAYER_REGEN_ENABLED` — call `ns.HandleRegenEnabled()`, which replays a switch requested during combat.
-- `LOOT_OPENED` and `LOOT_CLOSED` — set and clear `ns.state.lootWindowOpen`, the flag `ns.CanCast()` reads. The events are the source of truth rather than `LootFrame:IsShown()`: Speedy-Loot-style add-ons hide that frame while looting is still open, so a frame read would report "no loot window" during exactly the window that needs guarding.
+- **Bursts coalesce into one recast.** `ns.ScheduleEventRecast(delay)` holds one pending `TryRecastPersistent` behind its own flag, so a hunter's aspects, which fire `UPDATE_SHAPESHIFT_FORM` constantly, share one recast. The 1.5 seconds after a shapeshift let the form's global cooldown expire first, and a main-hand change uses the same delay. The 2 seconds after `MINIMAP_UPDATE_TRACKING` let the burst settle; the add-on's own casts fire that event too, and the recast's grace window and debounce absorb the echo.
+- **The farm ticker is the event for what has none.** `C_Timer.NewTicker` runs `ns.RunFarmLogic()` every `farmInterval` seconds whether or not Farm Mode is on. It is the only thing that sees a flight start or land, and the only refresh for pause reasons that fire no registered event.
+- **Resting reacts at once.** `PLAYER_UPDATE_RESTING` runs the farm logic immediately instead of waiting up to a full tick. The resting flag itself can lag zone entry by several seconds; that latency is the client's.
+- **The loot events are the truth about looting.** `LOOT_OPENED` and `LOOT_CLOSED` drive `ns.state.lootWindowOpen` rather than `LootFrame:IsShown()`, because speedy-loot add-ons hide that frame while looting is still open.
 
 ### Combat Lockdown
 
-Nothing here drives secure or protected UI, so there is no taint surface to defer around. Combat still shapes three behaviors, and they are deliberately different from one another:
+Nothing in the add-on drives a secure frame or edits a macro, so no work waits behind a dirty flag and no `PLAYER_REGEN_ENABLED` handler exists. Combat still shapes five behaviors, each deliberately different:
 
-- **The options opener refuses outright.** `ns:OpenOptionsPanel` ([Options/Options.lua](Options/Options.lua)) checks `InCombatLockdown()` before anything else and returns after printing `CHAT_OPTIONS_IN_COMBAT`. Blizzard's Settings panel is protected in combat, and without that gate `/te` or Shift + Middle-Click hands the player an `ADDON_ACTION_BLOCKED` error naming Tracking Eye. It **never queues** the open for later, and it is the single call site of that locale key.
-- **Target Tracking defers.** A creature-type switch asked for during combat is stored in the `pendingSpellId` file-local in [Features/Target-Tracking.lua](Features/Target-Tracking.lua) rather than cast, because a tracking cast costs a global cooldown and mid-fight is when that is least affordable. `PLAYER_REGEN_ENABLED` replays it through `ns.HandleRegenEnabled`, which re-runs the whole decision instead of casting the stored ID (see *Target Tracking*). Deferral is the *out-of-instance* behavior only — inside an instance the switch is dropped rather than stored.
-- **Automatic casts refuse and retry.** `ns.CanCast()` is false while `UnitAffectingCombat("player")` is true, so the farm ticker, the persistent recast, and the cycle binding all decline. No queue is needed because every caller re-fires on its own: the ticker on its next tick, the recast through `ScheduleRecast`.
+- **The options opener refuses outright.** `ns:OpenOptionsPanel` (`Options/Options.lua`) makes `InCombatLockdown()` its first statement, prints `CHAT_OPTIONS_IN_COMBAT`, and returns. Blizzard's Settings panel is protected in combat, and without the gate `/te` or Shift + Middle-Click hands the player an `ADDON_ACTION_BLOCKED` error naming Tracking Eye. It never queues the open.
+- **Automatic casts refuse and retry.** `ns.CanCast()` is false while `UnitAffectingCombat("player")` is true, so the farm cycle, the form-leave restore, the persistent recast, the post-resurrection recast, the hunt cast, and the Cycle Farm Mode Ability binding all decline. Each automatic caller retries on its own: the ticker and the form-leave restore on the next tick, `TryRecastPersistent` through `ScheduleRecast`, the post-resurrection recast after `RECAST_DEBOUNCE_SECONDS`, the hunt cast after `HUNT_RETRY_SECONDS`. The binding does nothing until it is pressed again.
+- **Automatic Target Tracking ignores targets picked in combat.** A target picked mid-fight never starts or switches a hunt, and nothing is queued for after the fight; otherwise whatever attacks the player would become what they track.
+- **Come & Get It drops its draft.** Opening the chat box steals keyboard focus and breaks movement, so its gate refuses under `InCombatLockdown()` and the draft is dropped, never replayed: a callout after the fight is stale, and the node raises its error again on the next right-click.
+- **WoW Forever hides combat state.** In combat, aura, cooldown, casting, identity, and unit-stat reads can come back secret there; see *Secret Values*.
 
-Two smaller combat facts follow from the same reasoning. `ComputePlayerStates` classifies the player as `mounted` only while `UnitAffectingCombat("player")` is false, so a fight that begins while mounted drops the state at once rather than leaving the cycle armed behind `ns.CanCast()`. And combat is reported as a Farm Mode pause reason but flagged **transient**, so the icon does not dim for it (see *Pause Reporting*).
+A fight that starts while mounted is still a fight: the player stays in the `mounted` farm state, `ns.CanCast()` holds the cycle, and the tooltip reports combat (README-Notes → Decisions).
 
-If a future feature ever needs to drive secure UI, add an `InCombatLockdown()`-gated dirty flag and replay it from the existing `PLAYER_REGEN_ENABLED` branch.
+### Reading and Clearing Tracking
+
+`ns.GetActiveTrackingSpell()` (`Features/Utilities.lua`) is the one answer to "which tracking spell is up right now?", and every caller goes through it. It tries three sources, by availability:
+
+1. Blizzard's `MiniMapTrackingIcon`, only while it is visible, with its texture matched back to a spell ID. On Classic Era this is the authority: `GetTrackingTexture()` returns nil there for some active tracking (racials such as Find Treasure), and the Vanilla client hides the icon entirely when nothing is tracked. A hidden frame keeps its last texture, which is why it is read only while visible.
+2. `GetTrackingTexture()`, wherever the client ships it, such as TBC Anniversary, whose icon shows a generic texture when nothing is tracked. When the client ships it, its answer, nil included, is final.
+3. The `C_Minimap` tracking list, on a client without `GetTrackingTexture` (WoW Forever, which has no `MiniMapTrackingIcon` either): the first active entry backed by one of this add-on's spells, matched by its `spellID`, or by texture for a spell entry without one. A town service switched on in the same list never counts as tracking.
+
+Reading `C_Minimap` only as the last resort is README-Notes → Exceptions → Legacy tracking reads: Classic Era ships `C_Minimap`'s tracking calls but reports an empty list, so the legacy reads stay wherever a client ships them.
+
+`ns.CancelActiveTracking()` is the one clear: `CancelTrackingBuff()` where the client ships it, otherwise `C_Minimap.SetTracking(index, false)` for each active entry backed by one of the add-on's spells. It never calls `ClearAllTracking`, which also clears Blizzard's own quest and target filters.
+
+**The mirror is a positive signal only.** On Classic Era 1.15.x the tracking mirror (`GetTrackingTexture()` and `MINIMAP_UPDATE_TRACKING`) lags the real state, sometimes by minutes, flushing only when an unrelated buff update fires, and nil is also its normal value for "nothing tracked". So a read that names the spell means "provably up, skip the cast", and anything else, nil included, falls through to a cast; recasting an active tracking spell is a harmless refresh. Never bail on nil: nil is both "nothing tracked" and "the mirror hasn't caught up", which is exactly the state a recast exists to fix.
+
+### Decide → Cast → Confirm
+
+Every tracking cast runs the same three steps, and the bookkeeping between them keeps the add-on from double-casting or giving up.
+
+1. **Decide.** Something picks the spell: the player's Tracking Menu click, `ns.GetPersistentSpell()` for every Persistent Tracking recast (`Features/Persistent-Tracking.lua`), the farm cycle (`Features/Farm-Mode.lua`), or a hunt (`Features/Target-Tracking.lua`). Every automatic caller gates itself with `ns.CanCast()` first.
+2. **Cast.** `ns.CastTracking(spellId)` (`Features/Tracking-State.lua`) checks `IsPlayerSpell`, refuses the druid's Cat Form tracking (`ns.CAT_FORM_ONLY`) outside Cat Form, skips a spell on cooldown or the global cooldown, stamps `ns.state.lastTrackingCastAt`, and calls `CastSpellByID` inside `pcall`. It returns `true` only when it reached `CastSpellByID`. It does not test `ns.CanCast()`: the Tracking Menu calls it directly, because a deliberate click must always cast.
+3. **Confirm.** `UNIT_SPELLCAST_SUCCEEDED` records the spell through `ns.SetLastCast`. `ns.CastTracking` never writes `ns.state.lastCastSpell`, because a cast can still fail silently (line of sight, range, a server reject), and recording the attempt would suppress the retry that fixes it.
+
+`ns.SetLastCast` is the one write site for `lastCastSpell`, and it records a spell only on evidence that the spell is up: the cast-success event, `ns.UpdateIcon` adopting tracking that predates the session, or `TryRecastPersistent` finding the spell provably active. It clears on Clear Tracking, and when the player leaves Cat Form with the druid's tracking recorded. `lastCastSpell` is runtime-only and never saved: carried over from last session, it would make every caller believe tracking is already up at login and skip every real cast.
+
+Two windows cover the gap while the mirror catches up. For `ns.CAST_IN_FLIGHT_SECONDS` (10) after an attempt, casters treat their own cast of the same spell as in flight rather than recast it; `ns.ICON_IN_FLIGHT_SECONDS` (4) is the icon's shorter window (see *Icon Resolution*). `ns.state.mirrorConfirmedCast` latches once the mirror positively reports `lastCastSpell`, and from then on a nil read is a genuine external cancel, not lag.
+
+`ns.CastTracking` treats an active global cooldown as a cooldown rather than separating the two, and says so at the call site. That is acceptable here: tracking casts are cheap refreshes and every caller retries, so a GCD-blocked attempt is never lost.
 
 ### Icon Resolution
 
-`ns.UpdateIcon()` ([Features/Core.lua](Features/Core.lua)) is the single place that decides which texture the launcher and the free frame display. It resolves through one authoritative reader — `ns.GetActiveTrackingSpell()` — and never reads `MiniMapTrackingIcon` or `GetTrackingTexture()` directly. Every past icon bug on Era came from a second reader of the tracking mirror with slightly different rules.
+`ns.UpdateIcon()` (`Features/Tracking-State.lua`) decides which texture the mini-map button and the free-placement frame show, and it reads tracking only through `ns.GetActiveTrackingSpell()`. The one other writer is `ns.ClearTracking()`, which forces the default icon at once (see *Click Map*). A second reader of the mirror with slightly different rules is what produced every stale icon on Era.
 
-1. `ns.GetPlayerStates()` — if the player has left Cat Form and `lastCastSpell` still holds `DRUID_HUMANOIDS`, clear it.
-2. `activeSpell = ns.GetActiveTrackingSpell()` — the live tracking spell (Blizzard minimap icon while visible, `GetTrackingTexture()` as fallback; see [Features/Utilities.lua](Features/Utilities.lua)).
-3. **Adopt** pre-session tracking: if `activeSpell` is set and `ns.state.lastCastSpell` is nil, adopt it via `ns.SetLastCast(activeSpell)` — but only while the session has no confirmed cast, since in-session casts already own `lastCastSpell` and the Era mirror lags them.
-4. **Latch** `mirrorConfirmedCast`: once the mirror positively reports our own `lastCastSpell`, it has caught up, so a later nil reading is a genuine external cancel rather than lag.
-5. Choose the icon spell: `activeSpell` if present; otherwise, for `ns.ICON_IN_FLIGHT_SECONDS` (4) after our own cast attempt and only until `mirrorConfirmedCast` latches, show `lastCastSpell` while the laggy Blizzard icon catches up. **There is no fallback to the selected or persisted spell** — every such fallback produced a stale icon (last session's spell at login with nothing actually up). Nothing tracked means `ns.ICON_DEFAULT` (`Interface\Icons\inv_misc_map_01`).
+1. If the player has left Cat Form and `lastCastSpell` holds the druid's Cat Form tracking, clear it.
+2. Read `activeSpell` from `ns.GetActiveTrackingSpell()`.
+3. **Adopt** tracking that predates the session: `activeSpell` is set and `lastCastSpell` is nil. Only then, because in-session casts own `lastCastSpell`, and adopting over them while the Era mirror lags would corrupt the cycle's comparisons.
+4. **Latch** `mirrorConfirmedCast` once `activeSpell` equals `lastCastSpell`.
+5. Show `activeSpell`, or `lastCastSpell` for `ns.ICON_IN_FLIGHT_SECONDS` after the add-on's own cast and only until the latch, while the mirror catches up. **There is no fallback to the saved pick**: every such fallback showed a stale icon, such as last session's spell at login with nothing up. Nothing tracked shows `ns.ICON_DEFAULT`.
 
-The resolved texture is written to `ns.state.currentIcon`, `ns.ldb.icon`, and the free frame's icon texture; `ns.RefreshTooltip()` then updates any tooltip already on-screen.
+The texture goes to `ns.state.currentIcon`, the LDB object, and the free frame, and `ns.RefreshTooltip()` redraws a tooltip already on screen. `UpdateIcon` is also the only writer of `ns.state.farmPauseReason`, cached so the farm tick can tell when the reason changed (see *Pause Reporting*). The icon never dims for a pause (README-Notes → Decisions).
 
-`UpdateIcon` is also the only writer of `ns.state.farmPauseReason`. It resolves `ns.GetFarmPauseReason()` and dims the icon **only for settled reasons** — `ns.ICON_PAUSED_TINT` (0.45) into `ns.ldb.iconR/G/B` for the launcher, plus `SetDesaturated` and the same tint on the free frame. Transient reasons (combat, casting, looting, a tooltip) are reported in the tooltip but never dim, or the icon strobes through every fight and every gathered node. The tint is always written as a **number, never nil**: LibDBIcon passes `iconR/G/B` straight into `SetVertexColor`, which errors on a nil component, so the un-dimmed state is an explicit `1`.
+Two pollers in `Features/Tracking-State.lua` shave latency without making the mirror any fresher:
 
-`ns.GetActiveTrackingSpell()` reads the global `MiniMapTrackingIcon` **only while it is visible** and matches its texture back to a known tracking ID; a hidden frame retains a stale texture, and on the Vanilla client the frame is hidden entirely when nothing is tracked. It falls back to `GetTrackingTexture()` for clients (TBC+) that show a generic "None" texture instead. The read degrades safely if the frame is ever absent — a nil frame yields no match and resolution falls through.
+- `ns.PollUntilTrackingReady()` runs once at `PLAYER_LOGIN` and retries every second, up to 15 times, until `MiniMapTrackingIcon` has a texture, then refreshes the icon. During the login storm the icon may have no texture yet and `MINIMAP_UPDATE_TRACKING` may never fire. On a client without that frame it simply runs out its attempts.
+- `ns.FlushIconAfterTrackingChange()` re-runs `UpdateIcon` eight times over two seconds after a tracking change, catching the Era mirror the moment it flushes. A flag coalesces it, so a burst of tracking events can't stack overlapping polls.
 
-Two supporting pollers in `Core.lua` shave latency without ever making the mirror fresher:
+### Spell and Item Data
 
-- `PollUntilTrackingReady()` runs once at `PLAYER_LOGIN`, retrying every second (up to 15×) until `MiniMapTrackingIcon` has a texture, then refreshes the icon once. During the login event storm the icon may not have its texture set yet and `MINIMAP_UPDATE_TRACKING` may never fire, so without this the icon can stay stuck on default until the user toggles something.
-- `FlushIconAfterTrackingChange()` re-runs `UpdateIcon` up to 8 times over ~2s after a tracking change, catching the Era mirror the moment it flushes. Both pollers are coalesced behind a flag so bursts of events cannot stack overlapping timers.
+Spell names and icons are never stored. The flavor data holds only IDs, and everything the player sees comes from `C_Spell.GetSpellName` and `C_Spell.GetSpellTexture` at runtime, so it localizes for free. That makes cold-call nils the thing to handle:
 
-### Spell Data Caching
+- **The texture reverse cache.** Matching a texture back to a spell uses a lazy texture-to-spell map built from `ns.TRACKING_IDS` (`Features/Utilities.lua`). During the login storm `C_Spell.GetSpellTexture` returns nil for spells whose data hasn't loaded, so a map built then is missing entries. Rebuilds are driven by a dirty flag that `SPELLS_CHANGED` and `PLAYER_ENTERING_WORLD` set through `ns.InvalidateTextureCache()`, never by testing whether every ID resolved: an ID the client lacks never resolves, so a completeness test would rebuild the whole map on every miss, and a miss is what happens whenever nothing is tracked.
+- **Nil names are a filter.** The Tracking Menu and the Farm Mode Abilities list both skip an ID whose name comes back nil, which is how an ID the client lacks disappears. Diagnostics reports the same condition as *not on this client*, so a bug report separates "this client has never heard of the spell" from "the player hasn't learned it".
+- **The fishing pole needs no cache.** `ns.IsFishingPoleEquipped()` reads the main-hand item's class and subclass through `C_Item.GetItemInfoInstant`, which reads the client's own item table and never comes back empty on a cold call the way `C_Item.GetItemInfo` can, so there is no static list of fishing poles.
 
-Spell names and textures are never stored; `Data/Data.lua` holds only IDs, and everything player-visible comes from `GetSpellInfo` / `GetSpellTexture` at runtime so it localizes for free. That makes cold-call nils the thing to handle, in two places.
+### Secret Values
 
-**The texture reverse cache.** `ns.GetActiveTrackingSpell()` has to turn a texture back into a spell ID, so `BuildTextureCache` in [Features/Utilities.lua](Features/Utilities.lua) builds a lazy `texture → spellId` map instead of scanning `ns.TRACKING_IDS` with `GetSpellTexture` on every call. During the login event storm `GetSpellTexture` returns nil for spells whose data has not loaded, so a cache built then is missing entries.
+WoW Forever runs the Retail engine and carries its secret values. While a restriction is in force, which in practice means combat, an aura read from add-on code throws, the player's own buffs included, and cooldown, casting, identity, and unit-stat reads return values add-on code may not test or compare. `C_Secrets` reports each restriction ahead of the read, so every read that can go secret sits behind an accessor in `Features/Utilities.lua` that asks first and answers with a safe default:
 
-**Rebuilds are driven by a dirty flag, never by testing whether every ID resolved.** Find Fish (43308) does not exist in the Era client at all, so "every ID resolved" is unreachable there: a completeness test stays false forever and rebuilds the whole table on every lookup miss — which is most of them, since a miss is what happens whenever nothing is tracked. `SPELLS_CHANGED` and `PLAYER_ENTERING_WORLD` are the only points where new spell data can appear, so they call `ns.InvalidateTextureCache()` and the next lookup rebuilds exactly once.
+| Accessor | While secret, it answers | So the caller |
+| --- | --- | --- |
+| `ns.GetSpellCooldown` | nil | Treats the spell as not cooling down and lets the cast attempt decide |
+| `ns.IsPlayerCasting` | `true` | Holds the automatic cast and retries |
+| The buff scan behind `ns.GetPlayerStates` | The last readable scan | Keeps the last known form; Farm Mode is paused for combat anyway |
+| `ns.GetUnitCreatureType` | nil | Starts no hunt |
+| `ns.IsPlayerMoving` | `false` | Waits for movement |
 
-**Nil names are a filter, not an error.** The tracking menu ([Features/Tracking-Menu.lua](Features/Tracking-Menu.lua)) and the Farm Mode ability list ([Options/Options-Farm-Mode.lua](Options/Options-Farm-Mode.lua)) both skip any ID whose `GetSpellInfo` comes back nil, which is how Find Fish silently disappears on Era. Diagnostics reports the same condition explicitly as *not on this client*, so a bug report can tell "the client has never heard of this spell" apart from "the player has not learned it."
+`ns.HasAttackableTarget`'s reads and `UnitIsPlayer` never go secret, so they are called directly. Diagnostics follows the same rule: the Farm Mode Context report prints `secret` for its buff columns while auras are locked, and prints movement as a boolean, never the raw speed. `C_Secrets` ships on all three current targets, so it is called directly, and nothing reads a secret value and works around it (Style Guide → COMPATIBILITY).
+
+### Client Differences
+
+The TOC decides the flavor. `Data/Flavor.lua` sets `ns.FLAVOR` from the chosen TOC's `## X-Flavor` and `ns.IS_DISCOVERY` from the active season on the Vanilla TOC, and derives `ns.EXPANSION` and `ns.DATA_FOLDER` from them. No feature code reads any of them; Diagnostics prints the flavor and the data folder. Each difference lives in the first place that can hold it (Style Guide → COMPATIBILITY):
+
+- **Data.** Each flavor folder carries only what its client has (see *File Map*), and the options hide what the data lacks. The Find Fish when you Equip a Fishing Pole row hides where `ns.SPELLS.FISH` is nil (Classic Era). A Farm Mode Condition whose movement state has no buff rows hides through `ns.IsMovementStateDetectable`, and the pause reason skips it too, which is how Retail drops Aspect of the Cheetah and Aspect of the Pack (README-Notes → Decisions).
+- **Availability.** The tracking reads and clears (see *Reading and Clearing Tracking*), the mini-map zoom buttons, and Validate Data's tooltip text (`C_TooltipInfo` where the client ships it, a hidden `GameTooltipTemplate` tooltip where it doesn't) each pick an API by whether it exists, never by a truthy result.
+- **Frame presence.** The Blizzard tracking-button takeover exists only where `MiniMapTracking` exists and `MiniMapTrackingButton` doesn't, which is Classic Era (see *Tracking Menu*).
+- **Secret values**, on WoW Forever (see *Secret Values*).
+
+The namespaced APIs every current target ships (`C_AddOns`, `C_Item`, `C_Map`, `C_Minimap`, `C_Secrets`, `C_Spell`, `C_UnitAuras`) are called directly with no legacy fallback. The legacy tracking reads are the one sanctioned exception (README-Notes → Exceptions).
 
 ## Persistent Tracking
 
-`TryRecastPersistent()` ([Features/Core.lua](Features/Core.lua)) handles mid-play recasts. It runs 1.5 seconds after `UPDATE_SHAPESHIFT_FORM`, 2 seconds after `MINIMAP_UPDATE_TRACKING`, and once at grace-expiry after `PLAYER_ENTERING_WORLD` (the catch-up). The bail chain, in order:
+Persistent Tracking keeps one ability up and puts it back whenever something takes it away: death, a shapeshift, a loading screen, a cancel from outside the add-on, the end of a farm run.
 
-- `ns.db` not yet created, `persistentTracking` off, or `selectedSpellId` not set → stop.
-- The player is in a farm state → stop; Farm Mode owns the cast.
-- `IsPlayerSpell(spellId)` is false (the saved spell was unlearned) → stop.
-- Less than `LOGIN_GRACE_SECONDS` (10) since `PLAYER_ENTERING_WORLD` → stop; the login/reload window. The catch-up re-fires after the window, so nothing is lost.
-- `ns.GetActiveTrackingSpell()` returns the selected spell (provably active) → sync `lastCastSpell`, re-latch `mirrorConfirmedCast`, and stop. This is what terminates the retry chain after a successful recast.
-- Our own cast of this spell is still in flight (`lastCastSpell == spellId` and less than `ns.CAST_IN_FLIGHT_SECONDS` (10) since the attempt) → **reschedule** and re-check. Without this, the constant `UPDATE_SHAPESHIFT_FORM` stream from a hunter's aspects drives a redundant recast every ~5s until the mirror flushes — the "it casts it three times" symptom.
-- `ns.CanCast()` is false (dead or ghost, stealthed, mid-cast, in combat, a loot window open, or something on the cursor) → **reschedule** via `ScheduleRecast(RECAST_DEBOUNCE_SECONDS)`.
-- On cooldown or GCD → **reschedule**.
-- Less than `RECAST_DEBOUNCE_SECONDS` (5) since the last cast attempt (the `MINIMAP_UPDATE_TRACKING` echo of our own cast) → **reschedule**.
-- Otherwise recast.
+### The Resolver
 
-Temporary bails **retry, never swallow**: on Era the client may fire no further tracking event ever, so a swallowed trigger (the user cancels tracking twice within the debounce) used to kill persistent tracking until the next login. `ScheduleRecast` coalesces retries behind a `recastRetryPending` flag so bursts cannot stack timers.
+`ns.GetPersistentSpell()` (`Features/Persistent-Tracking.lua`) decides what that ability is right now. First match wins, and each override also requires the character to know the spell:
 
-Two client facts shape this design:
+1. Track Humanoids inside a battleground or an arena, with **Hunter: Track Humanoids in Battlegrounds** on (`battlegroundHumanoids`).
+2. Druid Track Humanoids in Cat Form, with **Druid: Track Humanoids when you Shift into Cat Form** on (`catFormHumanoids`).
+3. Find Fish with a fishing pole in the main hand, with **Find Fish when you Equip a Fishing Pole** on (`fishingPoleFish`).
+4. The running Automatic Target Tracking hunt, while the player is out in the world.
+5. The player's own pick, `selectedSpellId`.
 
-1. **The login blackout.** During the Classic login/reload event storm the tracking API is unresponsive for ten or more seconds and `GetTrackingTexture()` returns `nil`; we cannot tell whether the saved spell is already active. Casting blindly in that window caused the historical login-recast bug. Solved by the **time-based grace window**, not by interpreting `nil`.
-2. **The Era stale mirror.** On the Vanilla-based client (Classic Era 1.15.x, since ~1.15.1) the tracking mirror — `GetTrackingTexture()` and `MINIMAP_UPDATE_TRACKING` — lags the real state, sometimes by minutes; it only flushes when an unrelated buff update fires. `nil` is also that client's normal steady-state value for "no tracking active." An earlier version that bailed whenever `GetTrackingTexture()` was `nil` permanently blocked recasts on Era — the guard matched the exact state that needed fixing. **Do not reintroduce a nil bail.** Treat the mirror as a **positive signal only** ("provably active → skip") and let everything else fall through to a recast; recasting an already-active tracking spell is a harmless refresh.
+Everything that restores the ability reads the resolver: `TryRecastPersistent`, the post-resurrection recast, the form-leave restore, and the farm cycle's persistent entry. None of them knows about overrides or hunts, and "your own pick comes back" costs nothing: when an override's condition ends, the resolver answers with the pick again and the next recast trigger casts it. `UPDATE_SHAPESHIFT_FORM` covers Cat Form, `PLAYER_EQUIPMENT_CHANGED` on the main hand covers the pole, and the `PLAYER_ENTERING_WORLD` catch-up covers a battleground. Switching an override on or off invalidates the farm cache and calls `ns.TryRecastPersistent()`, so the change applies at once. A hunt never runs inside an instance, so it never meets the battleground override, and the resolver ignores a hunt outside the world as a backstop against a missed event that should already have ended it.
 
-Resurrection does **not** route through `TryRecastPersistent`. After a rez the server has genuinely cleared the player's tracking buff, so a recast is always needed and the mirror is never consulted. Both `PLAYER_UNGHOST` (returning to a corpse after a spirit run) and `PLAYER_ALIVE` (an in-place resurrection — healer rez, soulstone, or a graveyard port) call the shared `RecastAfterResurrection()`, which casts directly after a 1.5-second delay so the GCD and post-resurrection scripts settle. It still honors the `persistentTracking` / `selectedSpellId` / farm-state guards. Two details make it robust: a corpse-run return fires **both** events, so a `resurrectRecastPending` flag coalesces them into a single recast; and because `PLAYER_ALIVE` also fires the instant the player releases spirit and becomes a ghost, the delayed callback bails while `UnitIsDeadOrGhost("player")` is still true so it never casts into a corpse (the real resurrection fires the event again).
+The mini-map tooltip's Persistent Tracking Ability row always shows the pick, never an override or a hunt.
 
-`ns.CastTracking(spellId)` is the shared cast primitive. It validates `IsPlayerSpell`, gates Druid Track Humanoids on Cat Form, treats an active GCD or cooldown as "skip," records `ns.state.lastTrackingCastAt`, and `pcall`s `CastSpellByID`. It **returns `true` only when it reached `CastSpellByID`**, which is what the cycle sound mute arms on. It deliberately does **not** write `ns.state.lastCastSpell` — only `UNIT_SPELLCAST_SUCCEEDED` does, so a silent failure (line of sight, range, server reject) never poisons the bookkeeping the farm cycle and recast logic compare against.
+### Mid-Play Recasts
+
+`TryRecastPersistent()` runs 1.5 seconds after `UPDATE_SHAPESHIFT_FORM` or a main-hand change, 2 seconds after `MINIMAP_UPDATE_TRACKING`, once when the login grace window ends (the catch-up), when a hunt ends at a context break or a flight lands, and when a Persistent Tracking sub-option changes. It is exposed as `ns.TryRecastPersistent` for those last callers. The bail chain, in order:
+
+1. `ns.db` missing, `persistentTracking` off, or nothing resolved: stop.
+2. The player is in a farm state: stop, Farm Mode owns the casting.
+3. The character doesn't know the spell: stop.
+4. Less than `LOGIN_GRACE_SECONDS` (10) since `PLAYER_ENTERING_WORLD`: stop, the catch-up covers it.
+5. The spell is provably up: sync `lastCastSpell`, re-latch `mirrorConfirmedCast`, stop. This is what ends a retry chain once a recast has landed.
+6. The add-on's own cast of this spell is still in flight: reschedule for when the window ends. Without this, a hunter's stream of shapeshift events drives a redundant recast every few seconds until the mirror flushes.
+7. The player is standing still: park until they move (below).
+8. `ns.CanCast()` refuses: reschedule after `RECAST_DEBOUNCE_SECONDS` (5).
+9. On cooldown or the GCD: reschedule.
+10. Inside the debounce since the last attempt, which is the `MINIMAP_UPDATE_TRACKING` echo of the add-on's own cast: reschedule for when it ends.
+11. Otherwise cast.
+
+**Temporary bails retry, never swallow.** On Era the client may never fire another tracking event, so a dropped trigger, such as a player cancelling tracking twice inside the debounce, would stop Persistent Tracking until the next login. `ScheduleRecast` coalesces the retries behind `recastRetryPending`, a flag separate from the event-burst one.
+
+### Waiting for Movement
+
+Every recast here waits for the player to move (README-Notes → Decisions). Standing still is when a player eats, drinks, gathers, or reads, and a cast then stands them up or costs a global cooldown for nothing. So `TryRecastPersistent` and the post-resurrection recast check `ns.IsPlayerMoving()` just ahead of the all-clear and, while it is false, park themselves in a waiting set with no timer. `PLAYER_STARTED_MOVING` calls `ns.OnPlayerStartedMoving()`, which runs every parked recast once, `MOVEMENT_SETTLE_SECONDS` (0.2) later, coalesced behind a pending flag. The set is swapped out before the calls and each recast re-checks movement itself, so a tap that stops at once parks it again. The farm tick holds the same way, the form-leave restore included (see *The Farm Tick*). Automatic Target Tracking's switch is not covered and casts the moment a new kind of creature is targeted.
+
+### The Login Blackout
+
+During the login or reload event storm the tracking API is unresponsive for ten seconds or more and `GetTrackingTexture()` returns nil, so there is no telling whether the pick is already up. A time-based grace window handles it, never an interpretation of nil. `ns.StartLoginGrace()` anchors `ns.state.enteredWorldAt` on every `PLAYER_ENTERING_WORLD` and schedules the catch-up for one second after the window ends. Without the catch-up, a player who logs in with tracking down stays that way, since on Era no tracking event may ever fire; if tracking survived the logout, the positive check skips the cast.
+
+### Post-Resurrection Recast
+
+Resurrection doesn't route through `TryRecastPersistent`: a resurrection genuinely clears tracking on the server, so the mirror is never consulted. `PLAYER_UNGHOST` (back at the corpse after a spirit run) and `PLAYER_ALIVE` (an in-place resurrection: a healer's, a soulstone, or a graveyard port) both call `ns.RecastAfterResurrection()`, which tries 1.5 seconds later, by the maintainer's choice (README-Notes → Decisions).
+
+- A corpse-run return fires both events, and `resurrectRecastPending` coalesces them into one attempt. The flag stays set while the attempt waits, so another `PLAYER_ALIVE` can't start a second chain.
+- `PLAYER_ALIVE` also fires the instant the player releases spirit and becomes a ghost, so the attempt ends while `UnitIsDeadOrGhost("player")` is still true; the real resurrection fires the event again.
+- `persistentTracking`, the resolver, the farm state, `IsPlayerSpell`, and the Cat Form gate are lasting bails that end the chain. Standing still parks it. When `ns.CanCast()` or the cast refuses, as it does when a battle resurrection or soulstone lands mid-fight, it tries again after `RECAST_DEBOUNCE_SECONDS` until it casts or a lasting bail ends it.
 
 ## Farm Mode
 
-`ns.RunFarmLogic()` ([Features/Farm-Mode.lua](Features/Farm-Mode.lua)) runs on a `C_Timer.NewTicker` (default 3.5s, configurable 2–10s in half-second steps via `ns.db.profile.farmInterval`) and also on demand from the `PLAYER_UPDATE_RESTING` handler. The decision chain:
+Farm Mode cycles the player's ticked tracking abilities while they travel in a farm state, so herbs and ore share one mini-map.
 
-1. Refresh the dimmed icon when `ns.GetFarmPauseReason()` differs from `ns.state.farmPauseReason`. This sits **above every bail** so the dim state stays honest even on ticks that do nothing else.
-2. Bail if one of our options panels is visible (`ns.IsOptionsPanelOpen()`).
-3. Bail if any blocking window is open (`ns.IsBlockingWindowOpen()`) or the player is reading a tooltip (`ns.IsTooltipShowing()`).
-4. Bail if `ns.db.profile.farmMode` is off.
-5. Read `ns.GetPlayerStates()`. If the player just left farm state (`not inForm and ns.state.wasFarming`), clear `wasFarming` and recast the persistent tracking spell unless it is provably active or our own cast is still in flight, then return. This runs **before** the restricted-zone gate, so a player who unmounts inside an instance or a city still gets their persistent spell back.
-6. Bail in restricted zones (`ns.IsRestrictedZone()`).
-7. Bail if not in farm state or `ns.CanCast()` is false.
-8. Lazily rebuild `cachedCycle` if nil. Bail when empty.
-9. Single-entry shortcut: when `#cachedCycle == 1`, idle only while the spell is provably active (`ns.GetActiveTrackingSpell()`) or our own cast is still in flight (`ns.CAST_IN_FLIGHT_SECONDS` since the last attempt, covering icon lag); anything else — including tracking cancelled outside the add-on — recasts. Mark `wasFarming = true` and return.
-10. Advance the cycle via `ns.AdvanceFarmCycle()`. Mark `wasFarming = true`.
+### The Farm Tick
 
-`ns.CanCast()` ([Features/Utilities.lua](Features/Utilities.lua)) is the shared gate for every **automatic** cast — the farm cycle, the persistent recast, the post-target switch, and the manual cycle binding. It refuses while the player is dead or a ghost, stealthed, mid-cast, in combat, while a loot window is open (`ns.state.lootWindowOpen`), or while `GetCursorInfo()` reports something on the cursor. The last two are not about wasting a GCD: in Classic a spell cast closes an open loot window, so a cycle tick landing mid-loot can cost the player the node they just gathered, and a cast fired while an item or spell is held on the cursor discards it. `ns.CastTracking` itself is deliberately **not** gated — the tracking menu is a deliberate player click and must always cast. Every condition is momentary and every caller retries, so nothing is ever swallowed.
+`ns.RunFarmLogic()` (`Features/Farm-Mode.lua`) runs on the ticker, every 3.5 seconds by default and 2 to 10 in half-second steps through `ns.db.profile.farmInterval`, and on demand from `PLAYER_UPDATE_RESTING`:
 
-Farm logic never reads `GetTrackingTexture()` directly. The multi-spell cycle compares against `ns.state.lastCastSpell` — written only from `UNIT_SPELLCAST_SUCCEEDED`, reliable on every supported client — and the single-spell shortcut additionally consults `ns.GetActiveTrackingSpell()` (Blizzard icon first) so an external cancel is noticed and re-cast. These comparisons exist only to avoid burning a GCD on a no-op recast.
+1. `ns.HandleFlightState()` (`Features/Target-Tracking.lua`): taking off ends a running hunt, and landing afterwards brings the Persistent Tracking Ability back.
+2. Re-resolve the pause reason and refresh the icon and any open tooltip when it changed. This sits above every hold, so the Farm Mode Status stays honest on ticks that do nothing else.
+3. Hold while one of the add-on's options panels is visible (`ns.IsOptionsPanelOpen()`).
+4. Hold while a window is open, while a living target the player can attack is selected, or while any tooltip shows, the add-on's own included (the last two per README-Notes → Decisions).
+5. Hold until `ns.db` exists.
+6. Hold while the player stands still.
+7. **Form-leave restore.** If the player just left the farm state (`ns.state.wasFarming` is set and the state isn't), cast the resolved ability back unless it is provably up or the add-on's own cast is in flight, then return. A refusal by the all-clear, a cooldown, or the GCD keeps `wasFarming` set so the next tick retries; it clears only once the restore has cast or has nothing left to do. The restore runs ahead of the Farm Mode and restricted-zone gates, so switching Farm Mode off mid-run, or dismounting in an instance or a town, still brings the ability back. Holds 3, 4, and 6 hold it too.
+8. Stop if Farm Mode is off.
+9. Stop in a restricted zone (see *Restricted Zones*).
+10. Stop outside a farm state, or while `ns.CanCast()` refuses.
+11. Build the cycle if needed, and stop if it is empty.
+12. As a run starts (`wasFarming` still false), zoom the mini-map out (see *Mini-map Zoom*).
+13. Cast. A one-entry cycle recasts only when its spell isn't provably up and the add-on's own cast isn't in flight, which is how a cancel from outside the add-on gets noticed. A longer cycle steps through `ns.AdvanceFarmCycle()`, which skips an entry that already matches `lastCastSpell`.
+14. Set `wasFarming`.
 
-`ns.AdvanceFarmCycle()` is the one advance path, shared by the ticker and the key binding. It honors `ns.CanCast()` itself, skips an entry that already matches `lastCastSpell` rather than recasting it, and always recasts on a one-entry cycle — pressing the key has to do something visible.
+Farm logic never uses the mirror as a gate. The multi-entry cycle compares against `lastCastSpell`, and the one-entry shortcut consults `ns.GetActiveTrackingSpell()` only as a positive signal. Those comparisons exist only to avoid spending a GCD on a no-op recast.
+
+`ns.CanCast()` (`Features/Utilities.lua`) is the all-clear for every automatic cast and for the binding. It refuses while the player is dead or a ghost, stealthed, casting or channeling, in combat, looting, or holding something on the cursor (README-Notes → Decisions). Three of those cost more than a wasted GCD: any cast ends a channel, so a tracking cast would cut short Fishing, a bandage, or Eagle Eye; in Classic a spell cast closes an open loot window, so a tick mid-loot can cost the node just gathered; and a cast fired with an item or spell on the cursor drops it. Every condition is momentary and every caller retries.
+
+`ns.AdvanceFarmCycle()` is the one advance path, shared by the ticker and the Cycle Farm Mode Ability binding. It honors `ns.CanCast()` itself, and it always recasts a one-entry cycle, since pressing the key has to do something visible.
 
 ### Farm-State Detection
 
-`ns.GetPlayerStates()` ([Features/Utilities.lua](Features/Utilities.lua)) returns `(isCat, isFarming, movementState)`. It scans up to 40 player buffs once, classifies the current movement state, then maps that state to its per-state toggle through `ns.MOVEMENT_STATE_TOGGLES`:
+`ns.GetPlayerStates()` (`Features/Utilities.lua`) returns `(isCat, isFarming, movementState)`. It scans up to 40 player buffs, classifies the movement state, and maps the state to its toggle through `ns.MOVEMENT_STATE_TOGGLES`:
 
-| Movement state | Detected by | Per-state toggle | Class gate (options only) |
+| Movement state | Detected by | Toggle | Owning class |
 | --- | --- | --- | --- |
-| `taxi` | `UnitOnTaxi` | *(returns `false, false` immediately)* | — |
-| `mounted` | `IsMounted()` and not in combat | `farmMounted` | all |
-| `travelForms` | buff IDs in `ns.FARM_FORMS` | `farmTravelForms` | `DRUID` |
-| `cheetah` | buff IDs in `ns.CHEETAH_BUFFS` | `farmCheetah` | `HUNTER` |
-| `ghostWolf` | buff ID `ns.GHOST_WOLF` | `farmGhostWolf` | `SHAMAN` |
-| `foot` | fallthrough | `farmNotMounted` (off by default) | all |
+| `taxi` | `UnitOnTaxi` | None: never a farm state | |
+| `mounted` | `IsMounted()` | `farmMounted` | Every class |
+| `travelForms` | A buff in `ns.FARM_FORMS` | `farmTravelForms` | `DRUID` |
+| `cheetah` | A buff in `ns.CHEETAH_BUFFS` | `farmCheetah` | `HUNTER` |
+| `pack` | A buff in `ns.PACK_BUFFS` | `farmPack` | `HUNTER` |
+| `ghostWolf` | A buff in `ns.GHOST_WOLF_BUFFS` | `farmGhostWolf` | `SHAMAN` |
+| `foot` | Everything else | `farmNotMounted` | Every class |
 
-`isFarming` is true only when the master `farmMode` toggle is on **and** the current state's toggle is enabled. States are mutually exclusive in practice (mounting cancels forms and aspects), so the checks are ordered mounted → travel form → cheetah → ghost wolf → on foot. `ns.MOVEMENT_STATE_TOGGLES` and `ns.MOVEMENT_STATE_CLASS` ([Data/Data.lua](Data/Data.lua)) are the one place the set of states is written down, so detection, the options toggles, and the paused-reason strings cannot disagree about which states exist.
+`isFarming` is true only when the master `farmMode` toggle and the current state's toggle are both on. The checks run in the table's order; in practice the states exclude each other, since mounting cancels forms and aspects. `ns.MOVEMENT_STATE_TOGGLES`, `ns.MOVEMENT_STATE_CLASS`, and `ns.CLASS_STATE_ORDER` (`Data/Data.lua`) tie each state to its toggle, its owning class, and its place in the on-foot pause reason. The buff scan, the pause-reason keys, and the option toggles still name each state themselves, so a new state has to be wired everywhere at once (see *Adding a New Farm Mode Condition*). Aspect of the Pack is a state of its own, off by default, and there is no Eagle Eye state, since a tracking cast ends that channel (README-Notes → Decisions).
 
-The class gates live only in the options UI (`ns.IsPlayerClass`, [Options/Options-Farm-Mode.lua](Options/Options-Farm-Mode.lua)) so a low-level character can pre-configure a toggle before learning the ability; detection itself is class-agnostic.
+Detection is class-agnostic, and so are the options: every class is offered every condition, because the toggles save to the profile, which characters of any class can share (README-Notes → Exceptions). The owning class matters only to the on-foot pause reason, which names just the states this character's class owns (`ns.IsPlayerClass`).
 
-`isCat` is reported separately because Cat Form is not a farm state — it gates Druid Track Humanoids, which is mutually exclusive with the travel forms that put the player into farm state.
+`isCat` is reported separately because Cat Form is not a farm state of its own: it counts as `foot`. It gates the druid's Cat Form tracking (see *Druid Tracking and Cat Form*).
 
-The scan sits behind a **frame-scoped memo** keyed on `GetTime()`, which is constant for the whole frame, so a cached answer can never come from a previous frame. `ns.UpdateIcon` and `ns.RunFarmLogic` each derive these states twice in one pass — directly, and again through `ns.GetFarmPauseReason` — and `FlushIconAfterTrackingChange` runs `UpdateIcon` eight times in about two seconds. Two bypasses are deliberate: while `ns.db` is nil the result is recomputed and never stamped, since `isFarming` reads the profile and the database appears mid-frame during `ADDON_LOADED`; and `ns:ApplyProfile` calls `ns.InvalidatePlayerStates()` first, since a profile switch rewrites the per-state toggles `isFarming` is derived from.
+The scan sits behind a **frame-scoped memo** keyed on `GetTime()`, which is constant for the whole frame, so a cached answer never comes from an earlier frame. `ns.UpdateIcon` and `ns.RunFarmLogic` each derive the states twice in one pass, directly and again through `ns.GetFarmPauseReason`, and `FlushIconAfterTrackingChange` runs `UpdateIcon` eight times in two seconds. Two bypasses are deliberate: while `ns.db` is nil the result is recomputed and never stamped, since `isFarming` reads the profile and the database appears mid-frame during `ADDON_LOADED`; and `ns:ApplyProfile` calls `ns.InvalidatePlayerStates()` first, since a profile switch rewrites the toggles `isFarming` comes from.
 
 ### Pause Reporting
 
-Farm Mode goes quiet for reasons the player cannot see, which is the most common "is it broken?" report. `ns.GetFarmPauseReason()` answers that in one place, returning `(localeKey, isTransient)` or nil:
+Farm Mode goes quiet for reasons the player can't see, and "is it broken?" is the most common report. `ns.GetFarmPauseReason()` (`Features/Farm-Pause-Reporting.lua`) answers it in one place, returning a locale key or nil. It returns nil when Farm Mode is off: that isn't a pause, and the tooltip already reports Disabled. Settled reasons come first; the transient ones, which clear on their own within seconds, are checked only while the player is in a farm state:
 
-| Kind | Reasons |
+| Kind | Reasons, in order |
 | --- | --- |
-| **Settled** (dims the icon) | dead; on a taxi; inside an instance or a `ns.RESTRICTED_MAP_IDS` map; resting; the cycle is empty; the current movement state's toggle is off; on foot with the on-foot toggle off |
-| **Transient** (tooltip only) | our options panel open; any blocking window open; a tooltip showing; in combat; casting; stealthed; a loot window open; something on the cursor |
+| **Settled** | Dead; on a taxi; inside an instance or on a restricted map; resting; an empty cycle; the current state's toggle off; on foot with the on-foot toggle off |
+| **Transient** | An options panel open; a window open; someone else's tooltip showing; in combat; casting; stealthed; looting; something on the cursor; an attackable target; standing still; the add-on's own tooltip, ranked last |
 
-It returns nil when Farm Mode is switched off — that is not a pause, and the tooltip already reports Disabled. **The transient flag is the whole point of the second return value:** these clear on their own within seconds, and an icon that flickers through every fight and every gathered node reads as a bug.
+An empty cycle has three causes, told apart by `ns.GetEmptyCycleKind()` (`Features/Farm-Mode.lua`): nothing ticked (`FARM_PAUSED_NO_ABILITIES`), nothing ticked that this character knows, like Find Herbs ticked with no Herbalism (`FARM_PAUSED_NOT_LEARNED`), or only the druid's Cat Form tracking known, outside Cat Form (`FARM_PAUSED_CAT_FORM`). Reporting the first for the second tells a player to tick abilities that are already ticked, and the second for the third tells a druid they don't know a spell they do. The binding's chat line splits the same three ways.
 
-The on-foot case gets special treatment. `GetMovementReason` names the states that *would* start the cycle, considering only the ones this class can reach, so a mage is never told about Ghost Wolf. Each combination is **one precomposed locale key** (`FARM_PAUSED_NOT_MOUNTED_TRAVEL`, `FARM_PAUSED_NOT_MOUNTED_CHEETAH`, …) rather than fragments joined at runtime: a comma-spliced sentence assembled from pieces cannot be translated correctly.
+On foot, `GetMovementReason` names the states that *would* start the cycle, considering only those this class owns and this flavor can detect, so a mage is never told about Ghost Wolf. A class that owns several, such as a hunter's Cheetah and Pack, is told about the first one switched on in `ns.CLASS_STATE_ORDER`. Each pairing is **one precomposed locale key** (`FARM_PAUSED_NOT_MOUNTED_TRAVEL`, `FARM_PAUSED_NOT_MOUNTED_CHEETAH`, and so on) rather than fragments joined at runtime, because a comma-spliced sentence assembled from pieces can't be translated correctly.
 
-`ns.IsRestrictedZone()` and `ns.GetFarmPauseReason()` share one file-local `GetRestrictedKind()` helper, so the yes/no gate and the reason string can never disagree about what counts as restricted.
+Several transient reasons are Farm Mode's own holds rather than `ns.CanCast()` conditions, so they stop the cycle without touching the manual binding: an options panel, a window, a tooltip, an attackable target, and standing still. All but standing still leave the persistent recast alone too; standing still holds it through its own check (see *Waiting for Movement*).
 
-Two of the transient reasons are Farm Mode's own gates rather than `ns.CanCast()` conditions, so they stop the cycle without touching the manual key binding or the persistent recast: `ns.IsOptionsPanelOpen()` and `ns.IsTooltipShowing()`. The tooltip check deliberately excludes the add-on's own tooltip — the mini-map button and the free frame both draw into `GameTooltip`, and counting them would make the status block report "paused" every time the player hovered the icon to read it. `ns.minimapButton` is stored in `ns.InitMinimap` purely so that owner comparison can be made. `ns.IsBlockingWindowOpen()` sweeps `UIPanelWindows` rather than a hand-written list, so every standard window (merchant, mail, auction, quest, gossip, bank, trade) is covered at once and stays covered when Blizzard adds one; a short `EXTRA_BLOCKING_FRAMES` list adds the few that are never registered there (the game menu, the Settings panel, `StaticPopup1`).
+Tooltips are checked in two halves. The mini-map button and the free frame both draw into `GameTooltip`, and hovering them is how the player reads the Farm Mode Status, so `ns.IsTooltipShowing()` covers everyone else's tooltips and `ns.IsOwnTooltipShowing()` the add-on's own, ranked last so the status names any other cause first. `ns.BuildTooltip` draws before its tooltip shows, when the live check can't see it yet, so it passes `true` as `ns.GetFarmPauseReason`'s `ownTooltipShowing` argument. `ns.minimapButton` is stored in `ns.InitMinimap` for that owner comparison. `ns.IsBlockingWindowOpen()` sweeps `UIPanelWindows` rather than a hand-written list, so every standard window stays covered when Blizzard adds one, plus a short `EXTRA_BLOCKING_FRAMES` list for frames never registered there, such as the game menu, the Settings panel, and `StaticPopup1`. `ns.IsOptionsPanelOpen()` (`Options/Options.lua`) evaluates `IsVisible()` live on every call: closing the Settings window hides the window, not the add-on's canvas, so a cached flag or an `IsShown()` read would stay true and pause Farm Mode until the next reload.
 
-The reason drives two surfaces: the dimmed icon and a status block at the top of the mini-map tooltip. Because several of these conditions fire no registered event — a taxi flight above all — `ns.RunFarmLogic()` re-resolves the reason on every tick **before its own bails** and calls `ns.UpdateIcon()` only when the value changed.
+The reason has one surface, the Farm Mode Status block in the mini-map tooltip. Because several conditions fire no registered event, a taxi flight above all, `ns.RunFarmLogic()` re-resolves the reason on every tick before its holds and calls `ns.UpdateIcon()` only when the value changed, which redraws an open tooltip.
 
 ### Farm Cycle Cache
 
-`BuildCycleCache()` builds a sorted, IDs-only array `cachedCycle` from every enabled entry in `ns.db.profile.farmCycleSpells`. It drops `ns.SPELLS.DRUID_HUMANOIDS`, requires `IsPlayerSpell`, and sorts so cycle order is stable across reloads.
+`BuildCycleCache()` builds `cachedCycle`, a sorted array of spell IDs, from every enabled entry in `ns.db.profile.farmCycleSpells` that the character knows, admitting the druid's Cat Form tracking only in Cat Form. Sorting keeps the cycle order stable across reloads. The cache records the Cat Form state it was built for, and every read (`ns.GetFarmCycleCount()`, `ns.GetFarmCycle()`, the tick, the advance) goes through `EnsureCycleCache`, which rebuilds it when that state has changed, so shifting in or out of Cat Form needs no invalidation of its own.
 
-It also appends `ns.db.profile.selectedSpellId` when `farmIncludePersistent` is on, guarded by a membership set so an ability that is both the persistent pick *and* ticked in the list appears **once** — queued twice it would take double the airtime of everything else. Because the cycle depends on `selectedSpellId`, every writer of that key invalidates the cache: the tracking menu's `info.func`, `ns.ClearTracking()`, and `ns.HandleTargetChanged()`.
+With `farmIncludePersistent` on, the cache also appends the resolved ability (`ns.GetPersistentSpell()`, so a running hunt takes the pick's place), guarded by a membership set so an ability that is both the persistent entry and ticked in the list appears **once**; queued twice, it would take double the airtime of everything else.
 
-`ns.InvalidateFarmCache()` nils the cache; it is invalidated on `SPELLS_CHANGED`, `PLAYER_ENTERING_WORLD`, on any profile change, and from each Farm Mode Abilities toggle's `set` handler, then rebuilt lazily on the next read. `ns.GetFarmCycleCount()` is the only reader of the cache's size outside this file — it builds the cache when nil and returns `#cachedCycle`, so nothing else needs to know the cache exists.
+`ns.InvalidateFarmCache()` nils the cache, and the next read rebuilds it. It runs on `SPELLS_CHANGED`, `PLAYER_ENTERING_WORLD`, and a main-hand change, on every profile change, on every hunt change, on every write of `selectedSpellId` (the Tracking Menu, Clear Tracking), and from the `set` handler of each Farm Mode Abilities toggle, the Include Persistent Tracking Ability toggle, and each Persistent Tracking sub-option. `ns.GetFarmCycleCount()` is the only reader of the cycle's size outside the file, and `ns.GetFarmCycle()` hands Diagnostics a copy, never the live cache.
 
 ### Cycle Sound Mute
 
-`ns.db.profile.muteCycleSound` (default `true`) silences the sound of Farm Mode's **own** automatic casts. Every automatic cast in [Features/Farm-Mode.lua](Features/Farm-Mode.lua) routes through one file-local seam, `CastCycleSpell(spellId)`; the tracking menu, `TryRecastPersistent`, `RecastAfterResurrection`, and Target Tracking all call `ns.CastTracking` directly and keep their sound.
+`ns.db.profile.muteCycleSound`, on by default, silences the sound of Farm Mode's own casts. Every cycle cast, the ticker's and the binding's, goes through one seam, `ns.CastCycleSpell(spellId)` in `Features/Cycle-Sound-Mute.lua`. The form-leave restore, the Tracking Menu, the persistent and post-resurrection recasts, and the hunt call `ns.CastTracking` directly and keep their sound.
 
-**Why a CVar and not `MuteSoundFile`.** The tracking spells' cast audio is played by the engine from the spell's own SoundKit and never passes through `PlaySound` or `PlaySoundFile`, so no FileDataID is reachable from Lua and `MuteSoundFile` has nothing to take. Switching `Sound_EnableSFX` off is the only lever available.
+**Why a CVar.** A tracking spell's cast audio comes from the spell's own SoundKit, played by the engine; it never passes through `PlaySound` or `PlaySoundFile`, so no FileDataID reaches Lua and `MuteSoundFile` has nothing to take. Switching `Sound_EnableSFX` off is the only lever.
 
-**The window is the whole trick.** The audio does *not* fire inside `CastSpellByID` — it fires when the server confirms the cast, a round trip later — so muting and restoring around the call silences nothing. The mute is held until `UNIT_SPELLCAST_SUCCEEDED` reports our spell (`ns.NotifyTrackingCastSucceeded`, the usual path, typically well under 200ms) and lifted `ns.CYCLE_MUTE_TAIL_SECONDS` (0.1) after that, with `ns.CYCLE_MUTE_SECONDS` (0.6) as the ceiling for a cast the server never confirms. Restores are generation-stamped so overlapping casts cannot restore each other early.
+**The window is the whole trick.** The audio doesn't fire inside `CastSpellByID`. It fires when the server confirms the cast, a round trip later, so muting and restoring around the call silences nothing. The mute holds until `UNIT_SPELLCAST_SUCCEEDED` reports the spell (`ns.NotifyTrackingCastSucceeded`, usually well under 200 ms) and lifts `ns.CYCLE_MUTE_TAIL_SECONDS` (0.1) after that, with `ns.CYCLE_MUTE_SECONDS` (0.6) as the ceiling for a cast the server never confirms. Restores are generation-stamped, so overlapping casts can't restore each other early.
 
-This is a **write to a game-wide user CVar with no chat notice**, which the house rule on user CVars otherwise forbids. It is a deliberate, signed-off carve-out on one ground: the sound being silenced is one the add-on itself creates on every cycle tick, so this suppresses its own side effect rather than buying a convenience, and a chat notice every few seconds would be noise rather than information. Four safeguards make it safe to ship:
+This is the momentary kind of write Style Guide → WRITING USER CVARS allows: made around the add-on's own automated action and restored within a second to the exact value read, so it prints nothing. It has its own toggle, and `README.md` discloses it. Four safeguards keep it that way:
 
-- **The mute is armed only after a cast was actually attempted.** `ns.CastTracking` returns `true` when it reached `CastSpellByID` and `false` on each early bail (spell unknown, Cat Form gate, cooldown or GCD), and `CastCycleSpell` casts first and arms second. Arming afterwards is safe precisely because the audio plays on server confirmation, not inside the call.
-- **`ns.RestoreCycleSoundNow()` restores unconditionally on teardown**, called from the `PLAYER_LOGOUT` handler in `Features/Core.lua` (which covers `/reload` as well as logout) and from the `muteCycleSound` toggle's `set` handler when the player switches the option off. `Sound_EnableSFX` persists across sessions, so a mute whose timer died with the UI would otherwise leave the player with sound effects off and nothing to connect it to.
-- **The cast is wrapped in `pcall`**, so an error inside `ns.CastTracking` can never skip the restore and strand the player with sound switched off.
-- **The CVar is only written when it is not already `"0"`.** A player who plays with sound effects off is never written to, and the restore puts back the exact string that was read.
+- **Cast first, arm second.** `ns.CastTracking` returns `false` on every early bail (an unknown spell, the Cat Form gate, a cooldown, the GCD), and the mute arms only after a cast was attempted. Arming afterwards is safe precisely because the audio plays on confirmation.
+- **Teardown restores unconditionally.** `ns.RestoreCycleSoundNow()` runs from the `PLAYER_LOGOUT` handler, which covers `/reload` as well, and from the toggle's `set` when the player switches the option off. `Sound_EnableSFX` persists across sessions, so a mute whose timer died with the UI would leave the player with sound effects off and nothing to connect it to.
+- **The cast runs inside `pcall`**, so an error can never skip the restore.
+- **Nothing is written when sound effects are already off**, and the restore puts back the exact string that was read.
 
-The trade-off worth knowing: the toggle silences *all* sound effects for that instant, not just the tracking cast, so a sound already playing can be clipped. At a 3.5-second cycle this is rarely audible, which is why the option ships on: the repeated cast sound is noise the add-on itself creates, and the player never asked for those casts.
+The trade-off: the mute silences every sound effect for that instant, not only the cast, so a sound already playing can be clipped. At a 3.5-second cycle that is rarely audible.
 
-### Why Druid Track Humanoids Is Excluded
+### Mini-map Zoom
 
-`ns.SPELLS.DRUID_HUMANOIDS` (5225) requires Cat Form, which is mutually exclusive with the travel forms that put the player into farm state. Including it in the cycle would mean casting a Cat-Form-gated spell from a non-Cat-Form context, which always fails. The exclusion lives in four places: `BuildCycleCache()` ([Features/Farm-Mode.lua](Features/Farm-Mode.lua)) skips the ID for both the list and the persistent entry, `BuildFarmAbilityArgs()` ([Options/Options-Farm-Mode.lua](Options/Options-Farm-Mode.lua)) never builds the toggle, `ns.CastTracking()` ([Features/Core.lua](Features/Core.lua)) guards on `isCat`, and `ns.CREATURE_TYPE_SPELLS` ([Data/Data.lua](Data/Data.lua)) omits it so Target Tracking can never select it. The tracking menu hides the entry unless the player is currently in Cat Form.
+**Zoom Mini-map Out** (`ns.db.global.farmZoomOut`, a Farm Mode sub-option, on by default) zooms the mini-map all the way out as each Farm Mode run starts, on the tick where the cycle is about to cast and `wasFarming` is still false. Zoomed out, the mini-map shows tracked nodes from farther away. It acts only then, so a player who zooms back in mid-run keeps that until the next run, and it never restores the player's own zoom (README-Notes → Decisions). It skips the write when the mini-map is already fully out. The key lives in `global` although it sits on the Farm Mode panel: it changes the client's own mini-map, which every character shares, so per-character copies would only undo each other.
+
+`Minimap:SetZoom` alone leaves Blizzard's zoom buttons showing the old state, so a player who was fully zoomed in would find zoom-in greyed out; Blizzard's own zoom clicks set the buttons themselves after the call. `ZoomMinimapOutForRun` does the same, enabling zoom-in and disabling zoom-out on `Minimap.ZoomIn` and `Minimap.ZoomOut` (WoW Forever) or `MinimapZoomIn` and `MinimapZoomOut` (Classic Era, TBC Anniversary), whichever exists.
+
+### Druid Tracking and Cat Form
+
+`ns.CAT_FORM_ONLY` (`Features/Utilities.lua`) holds the druid's tracking, which can be cast only in Cat Form: Track Humanoids (`ns.SPELLS.DRUID_HUMANOIDS`, 5225) on every flavor, and Track Beasts (`ns.SPELLS.DRUID_BEASTS`, 210065) on Retail. Each is listed in the Farm Mode Abilities list under Druid, beside the hunter's own, and the cycle admits it, from the list or as the persistent entry, only while the player is in Cat Form. Cat Form counts as on foot, so in practice it cycles for a druid farming with **Not Mounted** ticked; in Travel Form the rest of the cycle runs without it rather than spending a step on a cast that always fails. Every toggle in that list shows its ability's own tooltip on hover (`tooltipHyperlink`), so these carry their catch on the panel instead, muted beside the name (`OPTIONS_FARM_CAT_FORM_NOTE`).
+
+Everywhere Cat Form can't be assumed, the add-on keeps them out of reach: `ns.CastTracking()` refuses them outside Cat Form, the form-leave restore and the post-resurrection recast skip them there, `ns.UpdateIcon` clears them from `lastCastSpell` when the player shifts out, the Tracking Menu hides them unless the player is in Cat Form, and `ns.CREATURE_TYPE_DATA` omits them so a hunt never lands on one.
+
+**Druid: Track Humanoids when you Shift into Cat Form** (`catFormHumanoids`, off by default) makes Druid Track Humanoids the Persistent Tracking Ability while the druid is in Cat Form, through the resolver. Nothing else is needed: `UPDATE_SHAPESHIFT_FORM` schedules the recast both ways, and like every automatic cast it waits out Prowl, since `ns.CanCast()` refuses while stealthed.
 
 ### Restricted Zones
 
-`ns.IsRestrictedZone()` ([Features/Utilities.lua](Features/Utilities.lua)) returns true when `IsInInstance()` is true (any instance — dungeon, raid, battleground, arena), when the current instance map ID is in `ns.RESTRICTED_MAP_IDS` (currently only Deeprun Tram, 369), or when `IsResting()` is true (capital cities and inn rest areas). It stays intentionally simple: no capital-city or battleground tables and only a single map-ID special case. The trade-off is breadth — Farm Mode pauses anywhere the resting flag is set, which covers more than just the named cities.
+`ns.IsRestrictedZone()` (`Features/Utilities.lua`) is true inside any instance (`IsInInstance()`: a dungeon, raid, battleground, or arena), on a map listed in the flavor folder's `ns.RESTRICTED_MAP_IDS` (Deeprun Tram, 369, on every flavor), and while resting (`IsResting()`: capital cities and inns). It shares `ns.GetRestrictedKind()` with the pause reason, so the gate and the reason can never disagree about what counts. The design stays deliberately simple, with no capital-city or battleground tables and a single map-ID special case. The trade-off is breadth: Farm Mode pauses anywhere the resting flag is set, which covers more than the named cities, and it reacts only as fast as the client sets that flag. `ns.IsOutInTheWorld()` adds "not on a taxi" to the same test for Automatic Target Tracking.
 
-## Target Tracking
+## Automatic Target Tracking
 
-`Features/Target-Tracking.lua` sets the Persistent Tracking Ability from the creature the player targets. It is opt-in (`ns.db.profile.targetTracking`, default `false`) and open to every class: whatever creature types a character can track, it can have set automatically. It is richest on a Hunter, who covers seven types, but a Paladin covers Undead and a Warlock Demons. It is drawn as a **sub-option of Enable Persistent Tracking** on the General panel and hides with it, because that is exactly what it modifies; it also hides for a character that covers no creature type at all. `ns.HasCreatureTypeTracking()` is the single predicate behind both the options section's `hidden` and the mini-map tooltip's status row, so the two can never disagree about whether the feature applies here.
+`Features/Target-Tracking.lua` runs the **hunt**: out in the world, the kind of creature the player targets temporarily stands in for the Persistent Tracking Ability. It is opt-in (`ns.db.profile.targetTracking`, off by default) and open to every class; whatever creature types a character can track, it can hunt. A Hunter covers seven types (eight on Retail, with Mechanical), and a Paladin's Sense Undead or a Warlock's Sense Demons covers one where the flavor has it. The section on the General panel and the mini-map tooltip block show on every character, since the setting lives in the profile, which characters of any class can share (README-Notes → Exceptions); a character that covers no creature type simply never starts a hunt.
 
-`ns.CREATURE_TYPE_SPELLS` ([Data/Data.lua](Data/Data.lua)) is keyed by the client's **localized** creature-type globals (`BEAST`, `DEMON`, `DRAGONKIN`, `ELEMENTAL`, `GIANT`, `HUMANOID`, `UNDEAD`) because `UnitCreatureType` returns a localized string. That is what makes the feature locale-proof without a single locale key of its own. Every type is registered under **two** keys, the localized global and the English literal: the globals are what make this work in other locales, but they cannot be relied on to exist — a missing one previously dropped its whole creature type at load, and the feature then failed silently for that type with no error to show for it.
+`ns.CREATURE_TYPE_SPELLS` (built in `Features/Utilities.lua` from each flavor folder's `ns.CREATURE_TYPE_DATA`) is keyed by the **creature type ID** that `UnitCreatureType` returns as its second value: 1 Beast, 2 Dragonkin, 3 Demon, 4 Elemental, 5 Giant, 6 Undead, 7 Humanoid, 9 Mechanical, the same on every client and in every locale. That is what makes the feature locale-proof without a single locale key of its own. Never match on the name `UnitCreatureType` returns first: it is localized. Each type maps to a list of candidates in preference order, such as Track Undead or Sense Undead, and `ns.GetCreatureTypeSpell()` returns the first one the character knows.
 
-Each type maps to a **list** of candidate spells, not one: Undead is covered by the Hunter's Track Undead *or* the Paladin's Sense Undead, Demons by Track Demons *or* Sense Demons. `ns.GetCreatureTypeSpell(creatureType)` ([Features/Utilities.lua](Features/Utilities.lua)) walks them in order and returns the first the character has learned.
+**An automatic signal must never overwrite a choice the player saved.** The hunt is runtime state only (`ns.state.huntSpellId`), never saved, and nothing automatic writes `selectedSpellId`: the Tracking Menu sets it on the player's own click, and Clear Tracking clears it. Login and `/reload` always start without a hunt, and walking into town gives the player's own pick back. The resolver folds the hunt in (see *The Resolver*), so the recasts, the form-leave restore, and the farm cycle's persistent entry follow it without knowing about it. With Persistent Tracking off, hunts still start and switch, but nothing is ever recast.
 
-**It writes `selectedSpellId` rather than borrowing the tracking slot**, and that single decision is what keeps the module small. Everything downstream already reads that one key — the post-resurrection recast, the form-leave restore, `TryRecastPersistent`, and the farm cycle's optional persistent entry — so all of them follow for free. There is no hold flag, no revert path, and no need to suppress Persistent Tracking, which means the two features cannot fight each other.
+`ns.OnPlayerTargetChanged()` runs on `PLAYER_TARGET_CHANGED`. The bail chain:
 
-`ns.HandleTargetChanged()` runs on `PLAYER_TARGET_CHANGED`. The bail chain:
+1. `ns.db` missing or `targetTracking` off: stop. Persistent Tracking being off doesn't stop it.
+2. Not out in the world (`ns.IsOutInTheWorld()`), or in combat: stop, and nothing is queued (see *Combat Lockdown*).
+3. No living, attackable target (`ns.HasAttackableTarget()`, the same test that holds Farm Mode), or an enemy player: stop. Creatures only, so clicking an add's corpse to loot it keeps the hunt.
+4. No known candidate for the creature type, read through `ns.GetUnitCreatureType` (see *Secret Values*): stop.
+5. The hunt is already this spell: stop.
+6. Otherwise start or switch the hunt and cast it at once: one global cooldown per new kind of creature, not per pull (README-Notes → Decisions).
 
-- `ns.db` missing, `targetTracking` off, **or `persistentTracking` off** → clear any pending switch and stop. The parent gate is load-bearing: the options panel hides this control while Persistent Tracking is off, so a feature that kept acting would rewrite the saved ability and burn a GCD for something the player believes is switched off. Its own `targetTracking` key is never written by that gate — the setting survives and resumes when the parent comes back on.
-- `IsInInstance()` → clear any pending switch and stop. A dungeon, raid, battleground, or arena is a stream of hostile targets, so the feature would fire on nearly every target change and spend a global cooldown each time — a distraction exactly where the player can least afford one, and one that tells them nothing, since the pack is already in front of them. **Nothing is queued from inside an instance:** clearing `pendingSpellId` here rather than storing it is what stops a stale pick from the last pull being applied on the way out.
-- No target, or `UnitCanAttack("player", "target")` is false → stop. Friendly units never drive a switch; targeting a city guard is not a hunt.
-- `UnitCreatureType("target")` has no entry in `ns.CREATURE_TYPE_SPELLS`, or no candidate spell is known → stop.
-- It is already the selected ability → clear any pending switch and stop.
-- `UnitAffectingCombat("player")` → store the ID in `pendingSpellId` and stop (see *Combat Lockdown*).
-- Otherwise write `selectedSpellId`, invalidate the farm cache (the cycle can include the persistent ability), and cast immediately unless `ns.CanCast()` refuses. **It casts whether or not Farm Mode is running.** An earlier version deferred to the cycle whenever `isFarming` was true, which made the feature look broken in the state it is most used in: mounted, the pick becomes one entry in a rotation of three or four and is overwritten within seconds, so targeting a beast produced nothing visible. Casting now shows the pack at once and the cycle reclaims the slot on its next tick, which keeps the no-hold-flag design intact.
+Every hunt change invalidates the farm cycle cache and refreshes the icon and tooltip. The cast treats `ns.GetActiveTrackingSpell()` only as a positive "already up" signal, and when `ns.CanCast()` or a cooldown refuses, it retries every `HUNT_RETRY_SECONDS` (2) until it lands or the hunt changes or ends; a generation counter retires a retry that belongs to an older hunt. While Farm Mode is actively cycling with Include Persistent Tracking Ability off (`farmIncludePersistent`), the hunt doesn't cast: it stays out of the rotation, and the form-leave restore brings it back when the farm state ends (README-Notes → Decisions).
 
-`ns.HandleRegenEnabled()` re-runs the whole decision rather than casting `pendingSpellId` directly — by the time the fight ends the target may be dead, swapped, or gone, and re-validating is cheaper than setting tracking from a corpse.
+A hunt has no fade timer. It ends only at a context break: resting starting (`PLAYER_UPDATE_RESTING`), arriving in a restricted zone (`PLAYER_ENTERING_WORLD`, `ZONE_CHANGED_NEW_AREA`), a flight starting (seen by the farm tick through `ns.HandleFlightState`), a Tracking Menu pick, Clear Tracking, switching the feature off (the options toggle or Shift + Right-Click, both through `ns.SetTargetTracking`), and a profile change. Killing the target, looting, or clearing the target keeps it. `ns.EndHunt(restorePersistent)` brings the Persistent Tracking Ability back through `ns.TryRecastPersistent` for every break except the menu pick and Clear Tracking, which set tracking themselves; after a flight that ended a hunt, landing triggers that recast.
+
+## Come & Get It
+
+`Features/Come-and-Get-It.lua` is the standalone Come & Get It add-on folded in as a feature (README-Notes → Decisions). Right-click an herb the player can't pick, a vein they can't mine, or a locked chest, and the error the client raises becomes a chat draft naming the node, its coordinates, and the zone. **It never sends anything**: the draft opens in the chat box for the player to send, edit, or delete. It is on by default (`ns.db.profile.comeAndGetIt`) and has its own options page directly beneath Farm Mode. The standalone's `/cgi` command, welcome message, and link rows didn't come across. Running the standalone alongside is harmless: whichever handler runs second finds the chat box already open and stands down.
+
+The pipeline is gate, detect, compose, write, entered from Core's `UI_ERROR_MESSAGE` branch through `ns.OnUIErrorMessage(messageID, message)`.
+
+**Gate: `CanAnnounce()`.** The toggle, then `IsInInstance()`, then `InCombatLockdown()`, then the 5-second cooldown (`ns.ANNOUNCE_COOLDOWN`). It runs before any matching on purpose: every "Out of range" and "Not enough rage" fires this event, hardest in combat, which is exactly when the gate says no, so a discarded error costs no string work.
+
+**Detect: `ns.MatchError(messageID, message)`.** Two tables, one per kind of key:
+
+- **Fast path, by error name.** A numeric `UI_ERROR_MESSAGE` index shifts between patches and between clients, since WoW Forever's Retail engine numbers errors differently from Classic, so the matcher resolves it with `GetGameMessageInfo` and looks up the GlobalStrings name. Locked chests match here, through `ns.ERROR_STRING_LOCKED_CHEST` (`"ERR_ITEM_LOCKED"`).
+- **Slow path, by skill name.** Herb and mine nodes raise the same `Requires <Skill>` error, so only the localized skill name tells them apart: the lowercased message is substring-scanned for `L["MATCH_HERB"]` and `L["MATCH_MINE"]`. One `MATCH_*` string can hold several names separated by semicolons, for a language whose clients don't all name the skill the same way. Substring matching is an accepted trade-off: word-boundary patterns break CJK locales, and a false match is bounded because nothing is ever sent.
+
+The two mappings stay separate tables because both key kinds are strings; merged, the substring scan would also try `ERR_ITEM_LOCKED` against message text. `ns.MatchError` lives on the namespace because the Diagnostics noise filter classifies with it.
+
+**Compose: `AnnounceNode(mapping)`.** Each step bails silently: the map from `C_Map.GetBestMapForUnit`; the position from `C_Map.GetPlayerMapPosition`, where an exact `0, 0` means the map can't resolve the player; the zone from `C_Map.GetMapInfo`; the node name from `GameTooltipTextLeft1`, read only while `GameTooltip:IsShown()` because the font string keeps its last text after the tooltip hides; and a bail when the tooltip shows an item, because a lockbox in the bags raises the same locked error as a world chest. `GameTooltip:GetItem` backs that check because `TooltipUtil` isn't on every client. The line comes from `ns:BuildAnnounceMessage` (`Features/Announcements.lua`).
+
+**Write.** `ChatFrameUtil.OpenChat(command .. " " .. announcement, ChatFrame1)`, skipped while `ChatFrameUtil.GetActiveWindow()` reports the player is already typing. The code calls `ChatFrameUtil` directly; the older `ChatFrame_OpenChat` and `ChatEdit_GetActiveWindow` globals survive only as deprecated aliases. `lastAnnounceTime` is stamped only after a successful open, so a bailed attempt never starts the cooldown. A line over 255 bytes (`ns.CHAT_MESSAGE_MAX_LENGTH`) prints `CHAT_TOO_LONG` but still opens whole: a byte-wise cut would split a multi-byte character, and the player edits the draft anyway. The measurement covers the line alone, since the client consumes the command prefix as a channel selector.
+
+### The Draft Line
+
+What lands in the chat box, with Local chosen:
+
+```text
+/1 Hey Miners! Rich Thorium Vein at 25, 54 in Eastern Plaguelands.
+```
+
+Each `MSG_FORMAT_*` body is the whole line after the command, with four `%s` in a fixed order: node name, x, y, zone. It carries no target marker, no add-on name, and no ` // `: a line drafted into the player's own chat box is the player's words (Style Guide → MESSAGES → Target Marker), and WoW Forever blocks raid-marker tokens in chat anyway. The greeting closes on "!" so nothing attaches to the node name, and no article or adjective has to agree with a name whose gender and number are unknown until runtime. `ns:BuildAnnounceMessage` strips stray pipes from the result; the bodies never carry item links, so nothing is lost.
+
+### Output Channels
+
+`ns.OUTPUT_CHANNELS` (`Data/Data.lua`) pairs each stable saved key with a slash command and a locale label key. The feature derives its key-to-command lookup from it and the options page derives the dropdown, so the list, its order, and the mapping can't drift. The chosen key is saved as `ns.db.profile.comeAndGetItOutput`. A key that no longer exists falls back to `ns.DEFAULT_OUTPUT_CHANNEL` (`channel1`, Local) at write time, and the dropdown shows that default rather than a blank.
+
+Beneath the dropdown sits a one-line note, `OPTIONS_OUTPUT_NOTE`: Local (/1) only reaches players on your layer. It is there by exception to the rule that helper text lives in the tooltip (README-Notes → Exceptions), and the dropdown's tooltip carries a different tip so the two never repeat each other.
 
 ## Tracking Menu
 
-`Features/Tracking-Menu.lua` builds one LibUIDropDownMenu dropdown at file scope and exposes `ns.ToggleMenu(anchor)`. Rows are every ID in `ns.TRACKING_IDS` that resolves a name and passes `IsPlayerSpell`, sorted by the **localized** name so the list reads alphabetically in every client. Druid Track Humanoids is hidden unless the player is currently in Cat Form.
+`Features/Tracking-Menu.lua` builds one LibUIDropDownMenu dropdown at file scope and exposes `ns.ToggleMenu(anchor)`. Rows are every ID in `ns.TRACKING_IDS` that resolves a name and passes `IsPlayerSpell`, sorted by the **localized** name so the list reads alphabetically in every client. The druid's Cat Form tracking is hidden unless the player is in Cat Form.
 
-Two rendering details are deliberate. LibDD only honors `info.fontObject` on *enabled* buttons, so the title and every ability row are built as enabled entries — the title simply carries no `func` — which is the only way to get the larger font. Spacer rows are `notClickable` entries with empty text, used between abilities to keep the list readable.
+LibUIDropDownMenu honors `info.fontObject` only on enabled buttons, so the title and every ability row are built as enabled entries, the title simply without a `func`; that is the only way to get the larger font. Spacer rows between abilities are `notClickable` entries with empty text.
 
-Picking a row writes `ns.db.profile.selectedSpellId`, invalidates the farm cache, clears `ns.state.wasFarming` (so the next non-farm tick does not fire a redundant form-leave restore of the ability just cast), and calls `ns.CastTracking` directly — **not** through `ns.CanCast()`, because a deliberate player click must always cast.
+Picking a row ends any running hunt (without the restore, since the pick casts itself), writes `ns.db.profile.selectedSpellId`, invalidates the farm cache, clears `ns.state.wasFarming` so the next tick doesn't run a redundant form-leave restore of the ability just cast, and calls `ns.CastTracking` directly, never through `ns.CanCast()`, because a deliberate click must always cast. The Tracking Menu is the only way to choose the pick: a tracking spell cast from an action bar, the spellbook, a macro, or WoW Forever's own tracking menu is never treated as one (README-Notes → Decisions).
 
-## Minimap Button & Free-Placement Frame
+### Blizzard Tracking Button Takeover
 
-`ns.InitMinimap()` ([Features/Minimap-Button.lua](Features/Minimap-Button.lua)) registers a `LibDataBroker-1.1` launcher and hands it to `LibDBIcon-1.0` with the saved `ns.db.global.minimap` payload. `ns.CreateFreeFrame()` builds the standalone `Button` used when Free Placement Mode is on. `ns.UpdatePlacement()` toggles visibility between the two based on `ns.db.global.freePlacement`, honors the Enable Mini-map Button preference (`ns.db.global.minimap.hide`), and hides both when the player has no tracking abilities at all (`ns.HasTrackingAbility()`). Free Placement hides the LibDBIcon button without touching `minimap.hide`, so the preference survives a round trip through Free Placement and back.
+`ns.ApplyBlizzardTrackingHook()` optionally makes Classic Era's own mini-map tracking icon open the Tracking Menu. It is gated on `ns.db.global.hookBlizzardTracking` (account-wide presentation, off by default) and called at the end of `ns.InitMinimap()`, from `ns:ApplyProfile`, and from the option's `set` handler.
 
-Free Placement has no `Features/` file of its own: its frame, position pipeline, and shape/scale appliers all live in `Minimap-Button.lua` because they are the same button drawn somewhere else. Only its options fragment is split out, into [Options/Options-Free-Placement.lua](Options/Options-Free-Placement.lua).
+It is offered on Classic Era only (README-Notes → Decisions). There the icon is the plain `MiniMapTracking` frame, which has no menu of its own: a right-click cancels tracking, and the takeover replaces that. On TBC Anniversary and MoP Classic, `MiniMapTrackingButton` is a Blizzard dropdown button whose built-in mouse-down opens Blizzard's own tracking menu, which no script swap can stop, so a takeover would open two menus on one click. `ns.HasBlizzardTrackingButton()` therefore reports a frame only when `MiniMapTracking` exists and `MiniMapTrackingButton` doesn't, and the option hides everywhere else.
+
+- **A takeover, not `HookScript`.** A hook would leave Blizzard's own handler running, so the frame's `OnMouseUp` handler is saved and replaced.
+- **Restore puts the frame back exactly as found.** Turning the option off re-installs the saved handler, a nil one included, and clears the saved state.
+
+The frame is neither secure nor protected, so replacing its script raises no taint. A UI that swaps the frame out after the takeover, such as an ElvUI reskin, gets the saved handler back on restore, which is the documented limit of the contract.
+
+## Mini-map Button and Free Placement
+
+`ns.InitMinimap()` (`Features/Minimap-Button.lua`) registers a LibDataBroker-1.1 launcher and hands it to LibDBIcon-1.0 with the saved `ns.db.global.minimap` table. `ns.CreateFreeFrame()` (`Features/Free-Placement.lua`) builds the standalone button used in Free Placement Mode: the same launcher drawn somewhere else, sharing the tooltip (`ns.BuildTooltip`) and click handler (`ns.HandleLauncherClick`).
+
+`ns.UpdatePlacement()` decides which one shows. A character with no tracking ability (`ns.HasTrackingAbility()`) gets neither. With `ns.db.global.freePlacement` on, the free frame shows and the LibDBIcon button hides without touching `minimap.hide`, so the Enable Mini-map Button preference survives a round trip through Free Placement; otherwise `LibDBIcon:Refresh` honors that preference. The Enable Mini-map Button toggle is disabled while Free Placement is on.
 
 ### Tooltip
 
-`ns.BuildTooltip` draws both surfaces. The **Farm Mode Status** block leads, because it is the only block that answers "why is nothing happening?" — it renders only while Farm Mode is enabled, shows Active in green or Paused in gray, and prints the localized pause reason underneath. Below it come the interactive blocks (Tracking Menu, Persistent Tracking Ability, Persistent Tracking, Farm Mode), each with its click hint, and two **status-only teasers** (Automatic Target Tracking, Silence Tracking Sounds) that report a setting's state with no click hint because they are operated from the options panel. Each teaser draws only while its setting is actually reachable, matching the condition its options row hides on, so the tooltip never advertises something the player cannot act on. The tooltip always ends with the options block.
+`ns.BuildTooltip` draws both surfaces, in order: the Tracking Menu, the Persistent Tracking Ability, Farm Mode, the Farm Mode Status (only while Farm Mode is on: gray Paused with its reason, or green Active), Automatic Target Tracking, and the options block (README-Notes → Decisions). The Persistent Tracking Ability row always shows the saved pick, and the Automatic Target Tracking block doesn't name a running hunt: the icon already shows what is tracked. Persistent Tracking itself has no block, since it is set in the options panel.
 
-`ns.RefreshTooltip()` re-runs the owning frame's `OnEnter` when the tooltip is already on screen, so a state change made by a click updates the text in place.
-
-### Anonymous Free Frame
-
-The free-placement frame is created with `nil` as its name on purpose. WoW's per-character `layout-local.txt` cache keys frames on their name; any named frame is looked up there at creation time and a cached position from a previous session is applied silently — overriding the account-wide `ns.db.global.freePos`. `SetUserPlaced(false)` from Lua does *not* prevent this lookup. Making the frame anonymous removes it from the layout-local system entirely, so positioning is owned 100% by `ns.db.global.freePos`.
-
-### Position Pipeline
-
-The frame uses two file-local helpers — `SaveFreePosition(frame)` and `ApplyFreePosition(frame)` — and a single stable anchor: `frame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y)`.
-
-- **Storage format.** `ns.db.global.freePos = { x = number, y = number }` where `x` and `y` are the frame's center in *absolute screen pixels* (live `GetCenter()` multiplied by the frame's effective scale at save time). Storing absolute pixels means a later UI-scale or icon-scale change does not drift the saved position — both ends of the round trip convert through the frame's current effective scale.
-- **Save points.** `OnDragStop` (after every drag), and `ns.SaveFreeFramePosition()` from the `PLAYER_LOGOUT` handler in [Features/Core.lua](Features/Core.lua) as a backstop, **guarded on the frame being shown**.
-- **Why the logout save is guarded.** The absolute-pixel round trip is only exact when the frame's effective scale is the same at anchor time and at save time. `UpdatePlacement` returns early for a character with no tracking ability, skipping the `ApplyFreePosition` inside `UpdateFreeFrameScale` — so on that character the frame is anchored once during `ADDON_LOADED`, before `UIParent`'s effective scale settles to the `uiScale` CVar, and never re-anchored. An unguarded logout save then read stale offsets, multiplied by the *settled* scale, and wrote a drifted `freePos`. Because `freePos` is account-wide, that moved the icon for every character, compounding on each visit to the alt. `ns.SaveFreeFramePosition` bails unless `ns.freeFrame:IsShown()`, which also stops a never-dragged frame from materializing a `freePos` at screen center.
-- **Apply points.** The end of `CreateFreeFrame` (initial restore), the end of `UpdateFreeFrameScale` (so `SetScale` does not shift the offsets), `UpdatePlacement` before `Show()` (defense against any code path that re-anchored the frame while hidden), and immediately after a drag (normalizing the live anchor back to the canonical `CENTER → BOTTOMLEFT` form).
-- **`SetUserPlaced(false)`.** Called in both `OnDragStop` and `ApplyFreePosition`. `StartMoving` / `StopMovingOrSizing` silently flag any frame as user-placed for the rest of the session, and a stale flag can cause the client to write a layout-local entry on logout that out-races our SavedVariables on next login. Clearing it on every apply keeps the flag from sticking.
-
-Shape is a texture swap, not a rebuild: `UpdateFreeFrameShape` shows either the circle pair or the square pair of textures created up front in `CreateFreeFrame`.
+`ns.RefreshTooltip()` re-runs the owning frame's `OnEnter` while its tooltip is on screen, so a change made by a click updates the text in place.
 
 ### Click Map
 
-`OnClick` drives every interaction on both the LibDBIcon button and the free-placement frame:
+`ns.HandleLauncherClick` drives both the LibDBIcon button and the free frame:
 
-| Modifier + Button | Action |
+| Click | Action |
 | --- | --- |
-| Left-Click | Open the tracking menu. |
-| Right-Click | `ns.ClearTracking()` — cancel and forget selection. |
-| Shift + Left-Click | Toggle Persistent Tracking. |
-| Shift + Right-Click | Toggle Farm Mode. |
-| Shift + Middle-Click | Open the options panel (`ns:OpenOptionsPanel()`). |
+| Left-Click | Open the Tracking Menu |
+| Right-Click | `ns.ClearTracking()`: cancel tracking and forget the pick |
+| Shift + Left-Click | Toggle Farm Mode |
+| Shift + Right-Click | `ns.SetTargetTracking()`: toggle Automatic Target Tracking; switching it off ends any hunt |
+| Shift + Middle-Click | `ns:OpenOptionsPanel()` |
 
-Shift + Middle-Click is handled **before** the `ns.db` guard, so the options panel opens regardless of saved-variable state. `ns.ClearTracking()` nils `selectedSpellId`, invalidates the farm cache, calls `CancelTrackingBuff()`, and forces the icon to default immediately — `CancelTrackingBuff` is asynchronous and the mirror would still report the old texture for a frame otherwise.
+Shift + Middle-Click is handled before the `ns.db` guard, so the options panel opens regardless of saved-variable state. `ns.ClearTracking()` ends any hunt, clears `lastCastSpell` and `selectedSpellId`, invalidates the farm cache, calls `ns.CancelActiveTracking()`, and forces the default icon at once: the cancel is asynchronous, and the mirror would still report the old texture for a frame.
 
-### Blizzard Tracking Button Hook
+### Anonymous Free Frame
 
-`ns.ApplyBlizzardTrackingHook()` optionally makes Blizzard's own mini-map tracking icon — inert on these clients — open the Tracking Menu. It is gated on `ns.db.global.hookBlizzardTracking` (account-wide presentation, default `false`), called at the end of `ns.InitMinimap()`, from `ns:ApplyProfile`, and from the option's `set` handler. The frame is resolved as `MiniMapTrackingButton`, falling back to `MiniMapTracking`; `ns.HasBlizzardTrackingButton()` reports whether either exists and hides the option outright when neither does.
+The free-placement frame is created with `nil` as its name on purpose. WoW's per-character `layout-local.txt` cache keys frames on their name, and a named frame is looked up there at creation and silently given a cached position from a previous session, overriding the account-wide `ns.db.global.freePos`. `SetUserPlaced(false)` from Lua doesn't prevent the lookup. An anonymous frame is outside that system entirely, so `freePos` alone owns placement.
 
-Three details are deliberate:
+### Position Pipeline
 
-- **Take-over, not `HookScript`.** A hook would leave Blizzard's own handler running and open two menus at once, so the existing handler is saved and replaced.
-- **Exactly one script is replaced** — `OnClick` where `HasScript` reports it, `OnMouseUp` otherwise. Replacing both fires the handler twice for a single click, which opens the menu and immediately closes it. `MiniMapTracking` is a `Frame` and has no `OnClick`, which is why the choice is probed rather than assumed.
-- **Restore puts the frame back exactly as found.** Turning the option off re-installs the saved handler (including a nil one) and clears the saved state.
+The frame uses two helpers, `SaveFreePosition(frame)` and `ApplyFreePosition(frame)`, the second also exported as `ns.ApplyFreePosition` for `ns.UpdatePlacement`, and one stable anchor: `frame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y)`.
 
-Neither frame is secure or protected on Classic Era or TBC Anniversary, so replacing their scripts raises no taint. A UI that swaps the button out *after* the hook is applied (ElvUI reskins, for instance) will receive the saved handler back on restore, which is the documented limit of the contract.
+- **Storage.** `ns.db.global.freePos = { x = ..., y = ... }` holds the frame's center in UI units at scale 1.0, the live `GetCenter()` multiplied by the effective scale at save time. Both ends of the round trip convert through the frame's current effective scale, so a later UI-scale or icon-scale change doesn't drift the saved position. With no `freePos` the frame sits at screen center.
+- **Save points.** `OnDragStop` after every drag, and `ns.SaveFreeFramePosition()` from the `PLAYER_LOGOUT` handler as a backstop, **guarded on the frame being shown**.
+- **Why the logout save is guarded.** The round trip is exact only when the effective scale at save time matches the one the last apply used. `UpdatePlacement` returns early for a character with no tracking ability, skipping the re-anchor, so on that character the frame keeps its first anchor from `ADDON_LOADED`, before `UIParent`'s effective scale settled to the `uiScale` CVar. An unguarded logout save would read those stale offsets against the settled scale and write a drifted `freePos`, and since `freePos` is account-wide, that moves the icon for every character. The `IsShown()` guard also stops a never-shown frame from materializing a `freePos`.
+- **Apply points.** The end of `CreateFreeFrame`, the end of `ns.UpdateFreeFrameScale` (so `SetScale` doesn't shift the offsets), `UpdatePlacement` before every `Show()` (against any code path that re-anchored the frame while hidden), and right after a drag, normalizing the live anchor back to the canonical one.
+- **`SetUserPlaced(false)`** runs in both `OnDragStop` and `ApplyFreePosition`. `StartMoving` and `StopMovingOrSizing` silently flag a frame as user-placed for the rest of the session, and a stale flag can make the client write a layout-local entry on logout that out-races the SavedVariables at the next login.
+
+Shape is a texture swap, not a rebuild: `ns.UpdateFreeFrameShape` shows either the circle pair or the square pair of textures created up front.
 
 ## Key Bindings
 
-One binding ships, defined in `Bindings.xml` at the add-on root: `TRACKINGEYE_CYCLE_FARM_ABILITY`, which advances the Farm Mode cycle by a single step on demand. It is a **manual** control and is deliberately not gated on `ns.db.profile.farmMode` — pressing the key works with Farm Mode switched off, standing still, or anywhere the automatic cycle would be paused. It still routes through `ns.AdvanceFarmCycle()`, so it obeys `ns.CanCast()` exactly as the ticker does, and it prints `BINDING_NOTHING_TO_CYCLE` when the cycle is empty rather than failing silently.
+One binding ships, defined in `Bindings.xml` at the add-on root: `TRACKINGEYE_CYCLE_FARM_ABILITY`, which advances the Farm Mode cycle one step. It is a **manual** control, deliberately not gated on `farmMode`: it works with Farm Mode off, standing still, or anywhere the automatic cycle is paused. It still goes through `ns.AdvanceFarmCycle()`, so it obeys `ns.CanCast()` exactly as the ticker does, and on an empty cycle it prints why rather than failing silently: `BINDING_NOTHING_TO_CYCLE` when nothing is ticked, `BINDING_NOTHING_LEARNED` when this character knows none of the ticked abilities, and `BINDING_NEEDS_CAT_FORM` when the only ones it knows are the druid's Cat Form tracking, outside Cat Form. The binding's chat line splits the same way as the pause reason (see *Pause Reporting*).
 
-The binding cannot be *set* from an AceConfig panel, so the General panel carries a Key Bindings section that points at the game's own Key Bindings list, using the same display name.
+An AceConfig panel can't set a binding, so the General panel carries a Key Bindings section that points at the game's own Key Bindings list, using the same display name.
 
-`Bindings.xml` is **auto-discovered from the add-on root and must never be listed in the TOC**. Listing it routes the file through the generic UI XML parser, which does not know the `<Bindings>` node and rejects the whole file with `Unrecognized XML: Bindings` warnings, so the binding never appears. Its root element is `<Bindings>` — not a `<Ui>` wrapper, which fails the same way. The `Binding` element carries `name` and **`category`**: the category string is what draws the collapsible **Tracking Eye** section in the Key Bindings list, and without it the binding loads but has nowhere to appear. `header` is a separate, older mechanism for sub-headings inside a category and is not used here.
+`Bindings.xml` is **found at the add-on root by the client and must never be listed in a TOC**. Listed, it goes through the generic UI XML parser, which doesn't know the `<Bindings>` node and rejects the whole file, so the binding never appears. Its root element is `<Bindings>`, never a `<Ui>` wrapper, which fails the same way. The `Binding` element carries `name` and `category`: the category string draws the collapsible **Tracking Eye** section in the Key Bindings list, and without it the binding loads with nowhere to appear.
 
-## Client Assumptions
+## Options Panels
 
-Both supported flavors — Classic Era 1.15.x and TBC Anniversary 2.5.x — run the modern client, so the modern API is what actually executes in practice. Every modern call is still **reached through an availability guard** with its legacy global behind it, per COMPATIBILITY ("Check the API exists, then call exactly one"). The guards cost nothing on a healthy client and turn a hard Lua error into a graceful degrade on one that is missing something.
+`Options/Options.lua` registers five panels in a fixed order, which is the order of the `AddToBlizOptions` calls: General (the root), Farm Mode, Come & Get It, Profiles, and Diagnostic Tools. Registration is deferred to `ns.RegisterOptionsPanels()`, which `Core.lua` calls right after `AceDB:New`, because the Profiles builder reads `ns.db`. Every registry name comes from `ns.OPTIONS_REGISTRY` (`Data/Data.lua`), derived from `ADDON_NAME`.
 
-- `C_AddOns.GetAddOnMetadata`, `C_AddOns.GetAddOnInfo`, and `C_AddOns.GetNumAddOns` resolve through `(C_AddOns and C_AddOns.X) or X`, falling back to the pre-`C_AddOns` globals. `GetVersion` returns `Dev` when neither resolves, when the metadata read comes back nil, or when the value still contains `@` — an unsubstituted `@project-version@` token, which is what a working copy carries until the packager builds it. The nil test runs first on purpose: an unpackaged read is nil, and calling `:find` on it would error on exactly the local-dev path the branch exists for. `ns:BuildAddOnReport` emits a single "unavailable" line.
-- `ns:OpenOptionsPanel` runs the full chain: combat gate, then `Settings.OpenToCategory(<captured categoryID>)` behind a `Settings and Settings.OpenToCategory` guard, then `InterfaceOptionsFrame_OpenToCategory(<captured frame>)` called twice, then `AceConfigDialog:Open` as a genuine last resort. Every route uses handles captured at registration, never a name or title lookup.
-- Rows in `ns.DIAGNOSTIC_API_CHECKS` carry an optional third element. A row flagged optional is the legacy half of a guard, absent on a modern client by design: it renders `[n/a]` and never counts as a failure. Any other miss is a real problem.
-- `ns.CastTracking` treats an active GCD as "on cooldown" rather than splitting the two. That is acceptable here and says so at the call site: tracking casts are cheap refreshes and every caller retries, so a GCD-blocked attempt is never lost.
-
-**Find Fish (43308) is the one deliberate cross-flavor entry.** It exists on TBC Anniversary and not in the Era client's spell database at all, so on Era `GetSpellInfo` returns nil, the menu and the Farm Mode list skip it, and Diagnostics reports it as *not on this client*. See *Spell Data Caching* for the texture-cache rule that depends on this.
+- **The opener routes by captured handles.** `ns:OpenOptionsPanel` gates on combat first (see *Combat Lockdown*), then calls `Settings.OpenToCategory` with the category ID captured from the root panel's `AddToBlizOptions`, and falls back to `AceConfigDialog:Open` only when registration returned no ID. A lookup by the panel's name returns nil wherever AceConfigDialog keeps a generated category ID, which drops the panel into a floating window.
+- **Open panels redraw on outside changes.** AceConfig re-evaluates dynamic `name`, `disabled`, and `get` callbacks only when it redraws, so `ns.RefreshOptionsPanels()` fires `NotifyChange` for every registered name. `ns:ApplyProfile` calls it; so should any new writer that changes a setting from outside the panel.
+- **Master switches hide their pages.** With Enable Farm Mode or Enable Come & Get It off, everything below it on that page hides outright, so the page is the toggle and nothing else. Persistent Tracking's and Free Placement Mode's sub-options collapse with their toggles the same way.
+- **Sub-option rows** come from `ns.OptionsSubRow` (`Options/Options-Utilities.lua`), and three details there are load-bearing: one unnamed inline group per sub-option, or the next control packs onto the leftover space and the indent stops indenting; controls sized with slack rather than to the full row width, or a control on the wrap boundary tips onto its own line and strands the indent; and `hidden` on the group, not its members, or the indent is left behind when the section collapses.
+- **Label-beside-control rows** (Cycle Speed, Default Output, the Feedback & Support links) pair `ns.OptionsRowLabel` with a control whose `name` is empty, the two totaling `ns.OPTIONS_ROW_WIDTH`. A row that can hide, as Cycle Speed and Default Output do, sits in an unnamed inline group so the pair hides as one. The cycle-interval dropdown needs its `sorting` list: without it the numeric keys sort as strings and "10" lands ahead of "2".
+- **Every class sees every option.** The Farm Mode Abilities list shows every tracking spell the client has, learned or not, and every Farm Mode Condition shows to every class, because a profile can be shared by characters of different classes (README-Notes → Exceptions).
 
 ## Diagnostics
 
-The Diagnostic Tools system ([Features/Diagnostics.lua](Features/Diagnostics.lua) + [Options/Options-Diagnostics.lua](Options/Options-Diagnostics.lua)) exists to make bug reports actionable. It is **not** a unit-test runner — WoW's sandboxed Lua has no assertion framework. Every report builds only on an explicit button press, and every check is read-only and side-effect free. The single exception is the Taint Log button, which sets the `taintLog` CVar.
+The Diagnostic Tools system (`Features/Diagnostics.lua` and `Options/Options-Diagnostics.lua`) exists to make bug reports actionable. It isn't a unit-test runner, since WoW's sandboxed Lua has none: every report builds only on an explicit button press, and every check is read-only and side-effect free except the Taint Log buttons, which set the `taintLog` CVar.
 
-- **Runtime-only state.** `ns.diagnostics = { enabled, logging, log }` is a plain namespace table, **not** a SavedVariable, so file-scope initialization is correct here. Nothing about diagnostics persists across sessions; it always starts off.
-- **English-only strings.** Diagnostics text lives in `ns.DiagnosticsStrings`, intentionally **not** localized — it is developer-facing troubleshooting output. The only localized value it uses is the add-on's own display name (`ns.L["ADDON_TITLE"]`).
-- **Enable gate.** A single runtime toggle (`ns:SetDiagnosticsEnabled`) shows the panel body; turning it off also stops any running event log. Because every gated widget shares that one condition, the panel bakes it into local `SectionHeader` / `ReportOutput` builders rather than repeating the predicate.
-- **Reports.** Eleven sections in panel order: Event Log, Event Registration (`ns.EVENT_NAMES` validated via `C_EventUtils.IsEventValid` plus a register/unregister round trip on a probe frame), API Endpoints (`ns.DIAGNOSTIC_API_CHECKS` existence and shape checks), Player & Spell Context (`ns.DIAGNOSTIC_SPELLS`, which is `ns.TRACKING_IDS`), Display Context, Farm Mode Context, Other Add-ons, Saved Variables dump, Library Versions, Taint Log, and External Tools. Every report is prefixed with a client header (version, build, TOC, locale, `WOW_PROJECT_ID`).
-- **The Farm Mode Context report is the add-on's own context probe** and answers most "it stopped cycling" reports in one paste: every toggle, the live movement inputs, the resulting `ns.GetPlayerStates()` classification, `CanCast` / `IsRestrictedZone`, the raw mirror value next to `lastCastSpell`, and the pause reason. The reason is printed as its **raw locale key**, never the translated string, so a report pasted from a zhTW client is still readable.
-- **Event Log.** A 500-entry ring buffer fed by `ns:LogEvent` from the Core dispatcher, capped at 8 arguments of 255 bytes each, with pipes escaped **after** the length cut so a truncated argument cannot leave a dangling pipe. `ns.DIAGNOSTIC_EVENT_EXCLUDE` is deliberately empty: the log only ever sees events the add-on registered, and none of those is a firehose, so there is no per-message-id filter and no suppressed-traffic block to read.
-- **Taint Log.** `ns:SetTaintLog` writes the `taintLog` CVar (0 = off, 2 = verbose). This is the only state the panel ever writes.
-- **External tools.** Rather than reimplement them, the panel points at `/console scriptErrors 1`, BugSack/!BugGrabber, and `/etrace`.
+- **Runtime-only state.** `ns.diagnostics` is a plain namespace table, never a SavedVariable, so file-scope initialization is correct and every session starts with the panel off. Turning it off stops the event log and releases its buffer, and retires any Validate Data run in progress.
+- **English-only strings.** Diagnostics text lives in `ns.DiagnosticsStrings`, deliberately not localized. The add-on title is the only localized string it uses as its own text; the Come & Get It Context report also prints the two `MATCH_*` strings, as data. Every widget below the enable toggle shares one condition, so the panel bakes it into local `SectionHeader` and `ReportOutput` builders.
+- **Fourteen sections, in panel order:** Event Log, Event Registration, API Endpoints, Player & Spell Context, Display Context, Farm Mode Context, Come & Get It Context, Other Add-ons, Saved Variables, Library Versions, one Validate Data section for each of the two flavor data files, Taint Log, and External Tools. Every report opens with a client header: add-on version, client version, build, TOC number, locale, `ns.FLAVOR`, and `ns.DATA_FOLDER`, never `WOW_PROJECT_ID`, which reads the same on WoW Forever and Retail.
+- **Event Registration** checks every name in `ns.EVENT_NAMES` with `C_EventUtils.IsEventValid` and a register-and-unregister round trip on a probe frame.
+- **API Endpoints** runs `ns.DIAGNOSTIC_API_CHECKS`, existence and shape checks for every API the add-on reaches directly as a namespaced call, through a guard, or through an accessor, plus the load-bearing calls the core loop depends on. A row with its optional third element set is one half of a compatibility guard or an optional read, absent on some clients by design: it renders `[n/a]` and never counts as a failure. Any other miss is a real problem.
+- **Player & Spell Context** lists class, level, and every `ns.TRACKING_IDS` entry as known, not known, or not on this client (`ns.DIAGNOSTIC_SPELLS`).
+- **Display Context** prints the screen size, UI scale, `uiScale` CVar, the free-placement state and `freePos`, the LibDBIcon position, and the mini-map zoom.
+- **Farm Mode Context** is the add-on's own context probe and answers most "it stopped cycling" reports in one paste: Farm Mode's toggles and interval, the Persistent Tracking overrides and the other feature toggles beside `Sound_EnableSFX`, the live movement inputs, the resulting `ns.GetPlayerStates()` classification, `ns.CanCast()` and `ns.IsRestrictedZone()`, the raw mirror beside `lastCastSpell`, every `C_Minimap` tracking entry, the pause reason, the target's creature type and what it resolves to, the hunt and the resolver's answer, and the cycle as Farm Mode casts it. The pause reason prints as its **raw locale key**, so a report pasted from a zhTW client is still readable.
+- **Come & Get It Context** prints live values: the toggle and channel, the locked-chest error name, the two match strings, the instance and combat gates, and the map, position, and zone `AnnounceNode` would use. An existence check can't prove the map chain returns something usable. If herbs and veins stay silent while chests work, the match strings don't equal what that client prints.
+- **Validate Data.** `ns.DIAGNOSTIC_DATA_SOURCES` names each flavor data file by label (`Spells`, `Zones`) and each of its tables by its key on `ns`, with a kind (`spell`, or `other` for IDs no client API looks up) and how to reach each row's ID. The folders share their table names, so one manifest serves every flavor, and each section's title reads the folder from `ns.DATA_FOLDER`. A run requests 100 spell IDs at a time, polls until each settles, and prints a tab-separated report: `OK`, `NOT ON CLIENT` (`C_Spell.DoesSpellExist` is false, or the ID never loads), `INCOMPLETE` (loaded, but its description or tooltip never did), `ERROR` (a reader threw), and `TABLE MISSING` for a table the folder never built. A `NOT ON CLIENT` row is a row in the wrong folder. Tooltip text comes through `ns.GetSpellTooltipText`: `C_TooltipInfo` where the client ships it, a hidden `GameTooltipTemplate` tooltip where it doesn't.
+- **Event Log.** A 500-entry buffer fed by `ns:LogEvent` from the Core dispatcher, capped at 8 arguments of 255 bytes each, with pipes escaped **after** the length cut so a truncated argument can't leave a dangling pipe. Stop keeps the capture for Show, and Start replaces it. `ns.DIAGNOSTIC_EVENT_EXCLUDE` is deliberately empty, since the log only ever sees events the add-on registered and each carries signal. `UI_ERROR_MESSAGE` is a firehose that is only sometimes signal, so `ns.MESSAGE_ID_FILTERED_EVENTS` names the argument position of its message ID and `ns:SuppressUncorrelatedMessage` classifies each firing at capture with the live `ns.MatchError`: a correlated firing logs in full, a firing with no ID logs verbatim, and everything else folds into a per-ID counter printed at the end of the report, biggest first. Filtering at capture rather than at render is the point: combat spam would otherwise evict the one line the report exists to carry. On a match, the feature also logs a synthetic `GetNodeName(...)` entry carrying the tooltip read, and a nil there means the read missed.
+- **Taint Log.** `ns:SetTaintLog` writes the `taintLog` CVar, 0 for off and 2 for verbose, the only state the panel ever writes. **External Tools** points at `/console scriptErrors 1`, BugSack and !BugGrabber, and `/etrace` rather than reimplementing them.
+
+### Offline Tests
+
+`tools/Test-Event-Log-Noise.lua` pins the noise filter with the three cases Build Reference → DIAGNOSTIC TOOLS → Event Log Noise requires: spam collapses to one counted row, a correlated ID still logs a full line, and an event with no ID logs verbatim. It loads `Features/Come-and-Get-It.lua` and `Features/Diagnostics.lua` into a stubbed sandbox, so it runs outside the game: `lua tools/Test-Event-Log-Noise.lua` from the add-on root, with Lua 5.2 or later, since it passes an environment to `loadfile`. It prints one PASS or FAIL line per test and exits non-zero on any failure. No TOC lists `tools/`, and `.pkgmeta` keeps it out of the release.
 
 ## Saved Variables
 
-Tracking Eye declares exactly one SavedVariables table, `TrackingEyeDB`, managed by **AceDB-3.0**, and no `SavedVariablesPerCharacter` line. `ns.db` is the AceDB object and is the only way the add-on reads it.
+Tracking Eye declares one SavedVariables table, `TrackingEyeDB`, managed by AceDB-3.0 and read through `ns.db`; only the Diagnostics dump reads the raw global. There is no `SavedVariablesPerCharacter` line.
 
-**The add-on uses the Per-Character model:** the third `AceDB:New` argument is omitted, so each character lands on its own `"Name - Realm"` profile. **Reset Profile therefore clears that character's tracking and Farm Mode configuration only** — everything in `global` survives, so resetting or switching a profile never moves the mini-map button, changes the free-placement icon's shape or size, or brings the welcome message back.
+**Model: Per-Character.** `AceDB:New("TrackingEyeDB", ns.DATABASE_DEFAULTS)` omits the third argument, so each character lands on its own `"Name - Realm"` profile, because the add-on stores what genuinely differs by character: the tracking ability that character picked and the abilities its Farm Mode cycles. **Reset Profile therefore clears that character's tracking picks and feature settings only**; everything in `global` survives, so a reset or a profile switch never moves the mini-map button, the free icon, or its shape and size, and never brings the welcome message back. That is the fact to check before adding a setting.
 
-- `ns.db.profile` holds this character's tracking state and Farm Mode configuration: the selected persistent ability, the Persistent Tracking / Farm Mode / Target Tracking master toggles, the cycle interval, the five per-movement-state toggles, the `farmCycleSpells` map, `farmIncludePersistent`, and `muteCycleSound`.
-- `ns.db.global` holds account-wide presentation: the LibDBIcon `minimap` payload, the free frame's `freePos` / `freePlacement` / `freeIconScale` / `freeIconShape`, `showWelcome`, and `hookBlizzardTracking`.
+- **`profile`** holds the character's choices and the feature settings that ride with them: Persistent Tracking with its pick and its three overrides, Farm Mode's toggle, interval, conditions, ability map, persistent entry, and sound mute, Automatic Target Tracking's toggle, and Come & Get It's toggle and output channel.
+- **`global`** holds presentation: the LibDBIcon `minimap` table, Free Placement Mode (on or off, `freePos`, icon size and shape), the welcome message, the Blizzard tracking-button takeover, and Farm Mode's mini-map zoom, which lives here because it changes the client's own mini-map.
 
-Profiles are switched from the Profiles panel ([Options/Options-Profiles.lua](Options/Options-Profiles.lua), the stock AceDBOptions-3.0 table returned unmodified).
+`Data/Default-Settings.lua` is the source of truth for the keys. Runtime state is never saved: `ns.state` (the running hunt, `lastCastSpell`, the loot flag) and `ns.diagnostics` start fresh every session. The standalone Come & Get It kept its settings in its own `ComeAndGetItDB`, which Tracking Eye never reads.
 
-Defaults come from `ns.DATABASE_DEFAULTS` and are applied by AceDB-3.0 when a scope is first accessed — explicit user values, including `false`, are never overridden. Note that scalar and table defaults are physically copied into the saved table (`copyDefaults` via `rawset`); only `*`/`**` wildcard defaults resolve through metatables.
+Defaults come from `ns.DATABASE_DEFAULTS` and are applied by AceDB-3.0 when a scope is first accessed, and explicit user values, including `false`, are never overridden. Note that scalar and table defaults are physically copied into the saved table (`copyDefaults` via `rawset`); only `*`/`**` wildcard defaults resolve through metatables. This add-on defines no wildcard defaults.
 
-There is deliberately **no refill-on-empty logic**. `farmCycleSpells` is a settings map, not a re-seedable list: AceDB copies its concrete defaults with `rawset`, so the map iterates correctly for new users, and the options toggle stores an explicit `false` for a disabled spell. A user who turns every entry off keeps that state across logins. Storing `nil` instead would let AceDB re-add the default `true` on the next login and resurrect a spell the user turned off. `selectedSpellId` is likewise absent from the defaults — `nil` is its "unset" value and cannot be stored as a default — and `freePos` is absent because it is written only once the player drags.
+There are no seeded lists and no refill-on-empty logic. `farmCycleSpells` is a settings map whose defaults are the flavor data's `ns.FARM_CYCLE_DEFAULTS`, handed to AceDB as they are: at every load AceDB fills in any default key missing from a character's map, so **a spell added to `ns.FARM_CYCLE_DEFAULTS` switches on for every existing character that never saved a choice for it**, and one removed from it switches off for them. Only an explicit `false`, which the option writes when the player unticks an ability, survives either change; say so in the release notes. The same explicit `false` is what lets a player who unticks everything keep that across logins. Two keys have no default on purpose: `selectedSpellId`, whose nil means nothing picked and can't be stored as a default, and `freePos`, which is written by a drag, or at logout while the free frame is shown.
 
-No migration code ships and none is to be added: the shared migration window has expired, so every `MIGRATION` tag and migration branch is deleted on sight. A stale key left behind by a long-gone storage shape simply lingers in that install's SavedVariables, harmlessly, and a returning player whose data predates the current shape falls back to defaults.
+There is no migration chain and no migration code. A change to the shape, name, or scope of saved data ships with its own migration for the data players already have, tagged `MIGRATION (remove after YYYY-MM-DD)` 30 days past the release that ships it (Style Guide → SAVED VARIABLES → Migration Windows).
 
 ### Profile Apply
 
-`ns:ApplyProfile` ([Features/Core.lua](Features/Core.lua)) is registered by name against all three AceDB profile callbacks and is the single settings-apply path. Only values read live from the database update themselves on a profile switch; everything applied imperatively has to be repeated here — the memoized player states, the farm cache and ticker interval, the icon placement, the free-frame scale and shape, and the Blizzard tracking-button hook. It ends by calling `ns.RefreshOptionsPanels()`, which iterates `ns.OPTIONS_REGISTRY` and fires `AceConfigRegistry:NotifyChange` for every registered name, so an options panel already on screen redraws instead of showing the profile the player just left. That same function is the general remedy for a setting changed from outside the panel — AceConfig only re-evaluates dynamic `name`, `disabled`, and `get` callbacks when it redraws.
+`ns:ApplyProfile` (`Features/Core.lua`) is registered by name against all three AceDB profile callbacks (`OnProfileChanged`, `OnProfileCopied`, `OnProfileReset`) and is the single settings-apply path. Values read live from the database update themselves; everything applied imperatively is repeated here: the memoized player states, the farm cache and ticker interval, the placement, the free frame's scale and shape, and the Blizzard tracking-button takeover. It also ends a running hunt, bringing the new profile's Persistent Tracking Ability back, and finishes with `ns.RefreshOptionsPanels()`, so an options panel already on screen redraws instead of showing the profile the player just left.
 
-### Reset
-
-Reset is entirely stock: the AceDBOptions **Reset Profile** control on the Profiles panel resets the active profile only. The General panel carries no reset control, and there is no account-wide wipe.
+Reset is entirely stock: the AceDBOptions Reset Profile control on the Profiles panel resets the active profile only. The General panel carries no reset control, and there is no account-wide wipe.
 
 ## Adding a New Tracking Spell
 
-1. Add a row to `SPELL_DATA` in [Data/Data.lua](Data/Data.lua) under the appropriate source (`{ spellId, key, source }`), and extend the SQL comment above the table so it stays regenerable. The loops below it populate `ns.SPELLS`, `ns.TRACKING_IDS`, and `ns.TRACKING_SET` automatically; form spells (listed in `FORM_KEYS`) are excluded from the tracking sets.
-2. If the spell should be on by default in Farm Mode, add it to `ns.FARM_CYCLE_DEFAULTS` in [Data/Default-Settings.lua](Data/Default-Settings.lua). Existing users keep their saved map, so note the addition in release notes.
-3. If it tracks a creature type, add it to the matching `CREATURE_TYPE_DATA` row in [Data/Data.lua](Data/Data.lua), in preference order, so Target Tracking can select it.
-4. If the spell has special form gating (like Druid Track Humanoids), add a guard in `ns.CastTracking` ([Features/Core.lua](Features/Core.lua)), exclude it from `BuildCycleCache` ([Features/Farm-Mode.lua](Features/Farm-Mode.lua)), and exclude it from `BuildFarmAbilityArgs` ([Options/Options-Farm-Mode.lua](Options/Options-Farm-Mode.lua)).
-5. No new locale strings are needed — the name and icon come from `GetSpellInfo` / `GetSpellTexture` at runtime, so they localize automatically. Only add a locale key if you also need a custom label or description.
-6. Verify the menu and options hide the spell on characters that do not know it. The `IsPlayerSpell(id)` checks inside `BuildFarmAbilityArgs`'s `hidden` and inside `Tracking-Menu.lua`'s row loop are what gate visibility.
+1. Add a `{ spellId, key, source }` row to `ns.TRACKING_SPELLS` in the `Spells-{Game}.lua` of every flavor folder whose client has the spell, and extend the SQL block above the table so it stays regenerable. Report which folders got the row and which didn't (Style Guide → DATA → Flavor Folders). The loops at the top of `Features/Utilities.lua` derive `ns.SPELLS`, `ns.TRACKING_IDS`, `ns.TRACKING_SET`, and `ns.TRACKING_SOURCE`; a form key in `FORM_KEYS` stays out of the tracking sets.
+2. If the spell should be on by default in Farm Mode, add `[spellId] = true` to `ns.FARM_CYCLE_DEFAULTS` in the same files. It switches on for existing characters too, except those that unticked it (see *Saved Variables*), so the release notes say so.
+3. If it tracks a creature type, add its key to that type's `ns.CREATURE_TYPE_DATA` row in the same files, in preference order, or add a row for a new creature type ID.
+4. If it can be cast only in Cat Form, add its key to the `ns.CAT_FORM_ONLY` list in `Features/Utilities.lua`; every Cat Form gate reads that set, and it stays out of `ns.CREATURE_TYPE_DATA`. Any other form gate needs its own guard in `ns.CastTracking` and in `BuildCycleCache`'s `CanCycle`, and if the gate can change mid-farm, `EnsureCycleCache` has to notice, as it does for Cat Form.
+5. The source field picks its group in the Farm Mode Abilities list: the class `ns.FARM_ABILITY_CLASSES` (`Data/Data.lua`) maps it to, or Professions & Racial Abilities for anything else. A new class needs a row there; `ns.CLASS_COLORS` already covers every class through Wrath.
+6. No locale strings are needed: the name and icon come from `C_Spell` at runtime.
+7. Run the Spells section of Validate Data on each client that got the row, and check the Tracking Menu hides the spell on a character that doesn't know it while the Farm Mode Abilities list shows it on every character.
 
-## Adding a New Registered Event
+## Adding a New Farm Mode Condition
 
-1. Add the event name to `ns.EVENT_NAMES` in [Features/Core.lua](Features/Core.lua). This is the single source of truth — the dispatcher registers from it and the Diagnostics *Event Registration* check validates against it, so both pick the event up together.
-2. If the event is unit-filtered, add it to the `UNIT_FILTERED_EVENTS` map in the same file so it registers via `RegisterUnitEvent` rather than waking the dispatcher for every unit.
-3. Add a branch to the `OnEvent` handler. Keep the branch ordering intact — `ADDON_LOADED` and `PLAYER_LOGIN` must stay ahead of the steady-state events.
-4. Do not register the event on a second frame. One dispatcher, one registration list.
-5. Add the event to `ns.DIAGNOSTIC_EVENT_EXCLUDE` only if it is a genuine no-signal firehose. The table is empty today and should stay that way unless a new registration proves otherwise.
+A new movement state touches every layer, and a state missing from any one of them misbehaves quietly.
+
+1. `Data/Data.lua`: add the state to `ns.MOVEMENT_STATE_TOGGLES` (state to profile key), `ns.MOVEMENT_STATE_CLASS` (its owning class), and `ns.CLASS_STATE_ORDER` (where the on-foot reason considers it).
+2. Every flavor folder's `ns.MOVEMENT_BUFF_SPELLS`: a `{ spellId, movementState }` row for each buff that means the state, in the folders whose client has it. A folder without one leaves the state undetectable there, and its toggle and reasons hide.
+3. `Features/Utilities.lua`: build the state's buff set from those rows, add it to `MOVEMENT_STATE_BUFFS`, check it in `ScanMovementBuffs` (including the last-scan values that stand in while auras are secret), and slot it into `ComputePlayerStates`' ordered checks.
+4. `Data/Default-Settings.lua`: the toggle's default, in `profile`.
+5. `Features/Farm-Pause-Reporting.lua`: its `FOOT_REASONS` entries, one for the state and one for mounted-or-the-state, and its `STATE_OFF_REASONS` entry.
+6. `Locales/enUS.lua`: the three pause reasons (`FARM_PAUSED_NOT_*`, `FARM_PAUSED_NOT_MOUNTED_*`, `FARM_PAUSED_*_OFF`), each a whole sentence, and the option's label and tooltip.
+7. `Options/Options-Farm-Mode.lua`: a `ConditionToggle` that passes the state, so it hides where the flavor can't detect it.
+8. `Features/Diagnostics.lua`: the toggle and the live buff in the Farm Mode Context report.
 
 ## Adding a New Farm Mode Pause Reason
 
-1. Add the locale key to [Locales/enUS.lua](Locales/enUS.lua) beside the other `FARM_PAUSED_*` strings, as one complete sentence. **Never assemble a reason from fragments at runtime** — a comma-spliced sentence cannot be translated correctly, which is why every on-foot combination has its own precomposed key.
-2. Return it from `ns.GetFarmPauseReason()` in [Features/Utilities.lua](Features/Utilities.lua), placed in the chain by priority. Return a second value of `true` if the condition clears on its own within seconds; omit it only for a settled condition that should dim the icon.
-3. If the condition should also stop the cycle, add the matching bail to `ns.RunFarmLogic()` or to `ns.CanCast()`. Reporting a reason and stopping the cycle are separate decisions: a `ns.CanCast()` condition stops every automatic cast, while a `RunFarmLogic` bail leaves the manual binding and the persistent recast alone.
-4. Grep `Locales/` for the key name before you commit to it — a retired key's translations survive in the other ten files and would silently serve the old string (see *Common Pitfalls*).
+1. Add the locale key to `Locales/enUS.lua` beside the other `FARM_PAUSED_*` strings, as one complete sentence. **Never assemble a reason from fragments at runtime.**
+2. Return it from `ns.GetFarmPauseReason()` in `Features/Farm-Pause-Reporting.lua`, placed in the chain by priority. A condition that clears on its own within seconds goes below the `isFarming` check with the other transient reasons, and above the own-tooltip reason, which stays last.
+3. If the condition should also stop the cycle, add the matching hold to `ns.RunFarmLogic()` or the condition to `ns.CanCast()`. Reporting a reason and stopping the cycle are separate decisions: a `ns.CanCast()` condition stops every automatic cast and the binding, while a `RunFarmLogic` hold leaves the binding and the persistent recast alone.
+4. Make sure the key name has never been used before (see *Localization*).
+
+## Adding a New Setting
+
+1. Add the key and its default to `ns.DATABASE_DEFAULTS` in `Data/Default-Settings.lua`: `profile` for anything that rides with a per-character feature, `global` for presentation and for anything whose effect lands in something every character shares (Style Guide → SAVED VARIABLES → The Two Models).
+2. Add the widget to the builder of the panel that owns it, reading and writing `ns.db` directly. A control that only means something while a toggle is on goes in an `ns.OptionsSubRow` with `hidden` on the row. It carries a label and one tooltip `desc`, with no second description line under it (Style Guide → OPTIONS PANEL → Helper Text Lives in the Tooltip).
+3. If the setting is applied imperatively (a frame, a timer, a hook), repeat it in `ns:ApplyProfile`, or a profile switch leaves it stale until a `/reload`.
+4. If it changes what Farm Mode cycles, call `ns.InvalidateFarmCache()` in its `set`; if it changes what Persistent Tracking keeps up, call `ns.TryRecastPersistent()` as well, as the three Persistent Tracking sub-options do.
+5. Add its strings to `Locales/enUS.lua` only.
+6. A change to an existing key's shape, name, or scope ships with its own migration (see *Saved Variables*).
+
+## Adding a New Registered Event
+
+1. Add the event name to `ns.EVENT_NAMES` in `Features/Core.lua`. The dispatcher registers from it and the Diagnostics Event Registration check validates against it, so both pick the event up together.
+2. If the event is unit-filtered, add it to `UNIT_FILTERED_EVENTS` in the same file, so it registers through `RegisterUnitEvent` instead of waking the dispatcher for every unit.
+3. Add a branch to the `OnEvent` handler that calls into the owning feature through `ns`, guarded if the feature could be left out of a flavor's TOC. `ADDON_LOADED` and `PLAYER_LOGIN` stay first.
+4. Never register an event on a second frame: it would escape the event-log tap.
+5. Run Event Registration on every flavor. Registering an event a client lacks throws (Style Guide → COMPATIBILITY).
+6. A firehose that is never signal goes in `ns.DIAGNOSTIC_EVENT_EXCLUDE`; one that is sometimes signal and carries a message ID goes in `ns.MESSAGE_ID_FILTERED_EVENTS` instead.
+
+## Adding a Come & Get It Node Type
+
+1. **Identify the trigger** with `/etrace`. If the client raises an error unique to that node type, add its GlobalStrings name as a constant in `Data/Data.lua` beside `ns.ERROR_STRING_LOCKED_CHEST`; never key on the numeric index. If it raises only the shared `Requires <Skill>` error, match the localized skill name instead.
+2. **Add a mapping entry** in `Features/Come-and-Get-It.lua`: in `ERROR_STRING_MAPPING` keyed by the error name, or in `SKILL_MAPPING` keyed by `L["MATCH_*"]`. Either way the entry carries a `formatKey` naming its `MSG_FORMAT_*` body. Keep the two tables separate.
+3. **Add the locale keys** to `Locales/enUS.lua`: the `MSG_FORMAT_*` body, with four `%s` in the fixed order and nothing attached before the node name, and the `MATCH_*` skill name if the match is by substring.
+4. **Show it in Diagnostics.** Add the new constant or match string to the Come & Get It Context report.
+5. **Check the length.** The composed line is a chat message the player sends: 255 bytes (`ns.CHAT_MESSAGE_MAX_LENGTH`), measured in bytes against the widest-encoding locale (Style Guide → MESSAGES → Message Length).
+
+## Adding an Output Channel
+
+1. Add one row to `ns.OUTPUT_CHANNELS` in `Data/Data.lua`. The `key` is saved to the database, so pick it once and never rename it.
+2. Add its `OPTIONS_OUTPUT_*` label to `Locales/enUS.lua`.
+
+The feature and the dropdown pick the row up on their own.
+
+## Adding a Data Table
+
+1. Declare the table whole in the same-named file of all seven `Data/{Game}/` folders, empty (`= {}`) where a flavor has no rows, with its column-header comment and a source block naming where the rows came from. The `Data/Vanilla/` and `Data/Discovery/` copies keep their opposite `ns.IS_DISCOVERY` guards.
+2. A new file goes into every TOC's data block, between `Data/Data.lua` and `Data/Default-Settings.lua`; the Vanilla TOC lists the Vanilla file and then the Discovery file.
+3. Add the table to `ns.DIAGNOSTIC_DATA_SOURCES` in `Features/Diagnostics.lua`, with its kind and how to reach each row's ID; a new file gets its own entry, and the panel builds its Validate Data section from that alone.
+4. Run Validate Data on every client with a TOC.
 
 ## Localization
 
-Player-visible strings live in `Locales/<locale>.lua`, each registered through AceLocale-3.0's `NewLocale("TrackingEye", "<locale>")`. `enUS.lua` is the source of truth and the only file that passes the `true` default-fallback flag; every string originates there and the other locales translate from it. `Data/Data.lua` acquires the handle once (`ns.L = LibStub("AceLocale-3.0"):GetLocale(ADDON_NAME)`) and every file reads `local L = ns.L`.
+Player-visible strings live in `Locales/`, one AceLocale-3.0 file per supported locale, all eleven already present, so localization is **maintenance, not expansion**; there is no "add a new locale" step.
 
-This is **maintenance, not expansion** — WoW ships a fixed locale set and all eleven files already exist (`enUS, deDE, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW`). There is no "add a new locale" step.
+- **`enUS.lua` is the source of truth** and the only file that passes the `true` default-fallback flag to `NewLocale("TrackingEye", ...)`; `Data/Data.lua` acquires the handle once with `GetLocale(ADDON_NAME)`. Every other locale translates its key set, and the Localization pass (`3 - Copy Cleanup & Localization Prompt.md`) owns those files: never hand-edit them during ordinary work. A reworded `enUS` string reads as the old translation elsewhere until that pass runs, which is expected. A retired key name is never reused, because its stale translations stay behind and would silently win over the English fallback.
+- **Placeholders.** `%s` and `%d` count, type, and order must match `enUS` per key in every locale, or the string crashes at runtime. The keys that carry them: `CHAT_LOADED` and `OPTIONS_VERSION` (the version), `OPTIONS_CYCLE_EVERY` (the formatted interval), the three `MSG_FORMAT_*` bodies (four `%s` in a fixed order: node name, x, y, zone, explained for translators in `enUS.lua`), and `CHAT_TOO_LONG`, whose two `%d` are the silent case: swapped, they don't crash, they report the draft's size and the limit backwards.
+- **`MATCH_*` is not display copy.** The two skill names must equal what the client itself prints in that language, since they are substring-matched against its error text; where a language's clients disagree, the string lists every name, separated by semicolons. A stylized translation silently stops herb and ore detection in that locale while chests keep working.
+- **Keys reached indirectly.** The `MSG_FORMAT_*` bodies resolve through `mapping.formatKey`, the `OPTIONS_OUTPUT_*` labels through `channel.labelKey`, every `FARM_PAUSED_*` reason through the key `ns.GetFarmPauseReason()` returns, and the three empty-cycle binding lines through `EMPTY_CYCLE_MESSAGES` (`Features/Key-Bindings.lua`). A search for `L["` reports them as unused; they aren't.
+- **Not localized:** `ns.DiagnosticsStrings`, the `ns.OPTIONS_REGISTRY` names, and the `category` attribute in `Bindings.xml`. Automatic Target Tracking needs no keys of its own, since it matches creature type IDs.
 
-- **Keeping locales in sync.** Every locale carries a translation of the same key set, and AceLocale falls back to English via `__index` for anything missing at runtime. Translating each `enUS.lua` key and keeping the files aligned is the job of the Localization pass (`3 - Copy Cleanup & Localization Prompt.md`); do not hand-edit the other locales during ordinary work. A reworded `enUS` string therefore reads as the old translation in the other ten locales until that pass runs, which is expected rather than a bug.
-- **Placeholders.** `%s` / `%d` count, type, and order must match `enUS` per key in every locale, or the string crashes at runtime. Two keys carry one today: `CHAT_LOADED` takes the version (formatted in `PrintWelcome`, [Features/Core.lua](Features/Core.lua)) and `OPTIONS_CYCLE_EVERY` takes the interval (formatted while building the dropdown values, [Options/Options-Farm-Mode.lua](Options/Options-Farm-Mode.lua)).
-- **Spanish.** `esES.lua` and `esMX.lua` are two separate, self-contained files. Identical strings in both is correct and expected.
-- **Locale overflow.** Neither 255-byte ceiling applies here: Tracking Eye writes no macros and calls `SendChatMessage` never — `ns:PrintMessage` is a plain `print`. The real constraint is layout, so the strings to eyeball are the long ones — the pause reasons, the option notes, and the welcome line — in the locales that render widest, usually deDE and ruRU.
-- **Diagnostics strings are not localized.** They live in `ns.DiagnosticsStrings` ([Features/Diagnostics.lua](Features/Diagnostics.lua)), are developer-facing, and are intentionally English-only. Never add them to `Locales/`.
-- **Target Tracking needs no locale keys of its own.** It keys off the client's localized creature-type globals, which is what makes it work in every locale for free.
+Everything else, including the Spanish file pairing, the overflow canary, and the output ceilings, is per Style Guide → LOCALIZATION and MESSAGES → Message Length.
 
 ## Common Pitfalls
 
-- **Trusting `GetTrackingTexture` / `MINIMAP_UPDATE_TRACKING` as live state** — on Classic Era 1.15.x the tracking mirror lags reality, sometimes by minutes, and `nil` doubles as the normal "no tracking active" value. Comparing against it (or bailing on `nil`) silently disabled Farm Mode and Persistent Tracking on Era. Compare against `ns.state.lastCastSpell`, and treat the mirror as a positive signal only. The login-recast bug is prevented by the time-based grace window (`LOGIN_GRACE_SECONDS`), never by a `nil` bail.
-- **Adding a second reader of the tracking mirror** — `ns.UpdateIcon` and all cast logic funnel through the single `ns.GetActiveTrackingSpell()`. Reading `MiniMapTrackingIcon` or `GetTrackingTexture()` directly anywhere else resurrects cleared tracking icons and re-poisons `lastCastSpell` through the adoption branch.
-- **Persisting `ns.state.lastCastSpell`** — it is runtime-only, written solely by `UNIT_SPELLCAST_SUCCEEDED` via `ns.SetLastCast`. A value carried over from last session makes the farm cycle and persistent recast believe tracking is already up at login and skip every real cast. It is never written to `ns.db`.
-- **Writing `lastCastSpell` from `ns.CastTracking`** — the cast can still fail silently (line of sight, range, server reject), and bookkeeping that records the attempt as a success suppresses the retry that would have fixed it.
-- **Casting tracking during the GCD after shapeshift** — mitigated by `C_Timer.After(1.5, TryRecastPersistent)` on `UPDATE_SHAPESHIFT_FORM`. Removing the delay causes silent cast failures because the shapeshift GCD has not elapsed.
-- **Swallowing a temporary bail in `TryRecastPersistent`** — in-combat, on-cooldown, in-flight, and debounce bails must `ScheduleRecast`, not `return` outright. On Era no further tracking event may fire, so a dropped trigger stops persistent tracking until the next login.
-- **Testing the texture cache for completeness instead of using the dirty flag** — Find Fish does not exist on Era, so "every ID resolved" is unreachable and a completeness test rebuilds the whole table on every lookup miss. Keep `ns.InvalidateTextureCache()` as the only trigger.
-- **Adding Druid Track Humanoids to the farm cycle or the creature-type map** — excluded on purpose (requires Cat Form, mutually exclusive with travel forms). Re-adding it queues casts that always fail.
-- **Forgetting the second return of `ns.GetFarmPauseReason()`** — a reason returned without the transient flag dims the icon. Give a condition that clears within seconds (combat, casting, looting) the `true`, or the icon strobes through every fight and every gathered node and players report it as a bug.
-- **Assembling a pause reason from fragments** — the on-foot reasons look like they want to be joined at runtime ("not mounted" + "not in Travel Form"). They are precomposed keys per combination because a comma-spliced sentence cannot be translated correctly.
-- **Counting our own tooltip in `ns.IsTooltipShowing()`** — the mini-map button and free frame both draw into `GameTooltip`, so dropping the owner check makes the status block report "paused" every time the player hovers the icon to read it, which is the one moment it has to be accurate.
-- **Arming the cycle sound mute before the cast** — `ns.CastTracking` returns `false` on every early bail, and muting for a cast that never happened switches the player's sound off for nothing. Cast first, arm second; that is safe only because the audio plays on server confirmation, not inside `CastSpellByID`.
-- **Relying on the mute's timer to restore `Sound_EnableSFX`** — the CVar survives the session but the timer does not. Keep the unconditional `ns.RestoreCycleSoundNow()` calls on `PLAYER_LOGOUT` and on switching the option off, and keep the `pcall` around the cast.
-- **Naming the free-placement frame** — reintroduces the `layout-local.txt` lookup the anonymous-frame fix avoids; a cached per-character position silently overrides `ns.db.global.freePos`. Keep the constructor's first argument `nil`.
-- **Reading `GetPoint()` to serialize the free-frame position** — `StartMoving` / `StopMovingOrSizing` leave the frame on a non-canonical anchor; saving it causes drift on the next Show or scale change. Always round-trip through `SaveFreePosition` / `ApplyFreePosition`.
-- **Skipping `SetUserPlaced(false)` after a position apply** — a leftover user-placed flag lets WoW write a layout-local entry on logout that out-races our SavedVariables on next login.
-- **Saving the free-frame position from a frame that was never re-anchored** — `GetCenter()` returns frame-space coordinates, so `SaveFreePosition` is only correct when the frame's effective scale matches the one `ApplyFreePosition` last used. A character with no tracking ability never re-anchors (`UpdatePlacement` early-returns), so an unguarded save at `PLAYER_LOGOUT` re-encoded stale offsets against a different scale and corrupted the account-wide `freePos` for every character. Keep the `IsShown()` guard, and never add a new unconditional caller of `SaveFreePosition`.
-- **Caching the options-open state, or reading it with `IsShown()`** — closing the Settings window hides the *window*, not our canvas, so the canvas keeps its own shown flag and its `OnHide` never fires. A flag cached behind Show/Hide hooks keeps the last value it saw (true) and pauses Farm Mode until the next reload, and `IsShown()` fails the same way. `ns.IsOptionsPanelOpen()` evaluates `IsVisible()` live on every call, which also requires every ancestor to be shown.
-- **Deferring Target Tracking's cast to the farm cycle** — `ns.HandleTargetChanged` must cast immediately, not bail on `isFarming`. Handing the cast to the cycle looks correct on paper but is the same as not implementing the feature while mounted: the pick is one entry in a rotation and is overwritten within seconds. The cycle reclaiming the slot a tick later is the intended, harmless outcome.
-- **Queueing a Target Tracking switch from inside an instance** — the instance bail must clear `pendingSpellId`, not store it. Storing it means walking out of a dungeon applies a pick made from whatever was targeted on the last pull, minutes earlier and nowhere near the player.
-- **Reusing a retired locale key name** — when a key is dropped from `enUS.lua` its translations stay behind in the other ten files, and AceLocale only falls back to enUS for keys a locale does *not* define. Reusing the name silently serves every non-English player the old string. Grep `Locales/` for any new key name before adding it; if it hits, pick a different name rather than editing the other locales, which the Localization pass owns.
-- **Localizing Diagnostics strings** — they belong only in `ns.DiagnosticsStrings`, never in `Locales/`.
-- **Reading `ns.db` before `ADDON_LOADED`** — AceDB creates `ns.db` inside the `ADDON_LOADED` handler in `Core.lua`. Any file-scope read of `ns.db` (or a bare `TrackingEyeDB`) runs before that and sees `nil`; every access is guarded (`ns.db and …`) and happens from runtime handlers, never at load.
-- **Renaming a saved field and expecting the old value to follow** — AceDB's defaults only supply *absent* fields, so a rename strands the old value under the old key while the new key falls back to its default. Migration code is retired, so a rename simply costs affected players that one setting: say so in the release notes, and clear the dead key explicitly (`ns.db.profile.oldField = nil`) rather than leaving it to accumulate.
-- **Storing `nil` to disable a `farmCycleSpells` entry** — AceDB re-adds the default `true` for any absent default key on the next login, so a disabled Herbs or Minerals would resurrect. The options toggle writes an explicit `false`; keep it that way.
-- **Adding a setting that only `ns:ApplyProfile` would apply, and forgetting to add it there** — anything applied imperatively rather than read live from the database stays stale after a profile switch until the next `/reload`.
+- **Trusting the tracking mirror as live state**: on Classic Era the mirror lags reality, sometimes by minutes, and nil doubles as "nothing tracked", so comparing against it, or bailing on nil, silently disables Farm Mode and Persistent Tracking there. Compare against `lastCastSpell`, treat the mirror as a positive signal only, and leave the login case to the time-based grace window.
+- **Adding a second reader of tracking state**: everything funnels through `ns.GetActiveTrackingSpell()`. Reading `MiniMapTrackingIcon`, `GetTrackingTexture()`, or `C_Minimap` anywhere else resurrects cleared icons and re-poisons `lastCastSpell` through the adopt branch.
+- **Recording a cast before the game confirms it**: `ns.CastTracking` must never write `lastCastSpell`. A silent failure (line of sight, range, a server reject) recorded as a success suppresses the retry that would have fixed it. Record only through `ns.SetLastCast`, on evidence the spell is up.
+- **Persisting `lastCastSpell`**: last session's value makes every caller believe tracking is already up at login and skip every real cast. It lives in `ns.state` and never in `ns.db`.
+- **Swallowing a temporary bail in `TryRecastPersistent`**: the in-flight, all-clear, cooldown, and debounce bails reschedule, and standing still parks. On Era no further tracking event may fire, so a dropped trigger stops Persistent Tracking until the next login.
+- **Casting in the shapeshift GCD**: the 1.5-second `ns.ScheduleEventRecast` delay after `UPDATE_SHAPESHIFT_FORM` lets the form's global cooldown expire. Without it the cast fails silently.
+- **Clearing tracking with `ClearAllTracking`**: it also clears Blizzard's own quest and target filters. Use `ns.CancelActiveTracking()`, which switches off only entries backed by the add-on's spells.
+- **Reading a secret value on WoW Forever**: a bare aura read in combat throws there, and a secret cooldown, cast, identity, or speed can't be compared. Go through the accessors in `Features/Utilities.lua`, which ask `C_Secrets` first.
+- **Testing the texture cache for completeness**: an ID the client lacks never resolves, so a completeness test rebuilds the whole map on every miss. `ns.InvalidateTextureCache()` is the only rebuild trigger.
+- **Adding a movement state to only some of its tables**: detection and the toggle can work while the on-foot reason never names it, so a player whose only state it is reads "Not mounted." Follow *Adding a New Farm Mode Condition* end to end.
+- **Letting the druid's Cat Form tracking run outside Cat Form, or into the creature-type map**: every cycle step it took would be a cast that always fails, and a hunt could land on it. Keep the `CanCycle` gate, the Cat Form check in `EnsureCycleCache`, and its absence from `ns.CREATURE_TYPE_DATA`.
+- **Assembling a pause reason from fragments**: a comma-spliced sentence can't be translated. Every combination is its own precomposed key.
+- **Ranking the own-tooltip pause reason anywhere but last**: hovering the button is how the player reads the Farm Mode Status, so an earlier rank makes it read "Reading a tooltip." in place of the real cause. Keep `ns.IsTooltipShowing()` to everyone else's tooltips.
+- **Caching the options-open state, or reading it with `IsShown()`**: closing the Settings window hides the window, not the canvas, so either one sticks at true and pauses Farm Mode until a reload. `ns.IsOptionsPanelOpen()` reads `IsVisible()` live.
+- **Arming the cycle mute before the cast**: `ns.CastTracking` returns `false` on every early bail, and muting for a cast that never happened switches the player's sound off for nothing. Cast first, arm second.
+- **Relying on the mute's timer to restore `Sound_EnableSFX`**: the CVar survives the session and the timer doesn't. Keep the unconditional restores on `PLAYER_LOGOUT` and on switching the option off, and keep the `pcall` around the cast.
+- **Naming the free-placement frame**: it brings back the `layout-local.txt` lookup, and a cached per-character position silently overrides `ns.db.global.freePos`. Keep the constructor's name argument `nil`.
+- **Serializing the free frame with `GetPoint()`, or saving it from a frame never re-anchored**: after a drag the frame sits on a non-canonical anchor, and a frame that was never re-anchored carries offsets from a different scale; either writes a drifted, account-wide `freePos`. Round-trip through `SaveFreePosition` and `ApplyFreePosition`, keep `SetUserPlaced(false)` on every apply, keep the `IsShown()` guard on the logout save, and never add an unconditional caller of `SaveFreePosition`.
+- **Letting Automatic Target Tracking write `selectedSpellId`**: a passing target would overwrite the pick, and the login catch-up would bring it back even in town. The hunt stays in `ns.state`, read through the resolver.
+- **Queueing a hunt switch or a Come & Get It draft for later**: a target picked in combat or outside the world, and a draft refused in combat, are dropped. Replayed, they would arrive minutes late from a fight that is long over, and the draft would steal keyboard focus as the fight ends.
+- **Keying herb or mine on the error ID, or merging Come & Get It's two mapping tables**: both node types share one error, whose number isn't stable across clients anyway, and a merged table would test `ERR_ITEM_LOCKED` against message text. The skill-name scan is the only thing that separates herb from mine.
+- **Making `ns.MatchError` file-local**: the Diagnostics noise filter classifies with it. Without it every red error logs in full, and combat spam floods the 500-entry buffer.
+- **Loosening Come & Get It's compose guards**: `C_Map.GetPlayerMapPosition` returns a valid vector reading exactly `0, 0` where the map can't place the player; `GameTooltipTextLeft1` keeps its last text after the tooltip hides; and a locked lockbox in the bags raises the same error as a world chest. Keep the zero check, the `IsShown()` read, and the bag-item gate, or drafts point at the map origin, name the wrong node, or call out inventory.
+- **Trimming an over-long draft, or measuring it with the command attached**: a byte-wise cut splits multi-byte characters, and the client strips `/1 ` before sending. Warn, leave the text whole, and measure the line alone.
+- **Renaming an output channel key**: the key is what is saved, so a rename silently sends existing players back to Local.
+- **Storing `nil` to untick a `farmCycleSpells` entry**: AceDB re-adds a default-`true` key on the next login, so an unticked Find Herbs or Find Minerals would come back. The toggle writes an explicit `false`.
+- **Expecting a new `ns.FARM_CYCLE_DEFAULTS` entry to reach only new characters**: AceDB fills it into every existing map that never saved that key, and removing one takes it away the same way. Say so in the release notes.
+- **Reading `ns.db` before `ADDON_LOADED`**: AceDB creates it in Core's `ADDON_LOADED` handler, so a file-scope read sees nil. Every access is guarded and happens from runtime handlers.
+- **Adding an imperatively applied setting without adding it to `ns:ApplyProfile`**: it stays stale after a profile switch until a `/reload`.
+- **Opening the options panel by name**: AceConfigDialog aliases a category's ID to its display name only on a client without `C_SettingsUtil.OpenSettingsPanel`, so a name lookup works on Classic Era but returns nil on TBC Anniversary and drops the panel into a floating window. Route by the category ID captured from `AddToBlizOptions`.
+- **Mutating the table `ns.BuildProfilesOptions()` returns**: AceDBOptions-3.0 hands every database the same table, so a change leaks into every other Ace3 add-on's Profiles panel. Return it unmodified.
+- **Reusing a retired locale key name**: its old translations stay in the other ten files, and AceLocale falls back to English only for keys a locale doesn't define. Search every locale file for a new key name before using it.
+- **Adding an unsuffixed `TrackingEye.toc`**: a client with no TOC of its own suffix falls back to it and would load the add-on under whatever `X-Flavor` it names. One suffixed TOC per flavor and nothing else.
+- **Listing `Bindings.xml` in a TOC**: the UI parser rejects the file and the binding never appears. The client loads it from the root on its own.
+- **Adding a GitHub token to `package.yml`**: given `GITHUB_OAUTH` or `GITHUB_API_TOKEN`, the packager rewrites the GitHub release's name and body from commit messages on every build, replacing the hand-written release notes. The workflow deliberately carries neither.
+- **Renaming *Restricted Zones* in this document**: `Features/Core.lua` cites that section by name.
 
 ## Contributing
 
-- **Issues:** open them at [github.com/Gogo1951/Tracking-Eye/issues](https://github.com/Gogo1951/Tracking-Eye/issues). For bug reports include: game version (Classic Era / TBC Anniversary), client locale, character class and level, exact reproduction steps, and any chat output or error text. The Diagnostic Tools panel (`/te` → Diagnostic Tools) produces copy-paste reports that carry most of this automatically — Farm Mode Context and Player & Spell Context answer the majority of reports on their own.
+- **Issues:** open them at [github.com/Gogo1951/Tracking-Eye/issues](https://github.com/Gogo1951/Tracking-Eye/issues).
+- **Bug reports:** include the game version (Classic Era 1.15.x, with or without Season of Discovery, TBC Anniversary 2.5.x, WoW Forever 1.60.x, MoP Classic 5.5.x, or Retail 12.x) and client locale, the character's class and level, exact reproduction steps, and any chat output: a Come & Get It draft, a key-binding message, or an error. The Diagnostic Tools panel (`/te`, then Diagnostic Tools) produces copy-paste reports that carry most of this; Farm Mode Context and Player & Spell Context answer most reports on their own.
 - **Discord:** [discord.gg/eh8hKq992Q](https://discord.gg/eh8hKq992Q) for discussion, screenshots, and quick questions.
 - **Pull requests:**
-    - Keep scope tight — one feature or fix per PR.
-    - Run StyLua with its default configuration over every Lua file you touched, and a clean `luacheck .` alongside `luac -p`. There is no `.stylua.toml`; the formatter owns whitespace.
-    - Follow the style guide: no hardcoded user-facing strings (every player-visible string belongs in `Locales/enUS.lua`; Diagnostics strings are the deliberate English-only exception), `#` rather than `##` for TOC file-group headers, and comments only where the code cannot speak for itself.
-    - Respect the Persistent Tracking and icon-resolution guards — read *Persistent Tracking* and *Icon Resolution* before touching those code paths.
-    - Migration discipline: no migration code ships. The shared migration window has expired, so a storage-shape change lets the affected data fall back to defaults — note it in the release notes rather than writing a migration branch, and delete any `MIGRATION` tag you come across.
-    - Check output length for any string change that reaches chat or a macro. Tracking Eye currently has neither, so the check is a formality — but the moment a `SendChatMessage` call appears, the 255-**byte** ceiling applies and the canary is whichever supported locale encodes widest, usually ruRU rather than deDE.
+    - Keep scope tight: one feature or fix per PR.
+    - Run StyLua with its default configuration and `--syntax lua51` over every Lua file you touched outside `Includes/`, and a clean `luacheck .` alongside `luac -p`. There is no `.stylua.toml`; the formatter owns whitespace.
+    - Put every player-visible string in `Locales/enUS.lua` (Diagnostics strings are the English-only exception), and comment only what the code can't say for itself; the durable why belongs here.
+    - Read *Reading and Clearing Tracking*, *Decide → Cast → Confirm*, and *Persistent Tracking* before touching those paths.
+    - Migration discipline: a change to the shape, name, or scope of saved data ships with its own 30-day migration, tagged `MIGRATION (remove after YYYY-MM-DD)` (Style Guide → SAVED VARIABLES → Migration Windows). A new or removed `ns.FARM_CYCLE_DEFAULTS` entry reaches existing characters; the release notes say so.
+    - Output length: Tracking Eye writes no macros and sends no chat itself. The Come & Get It `MSG_FORMAT_*` bodies are its one chat line, sent by the player, so a change to them is checked against 255 bytes in the widest-encoding locale (Style Guide → MESSAGES → Message Length), with the four `%s` kept in order.
+    - Run `lua tools/Test-Event-Log-Noise.lua` after touching Come & Get It's matcher or the event log, and `README-Testing.md` on each flavor before a release.
     - When the architecture or file map changes, update this document in the same PR.
+- **Commit and PR descriptions require a User Story.** Don't just say "I changed X" or "I fixed Y." Frame the change in terms of who it helps and why:
 
-### Commit and PR descriptions require a User Story
+    **Format:** *As a [role], I [needed / wanted] [behavior] so that [outcome]. This change [does X].*
 
-Do not just say "I changed X" or "I fixed Y." Frame the change in terms of who it helps and why.
-
-**Format:** *As a [role], I [needed / wanted] [behavior] so that [outcome]. This change [does X].*
-
-**Example:** *As a druid who shapeshifts between Travel Form and caster form during a farming run, I wanted Tracking Eye to recast my saved tracking spell after the shapeshift instead of leaving me with no tracking buff. This change schedules a `TryRecastPersistent()` 1.5 seconds after `UPDATE_SHAPESHIFT_FORM` so the post-shift GCD has elapsed before the cast fires.*
-
-The User Story makes review faster and gives future maintainers context the diff alone will not carry.
+    **Example:** *As a druid who shifts between Travel Form and caster form on a farming run, I wanted Tracking Eye to recast my tracking after the shift instead of leaving me with none. This change schedules a Persistent Tracking recast 1.5 seconds after `UPDATE_SHAPESHIFT_FORM`, so the form's global cooldown has passed before the cast fires.*

@@ -34,3 +34,5 @@ ignore:
   - .pkgmeta
   - .vscode
   - LICENSE
+  - tools
+  - Data/Wrath

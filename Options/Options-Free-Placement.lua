@@ -15,23 +15,25 @@ local function Hidden()
 end
 
 -- Sized to their captions with slack; never the full row width. See ns.OptionsSubRow.
-local SHAPE_LABEL_WIDTH = 0.9
+local SUB_LABEL_WIDTH = 0.9
 local SHAPE_DROPDOWN_WIDTH = 1.0
 local SCALE_SLIDER_WIDTH = 1.9
 
 --------------------------------------------------------------------------------
 -- Free Placement Mode Options (composed into the General panel)
 --------------------------------------------------------------------------------
+
 function ns.BuildFreePlacementOptions()
 	return {
-		spaceFP0 = Spacer(39),
+		spaceFreePlacement0 = Spacer(39),
 		headerFree = Header(L["PLACEMENT_MODE"], 40),
-		spaceFPHeader = Spacer(40.5),
-		descFree = Desc(L["PLACEMENT_DESC"], 41),
-		spaceFP1 = Spacer(42),
+		spaceFreePlacementHeader = Spacer(40.5),
+		descFree = Desc(L["OPTIONS_PLACEMENT_DESCRIPTION"], 41),
+		spaceFreePlacement1 = Spacer(42),
 		enableFree = {
 			type = "toggle",
 			name = L["OPTIONS_ENABLE_FREE"],
+			desc = L["OPTIONS_ENABLE_FREE_DESCRIPTION"],
 			order = 43,
 			width = "full",
 			get = function()
@@ -46,11 +48,11 @@ function ns.BuildFreePlacementOptions()
 		},
 
 		iconShapeRow = SubRow(45, Hidden, {
-			RowLabel(SubLabel(L["OPTIONS_ICON_SHAPE"]), 1, SHAPE_LABEL_WIDTH),
+			RowLabel(SubLabel(L["OPTIONS_ICON_SHAPE"]), 1, SUB_LABEL_WIDTH),
 			{
 				type = "select",
 				name = "",
-				desc = L["OPTIONS_ICON_SHAPE_DESC"],
+				desc = L["OPTIONS_ICON_SHAPE_DESCRIPTION"],
 				width = SHAPE_DROPDOWN_WIDTH,
 				style = "dropdown",
 				values = {
@@ -58,7 +60,7 @@ function ns.BuildFreePlacementOptions()
 					[ns.SHAPES.SQUARE] = L["OPTIONS_SHAPE_SQUARE"],
 				},
 				get = function()
-					return ns.db and ns.db.global.freeIconShape or ns.DATABASE_DEFAULTS.global.freeIconShape
+					return ns.db and ns.db.global.freeIconShape
 				end,
 				set = function(_, value)
 					if ns.db then
@@ -70,17 +72,18 @@ function ns.BuildFreePlacementOptions()
 		}),
 
 		iconScaleRow = SubRow(47, Hidden, {
+			RowLabel(SubLabel(L["OPTIONS_ICON_SCALE"]), 1, SUB_LABEL_WIDTH),
 			{
 				type = "range",
-				name = SubLabel(L["OPTIONS_ICON_SCALE"]),
-				desc = L["OPTIONS_ICON_SCALE_DESC"],
+				name = "",
+				desc = L["OPTIONS_ICON_SCALE_DESCRIPTION"],
 				width = SCALE_SLIDER_WIDTH,
 				min = 0.25,
 				max = 3.0,
 				step = 0.05,
 				isPercent = true,
 				get = function()
-					return ns.db and ns.db.global.freeIconScale or ns.DATABASE_DEFAULTS.global.freeIconScale
+					return ns.db and ns.db.global.freeIconScale
 				end,
 				set = function(_, value)
 					if ns.db then
