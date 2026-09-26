@@ -5,102 +5,149 @@ local _, ns = ...
 --------------------------------------------------------------------------------
 
 --[[
-    Sets the Persistent Tracking Ability from the creature the player targets, so
-    the rest of that pack shows on the mini-map. It is a sub-option of Persistent
-    Tracking and behaves like one in both directions. It does nothing at all while
-    ns.db.profile.persistentTracking is off — the options panel hides the control
-    then, so a feature that kept acting would be rewriting the saved ability and
-    burning a GCD for something the player believes is switched off. Its own
-    targetTracking key is never written by that gate: the setting survives
-    untouched and resumes when the parent comes back on.
+    Out in the world, the kind of creature the player targets stands in for the
+    Persistent Tracking Ability: a "hunt". The hunt is runtime state only
+    (ns.state.huntSpellId) and is never saved, so login and /reload always start
+    without one, and nothing automatic ever writes selectedSpellId. An automatic
+    signal must never overwrite a choice the player saved.
 
-    When it does run it writes ns.db.profile.selectedSpellId, the same key the
-    tracking menu writes, and everything downstream follows for free — the
-    post-death recast, the form-leave restore, and the farm cycle's optional
-    persistent entry all read that one key.
+    ns.GetPersistentSpell (Persistent-Tracking.lua) decides what Persistent
+    Tracking keeps up, the hunt included, so the post-resurrection recast, the
+    form-leave restore, and the farm cycle's persistent entry all follow the hunt
+    without knowing about it.
 
-    Writing the key rather than borrowing the slot is what keeps this simple.
-    There is no hold flag and no revert path, so Persistent Tracking never has to
-    be suppressed and the two features cannot fight each other.
-
-    It never casts in combat: a tracking spell costs a global cooldown, which is
-    least affordable mid-fight, so a switch asked for during combat is remembered
-    and applied on PLAYER_REGEN_ENABLED instead.
-
-    It stays out of instances entirely. A dungeon, raid, battleground, or arena is
-    a stream of hostile targets, so the feature would fire on nearly every target
-    change and spend a global cooldown each time — a distraction exactly where the
-    player can least afford one, and one that tells them nothing: the pack is
-    already in front of them. Nothing is queued from inside an instance either. A
-    switch asked for there is dropped rather than saved for the zone-out, so
-    walking back out never applies a stale pick from the last pull.
+    A hunt starts or switches only out in the world and out of combat, from a
+    living, attackable creature. A target picked mid-fight never counts and is
+    never queued. A hunt ends at a context break: a town, an inn, an instance, a
+    flight, a Tracking Menu pick, Clear Tracking, switching the feature off, or a
+    profile change. Every break except the menu pick and Clear Tracking brings the
+    Persistent Tracking Ability back through ns.TryRecastPersistent.
 ]]
 
--- The switch a target change asked for while the player was in combat, or nil.
-local pendingSpellId = nil
+-- Seconds between attempts while ns.CanCast() or a cooldown refuses a hunt's cast.
+local HUNT_RETRY_SECONDS = 2
 
-function ns.HandleTargetChanged()
-	-- Off, or the parent is off: drop any stored switch rather than applying it later.
-	if not ns.db or not ns.db.profile.targetTracking or not ns.db.profile.persistentTracking then
-		pendingSpellId = nil
-		return
+-- Bumped on every hunt change, so a pending retry for an older hunt stops.
+local huntGeneration = 0
+
+-- Starts, switches, or (with nil) ends the hunt. Returns false when nothing changed.
+local function SetHunt(spellId)
+	if ns.state.huntSpellId == spellId then
+		return false
 	end
-
-	-- Instanced content is the one place this is noise rather than help; see above.
-	if IsInInstance() then
-		pendingSpellId = nil
-		return
-	end
-
-	-- Friendly units must not drive a switch; targeting a city guard is not a hunt.
-	if not UnitExists("target") or not UnitCanAttack("player", "target") then
-		return
-	end
-
-	local spellId = ns.GetCreatureTypeSpell(ns.GetUnitCreatureType("target"))
-	if not spellId then
-		return
-	end
-
-	if ns.db.profile.selectedSpellId == spellId then
-		pendingSpellId = nil
-		return
-	end
-
-	if UnitAffectingCombat("player") then
-		pendingSpellId = spellId
-		return
-	end
-
-	pendingSpellId = nil
-	ns.db.profile.selectedSpellId = spellId
-	-- The farm cycle can include the persistent ability, so its cache is now stale.
+	ns.state.huntSpellId = spellId
+	huntGeneration = huntGeneration + 1
+	-- The farm cycle's persistent entry holds the hunt, so its cache is now stale.
 	ns.InvalidateFarmCache()
+	ns.UpdateIcon()
+	return true
+end
 
-	--[[
-        Cast straight away, Farm Mode running or not. Deferring to the cycle made
-        the feature look dead in the state players actually use it in: mounted, the
-        pick becomes one entry in a rotation of three or four and is overwritten
-        within seconds, so targeting a beast showed nothing. Casting now puts the
-        pack on the mini-map immediately and the cycle simply reclaims the slot on
-        its next tick — still no hold flag, so the two features never suppress each
-        other.
-    ]]
-	if ns.CanCast() then
-		ns.CastTracking(spellId)
+--[[
+    Ends a running hunt. A Tracking Menu pick and Clear Tracking pass false,
+    since each sets tracking itself; every other break brings the Persistent
+    Tracking Ability back.
+]]
+function ns.EndHunt(restorePersistent)
+	if not SetHunt(nil) then
+		return
+	end
+	if restorePersistent then
+		ns.TryRecastPersistent()
+	end
+end
+
+-- Shared by the options toggle and the launcher's Shift + Right-Click.
+function ns.SetTargetTracking(enabled)
+	ns.db.profile.targetTracking = enabled
+	if not enabled then
+		ns.EndHunt(true)
 	end
 end
 
 --[[
-    Combat ended. Re-run the whole decision rather than casting the stored ID: the
-    target may be dead, swapped, or long gone, and re-validating costs one cheap
-    pass while casting blind would set tracking from a corpse.
+    Casts the running hunt, retrying until it lands or the hunt changes or ends.
+    Uses ns.GetActiveTrackingSpell() only as a positive "already up" signal, and
+    never casts while Farm Mode is cycling without the Persistent Tracking
+    Ability's entry: the form-leave restore brings the hunt back when the farm
+    state ends.
 ]]
-function ns.HandleRegenEnabled()
-	if not pendingSpellId then
+local function CastHunt(generation)
+	if generation ~= huntGeneration then
+		return
+	end
+	local spellId = ns.state.huntSpellId
+	if not spellId or not ns.IsOutInTheWorld() then
 		return
 	end
 
-	pendingSpellId = nil
-	ns.HandleTargetChanged()
+	local _, isFarming = ns.GetPlayerStates()
+	if isFarming and not ns.db.profile.farmIncludePersistent then
+		return
+	end
+
+	if ns.GetActiveTrackingSpell() == spellId then
+		return
+	end
+
+	if not ns.CanCast() or not ns.CastTracking(spellId) then
+		C_Timer.After(HUNT_RETRY_SECONDS, function()
+			CastHunt(generation)
+		end)
+	end
+end
+
+function ns.OnPlayerTargetChanged()
+	if not ns.db or not ns.db.profile.targetTracking then
+		return
+	end
+
+	if not ns.IsOutInTheWorld() or UnitAffectingCombat("player") then
+		return
+	end
+
+	--[[
+        Creatures only: an enemy player, a friendly unit, or a corpse never
+        drives a switch, so clicking an add's corpse to loot it keeps the hunt.
+        UnitIsPlayer never goes secret on WoW Forever; the creature type can, so
+        it goes through ns.GetUnitCreatureType.
+    ]]
+	if not ns.HasAttackableTarget() or UnitIsPlayer("target") then
+		return
+	end
+
+	local _, creatureTypeId = ns.GetUnitCreatureType("target")
+	local spellId = ns.GetCreatureTypeSpell(creatureTypeId)
+	if not spellId or not SetHunt(spellId) then
+		return
+	end
+
+	-- A switch casts at once: one global cooldown per new kind, not per pull.
+	CastHunt(huntGeneration)
+end
+
+--[[
+    Called from the farm ticker, the only thing that sees a flight start or land:
+    no registered event fires for either. Taking off ends a running hunt, and
+    landing after that brings the Persistent Tracking Ability back.
+]]
+local wasOnTaxi = false
+local restoreAfterLanding = false
+
+function ns.HandleFlightState()
+	local onTaxi = UnitOnTaxi("player") and true or false
+	if onTaxi == wasOnTaxi then
+		return
+	end
+	wasOnTaxi = onTaxi
+
+	if onTaxi then
+		if ns.state.huntSpellId then
+			restoreAfterLanding = true
+			ns.EndHunt(true)
+		end
+	elseif restoreAfterLanding then
+		restoreAfterLanding = false
+		ns.TryRecastPersistent()
+	end
 end

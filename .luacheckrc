@@ -1,15 +1,20 @@
 std = "lua51"
 max_line_length = false -- StyLua owns formatting
-self = false -- dot-defined and method-defined helpers share signatures; implicit self is often unused
-ignore = { "611", "612", "613", "614", "621" } -- whitespace warnings — StyLua owns these too
-exclude_files = { "Includes/" } -- vendored, never linted
+ignore = { "212/self", "611", "612", "613", "614", "621" } -- implicit self (house ns: methods) + whitespace — StyLua owns the latter
+exclude_files = { "Includes/", ".claude/" } -- vendored or session-local, never linted
 read_globals = {
 	-- Libraries
 	"LibStub",
 	-- Frames & UI globals
+	"ChatFrame1",
+	"ChatFrameUtil",
 	"CreateFont",
 	"CreateFrame",
 	"GameTooltip",
+	"GameTooltipTextLeft1",
+	"Minimap",
+	"MinimapZoomIn",
+	"MinimapZoomOut",
 	"MiniMapTracking",
 	"MiniMapTrackingButton",
 	"MiniMapTrackingIcon",
@@ -18,49 +23,55 @@ read_globals = {
 	-- Modern API namespaces
 	"C_AddOns",
 	"C_EventUtils",
+	"C_Item",
+	"C_Map",
 	"C_Minimap",
+	"C_Seasons",
 	"C_Secrets",
 	"C_Spell",
 	"C_Timer",
+	"C_TooltipInfo",
 	"C_UnitAuras",
+	"Enum",
 	"Settings",
 	-- Legacy halves of compatibility guards
 	"CancelTrackingBuff",
-	"GetAddOnInfo",
-	"GetAddOnMetadata",
-	"GetNumAddOns",
-	"GetSpellCooldown",
-	"GetSpellInfo",
-	"GetSpellTexture",
 	"GetTrackingTexture",
-	"InterfaceOptionsFrame_OpenToCategory",
 	-- WoW API
 	"CastSpellByID",
 	"GetBuildInfo",
 	"GetCVar",
 	"GetCursorInfo",
+	"GetGameMessageInfo",
 	"GetInstanceInfo",
+	"GetInventoryItemID",
 	"GetLocale",
 	"GetPhysicalScreenSize",
 	"GetTime",
+	"GetUnitSpeed",
 	"InCombatLockdown",
+	"INVSLOT_MAINHAND",
 	"IsInInstance",
 	"IsMounted",
 	"IsPlayerSpell",
 	"IsResting",
 	"IsShiftKeyDown",
+	"IsSpellKnown",
 	"IsStealthed",
+	"LOCALIZED_CLASS_NAMES_MALE",
 	"SetCVar",
 	"UnitAffectingCombat",
 	"UnitCanAttack",
 	"UnitCastingInfo",
+	"UnitChannelInfo",
 	"UnitClass",
 	"UnitCreatureType",
 	"UnitExists",
+	"UnitIsDead",
 	"UnitIsDeadOrGhost",
+	"UnitIsPlayer",
 	"UnitLevel",
 	"UnitOnTaxi",
-	"WOW_PROJECT_ID",
 }
 globals = {
 	-- exactly the add-on's own sanctioned globals

@@ -4,6 +4,10 @@ local L = ns.L
 local GetColor = ns.GetColor
 local Header, Desc, Spacer = ns.OptionsHeader, ns.OptionsDesc, ns.OptionsSpacer
 local RowLabel = ns.OptionsRowLabel
+local SubRow, SubLabel = ns.OptionsSubRow, ns.OptionsSubLabel
+
+-- Sized to its caption with slack; never the full row width. See ns.OptionsSubRow.
+local SUB_TOGGLE_WIDTH = 3.2
 
 --[[
     The Feedback & Support rows override the default half-and-half label/control
@@ -17,18 +21,60 @@ local RowLabel = ns.OptionsRowLabel
 local LINK_LABEL_WIDTH = 0.6
 local LINK_URL_WIDTH = ns.OPTIONS_ROW_WIDTH - LINK_LABEL_WIDTH
 
+local function NoBlizzardTrackingButton()
+	return not (ns.HasBlizzardTrackingButton and ns.HasBlizzardTrackingButton())
+end
+
+local function PersistentOff()
+	return not (ns.db and ns.db.profile.persistentTracking)
+end
+
+-- Find Fish is missing from some flavors' data (Classic Era), so its row never shows there.
+local function FishingPoleRowHidden()
+	return PersistentOff() or not ns.SPELLS.FISH
+end
+
+--[[
+    A Persistent Tracking sub-option: an override for the ability Persistent
+    Tracking keeps up, bound to one profile field and hidden with Persistent
+    Tracking unless the row passes its own condition. A change applies at once,
+    even mid-battleground, since the recast and the farm cycle's persistent entry
+    both read the resolver.
+]]
+local function PersistentOverrideRow(order, field, name, desc, hidden)
+	return SubRow(order, hidden or PersistentOff, {
+		{
+			type = "toggle",
+			name = SubLabel(name),
+			desc = desc,
+			width = SUB_TOGGLE_WIDTH,
+			get = function()
+				return ns.db and ns.db.profile[field]
+			end,
+			set = function(_, value)
+				if ns.db then
+					ns.db.profile[field] = value
+					ns.InvalidateFarmCache()
+					ns.TryRecastPersistent()
+				end
+			end,
+		},
+	})
+end
+
 --------------------------------------------------------------------------------
 -- General Options Panel
 --------------------------------------------------------------------------------
+
 function ns.BuildGeneralOptions()
 	local args = {
-		descIntro = Desc(L["OPTIONS_DESC"], 1),
+		descIntro = Desc(L["OPTIONS_DESCRIPTION"], 1),
 
 		spaceWelcome0 = Spacer(2),
 		enableWelcome = {
 			type = "toggle",
 			name = L["OPTIONS_ENABLE_WELCOME"],
-			desc = L["OPTIONS_WELCOME_DESC"],
+			desc = L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"],
 			order = 3,
 			width = "full",
 			get = function()
@@ -44,7 +90,7 @@ function ns.BuildGeneralOptions()
 		enableMinimap = {
 			type = "toggle",
 			name = L["OPTIONS_ENABLE_MINIMAP"],
-			desc = L["OPTIONS_ENABLE_MINIMAP_DESC"],
+			desc = L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"],
 			order = 3.5,
 			width = "full",
 			disabled = function()
@@ -55,55 +101,15 @@ function ns.BuildGeneralOptions()
 			end,
 			set = function(_, value)
 				if ns.db then
-					if not ns.db.global.minimap then
-						ns.db.global.minimap = {}
-					end
 					ns.db.global.minimap.hide = not value
 					ns.UpdatePlacement()
 				end
 			end,
 		},
 
-		--[[
-			Sits with the other two mini-map controls rather than down among the
-			feature settings: it is a third toggle for the same button, and the
-			player reads the three as one group.
-		]]
-		spaceHookBlizzard0 = Spacer(3.55),
-		hookBlizzardTracking = {
-			type = "toggle",
-			name = L["OPTIONS_HOOK_BLIZZARD"],
-			desc = L["OPTIONS_HOOK_BLIZZARD_DESC"],
-			order = 3.6,
-			width = "full",
-			hidden = function()
-				return not (ns.HasBlizzardTrackingButton and ns.HasBlizzardTrackingButton())
-			end,
-			get = function()
-				return ns.db and ns.db.global.hookBlizzardTracking
-			end,
-			set = function(_, value)
-				if ns.db then
-					ns.db.global.hookBlizzardTracking = value
-					ns.ApplyBlizzardTrackingHook()
-				end
-			end,
-		},
-		descHookBlizzardNote = {
-			type = "description",
-			name = GetColor("HELP") .. L["OPTIONS_HOOK_BLIZZARD_NOTE"] .. "|r",
-			fontSize = "medium",
-			order = 3.65,
-			hidden = function()
-				return not (ns.HasBlizzardTrackingButton and ns.HasBlizzardTrackingButton())
-			end,
-		},
-
 		spaceCommands0 = Spacer(4),
 		headerCommands = Header(L["OPTIONS_COMMANDS_HEADER"], 5),
 		spaceCommands1 = Spacer(6),
-		descCommandsIntro = Desc(L["OPTIONS_COMMANDS_INTRO"], 7),
-		spaceCommands2 = Spacer(7.1),
 		descCommands = Desc(
 			GetColor("INFO") .. L["OPTIONS_COMMAND"] .. "|r" .. "  " .. L["OPTIONS_COMMAND_DESCRIPTION"],
 			7.2
@@ -118,18 +124,64 @@ function ns.BuildGeneralOptions()
 		headerKeyBinds = Header(L["OPTIONS_KEYBINDS"], 7.6),
 		spaceKeyBinds1 = Spacer(7.7),
 		descKeyBinds = Desc(
-			GetColor("INFO") .. L["BINDING_CYCLE_FARM_ABILITY"] .. "|r" .. "  " .. L["OPTIONS_KEYBINDS_DESC"],
+			GetColor("INFO") .. L["BINDING_CYCLE_FARM_ABILITY"] .. "|r" .. "  " .. L["OPTIONS_KEYBINDS_DESCRIPTION"],
 			7.8
 		),
 
-		spacePT0 = Spacer(9),
+		-- Present only where the client has a Blizzard tracking button to take over.
+		spaceTrackingMenu0 = {
+			type = "description",
+			name = " ",
+			order = 8.1,
+			hidden = NoBlizzardTrackingButton,
+		},
+		headerTrackingMenu = Header(L["TRACKING_MENU"], 8.2, NoBlizzardTrackingButton),
+		spaceTrackingMenuHeader = {
+			type = "description",
+			name = " ",
+			order = 8.3,
+			hidden = NoBlizzardTrackingButton,
+		},
+		descTrackingMenu = {
+			type = "description",
+			name = L["OPTIONS_TRACKING_MENU_DESCRIPTION"],
+			fontSize = "medium",
+			order = 8.4,
+			hidden = NoBlizzardTrackingButton,
+		},
+		spaceTrackingMenu1 = {
+			type = "description",
+			name = " ",
+			order = 8.5,
+			hidden = NoBlizzardTrackingButton,
+		},
+		hookBlizzardTracking = {
+			type = "toggle",
+			name = L["OPTIONS_HOOK_BLIZZARD"],
+			desc = L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"],
+			order = 8.6,
+			width = "full",
+			hidden = NoBlizzardTrackingButton,
+			get = function()
+				return ns.db and ns.db.global.hookBlizzardTracking
+			end,
+			set = function(_, value)
+				if ns.db then
+					ns.db.global.hookBlizzardTracking = value
+					ns.ApplyBlizzardTrackingHook()
+				end
+			end,
+		},
+
+		spacePersistent0 = Spacer(9),
 		headerPersistent = Header(L["PERSISTENT_TRACKING"], 10),
-		spacePTHeader = Spacer(10.5),
-		descPersistent = Desc(L["PERSISTENT_DESC"], 11),
-		spacePT1 = Spacer(12),
+		spacePersistentHeader = Spacer(10.5),
+		descPersistent = Desc(L["OPTIONS_PERSISTENT_DESCRIPTION"], 11),
+		spacePersistent1 = Spacer(12),
 		enablePersistent = {
 			type = "toggle",
 			name = L["OPTIONS_ENABLE_PERSISTENT"],
+			desc = L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"],
 			order = 13,
 			width = "full",
 			get = function()
@@ -141,6 +193,25 @@ function ns.BuildGeneralOptions()
 				end
 			end,
 		},
+		fishingPoleFishRow = PersistentOverrideRow(
+			13.1,
+			"fishingPoleFish",
+			L["OPTIONS_FISHING_POLE_FISH"],
+			L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"],
+			FishingPoleRowHidden
+		),
+		catFormHumanoidsRow = PersistentOverrideRow(
+			13.2,
+			"catFormHumanoids",
+			L["OPTIONS_CAT_FORM_HUMANOIDS"],
+			L["OPTIONS_CAT_FORM_HUMANOIDS_DESCRIPTION"]
+		),
+		battlegroundHumanoidsRow = PersistentOverrideRow(
+			13.3,
+			"battlegroundHumanoids",
+			L["OPTIONS_BATTLEGROUND_HUMANOIDS"],
+			L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"]
+		),
 
 		-- Feedback & Support (Discord, GitHub, CurseForge, Wago)
 		spaceLinks0 = Spacer(69),
@@ -201,7 +272,7 @@ function ns.BuildGeneralOptions()
 		},
 		versionLine = {
 			type = "description",
-			name = GetColor("MUTED") .. "Version " .. ns.Version .. "|r",
+			name = GetColor("MUTED") .. L["OPTIONS_VERSION"]:format(ns.Version) .. "|r",
 			fontSize = "medium",
 			order = 999,
 		},

@@ -6,23 +6,44 @@ local _, ns = ...
 
 local farmIndex = 0
 local cachedCycle = nil
+-- The Cat Form state cachedCycle was built for; see BuildCycleCache.
+local cachedForCat = nil
 local farmTicker = nil
 
 --------------------------------------------------------------------------------
 -- Farm Cycle Cache
 --------------------------------------------------------------------------------
+
+local function IsInCatForm()
+	return (ns.GetPlayerStates()) and true or false
+end
+
+--[[
+    The druid's tracking (ns.CAT_FORM_ONLY) can only be cast in Cat Form, so it
+    joins the rotation only while the player is in it. Cat Form counts as on
+    foot, so in practice that is a druid farming with Not Mounted ticked; in
+    Travel Form the rest of the cycle runs without it. The cache records the Cat
+    Form state it was built for, and EnsureCycleCache rebuilds it when that
+    changes.
+]]
 local function BuildCycleCache()
 	cachedCycle = {}
+	local isCat = IsInCatForm()
+	cachedForCat = isCat
 	local db = ns.db and ns.db.profile
 	if not db then
 		return
+	end
+
+	local function CanCycle(id)
+		return IsPlayerSpell(id) and (not ns.CAT_FORM_ONLY[id] or isCat)
 	end
 
 	local inCycle = {}
 	local spells = db.farmCycleSpells
 	if spells then
 		for id, enabled in pairs(spells) do
-			if enabled and id ~= ns.SPELLS.DRUID_HUMANOIDS and IsPlayerSpell(id) then
+			if enabled and CanCycle(id) then
 				inCycle[id] = true
 				table.insert(cachedCycle, id)
 			end
@@ -33,22 +54,22 @@ local function BuildCycleCache()
         The Persistent Tracking ability joins the rotation when the option is on,
         but only ONCE: picking Find Herbs as the persistent ability while Find
         Herbs is already ticked in the list must not queue it twice, which would
-        hand it double the airtime of everything else in the cycle. Druid Track
-        Humanoids is excluded here for the same reason it is excluded above — it
-        requires Cat Form, which is mutually exclusive with every farm state.
+        hand it double the airtime of everything else in the cycle. The entry
+        holds whatever ns.GetPersistentSpell resolves to, so a running Target
+        Tracking hunt takes the player's pick's place.
     ]]
-	local selected = db.selectedSpellId
-	if
-		db.farmIncludePersistent
-		and selected
-		and not inCycle[selected]
-		and selected ~= ns.SPELLS.DRUID_HUMANOIDS
-		and IsPlayerSpell(selected)
-	then
+	local selected = ns.GetPersistentSpell()
+	if db.farmIncludePersistent and selected and not inCycle[selected] and CanCycle(selected) then
 		table.insert(cachedCycle, selected)
 	end
 
 	table.sort(cachedCycle)
+end
+
+local function EnsureCycleCache()
+	if not cachedCycle or cachedForCat ~= IsInCatForm() then
+		BuildCycleCache()
+	end
 end
 
 function ns.InvalidateFarmCache()
@@ -57,116 +78,119 @@ end
 
 -- Single reader of the cycle's size, so nothing else has to know about the cache.
 function ns.GetFarmCycleCount()
-	if not cachedCycle then
-		BuildCycleCache()
-	end
+	EnsureCycleCache()
 	return #cachedCycle
 end
 
---------------------------------------------------------------------------------
--- Cast Seam
---------------------------------------------------------------------------------
-
---[[
-    Every automatic cast in this file goes through here, so the optional cycle
-    mute has exactly one seam to wrap. The tracking menu, the persistent recast,
-    and the post-resurrection recast all call ns.CastTracking directly and keep
-    their sound, which is what the option promises.
-
-    Sound_EnableSFX is the only lever available: the tracking spells' audio comes
-    from the spell's own SoundKit, played by the engine, and never passes through
-    PlaySound, so there is no FileDataID for MuteSoundFile to take.
-
-    The window is the whole trick. The audio does NOT fire inside CastSpellByID —
-    it fires when the server confirms the cast, a round trip later — so muting and
-    restoring around the call silences nothing. The mute is therefore held until
-    UNIT_SPELLCAST_SUCCEEDED reports our spell (ns.NotifyTrackingCastSucceeded,
-    the usual path, typically well under 200ms) and lifted a short tail after
-    that, with ns.CYCLE_MUTE_SECONDS as the ceiling for a cast the server never
-    confirms. Generation-stamped so overlapping casts cannot restore each other
-    early, and the cast is pcall-wrapped so an error can never strand the player
-    with sound switched off.
-
-    The timers are not the only way back. Sound_EnableSFX persists across
-    sessions, so a mute whose timer dies with the UI would leave the player with
-    sound effects off and nothing to connect it to. ns.RestoreCycleSoundNow
-    restores unconditionally from two teardown points: the PLAYER_LOGOUT handler
-    in Core.lua (which covers /reload as well as logout) and the muteCycleSound
-    toggle's set handler when the player switches the option off.
-]]
-local muteGeneration = 0
-local mutedValue = nil
-
-local function RestoreCycleSound(generation)
-	if mutedValue == nil or generation ~= muteGeneration then
-		return
+-- A copy of the cycle as Farm Mode casts it, for Diagnostics; never the live cache.
+function ns.GetFarmCycle()
+	EnsureCycleCache()
+	local copy = {}
+	for index, spellId in ipairs(cachedCycle) do
+		copy[index] = spellId
 	end
-	SetCVar("Sound_EnableSFX", mutedValue)
-	mutedValue = nil
+	return copy
 end
 
 --[[
-    Teardown restore, deliberately ignoring the generation stamp — this is the
-    "put it back now, whatever is in flight" path, not a race between overlapping
-    casts. Safe to call when nothing is muted.
+    Why the cycle is empty, for the two places that explain it: the tooltip's
+    pause reason and the key binding's chat line. "none" means nothing is picked;
+    "catForm" means the only picked abilities this character knows are the
+    druid's Cat Form tracking, outside Cat Form; "unlearned" means nothing picked
+    is known yet (Find Herbs ticked, but no Herbalism). Only meaningful while the
+    cycle is empty.
 ]]
-function ns.RestoreCycleSoundNow()
-	if mutedValue == nil then
-		return
-	end
-	SetCVar("Sound_EnableSFX", mutedValue)
-	mutedValue = nil
-end
-
--- Called from Core's UNIT_SPELLCAST_SUCCEEDED branch once the server confirms a tracking cast.
-function ns.NotifyTrackingCastSucceeded()
-	if mutedValue == nil then
-		return
-	end
-	local generation = muteGeneration
-	C_Timer.After(ns.CYCLE_MUTE_TAIL_SECONDS, function()
-		RestoreCycleSound(generation)
-	end)
-end
-
-local function CastCycleSpell(spellId)
-	if not (ns.db and ns.db.profile.muteCycleSound) then
-		ns.CastTracking(spellId)
-		return
+function ns.GetEmptyCycleKind()
+	local db = ns.db and ns.db.profile
+	if not db then
+		return "none"
 	end
 
-	--[[
-	    Cast first, arm second. CastTracking returns false without casting when the
-	    spell is unknown, fails its Cat Form gate, or is on cooldown or the GCD, and
-	    muting for a cast that never happened switches the player's sound off for
-	    nothing. Arming afterwards is safe precisely because the audio plays on
-	    server confirmation rather than inside CastSpellByID.
-	]]
-	local ok, attempted = pcall(ns.CastTracking, spellId)
-	if not ok or not attempted then
-		return
-	end
-
-	muteGeneration = muteGeneration + 1
-	local generation = muteGeneration
-
-	-- Never written when the player already plays with sound effects off.
-	if mutedValue == nil then
-		local previous = GetCVar("Sound_EnableSFX")
-		if previous ~= "0" then
-			mutedValue = previous
-			SetCVar("Sound_EnableSFX", 0)
+	local picked, knowsCatOnly = false, false
+	local function Consider(id)
+		picked = true
+		if ns.CAT_FORM_ONLY[id] and IsPlayerSpell(id) then
+			knowsCatOnly = true
 		end
 	end
 
-	C_Timer.After(ns.CYCLE_MUTE_SECONDS, function()
-		RestoreCycleSound(generation)
-	end)
+	local spells = db.farmCycleSpells
+	if spells then
+		for id, enabled in pairs(spells) do
+			if enabled then
+				Consider(id)
+			end
+		end
+	end
+	local persistent = ns.GetPersistentSpell()
+	if db.farmIncludePersistent and persistent then
+		Consider(persistent)
+	end
+
+	if not picked then
+		return "none"
+	end
+	return knowsCatOnly and "catForm" or "unlearned"
 end
 
 --------------------------------------------------------------------------------
 -- Farm Cycle Logic
 --------------------------------------------------------------------------------
+
+--[[
+    One attempt at the form-leave restore, made once per farm tick. Returns true
+    once nothing is left to do: the ability was cast, is provably up already, or
+    can never be cast from here. Returns false for a temporary refusal (the
+    all-clear, a cooldown, the GCD), so the caller keeps wasFarming set and the
+    next tick tries again instead of dropping the restore.
+]]
+local function RestoreAfterFarming()
+	local spellId = ns.GetPersistentSpell()
+	if not ns.db.profile.persistentTracking or not spellId or not IsPlayerSpell(spellId) then
+		return true
+	end
+	if ns.CAT_FORM_ONLY[spellId] and not ns.GetPlayerStates() then
+		return true
+	end
+
+	-- Positive signal only: a nil mirror never counts as "already up".
+	if ns.GetActiveTrackingSpell() == spellId then
+		return true
+	end
+	local inFlight = ns.state.lastCastSpell == spellId
+		and (GetTime() - (ns.state.lastTrackingCastAt or 0)) < ns.CAST_IN_FLIGHT_SECONDS
+	if inFlight then
+		return true
+	end
+
+	if not ns.CanCast() then
+		return false
+	end
+	return ns.CastTracking(spellId)
+end
+
+--[[
+    Zoom Mini-map Out: as each Farm Mode run starts, the mini-map zooms all the
+    way out, and the player's own zoom is never put back. Blizzard's own zoom
+    clicks set the zoom buttons themselves after Minimap:SetZoom, so this does the
+    same: Era and TBC name them MinimapZoomIn and MinimapZoomOut, and WoW Forever
+    hangs them off the mini-map.
+]]
+local function ZoomMinimapOutForRun()
+	if not (ns.db and ns.db.global.farmZoomOut) or Minimap:GetZoom() == 0 then
+		return
+	end
+	Minimap:SetZoom(0)
+	local zoomIn = Minimap.ZoomIn or MinimapZoomIn
+	local zoomOut = Minimap.ZoomOut or MinimapZoomOut
+	if zoomIn then
+		zoomIn:Enable()
+	end
+	if zoomOut then
+		zoomOut:Disable()
+	end
+end
+
 --[[
     Avoids raw GetTrackingTexture comparisons: the Era mirror lags real state by
     up to minutes, so it's consulted only as positive confirmation, never as a
@@ -175,11 +199,15 @@ end
     spell is a harmless refresh, so the check only avoids burning a GCD on a no-op.
 ]]
 function ns.RunFarmLogic()
+	if ns.HandleFlightState then
+		ns.HandleFlightState()
+	end
+
 	--[[
-        Keep the dimmed icon honest before any bail. The ticker is the only thing
-        that notices conditions firing no registered event — a taxi flight above
-        all — so the pause reason is re-resolved here and the icon refreshed only
-        when it actually changed.
+        Keep an open tooltip's Farm Mode Status honest before any bail. The ticker
+        is the only thing that notices conditions firing no registered event — a
+        taxi flight above all — so the pause reason is re-resolved here and the
+        display refreshed only when it actually changed.
     ]]
 	if ns.GetFarmPauseReason() ~= ns.state.farmPauseReason then
 		ns.UpdateIcon()
@@ -189,38 +217,42 @@ function ns.RunFarmLogic()
 		return
 	end
 
-	-- Hold while any window is open, or while the player is reading a tooltip.
-	if ns.IsBlockingWindowOpen() or ns.IsTooltipShowing() then
+	-- Hold while any window is open, something attackable is targeted, or any tooltip shows, ours included.
+	if ns.IsBlockingWindowOpen() or ns.HasAttackableTarget() or ns.IsTooltipShowing() or ns.IsOwnTooltipShowing() then
 		return
 	end
 
-	if not ns.db or not ns.db.profile.farmMode then
+	if not ns.db then
 		return
 	end
 
 	local _, inForm = ns.GetPlayerStates()
 
 	--[[
-        Form-leave restore runs before the restricted-zone gate so a
-        player who unmounts inside an instance or resting area still
-        gets their persistent tracking spell back. Restore unless the
-        selected spell is provably active (Blizzard icon / mirror via
-        ns.GetActiveTrackingSpell) or our own cast of it is still in
-        flight — bookkeeping alone (lastCastSpell) cannot see tracking
-        cancelled outside the addon.
+        Nothing below runs while the player stands still, the form-leave restore
+        included: standing still is when a player eats, drinks, gathers, or reads,
+        and a cast then stands them up or costs a global cooldown for nothing.
+    ]]
+	if not ns.IsPlayerMoving() then
+		return
+	end
+
+	--[[
+        Form-leave restore. It runs ahead of the Farm Mode and restricted-zone
+        gates, so switching Farm Mode off mid-farm, or unmounting inside an
+        instance or a resting area, still brings the persistent ability back.
+        wasFarming stays set until RestoreAfterFarming reports the job done, so
+        a tick refused by the all-clear retries on the next one. Bookkeeping
+        alone (lastCastSpell) cannot see tracking cancelled outside the add-on.
     ]]
 	if not inForm and ns.state.wasFarming then
-		ns.state.wasFarming = false
-		if ns.db.profile.persistentTracking and ns.db.profile.selectedSpellId then
-			local spellId = ns.db.profile.selectedSpellId
-			if ns.GetActiveTrackingSpell() ~= spellId then
-				local inFlight = ns.state.lastCastSpell == spellId
-					and (GetTime() - (ns.state.lastTrackingCastAt or 0)) < ns.CAST_IN_FLIGHT_SECONDS
-				if not inFlight then
-					ns.CastTracking(spellId)
-				end
-			end
+		if RestoreAfterFarming() then
+			ns.state.wasFarming = false
 		end
+		return
+	end
+
+	if not ns.db.profile.farmMode then
 		return
 	end
 
@@ -232,12 +264,15 @@ function ns.RunFarmLogic()
 		return
 	end
 
-	if not cachedCycle then
-		BuildCycleCache()
-	end
+	EnsureCycleCache()
 
 	if #cachedCycle == 0 then
 		return
+	end
+
+	-- Only as a run starts, so a player who zooms back in mid-run keeps their choice.
+	if not ns.state.wasFarming then
+		ZoomMinimapOutForRun()
 	end
 
 	if #cachedCycle == 1 then
@@ -248,13 +283,13 @@ function ns.RunFarmLogic()
             mirror via ns.GetActiveTrackingSpell) or our own cast is still
             in flight (the icon can lag the UNIT_SPELLCAST_SUCCEEDED by a
             moment). Anything else — including tracking cancelled outside
-            the addon, which bookkeeping alone cannot see — recasts.
+            the add-on, which bookkeeping alone cannot see — recasts.
         ]]
 		if ns.GetActiveTrackingSpell() ~= spellId then
 			local inFlight = ns.state.lastCastSpell == spellId
 				and (GetTime() - (ns.state.lastTrackingCastAt or 0)) < ns.CAST_IN_FLIGHT_SECONDS
 			if not inFlight then
-				CastCycleSpell(spellId)
+				ns.CastCycleSpell(spellId)
 			end
 		end
 		ns.state.wasFarming = true
@@ -280,16 +315,14 @@ end
     key must always do something visible.
 ]]
 function ns.AdvanceFarmCycle()
-	if not cachedCycle then
-		BuildCycleCache()
-	end
+	EnsureCycleCache()
 
 	if #cachedCycle == 0 or not ns.CanCast() then
 		return false
 	end
 
 	if #cachedCycle == 1 then
-		CastCycleSpell(cachedCycle[1])
+		ns.CastCycleSpell(cachedCycle[1])
 		return true
 	end
 
@@ -297,7 +330,7 @@ function ns.AdvanceFarmCycle()
 	local nextSpellId = cachedCycle[farmIndex]
 
 	if nextSpellId ~= ns.state.lastCastSpell then
-		CastCycleSpell(nextSpellId)
+		ns.CastCycleSpell(nextSpellId)
 	end
 
 	return true
@@ -306,18 +339,19 @@ end
 --------------------------------------------------------------------------------
 -- Ticker Management
 --------------------------------------------------------------------------------
+
 function ns.RestartFarmTicker()
 	if farmTicker then
 		farmTicker:Cancel()
 		farmTicker = nil
 	end
-	local interval = (ns.db and ns.db.profile.farmInterval) or ns.DATABASE_DEFAULTS.profile.farmInterval
-	farmTicker = C_Timer.NewTicker(interval, ns.RunFarmLogic)
+	farmTicker = C_Timer.NewTicker(ns.db.profile.farmInterval, ns.RunFarmLogic)
 end
 
 --------------------------------------------------------------------------------
 -- Initialization
 --------------------------------------------------------------------------------
+
 function ns.InitFarmMode()
 	ns.RestartFarmTicker()
 end

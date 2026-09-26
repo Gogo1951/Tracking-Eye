@@ -1,6 +1,9 @@
 ## Title: Tracking Eye
-## Notes: Improved Tracking Menu and automatic tracking switcher that cycles Find Herbs and Find Minerals while farming and reapplies tracking after death. Supports every tracking ability. Never lose track of the resources you're hunting.
+## Notes: Improved Tracking Menu and automatic switcher that cycles Find Herbs and Find Minerals while farming, restores tracking after death, and tracks targeted creatures while questing. Supports every tracking ability. Never lose track of what you're hunting.
 ## Author: Gogo1951
+
+## IconTexture: Interface/AddOns/TrackingEye/Includes/Images/Tracking-Eye.tga
+## X-License: MIT
 
 ## Category-enUS: Professions
 ## Category-deDE: Berufe
@@ -14,12 +17,9 @@
 ## Category-zhCN: 专业
 ## Category-zhTW: 專業技能
 
-## IconTexture: Interface/AddOns/TrackingEye/Includes/Images/Tracking-Eye.tga
-## X-License: MIT
-
-## Interface: 11509, 16001, 20506
+## Interface: 50504
+## X-Flavor: Mists
 ## Version: @project-version@
-
 ## X-Curse-Project-ID: 1129680
 ## X-Wago-ID: qGZOMXNd
 
@@ -54,17 +54,26 @@ Locales/zhCN.lua
 Locales/zhTW.lua
 
 # Data
+Data/Flavor.lua
 Data/Data.lua
+Data/Mists/Spells-Mists.lua
+Data/Mists/Zones-Mists.lua
 Data/Default-Settings.lua
 
 # Tracking Eye
 Features/Core.lua
 Features/Utilities.lua
 Features/Announcements.lua
+Features/Tracking-State.lua
+Features/Persistent-Tracking.lua
 Features/Farm-Mode.lua
+Features/Farm-Pause-Reporting.lua
+Features/Cycle-Sound-Mute.lua
 Features/Target-Tracking.lua
+Features/Come-and-Get-It.lua
 Features/Key-Bindings.lua
 Features/Tracking-Menu.lua
+Features/Free-Placement.lua
 Features/Diagnostics.lua
 Features/Minimap-Button.lua
 Options/Options-Utilities.lua
@@ -72,6 +81,7 @@ Options/Options-Target-Tracking.lua
 Options/Options-Free-Placement.lua
 Options/Options-General.lua
 Options/Options-Farm-Mode.lua
+Options/Options-Come-and-Get-It.lua
 Options/Options-Profiles.lua
 Options/Options-Diagnostics.lua
 Options/Options.lua
