@@ -62,6 +62,79 @@ local function PersistentOverrideRow(order, field, name, desc, hidden)
 	})
 end
 
+--[[
+    A binding cannot be set from an AceConfig panel, so each row shows the key
+    the player bound, or a muted Not Bound, and a Set Key button that opens the
+    game's Key Bindings list through ns:OpenKeyBindings (Features/Key-Bindings.lua).
+    The binding names come from Bindings.xml's name attributes; the captions are
+    the same BINDING_* strings the Key Bindings list prints. Core repaints this
+    panel on UPDATE_BINDINGS, when the player changes a key.
+]]
+local KEY_BINDINGS = {
+	-- { bindingName, captionKey, descKey }
+	{ "TRACKINGEYE_CYCLE_FARM_ABILITY", "BINDING_CYCLE_FARM_ABILITY", "OPTIONS_KEYBINDS_DESCRIPTION" },
+}
+
+local KEY_LABEL_WIDTH = 1.9
+local KEY_STATUS_WIDTH = 0.85
+local KEY_BUTTON_WIDTH = 0.55
+
+local function GetBindingStatus(bindingName)
+	local key = GetBindingKey(bindingName)
+	if not key then
+		return GetColor("MUTED") .. NOT_BOUND .. "|r"
+	end
+	local text = (GetBindingText and GetBindingText(key)) or key
+	return GetColor("TEXT") .. text .. "|r"
+end
+
+-- Each binding is its row (caption, key, Set Key), its description under it, and a blank line before the next.
+local function AddKeyBindingRows(args, startOrder)
+	local order = startOrder
+
+	for index, entry in ipairs(KEY_BINDINGS) do
+		local bindingName, captionKey, descKey = entry[1], entry[2], entry[3]
+
+		if index > 1 then
+			args["spaceKeyBinding" .. index] = Spacer(order)
+			order = order + 0.01
+		end
+
+		args["rowKeyBinding" .. index] = {
+			type = "group",
+			name = "",
+			inline = true,
+			order = order,
+			args = {
+				caption = RowLabel(GetColor("INFO") .. L[captionKey] .. "|r", 1, KEY_LABEL_WIDTH),
+				status = {
+					type = "description",
+					name = function()
+						return GetBindingStatus(bindingName)
+					end,
+					fontSize = "medium",
+					width = KEY_STATUS_WIDTH,
+					order = 2,
+				},
+				setKey = {
+					type = "execute",
+					name = L["OPTIONS_KEY_SET"],
+					desc = L["OPTIONS_KEY_SET_DESCRIPTION"],
+					width = KEY_BUTTON_WIDTH,
+					order = 3,
+					func = function()
+						ns:OpenKeyBindings()
+					end,
+				},
+			},
+		}
+		order = order + 0.01
+
+		args["descKeyBinding" .. index] = Desc(GetColor("HELP") .. L[descKey] .. "|r", order)
+		order = order + 0.01
+	end
+end
+
 --------------------------------------------------------------------------------
 -- General Options Panel
 --------------------------------------------------------------------------------
@@ -107,41 +180,10 @@ function ns.BuildGeneralOptions()
 			end,
 		},
 
-		spaceCommands0 = Spacer(4),
-		headerCommands = Header(L["OPTIONS_COMMANDS_HEADER"], 5),
-		spaceCommands1 = Spacer(6),
-		descCommands = Desc(
-			GetColor("INFO") .. L["OPTIONS_COMMAND"] .. "|r" .. "  " .. L["OPTIONS_COMMAND_DESCRIPTION"],
-			7.2
-		),
-
-		--[[
-			A binding cannot be set from an AceConfig panel, so this section is a
-			pointer: without it the binding exists but nothing in the add-on ever
-			mentions it. The name matches the Key Bindings entry exactly.
-		]]
-		spaceKeyBinds0 = Spacer(7.5),
-		headerKeyBinds = Header(L["OPTIONS_KEYBINDS"], 7.6),
-		spaceKeyBinds1 = Spacer(7.7),
-		descKeyBinds = Desc(
-			GetColor("INFO") .. L["BINDING_CYCLE_FARM_ABILITY"] .. "|r" .. "  " .. L["OPTIONS_KEYBINDS_DESCRIPTION"],
-			7.8
-		),
-
 		-- Present only where the client has a Blizzard tracking button to take over.
-		spaceTrackingMenu0 = {
-			type = "description",
-			name = " ",
-			order = 8.1,
-			hidden = NoBlizzardTrackingButton,
-		},
+		spaceTrackingMenu0 = Spacer(8.1, NoBlizzardTrackingButton),
 		headerTrackingMenu = Header(L["TRACKING_MENU"], 8.2, NoBlizzardTrackingButton),
-		spaceTrackingMenuHeader = {
-			type = "description",
-			name = " ",
-			order = 8.3,
-			hidden = NoBlizzardTrackingButton,
-		},
+		spaceTrackingMenuHeader = Spacer(8.3, NoBlizzardTrackingButton),
 		descTrackingMenu = {
 			type = "description",
 			name = L["OPTIONS_TRACKING_MENU_DESCRIPTION"],
@@ -149,12 +191,7 @@ function ns.BuildGeneralOptions()
 			order = 8.4,
 			hidden = NoBlizzardTrackingButton,
 		},
-		spaceTrackingMenu1 = {
-			type = "description",
-			name = " ",
-			order = 8.5,
-			hidden = NoBlizzardTrackingButton,
-		},
+		spaceTrackingMenu1 = Spacer(8.5, NoBlizzardTrackingButton),
 		hookBlizzardTracking = {
 			type = "toggle",
 			name = L["OPTIONS_HOOK_BLIZZARD"],
@@ -196,21 +233,40 @@ function ns.BuildGeneralOptions()
 		fishingPoleFishRow = PersistentOverrideRow(
 			13.1,
 			"fishingPoleFish",
-			L["OPTIONS_FISHING_POLE_FISH"],
+			L["OPTIONS_FISHING_POLE_FISH_NAMED"]:format(ns.GetSpellNameText(ns.SPELLS.FISH), ns.GetFishingPoleName()),
 			L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"],
 			FishingPoleRowHidden
 		),
 		catFormHumanoidsRow = PersistentOverrideRow(
 			13.2,
 			"catFormHumanoids",
-			L["OPTIONS_CAT_FORM_HUMANOIDS"],
-			L["OPTIONS_CAT_FORM_HUMANOIDS_DESCRIPTION"]
+			L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"]:format(
+				ns.GetClassNameText("DRUID"),
+				ns.GetSpellNameText(ns.SPELLS.DRUID_HUMANOIDS),
+				ns.GetSpellNameText(ns.SPELLS.CAT)
+			),
+			L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"]
 		),
 		battlegroundHumanoidsRow = PersistentOverrideRow(
 			13.3,
 			"battlegroundHumanoids",
-			L["OPTIONS_BATTLEGROUND_HUMANOIDS"],
+			L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"]:format(
+				ns.GetClassNameText("HUNTER"),
+				ns.GetSpellNameText(ns.SPELLS.HUMANOIDS)
+			),
 			L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"]
+		),
+
+		spaceKeyBinds0 = Spacer(50),
+		headerKeyBinds = Header(L["OPTIONS_KEYBINDS"], 51),
+		spaceKeyBinds1 = Spacer(52),
+
+		spaceCommands0 = Spacer(60),
+		headerCommands = Header(L["OPTIONS_COMMANDS_HEADER"], 61),
+		spaceCommands1 = Spacer(62),
+		descCommands = Desc(
+			GetColor("INFO") .. L["OPTIONS_COMMAND"] .. "|r" .. "  " .. L["OPTIONS_COMMAND_DESCRIPTION"],
+			63
 		),
 
 		-- Feedback & Support (Discord, GitHub, CurseForge, Wago)
@@ -285,6 +341,8 @@ function ns.BuildGeneralOptions()
 		same regardless of merge sequence. Farm Mode is not among them — it carries
 		enough controls to have earned its own child panel.
 	]]
+	AddKeyBindingRows(args, 53)
+
 	for key, entry in pairs(ns.BuildTargetTrackingOptions()) do
 		args[key] = entry
 	end

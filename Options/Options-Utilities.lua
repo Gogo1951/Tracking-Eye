@@ -24,11 +24,12 @@ function ns.OptionsDesc(text, order)
 	}
 end
 
-function ns.OptionsSpacer(order)
+function ns.OptionsSpacer(order, hidden)
 	return {
 		type = "description",
 		name = " ",
 		order = order,
+		hidden = hidden,
 	}
 end
 

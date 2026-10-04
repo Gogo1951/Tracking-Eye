@@ -11,9 +11,9 @@ local dropdown = LibUIDropDownMenu:Create_UIDropDownMenu(ADDON_NAME .. "Tracking
 
 --[[
     Larger font for the menu. LibUIDropDownMenu only honours info.fontObject on enabled
-    buttons, so both the title and the ability rows are rendered as enabled
-    (non-functional) entries to pick this up. Text colour comes from the inline
-    colour codes already embedded in the button text.
+    buttons, so the title is rendered as an enabled button with no func to pick
+    this up. Text colour comes from the inline colour codes already embedded in
+    the button text.
 ]]
 local menuFont = CreateFont(ADDON_NAME .. "TrackingMenuFont")
 do

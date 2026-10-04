@@ -12,7 +12,7 @@ local FORM_KEYS = { CAT = true, TRAVEL = true, AQUATIC = true, FLIGHT = true, SW
 
 ns.SPELLS = {}
 ns.TRACKING_IDS = {}
--- Hash set built from TRACKING_IDS for O(1) lookups in UNIT_SPELLCAST_SUCCEEDED
+-- Hash set of TRACKING_IDS for O(1) lookups.
 ns.TRACKING_SET = {}
 -- spellId -> the row's source ("Hunter", "Herbalism", ...), which groups the Farm Mode Abilities list.
 ns.TRACKING_SOURCE = {}
@@ -80,6 +80,44 @@ for _, row in ipairs(ns.CREATURE_TYPE_DATA) do
 	if ids[1] then
 		ns.CREATURE_TYPE_SPELLS[row[1]] = ids
 	end
+end
+
+--------------------------------------------------------------------------------
+-- Game Names
+--------------------------------------------------------------------------------
+
+--[[
+    Names the client supplies by ID (Style Guide → GAME NAMES), for our own
+    sentences that place a spell, class or item type. Each falls back to an empty
+    string, never to typed text, while the client hasn't loaded the record.
+]]
+function ns.GetSpellNameText(spellId)
+	return spellId and C_Spell.GetSpellName(spellId) or ""
+end
+
+function ns.GetClassNameText(classToken)
+	return LOCALIZED_CLASS_NAMES_MALE and LOCALIZED_CLASS_NAMES_MALE[classToken] or ""
+end
+
+-- Every rank of a movement buff carries the same name, so any one row names its state.
+local MOVEMENT_STATE_SPELL = {}
+for _, row in ipairs(ns.MOVEMENT_BUFF_SPELLS) do
+	MOVEMENT_STATE_SPELL[row[2]] = row[1]
+end
+
+function ns.GetMovementStateName(state)
+	return ns.GetSpellNameText(MOVEMENT_STATE_SPELL[state])
+end
+
+-- The druid's class name and Cat Form, the pair every Cat Form-only message names.
+function ns.GetCatFormNames()
+	return ns.GetClassNameText("DRUID"), ns.GetSpellNameText(ns.SPELLS.CAT)
+end
+
+local GetItemSubClassInfo = C_Item.GetItemSubClassInfo
+
+function ns.GetFishingPoleName()
+	return GetItemSubClassInfo(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Fishingpole) or ""
 end
 
 --------------------------------------------------------------------------------
@@ -153,48 +191,71 @@ function ns.GetUnitCreatureType(unit)
 end
 
 --[[
-    A spell's whole tooltip as one line: lines joined by " // ", a right-hand text
-    after " >> ", or "" before the client has the text. C_TooltipInfo where the
-    client ships its getter, a hidden GameTooltipTemplate tooltip where it
-    doesn't, picked once at load. Validate Data is the only reader.
+    An item's or spell's tooltip as plain lines, a right-hand column kept after
+    " >> ". kind is "item" or "spell". C_TooltipInfo hands the lines over as
+    data where the client ships its GetItemByID and GetSpellByID getters;
+    elsewhere they are read off a hidden tooltip that is never shown. Color
+    escapes are stripped so each line reads as its words. Resolved once at load.
+    A read can throw on an odd id, so callers protect it. Validate Data is the
+    only reader.
 ]]
-local function JoinTooltipLine(parts, left, right)
-	local text = left or ""
-	if right and right ~= "" then
-		text = text .. " >> " .. right
+local SCAN_TOOLTIP_NAME = "TrackingEyeScanTooltip"
+local TOOLTIP_DATA_GETTERS = C_TooltipInfo
+	and C_TooltipInfo.GetItemByID
+	and C_TooltipInfo.GetSpellByID
+	and { item = C_TooltipInfo.GetItemByID, spell = C_TooltipInfo.GetSpellByID }
+local scanTooltip
+
+local function PlainText(text)
+	if type(text) ~= "string" then
+		return nil
 	end
-	if text ~= "" then
-		parts[#parts + 1] = text
-	end
+	return (text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|cn[^:]*:", ""):gsub("|r", ""))
 end
 
-if C_TooltipInfo and C_TooltipInfo.GetSpellByID then
-	function ns.GetSpellTooltipText(spellId)
-		local data = C_TooltipInfo.GetSpellByID(spellId)
-		local parts = {}
-		for _, line in ipairs(data and data.lines or {}) do
-			JoinTooltipLine(parts, line.leftText, line.rightText)
-		end
-		return table.concat(parts, " // ")
+local function JoinTooltipLine(left, right)
+	left = PlainText(left) or ""
+	right = PlainText(right)
+	if right and right ~= "" then
+		return left .. " >> " .. right
 	end
-else
-	local scanTooltip
-	function ns.GetSpellTooltipText(spellId)
-		if not scanTooltip then
-			scanTooltip = CreateFrame("GameTooltip", "TrackingEyeScanTooltip", nil, "GameTooltipTemplate")
-		end
-		scanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-		scanTooltip:ClearLines()
-		scanTooltip:SetSpellByID(spellId)
-		local parts = {}
-		for index = 1, scanTooltip:NumLines() do
-			local left = _G["TrackingEyeScanTooltipTextLeft" .. index]
-			local right = _G["TrackingEyeScanTooltipTextRight" .. index]
-			JoinTooltipLine(parts, left and left:GetText(), right and right:IsShown() and right:GetText() or nil)
-		end
-		scanTooltip:Hide()
-		return table.concat(parts, " // ")
+	return left
+end
+
+local function ReadTooltipData(kind, id)
+	local lines = {}
+	local data = TOOLTIP_DATA_GETTERS[kind](id)
+	for _, line in ipairs(data and data.lines or {}) do
+		lines[#lines + 1] = JoinTooltipLine(line.leftText, line.rightText)
 	end
+	return lines
+end
+
+local function ReadScanTooltip(kind, id)
+	if not scanTooltip then
+		scanTooltip = CreateFrame("GameTooltip", SCAN_TOOLTIP_NAME, nil, "GameTooltipTemplate")
+	end
+	scanTooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
+	scanTooltip:ClearLines()
+	scanTooltip:SetHyperlink(kind .. ":" .. id)
+	local lines = {}
+	for index = 1, scanTooltip:NumLines() do
+		local left = _G[SCAN_TOOLTIP_NAME .. "TextLeft" .. index]
+		local right = _G[SCAN_TOOLTIP_NAME .. "TextRight" .. index]
+		lines[#lines + 1] = JoinTooltipLine(left and left:GetText(), right and right:IsShown() and right:GetText())
+	end
+	scanTooltip:Hide()
+	return lines
+end
+
+ns.GetTooltipLines = TOOLTIP_DATA_GETTERS and ReadTooltipData or ReadScanTooltip
+
+--------------------------------------------------------------------------------
+-- Formatting
+--------------------------------------------------------------------------------
+
+function ns:FormatCommaNumber(number)
+	return (tostring(number):reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", ""))
 end
 
 --------------------------------------------------------------------------------

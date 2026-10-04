@@ -209,7 +209,8 @@ function ns.RunFarmLogic()
         taxi flight above all — so the pause reason is re-resolved here and the
         display refreshed only when it actually changed.
     ]]
-	if ns.GetFarmPauseReason() ~= ns.state.farmPauseReason then
+	local pauseReason, pauseState = ns.GetFarmPauseReason()
+	if pauseReason ~= ns.state.farmPauseReason or pauseState ~= ns.state.farmPauseState then
 		ns.UpdateIcon()
 	end
 

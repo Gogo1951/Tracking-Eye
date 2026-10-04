@@ -12,7 +12,7 @@ local RowLabel = ns.OptionsRowLabel
 local OUTPUT_VALUES = {}
 local OUTPUT_SORTING = {}
 for index, channel in ipairs(ns.OUTPUT_CHANNELS) do
-	OUTPUT_VALUES[channel.key] = L[channel.labelKey]
+	OUTPUT_VALUES[channel.key] = channel.labelGlobal and _G[channel.labelGlobal] or L[channel.labelKey]
 	OUTPUT_SORTING[index] = channel.key
 end
 

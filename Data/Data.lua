@@ -1,5 +1,7 @@
 local ADDON_NAME, ns = ...
 ns.L = LibStub("AceLocale-3.0"):GetLocale(ADDON_NAME)
+ns.ADDON_TITLE = ns.L["ADDON_TITLE"]
+ns.SAVED_VARIABLES_NAME = "TrackingEyeDB"
 
 --------------------------------------------------------------------------------
 -- Constants & Config
@@ -153,15 +155,16 @@ ns.CHAT_MESSAGE_MAX_LENGTH = 255
     Single source of truth for output channels: the feature derives its key ->
     command lookup and Options derives the dropdown from this one table, so the
     list, its order, and the command mapping can't drift. Array order is dropdown
-    order; keys are saved to the DB and never localized. Adding a channel is one
-    row here plus its OPTIONS_OUTPUT_* locale string.
+    order; keys are saved to the DB and never localized. A Blizzard channel is
+    labeled by the client's own string (labelGlobal, a GlobalStrings name); only
+    a label in our own words is a locale key (labelKey).
 ]]
 ns.OUTPUT_CHANNELS = {
 	{ key = "channel1", command = "/1", labelKey = "OPTIONS_OUTPUT_CHANNEL1" },
-	{ key = "say", command = "/say", labelKey = "OPTIONS_OUTPUT_SAY" },
-	{ key = "yell", command = "/yell", labelKey = "OPTIONS_OUTPUT_YELL" },
-	{ key = "party", command = "/party", labelKey = "OPTIONS_OUTPUT_PARTY" },
-	{ key = "guild", command = "/guild", labelKey = "OPTIONS_OUTPUT_GUILD" },
+	{ key = "say", command = "/say", labelGlobal = "SAY" },
+	{ key = "yell", command = "/yell", labelGlobal = "YELL" },
+	{ key = "party", command = "/party", labelGlobal = "PARTY" },
+	{ key = "guild", command = "/guild", labelGlobal = "GUILD" },
 }
 
 -- Fallback when ns.db.profile.comeAndGetItOutput is unset or holds a stale key.

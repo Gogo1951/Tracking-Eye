@@ -30,8 +30,9 @@ ns.state = {
         in-flight fallback stops overriding it. Reset to false on every new cast.
     ]]
 	mirrorConfirmedCast = false,
-	-- Locale key for why Farm Mode is idle, or nil. Written only by UpdateIcon.
+	-- Locale key for why Farm Mode is idle, or nil, and the movement state it names. Written only by UpdateIcon.
 	farmPauseReason = nil,
+	farmPauseState = nil,
 	-- The running Automatic Target Tracking hunt's spell, or nil. Never saved (see Target-Tracking.lua).
 	huntSpellId = nil,
 }
@@ -110,7 +111,9 @@ function ns.UpdateIcon()
 	ns.state.currentIcon = iconSpell and C_Spell.GetSpellTexture(iconSpell) or ns.ICON_DEFAULT
 
 	-- Cached so RunFarmLogic can tell when the reason changes and redraw an open tooltip.
-	ns.state.farmPauseReason = ns.GetFarmPauseReason and ns.GetFarmPauseReason()
+	if ns.GetFarmPauseReason then
+		ns.state.farmPauseReason, ns.state.farmPauseState = ns.GetFarmPauseReason()
+	end
 
 	if ns.ldb then
 		ns.ldb.icon = ns.state.currentIcon
