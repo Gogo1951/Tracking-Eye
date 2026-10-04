@@ -22,7 +22,7 @@ Improved Tracking Menu and automatic switcher that cycles Find Herbs and Find Mi
 2. Log in.
 3. Left-click the mini-map button and pick your tracking.
 4. Mount up and ride. Farm Mode does the rest.
-5. Questing? Type `/te` and switch on Automatic Target Tracking.
+5. Something not behaving the way you want it to? Type `/te` and tune settings to your heart's desire.
 6. _"All your nodes are belong to us."_
 
 ## How It Works
@@ -67,7 +67,7 @@ The icon shows what you're tracking, and hovering it tells you exactly why Farm 
 
 Type `/te`, or find it under **Options > AddOns > Tracking Eye**.
 
-* **Tracking Eye** // Persistent Tracking and its swaps, Automatic Target Tracking, Free Placement Mode, and the mini-map button.
+* **Tracking Eye** // Persistent Tracking and its swaps, Automatic Target Tracking, Free Placement Mode, the mini-map button, and a key that cycles your tracking.
 * **Farm Mode** // What cycles, when, and how fast.
 * **Come & Get It** // Where your callouts go.
 * **Profiles** // Copy one character's setup to another.
@@ -121,9 +121,9 @@ Type `/te`, or find it under **Options > AddOns > Tracking Eye**.
 ### 🟡 Overlaps
 
 * kvakvs's [Buffomat Classic](https://www.curseforge.com/wow/addons/buffomat-classic)
-* Rivare123's [Classic Tracker](https://www.curseforge.com/wow/addons/classic-tracker)
 * Epicstrike's [ForeverPlus](https://www.curseforge.com/wow/addons/foreverplus)
 * BetterAddons' [GatherProClassic](https://www.curseforge.com/wow/addons/gatherproclassic)
+* fuba82's [MinimapTrackingMenu_Classic](https://www.curseforge.com/wow/addons/minimaptrackingmenu_classic)
 * ilvec90's [NodeCounter](https://www.curseforge.com/wow/addons/nodecounter)
 
 ### 🔴 Alternatives

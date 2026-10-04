@@ -28,6 +28,18 @@
 - **Instead:** The README's History carries both lead lines: the takeover line over LindenRyuujin's Tracking Eye, and the shoulders line over Come & Get It.
 - **Why:** Both are true of this add-on: Gogo1951 took it over from its original author and later rolled another Gogo1951 add-on into it.
 
+### Feature switches with their features
+
+- **Departs from:** OPTIONS PANEL → Main Page Layout → Features, every feature's on/off switch two to a line.
+- **Instead:** Each feature's Enable toggle heads that feature's own section or options page, and the feature's other settings hide while it is off.
+- **Why:** A feature's settings mean nothing while it is off, so its switch sits with them and its section collapses to that one toggle.
+
+### Game names in prose copy
+
+- **Departs from:** GAME NAMES → a string that names a spell, item, skill, zone, class or Blizzard UI label doesn't belong in `Locales/`.
+- **Instead:** The tagline's Find Herbs and Find Minerals and Come & Get It's mentions of Rogues are translated as copy in every locale.
+- **Why:** The tagline must read the same as the TOC Notes and the listings, and a greeting addressed to a group of players isn't a lookup of a game record.
+
 ## Decisions
 
 - The post-resurrection tracking recast waits 1.5 seconds (`C_Timer.After`) before casting, by the maintainer's choice.
@@ -52,7 +64,7 @@
 - Druid: Track Humanoids when you Shift into Cat Form is off by default: in Cat Form it makes Druid Track Humanoids the Persistent Tracking Ability, and the player's own pick comes back when they shift out.
 - Hunter: Track Humanoids in Battlegrounds is off by default: in a battleground or an arena it makes Track Humanoids the Persistent Tracking Ability, and the player's own pick comes back outside.
 - Zoom Mini-map Out is a Farm Mode sub-option, on by default: it zooms the mini-map all the way out when a Farm Mode run starts and never puts the player's zoom back, by the maintainer's choice.
-- The README's Features are the four main features: Tracking Menu & Persistent Tracking, Farm Mode, Automatic Target Tracking, and Come & Get It. Free Placement Mode is covered under How It Works instead.
+- The README's Features are the four main features: Tracking Menu & Persistent Tracking, Farm Mode, Automatic Target Tracking, and Come & Get It, then a fifth Highly Configurable bullet, which the maintainer wants kept. Free Placement Mode is covered under How It Works instead.
 - Declined: treating a tracking spell cast outside the Tracking Menu (an action bar, the spellbook, a macro, or WoW Forever's own tracking menu) as a new pick. The Tracking Menu stays the only way to change the pick.
 - Declined: ticking Farm Mode Abilities from the Tracking Menu. The menu only picks the Persistent Tracking Ability; Farm Mode Abilities are set on the Farm Mode page.
 - Declined: key bindings for Toggle Farm Mode, Toggle Automatic Target Tracking, and Open Tracking Menu. The mini-map button's clicks already do all three.
