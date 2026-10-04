@@ -20,6 +20,7 @@ local ns = {
 	ANNOUNCE_COOLDOWN = 5,
 	ERROR_STRING_LOCKED_CHEST = "ERR_ITEM_LOCKED",
 	TRACKING_IDS = {},
+	ADDON_TITLE = "Tracking Eye",
 }
 
 -- Stubs for the WoW globals these tests reach; everything else falls through to Lua's own globals.
@@ -39,7 +40,11 @@ local sandbox = setmetatable({
 	end,
 }, { __index = _G })
 
-for _, path in ipairs({ "Features/Come-and-Get-It.lua", "Features/Diagnostics.lua" }) do
+for _, path in ipairs({
+	"Features/Come-and-Get-It.lua",
+	"Diagnostics/Diagnostics-Core.lua",
+	"Diagnostics/Event-Log.lua",
+}) do
 	local chunk = assert(loadfile(path, "t", sandbox))
 	chunk("TrackingEye", ns)
 end

@@ -77,6 +77,36 @@ local function SpellLabel(spellId, name, suffix)
 	return label
 end
 
+-- "Hunter: Aspect of the Cheetah", from the class that owns the state and the state's own buff.
+local function ClassStateLabel(state)
+	return L["OPTIONS_FARM_CLASS_STATE"]:format(
+		ns.GetClassNameText(ns.MOVEMENT_STATE_CLASS[state]),
+		ns.GetMovementStateName(state)
+	)
+end
+
+--[[
+    The druid forms Travel Forms covers besides Travel Form itself, named only
+    where this flavor's data has them and the client names them apart from
+    Travel Form, as Retail doesn't. Nil when there are none.
+]]
+local function TravelFormsDescription()
+	local travelName = ns.GetSpellNameText(ns.SPELLS.TRAVEL)
+	local others = {}
+	for _, key in ipairs({ "AQUATIC", "FLIGHT" }) do
+		local name = ns.GetSpellNameText(ns.SPELLS[key])
+		if name ~= "" and name ~= travelName then
+			others[#others + 1] = name
+		end
+	end
+	if #others == 2 then
+		return L["OPTIONS_FARM_TRAVEL_FORMS_TWO_DESCRIPTION"]:format(others[1], others[2])
+	elseif #others == 1 then
+		return L["OPTIONS_FARM_TRAVEL_FORMS_ONE_DESCRIPTION"]:format(others[1])
+	end
+	return nil
+end
+
 --------------------------------------------------------------------------------
 -- Farm Ability Groups
 --------------------------------------------------------------------------------
@@ -109,7 +139,12 @@ local function AbilityToggle(id, name, order)
 			a note (the druid's tracking cycles only in Cat Form) sits on the panel,
 			muted beside the name.
 		]]
-		name = SpellLabel(id, name, ns.CAT_FORM_ONLY[id] and L["OPTIONS_FARM_CAT_FORM_NOTE"] or nil),
+		name = SpellLabel(
+			id,
+			name,
+			ns.CAT_FORM_ONLY[id] and L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"]:format(ns.GetSpellNameText(ns.SPELLS.CAT))
+				or nil
+		),
 		tooltipHyperlink = "spell:" .. id,
 		order = order,
 		width = "full",
@@ -293,22 +328,28 @@ function ns.BuildFarmModeOptions()
 		spaceFarmClassForms = FarmSpacer(6.5),
 		farmTravelForms = ConditionToggle(
 			"farmTravelForms",
-			L["OPTIONS_FARM_TRAVEL_FORMS"],
-			L["OPTIONS_FARM_TRAVEL_FORMS_DESCRIPTION"],
+			L["OPTIONS_FARM_TRAVEL_FORMS_NAMED"]:format(ns.GetClassNameText("DRUID")),
+			TravelFormsDescription(),
 			7,
 			"travelForms"
 		),
 		farmCheetah = ConditionToggle(
 			"farmCheetah",
-			L["OPTIONS_FARM_CHEETAH"],
+			ClassStateLabel("cheetah"),
 			L["OPTIONS_FARM_CHEETAH_DESCRIPTION"],
 			8,
 			"cheetah"
 		),
-		farmPack = ConditionToggle("farmPack", L["OPTIONS_FARM_PACK"], L["OPTIONS_FARM_PACK_DESCRIPTION"], 8.1, "pack"),
+		farmPack = ConditionToggle(
+			"farmPack",
+			ClassStateLabel("pack"),
+			L["OPTIONS_FARM_PACK_GROUP_DESCRIPTION"],
+			8.1,
+			"pack"
+		),
 		farmGhostWolf = ConditionToggle(
 			"farmGhostWolf",
-			L["OPTIONS_FARM_GHOST_WOLF"],
+			ClassStateLabel("ghostWolf"),
 			L["OPTIONS_FARM_GHOST_WOLF_DESCRIPTION"],
 			9,
 			"ghostWolf"

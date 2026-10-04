@@ -12,6 +12,9 @@ L["ADDON_TITLE"] = "Tracking Eye"
 L["CHAT_LOADED"] =
 	"버전 %s. 설정(이 메시지를 비활성화하는 옵션 포함)은 설정 > 애드온 > Tracking Eye에서 찾을 수 있습니다. 애드온이 마음에 드시나요? 친구에게 알려주세요! (="
 L["CHAT_OPTIONS_IN_COMBAT"] = "안전을 위해 전투 중에는 옵션 인터페이스를 열 수 없습니다."
+L["CHAT_KEY_BINDINGS_IN_COMBAT"] = "안전을 위해 전투 중에는 단축키 목록을 열 수 없습니다."
+L["KEY_BINDINGS_LOCATION"] =
+	"게임 메뉴를 연 다음 %s, %s 순서로 이동해 Tracking Eye 항목을 찾으세요."
 
 --------------------------------------------------------------------------------
 -- Feature Names & Descriptions
@@ -39,30 +42,23 @@ L["FARM_PAUSED_DEAD"] = "사망 상태입니다."
 L["FARM_PAUSED_TAXI"] = "비행 경로 이용 중입니다."
 L["FARM_PAUSED_INSTANCE"] = "인스턴스 내부입니다."
 L["FARM_PAUSED_RESTING"] = "마을 또는 여관에 있습니다."
-L["FARM_PAUSED_NO_ABILITIES"] = "파밍 모드에서 순환할 능력을 선택하지 않았습니다."
-L["FARM_PAUSED_NOT_LEARNED"] =
-	"파밍 모드에서 순환하도록 선택한 능력을 하나도 배우지 않았습니다."
-L["FARM_PAUSED_CAT_FORM"] = "드루이드 추적은 표범 변신 상태에서만 순환합니다."
+L["FARM_PAUSED_NO_ABILITIES"] = "체크된 파밍 모드 능력이 없습니다."
+L["FARM_PAUSED_NOT_LEARNED"] = "체크한 파밍 모드 능력을 하나도 배우지 않았습니다."
+L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s 추적은 %s 상태에서만 순환합니다."
 L["FARM_PAUSED_NO_STATES"] = "켜져 있는 파밍 모드 조건이 없습니다."
 L["FARM_PAUSED_NOT_MOUNTED"] = "탈것에 타고 있지 않습니다."
 L["FARM_PAUSED_NOT_TRAVEL"] = "여행 변신 상태가 아닙니다."
-L["FARM_PAUSED_NOT_CHEETAH"] = "치타의 상을 사용하고 있지 않습니다."
-L["FARM_PAUSED_NOT_PACK"] = "치타 무리의 상을 사용하고 있지 않습니다."
-L["FARM_PAUSED_NOT_GHOST_WOLF"] = "늑대 정령 상태가 아닙니다."
+L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "%s 사용 중이 아닙니다."
+L["FARM_PAUSED_NOT_GHOST_WOLF_NAMED"] = "%s 상태가 아닙니다."
 L["FARM_PAUSED_NOT_MOUNTED_TRAVEL"] = "탈것에 타고 있지 않고 여행 변신 상태도 아닙니다."
-L["FARM_PAUSED_NOT_MOUNTED_CHEETAH"] =
-	"탈것에 타고 있지 않고 치타의 상도 사용하고 있지 않습니다."
-L["FARM_PAUSED_NOT_MOUNTED_PACK"] =
-	"탈것에 타고 있지 않고 치타 무리의 상도 사용하고 있지 않습니다."
-L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF"] = "탈것에 타고 있지 않고 늑대 정령 상태도 아닙니다."
+L["FARM_PAUSED_NOT_MOUNTED_ASPECT_NAMED"] = "탈것에 타고 있지 않고 %s 사용 중도 아닙니다."
+L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF_NAMED"] = "탈것에 타고 있지 않고 %s 상태도 아닙니다."
 L["FARM_PAUSED_MOUNTED_OFF"] = "파밍 모드가 탈것 탑승 중에 실행되도록 설정되어 있지 않습니다."
 L["FARM_PAUSED_TRAVEL_OFF"] = "파밍 모드가 여행 변신 중에 실행되도록 설정되어 있지 않습니다."
-L["FARM_PAUSED_CHEETAH_OFF"] =
-	"파밍 모드가 치타의 상 사용 중에 실행되도록 설정되어 있지 않습니다."
-L["FARM_PAUSED_PACK_OFF"] =
-	"파밍 모드가 치타 무리의 상 사용 중에 실행되도록 설정되어 있지 않습니다."
-L["FARM_PAUSED_GHOST_WOLF_OFF"] =
-	"파밍 모드가 늑대 정령 상태에서 실행되도록 설정되어 있지 않습니다."
+L["FARM_PAUSED_ASPECT_OFF_NAMED"] =
+	"파밍 모드가 %s 사용 중에 실행되도록 설정되어 있지 않습니다."
+L["FARM_PAUSED_GHOST_WOLF_OFF_NAMED"] =
+	"파밍 모드가 %s 상태에서 실행되도록 설정되어 있지 않습니다."
 L["FARM_PAUSED_COMBAT"] = "전투 중입니다."
 L["FARM_PAUSED_CASTING"] = "시전 중입니다."
 L["FARM_PAUSED_STEALTHED"] = "은신 중입니다."
@@ -97,19 +93,21 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye 옵션"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "파밍 모드 능력 전환"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"파밍 모드에 선택된 추적 능력이 없습니다. 설정 > 애드온 > Tracking Eye > 파밍 모드에서 선택하세요."
-L["BINDING_NOTHING_LEARNED"] =
-	"파밍 모드에서 순환하도록 선택한 능력을 하나도 배우지 않았습니다."
-L["BINDING_NEEDS_CAT_FORM"] = "드루이드 추적은 표범 변신 상태에서만 시전할 수 있습니다."
+	"체크된 파밍 모드 능력이 없습니다. 설정 > 애드온 > Tracking Eye > 파밍 모드에서 체크하세요."
 
 --------------------------------------------------------------------------------
 -- Options Interface
 --------------------------------------------------------------------------------
 
+--[[
+    Each section's description sells the feature. Each control's description is
+    its mouseover tooltip: a pro tip the label and section don't already say.
+]]
+
 -- General
 
 L["OPTIONS_DESCRIPTION"] =
-	"개선된 추적 메뉴와 자동 추적 전환기로, 파밍 중에 약초 찾기와 광물 찾기를 순환하고 사망 후 추적을 다시 적용합니다. 모든 추적 능력을 지원합니다. 찾고 있는 자원을 절대 놓치지 마세요."
+	"개선된 추적 메뉴와 자동 추적 전환기로, 파밍 중에는 약초 찾기와 광물 찾기를 순환하고, 사망 후에는 추적을 다시 적용하며, 퀘스트 중에는 대상으로 지정한 생물을 추적합니다. 모든 추적 능력을 지원합니다. 쫓고 있는 대상을 절대 놓치지 마세요."
 L["OPTIONS_ENABLE_WELCOME"] = "환영 메시지 활성화"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Tracking Eye가 로드될 때 대화창에 한 줄짜리 인사말을 출력합니다."
@@ -125,13 +123,10 @@ L["OPTIONS_COMMAND_DESCRIPTION"] = "이 애드온의 옵션 인터페이스를 �
 -- Key Bindings
 
 L["OPTIONS_KEYBINDS"] = "단축키 설정"
+L["OPTIONS_KEY_SET"] = "단축키 지정"
+L["OPTIONS_KEY_SET_DESCRIPTION"] = "Tracking Eye 전용 항목이 있는 게임 단축키 목록을 엽니다."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
-	"키 하나로 다음 추적 능력으로 넘어갑니다. 파밍 모드가 꺼져 있어도 작동합니다. 게임 메뉴의 단축키 설정에서 지정하세요."
-
---[[
-    Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
-]]
+	"키 하나로 다음 추적 능력으로 넘어갑니다. 파밍 모드가 꺼져 있어도 작동합니다."
 
 -- Tracking Menu
 
@@ -139,7 +134,7 @@ L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
 	"알고 있는 모든 추적 능력을 가나다순 메뉴 하나에 모았습니다. 여기서 고른 능력이 지속 추적 능력이 됩니다."
 L["OPTIONS_HOOK_BLIZZARD"] = "기본 추적 버튼 사용"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"블리자드 추적 버튼으로도 이 메뉴가 열립니다. 다른 애드온이 이미 그 버튼을 사용 중이라면 꺼 두세요."
+	"기본 추적 버튼으로도 이 메뉴가 열립니다. 다른 애드온이 이미 그 버튼을 사용 중이라면 꺼 두세요."
 
 -- Persistent Tracking
 
@@ -148,12 +143,12 @@ L["OPTIONS_PERSISTENT_DESCRIPTION"] =
 L["OPTIONS_ENABLE_PERSISTENT"] = "지속 추적 활성화"
 L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"] =
 	"전투에서 벗어날 때까지 기다리므로 전투 중에 전역 재사용 대기시간을 쓰는 일이 없습니다."
-L["OPTIONS_FISHING_POLE_FISH"] = "낚싯대 장착 시 물고기 찾기"
+L["OPTIONS_FISHING_POLE_FISH_NAMED"] = "%s (%s 장착 시)"
 L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"] = "낚싯대를 해제하면 직접 고른 추적이 돌아옵니다."
-L["OPTIONS_CAT_FORM_HUMANOIDS"] = "드루이드: 표범 변신 시 인간형 추적"
-L["OPTIONS_CAT_FORM_HUMANOIDS_DESCRIPTION"] =
-	"숨기가 끝날 때까지 기다리며, 변신을 풀면 직접 고른 추적이 돌아옵니다."
-L["OPTIONS_BATTLEGROUND_HUMANOIDS"] = "사냥꾼: 전장에서 인간형 추적"
+L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s: %s (%s 시)"
+L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"] =
+	"은신이 끝날 때까지 기다리며, 변신을 풀면 직접 고른 추적이 돌아옵니다."
+L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"] = "%s: 전장에서 %s"
 L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"] =
 	"투기장도 포함되며, 나가면 직접 고른 추적이 돌아옵니다."
 
@@ -213,14 +208,13 @@ L["OPTIONS_FARM_MOUNTED_DESCRIPTION"] = "채집물 앞에서 내리면 채집하
 L["OPTIONS_FARM_NOT_MOUNTED"] = "탈것 미탑승"
 L["OPTIONS_FARM_NOT_MOUNTED_DESCRIPTION"] =
 	"채집하거나 음식을 먹으려고 멈추면 다시 움직일 때까지 순환이 기다립니다."
-L["OPTIONS_FARM_TRAVEL_FORMS"] = "드루이드: 여행 변신"
-L["OPTIONS_FARM_TRAVEL_FORMS_DESCRIPTION"] = "바다표범 변신과 폭풍까마귀 변신도 포함됩니다."
-L["OPTIONS_FARM_CHEETAH"] = "사냥꾼: 치타의 상"
+L["OPTIONS_FARM_TRAVEL_FORMS_NAMED"] = "%s: 여행 변신"
+L["OPTIONS_FARM_TRAVEL_FORMS_ONE_DESCRIPTION"] = "%s도 포함됩니다."
+L["OPTIONS_FARM_TRAVEL_FORMS_TWO_DESCRIPTION"] = "%s 및 %s도 포함됩니다."
+L["OPTIONS_FARM_CLASS_STATE"] = "%s: %s"
 L["OPTIONS_FARM_CHEETAH_DESCRIPTION"] = "다른 조건과 마찬가지로 이동하는 동안에만 순환합니다."
-L["OPTIONS_FARM_PACK"] = "사냥꾼: 치타 무리의 상"
-L["OPTIONS_FARM_PACK_DESCRIPTION"] =
-	"파티원 모두가 치타 속도로 이동하는 파티 채집 때 유용합니다."
-L["OPTIONS_FARM_GHOST_WOLF"] = "주술사: 늑대 정령"
+L["OPTIONS_FARM_PACK_GROUP_DESCRIPTION"] =
+	"파티 전체가 같은 속도로 따라오는 파티 채집 때 유용합니다."
 L["OPTIONS_FARM_GHOST_WOLF_DESCRIPTION"] = "첫 탈것을 얻기 전 채집하러 다닐 때 좋습니다."
 L["OPTIONS_CYCLE_SPEED"] = "순환 속도"
 L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
@@ -230,8 +224,8 @@ L["OPTIONS_FARM_ABILITIES"] = "파밍 모드 능력"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"찾고 싶은 것을 체크하세요. 파밍 모드는 이 캐릭터가 아는 체크된 능력을 모두 순환하고 나머지는 건너뜁니다."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "전문 기술 및 종족 특성"
-L["OPTIONS_FARM_CAT_FORM_NOTE"] =
-	"표범 변신 상태에서만 순환하며, 표범 변신은 탈것 미탑승으로 간주됩니다."
+L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] =
+	"%s 상태에서만 순환하며, 이 상태는 탈것 미탑승으로 간주됩니다."
 L["OPTIONS_FARM_PERSISTENT"] = "지속 추적 능력 포함"
 L["OPTIONS_FARM_PERSISTENT_DESCRIPTION"] =
 	"아래에서 함께 체크되어 있어도 두 번 나오지 않습니다. 자동 대상 추적은 이 자리에 대상의 종류를 대신 넣습니다."
@@ -290,7 +284,3 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"길드는 레이어나 지역에 상관없이 접속 중인 모든 길드원에게 전달됩니다."
 L["OPTIONS_OUTPUT_NOTE"] = "참고: 지역 (/1)은 같은 레이어에 있는 플레이어에게만 전달됩니다."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "지역 (/1)"
-L["OPTIONS_OUTPUT_SAY"] = "일반 대화"
-L["OPTIONS_OUTPUT_YELL"] = "외침"
-L["OPTIONS_OUTPUT_PARTY"] = "파티"
-L["OPTIONS_OUTPUT_GUILD"] = "길드"

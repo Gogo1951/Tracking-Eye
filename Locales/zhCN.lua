@@ -12,6 +12,8 @@ L["ADDON_TITLE"] = "Tracking Eye"
 L["CHAT_LOADED"] =
 	"版本 %s。设置（包含禁用此消息的选项）可以在 设置选项 > 插件 > Tracking Eye 中找到。喜欢这个插件？告诉您的朋友吧！(="
 L["CHAT_OPTIONS_IN_COMBAT"] = "出于安全考虑，战斗中无法打开选项界面。"
+L["CHAT_KEY_BINDINGS_IN_COMBAT"] = "出于安全考虑，战斗中无法打开快捷键列表。"
+L["KEY_BINDINGS_LOCATION"] = "打开游戏菜单，点击%s，再点击%s，然后找到 Tracking Eye 分类。"
 
 --------------------------------------------------------------------------------
 -- Feature Names & Descriptions
@@ -39,24 +41,21 @@ L["FARM_PAUSED_DEAD"] = "您已死亡。"
 L["FARM_PAUSED_TAXI"] = "正在飞行路线上。"
 L["FARM_PAUSED_INSTANCE"] = "位于副本内。"
 L["FARM_PAUSED_RESTING"] = "位于城镇或旅店。"
-L["FARM_PAUSED_NO_ABILITIES"] = "您没有为采集模式选择任何循环技能。"
-L["FARM_PAUSED_NOT_LEARNED"] = "您尚未学会任何已选为采集模式循环的技能。"
-L["FARM_PAUSED_CAT_FORM"] = "德鲁伊追踪只在猎豹形态下循环。"
+L["FARM_PAUSED_NO_ABILITIES"] = "未勾选任何采集模式技能。"
+L["FARM_PAUSED_NOT_LEARNED"] = "您尚未学会任何已勾选的采集模式技能。"
+L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s追踪只在%s下循环。"
 L["FARM_PAUSED_NO_STATES"] = "未开启任何采集模式条件。"
 L["FARM_PAUSED_NOT_MOUNTED"] = "未骑乘。"
 L["FARM_PAUSED_NOT_TRAVEL"] = "未处于旅行类形态。"
-L["FARM_PAUSED_NOT_CHEETAH"] = "未使用猎豹守护。"
-L["FARM_PAUSED_NOT_PACK"] = "未使用豹群守护。"
-L["FARM_PAUSED_NOT_GHOST_WOLF"] = "未处于幽魂之狼形态。"
+L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "未使用%s。"
+L["FARM_PAUSED_NOT_GHOST_WOLF_NAMED"] = "未处于%s形态。"
 L["FARM_PAUSED_NOT_MOUNTED_TRAVEL"] = "未骑乘，也未处于旅行类形态。"
-L["FARM_PAUSED_NOT_MOUNTED_CHEETAH"] = "未骑乘，也未使用猎豹守护。"
-L["FARM_PAUSED_NOT_MOUNTED_PACK"] = "未骑乘，也未使用豹群守护。"
-L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF"] = "未骑乘，也未处于幽魂之狼形态。"
+L["FARM_PAUSED_NOT_MOUNTED_ASPECT_NAMED"] = "未骑乘，也未使用%s。"
+L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF_NAMED"] = "未骑乘，也未处于%s形态。"
 L["FARM_PAUSED_MOUNTED_OFF"] = "采集模式未设置为在骑乘时运行。"
 L["FARM_PAUSED_TRAVEL_OFF"] = "采集模式未设置为在旅行类形态下运行。"
-L["FARM_PAUSED_CHEETAH_OFF"] = "采集模式未设置为在猎豹守护下运行。"
-L["FARM_PAUSED_PACK_OFF"] = "采集模式未设置为在豹群守护下运行。"
-L["FARM_PAUSED_GHOST_WOLF_OFF"] = "采集模式未设置为在幽魂之狼形态下运行。"
+L["FARM_PAUSED_ASPECT_OFF_NAMED"] = "采集模式未设置为在%s下运行。"
+L["FARM_PAUSED_GHOST_WOLF_OFF_NAMED"] = "采集模式未设置为在%s形态下运行。"
 L["FARM_PAUSED_COMBAT"] = "正在战斗中。"
 L["FARM_PAUSED_CASTING"] = "正在施法。"
 L["FARM_PAUSED_STEALTHED"] = "处于潜行状态。"
@@ -91,18 +90,21 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye 选项"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "切换采集模式技能"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"未为采集模式选择任何追踪技能。请在 设置选项 > 插件 > Tracking Eye > 采集模式 中选择。"
-L["BINDING_NOTHING_LEARNED"] = "您尚未学会任何已选为采集模式循环的技能。"
-L["BINDING_NEEDS_CAT_FORM"] = "德鲁伊追踪只能在猎豹形态下施放。"
+	"未勾选任何采集模式技能。请在 设置选项 > 插件 > Tracking Eye > 采集模式 中勾选。"
 
 --------------------------------------------------------------------------------
 -- Options Interface
 --------------------------------------------------------------------------------
 
+--[[
+    Each section's description sells the feature. Each control's description is
+    its mouseover tooltip: a pro tip the label and section don't already say.
+]]
+
 -- General
 
 L["OPTIONS_DESCRIPTION"] =
-	"改进的追踪菜单和自动追踪切换器，在采集时循环寻找草药和寻找矿物，并在死亡后重新施放追踪。支持所有追踪技能。再也不会跟丢您正在寻找的资源。"
+	"改进的追踪菜单和自动追踪切换器，在采集时循环寻找草药和寻找矿物，在死亡后恢复追踪，并在做任务时追踪您所选目标的同类生物。支持所有追踪技能。再也不会跟丢您要找的目标。"
 L["OPTIONS_ENABLE_WELCOME"] = "启用欢迎消息"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Tracking Eye 加载时在聊天中显示一行欢迎语。"
 L["OPTIONS_ENABLE_MINIMAP"] = "启用小地图按钮"
@@ -117,13 +119,9 @@ L["OPTIONS_COMMAND_DESCRIPTION"] = "打开此插件的选项界面。"
 -- Key Bindings
 
 L["OPTIONS_KEYBINDS"] = "快捷键"
-L["OPTIONS_KEYBINDS_DESCRIPTION"] =
-	"一键跳到下一个追踪技能，即使采集模式已关闭也能使用。请在游戏菜单的快捷键中绑定。"
-
---[[
-    Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
-]]
+L["OPTIONS_KEY_SET"] = "设置按键"
+L["OPTIONS_KEY_SET_DESCRIPTION"] = "打开游戏的快捷键列表，Tracking Eye 在其中有专属分类。"
+L["OPTIONS_KEYBINDS_DESCRIPTION"] = "一键跳到下一个追踪技能，即使采集模式已关闭也能使用。"
 
 -- Tracking Menu
 
@@ -131,7 +129,7 @@ L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
 	"您掌握的所有追踪技能，汇集在一个按名称排序的菜单中。选中的技能将成为您的持久追踪技能。"
 L["OPTIONS_HOOK_BLIZZARD"] = "使用默认追踪按钮"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"暴雪的追踪按钮也会打开此菜单。如果其他插件已在使用该按钮，请保持关闭。"
+	"默认追踪按钮也会打开此菜单。如果其他插件已在使用该按钮，请保持关闭。"
 
 -- Persistent Tracking
 
@@ -140,12 +138,12 @@ L["OPTIONS_PERSISTENT_DESCRIPTION"] =
 L["OPTIONS_ENABLE_PERSISTENT"] = "启用持久追踪"
 L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"] =
 	"会等到您脱离战斗再施放，绝不会在战斗中占用公共冷却时间。"
-L["OPTIONS_FISHING_POLE_FISH"] = "装备鱼竿时寻找渔点"
+L["OPTIONS_FISHING_POLE_FISH_NAMED"] = "%s（装备%s时）"
 L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"] = "收起鱼竿后，您自己选择的追踪会恢复。"
-L["OPTIONS_CAT_FORM_HUMANOIDS"] = "德鲁伊：变为猎豹形态时追踪人型生物"
-L["OPTIONS_CAT_FORM_HUMANOIDS_DESCRIPTION"] =
-	"会等潜行结束，离开该形态后您自己选择的追踪会恢复。"
-L["OPTIONS_BATTLEGROUND_HUMANOIDS"] = "猎人：在战场中追踪人型生物"
+L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s：%s（变为%s时）"
+L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"] =
+	"会等到您脱离潜行，离开该形态后您自己选择的追踪会恢复。"
+L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"] = "%s：在战场中%s"
 L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"] =
 	"竞技场也算在内，离开后您自己选择的追踪会恢复。"
 
@@ -200,13 +198,12 @@ L["OPTIONS_FARM_MOUNTED"] = "骑乘时"
 L["OPTIONS_FARM_MOUNTED_DESCRIPTION"] = "在采集点下马后，循环会等您采集完毕。"
 L["OPTIONS_FARM_NOT_MOUNTED"] = "未骑乘"
 L["OPTIONS_FARM_NOT_MOUNTED_DESCRIPTION"] = "停下来采集或进食时，循环会等您继续前进。"
-L["OPTIONS_FARM_TRAVEL_FORMS"] = "德鲁伊：旅行类形态"
-L["OPTIONS_FARM_TRAVEL_FORMS_DESCRIPTION"] = "水栖形态和飞行形态也算在内。"
-L["OPTIONS_FARM_CHEETAH"] = "猎人：猎豹守护"
+L["OPTIONS_FARM_TRAVEL_FORMS_NAMED"] = "%s：旅行类形态"
+L["OPTIONS_FARM_TRAVEL_FORMS_ONE_DESCRIPTION"] = "%s也算在内。"
+L["OPTIONS_FARM_TRAVEL_FORMS_TWO_DESCRIPTION"] = "%s和%s也算在内。"
+L["OPTIONS_FARM_CLASS_STATE"] = "%s：%s"
 L["OPTIONS_FARM_CHEETAH_DESCRIPTION"] = "只在您移动时循环，和其他条件一样。"
-L["OPTIONS_FARM_PACK"] = "猎人：豹群守护"
-L["OPTIONS_FARM_PACK_DESCRIPTION"] = "适合组队跑图采集，全队都能以猎豹的速度移动。"
-L["OPTIONS_FARM_GHOST_WOLF"] = "萨满祭司：幽魂之狼"
+L["OPTIONS_FARM_PACK_GROUP_DESCRIPTION"] = "适合组队跑图采集，全队都能跟上您的速度。"
 L["OPTIONS_FARM_GHOST_WOLF_DESCRIPTION"] = "获得第一匹坐骑之前跑图采集的好帮手。"
 L["OPTIONS_CYCLE_SPEED"] = "循环速度"
 L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
@@ -216,7 +213,7 @@ L["OPTIONS_FARM_ABILITIES"] = "采集模式技能"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"勾选您想找的东西。采集模式会循环此角色已掌握的所有勾选技能，并跳过其余技能。"
 L["OPTIONS_FARM_GROUP_GENERAL"] = "专业与种族特长"
-L["OPTIONS_FARM_CAT_FORM_NOTE"] = "只在猎豹形态下循环，该形态算作未骑乘。"
+L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] = "只在%s下循环，该形态算作未骑乘。"
 L["OPTIONS_FARM_PERSISTENT"] = "包含持久追踪技能"
 L["OPTIONS_FARM_PERSISTENT_DESCRIPTION"] =
 	"即使下方也已勾选，它也绝不会出现两次。自动目标追踪会用追踪您目标同类的技能替代它。"
@@ -274,7 +271,3 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"公会频道会送达所有在线的公会成员，无论其位于哪个位面或区域。"
 L["OPTIONS_OUTPUT_NOTE"] = "注意：本地 (/1) 只能送达与您处于同一位面的玩家。"
 L["OPTIONS_OUTPUT_CHANNEL1"] = "本地 (/1)"
-L["OPTIONS_OUTPUT_SAY"] = "说"
-L["OPTIONS_OUTPUT_YELL"] = "大喊"
-L["OPTIONS_OUTPUT_PARTY"] = "队伍"
-L["OPTIONS_OUTPUT_GUILD"] = "公会"

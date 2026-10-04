@@ -12,6 +12,8 @@ L["ADDON_TITLE"] = "Tracking Eye"
 L["CHAT_LOADED"] =
 	"版本 %s。設定（包含停用此訊息的選項）可以在 選項 > 插件 > Tracking Eye 中找到。喜歡這個插件？告訴您的朋友吧！(="
 L["CHAT_OPTIONS_IN_COMBAT"] = "基於安全考量，戰鬥中無法開啟選項介面。"
+L["CHAT_KEY_BINDINGS_IN_COMBAT"] = "基於安全考量，戰鬥中無法開啟按鍵綁定清單。"
+L["KEY_BINDINGS_LOCATION"] = "開啟遊戲選單，點選%s，再點選%s，然後找到 Tracking Eye 分類。"
 
 --------------------------------------------------------------------------------
 -- Feature Names & Descriptions
@@ -32,31 +34,28 @@ L["FARM_MODE_DESCRIPTION"] = "在旅途中循環切換您的追蹤技能。"
 --------------------------------------------------------------------------------
 
 L["FARM_STATUS"] = "採集模式狀態"
-L["FARM_STATUS_ACTIVE"] = "運行中"
+L["FARM_STATUS_ACTIVE"] = "運作中"
 L["FARM_STATUS_PAUSED"] = "已暫停"
 
 L["FARM_PAUSED_DEAD"] = "您已死亡。"
 L["FARM_PAUSED_TAXI"] = "正在飛行路線上。"
 L["FARM_PAUSED_INSTANCE"] = "位於副本內。"
 L["FARM_PAUSED_RESTING"] = "位於城鎮或旅館。"
-L["FARM_PAUSED_NO_ABILITIES"] = "您沒有為採集模式選擇任何循環技能。"
-L["FARM_PAUSED_NOT_LEARNED"] = "您尚未學會任何已選為採集模式循環的技能。"
-L["FARM_PAUSED_CAT_FORM"] = "德魯伊追蹤只在獵豹形態下循環。"
+L["FARM_PAUSED_NO_ABILITIES"] = "未勾選任何採集模式技能。"
+L["FARM_PAUSED_NOT_LEARNED"] = "您尚未學會任何已勾選的採集模式技能。"
+L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s追蹤只在%s下循環。"
 L["FARM_PAUSED_NO_STATES"] = "未開啟任何採集模式條件。"
 L["FARM_PAUSED_NOT_MOUNTED"] = "未騎乘。"
 L["FARM_PAUSED_NOT_TRAVEL"] = "未處於旅行類形態。"
-L["FARM_PAUSED_NOT_CHEETAH"] = "未使用獵豹守護。"
-L["FARM_PAUSED_NOT_PACK"] = "未使用豹群守護。"
-L["FARM_PAUSED_NOT_GHOST_WOLF"] = "未處於幽魂之狼形態。"
+L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "未使用%s。"
+L["FARM_PAUSED_NOT_GHOST_WOLF_NAMED"] = "未處於%s形態。"
 L["FARM_PAUSED_NOT_MOUNTED_TRAVEL"] = "未騎乘，也未處於旅行類形態。"
-L["FARM_PAUSED_NOT_MOUNTED_CHEETAH"] = "未騎乘，也未使用獵豹守護。"
-L["FARM_PAUSED_NOT_MOUNTED_PACK"] = "未騎乘，也未使用豹群守護。"
-L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF"] = "未騎乘，也未處於幽魂之狼形態。"
-L["FARM_PAUSED_MOUNTED_OFF"] = "採集模式未設定為在騎乘時運行。"
-L["FARM_PAUSED_TRAVEL_OFF"] = "採集模式未設定為在旅行類形態下運行。"
-L["FARM_PAUSED_CHEETAH_OFF"] = "採集模式未設定為在獵豹守護下運行。"
-L["FARM_PAUSED_PACK_OFF"] = "採集模式未設定為在豹群守護下運行。"
-L["FARM_PAUSED_GHOST_WOLF_OFF"] = "採集模式未設定為在幽魂之狼形態下運行。"
+L["FARM_PAUSED_NOT_MOUNTED_ASPECT_NAMED"] = "未騎乘，也未使用%s。"
+L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF_NAMED"] = "未騎乘，也未處於%s形態。"
+L["FARM_PAUSED_MOUNTED_OFF"] = "採集模式未設定為在騎乘時運作。"
+L["FARM_PAUSED_TRAVEL_OFF"] = "採集模式未設定為在旅行類形態下運作。"
+L["FARM_PAUSED_ASPECT_OFF_NAMED"] = "採集模式未設定為在%s下運作。"
+L["FARM_PAUSED_GHOST_WOLF_OFF_NAMED"] = "採集模式未設定為在%s形態下運作。"
 L["FARM_PAUSED_COMBAT"] = "正在戰鬥中。"
 L["FARM_PAUSED_CASTING"] = "正在施法。"
 L["FARM_PAUSED_STEALTHED"] = "處於潛行狀態。"
@@ -91,18 +90,21 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye 選項"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "切換採集模式技能"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"未為採集模式選擇任何追蹤技能。請在 選項 > 插件 > Tracking Eye > 採集模式 中選擇。"
-L["BINDING_NOTHING_LEARNED"] = "您尚未學會任何已選為採集模式循環的技能。"
-L["BINDING_NEEDS_CAT_FORM"] = "德魯伊追蹤只能在獵豹形態下施放。"
+	"未勾選任何採集模式技能。請在 選項 > 插件 > Tracking Eye > 採集模式 中勾選。"
 
 --------------------------------------------------------------------------------
 -- Options Interface
 --------------------------------------------------------------------------------
 
+--[[
+    Each section's description sells the feature. Each control's description is
+    its mouseover tooltip: a pro tip the label and section don't already say.
+]]
+
 -- General
 
 L["OPTIONS_DESCRIPTION"] =
-	"改進的追蹤選單和自動追蹤切換器，在採集時循環尋找草藥和尋找礦物，並在死亡後重新施放追蹤。支援所有追蹤技能。再也不會跟丟您正在尋找的資源。"
+	"改進的追蹤選單和自動追蹤切換器，在採集時循環尋找草藥和尋找礦物，在死亡後恢復追蹤，並在解任務時追蹤您所選目標的同類生物。支援所有追蹤技能。再也不會跟丟您要找的目標。"
 L["OPTIONS_ENABLE_WELCOME"] = "啟用歡迎訊息"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Tracking Eye 載入時在聊天中顯示一行歡迎語。"
 L["OPTIONS_ENABLE_MINIMAP"] = "啟用小地圖按鈕"
@@ -117,13 +119,9 @@ L["OPTIONS_COMMAND_DESCRIPTION"] = "開啟此插件的選項介面。"
 -- Key Bindings
 
 L["OPTIONS_KEYBINDS"] = "按鍵綁定"
-L["OPTIONS_KEYBINDS_DESCRIPTION"] =
-	"一鍵跳到下一個追蹤技能，即使採集模式已關閉也能使用。請在遊戲選單的按鍵綁定中設定。"
-
---[[
-    Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
-]]
+L["OPTIONS_KEY_SET"] = "設定按鍵"
+L["OPTIONS_KEY_SET_DESCRIPTION"] = "開啟遊戲的按鍵綁定清單，Tracking Eye 在其中有專屬分類。"
+L["OPTIONS_KEYBINDS_DESCRIPTION"] = "一鍵跳到下一個追蹤技能，即使採集模式已關閉也能使用。"
 
 -- Tracking Menu
 
@@ -131,7 +129,7 @@ L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
 	"您掌握的所有追蹤技能，匯集在一個依名稱排序的選單中。選取的技能將成為您的持久追蹤技能。"
 L["OPTIONS_HOOK_BLIZZARD"] = "使用預設追蹤按鈕"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"暴雪的追蹤按鈕也會開啟此選單。如果其他插件已在使用該按鈕，請保持關閉。"
+	"預設追蹤按鈕也會開啟此選單。如果其他插件已在使用該按鈕，請保持關閉。"
 
 -- Persistent Tracking
 
@@ -140,12 +138,12 @@ L["OPTIONS_PERSISTENT_DESCRIPTION"] =
 L["OPTIONS_ENABLE_PERSISTENT"] = "啟用持久追蹤"
 L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"] =
 	"會等到您脫離戰鬥再施放，絕不會在戰鬥中佔用共用冷卻時間。"
-L["OPTIONS_FISHING_POLE_FISH"] = "裝備魚竿時尋找魚類"
+L["OPTIONS_FISHING_POLE_FISH_NAMED"] = "%s（裝備%s時）"
 L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"] = "收起魚竿後，您自己選擇的追蹤會恢復。"
-L["OPTIONS_CAT_FORM_HUMANOIDS"] = "德魯伊：變為獵豹形態時追蹤人型生物"
-L["OPTIONS_CAT_FORM_HUMANOIDS_DESCRIPTION"] =
-	"會等潛行結束，離開該形態後您自己選擇的追蹤會恢復。"
-L["OPTIONS_BATTLEGROUND_HUMANOIDS"] = "獵人：在戰場中追蹤人型生物"
+L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s：%s（變為%s時）"
+L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"] =
+	"會等到您脫離潛行，離開該形態後您自己選擇的追蹤會恢復。"
+L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"] = "%s：在戰場中%s"
 L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"] =
 	"競技場也算在內，離開後您自己選擇的追蹤會恢復。"
 
@@ -200,13 +198,12 @@ L["OPTIONS_FARM_MOUNTED"] = "騎乘時"
 L["OPTIONS_FARM_MOUNTED_DESCRIPTION"] = "在採集點下馬後，循環會等您採集完畢。"
 L["OPTIONS_FARM_NOT_MOUNTED"] = "未騎乘"
 L["OPTIONS_FARM_NOT_MOUNTED_DESCRIPTION"] = "停下來採集或進食時，循環會等您繼續前進。"
-L["OPTIONS_FARM_TRAVEL_FORMS"] = "德魯伊：旅行類形態"
-L["OPTIONS_FARM_TRAVEL_FORMS_DESCRIPTION"] = "水棲形態和飛行形態也算在內。"
-L["OPTIONS_FARM_CHEETAH"] = "獵人：獵豹守護"
+L["OPTIONS_FARM_TRAVEL_FORMS_NAMED"] = "%s：旅行類形態"
+L["OPTIONS_FARM_TRAVEL_FORMS_ONE_DESCRIPTION"] = "%s也算在內。"
+L["OPTIONS_FARM_TRAVEL_FORMS_TWO_DESCRIPTION"] = "%s和%s也算在內。"
+L["OPTIONS_FARM_CLASS_STATE"] = "%s：%s"
 L["OPTIONS_FARM_CHEETAH_DESCRIPTION"] = "只在您移動時循環，和其他條件一樣。"
-L["OPTIONS_FARM_PACK"] = "獵人：豹群守護"
-L["OPTIONS_FARM_PACK_DESCRIPTION"] = "適合組隊跑圖採集，全隊都能以獵豹的速度移動。"
-L["OPTIONS_FARM_GHOST_WOLF"] = "薩滿：幽魂之狼"
+L["OPTIONS_FARM_PACK_GROUP_DESCRIPTION"] = "適合組隊跑圖採集，全隊都能跟上您的速度。"
 L["OPTIONS_FARM_GHOST_WOLF_DESCRIPTION"] = "獲得第一隻坐騎之前跑圖採集的好幫手。"
 L["OPTIONS_CYCLE_SPEED"] = "循環速度"
 L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
@@ -216,7 +213,7 @@ L["OPTIONS_FARM_ABILITIES"] = "採集模式技能"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"勾選您想找的東西。採集模式會循環此角色已學會的所有勾選技能，並略過其餘技能。"
 L["OPTIONS_FARM_GROUP_GENERAL"] = "專業技能與種族特長"
-L["OPTIONS_FARM_CAT_FORM_NOTE"] = "只在獵豹形態下循環，該形態算作未騎乘。"
+L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] = "只在%s下循環，該形態算作未騎乘。"
 L["OPTIONS_FARM_PERSISTENT"] = "包含持久追蹤技能"
 L["OPTIONS_FARM_PERSISTENT_DESCRIPTION"] =
 	"即使下方也已勾選，它也絕不會出現兩次。自動目標追蹤會用追蹤您目標同類的技能取代它。"
@@ -274,7 +271,3 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"公會頻道會送達所有線上的公會成員，無論其位於哪個位面或區域。"
 L["OPTIONS_OUTPUT_NOTE"] = "注意：本地 (/1) 只能送達與您處於同一位面的玩家。"
 L["OPTIONS_OUTPUT_CHANNEL1"] = "本地 (/1)"
-L["OPTIONS_OUTPUT_SAY"] = "說"
-L["OPTIONS_OUTPUT_YELL"] = "大喊"
-L["OPTIONS_OUTPUT_PARTY"] = "隊伍"
-L["OPTIONS_OUTPUT_GUILD"] = "公會"

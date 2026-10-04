@@ -1,6 +1,8 @@
 local _, ns = ...
 local L = ns.L
 
+local format = string.format
+
 --------------------------------------------------------------------------------
 -- Key Bindings
 --------------------------------------------------------------------------------
@@ -21,8 +23,8 @@ BINDING_NAME_TRACKINGEYE_CYCLE_FARM_ABILITY = L["BINDING_CYCLE_FARM_ABILITY"]
 -- ns.GetEmptyCycleKind -> the chat line that explains an empty cycle.
 local EMPTY_CYCLE_MESSAGES = {
 	none = "BINDING_NOTHING_TO_CYCLE",
-	unlearned = "BINDING_NOTHING_LEARNED",
-	catForm = "BINDING_NEEDS_CAT_FORM",
+	unlearned = "FARM_PAUSED_NOT_LEARNED",
+	catForm = "FARM_PAUSED_CAT_FORM_NAMED",
 }
 
 function TrackingEye_CycleFarmAbility()
@@ -32,9 +34,83 @@ function TrackingEye_CycleFarmAbility()
 
 	-- Deliberately not gated on farmMode: this is a manual control, usable with Farm Mode switched off.
 	if ns.GetFarmCycleCount() == 0 then
-		ns:PrintMessage(L[EMPTY_CYCLE_MESSAGES[ns.GetEmptyCycleKind()]])
+		local kind = ns.GetEmptyCycleKind()
+		local message = L[EMPTY_CYCLE_MESSAGES[kind]]
+		if kind == "catForm" then
+			message = message:format(ns.GetCatFormNames())
+		end
+		ns:PrintMessage(message)
 		return
 	end
 
 	ns.AdvanceFarmCycle()
+end
+
+--------------------------------------------------------------------------------
+-- Opening Key Bindings
+--------------------------------------------------------------------------------
+
+--[[
+    The General panel's Set Key button. The clients disagree on how the game's
+    Key Bindings list is reached, so the routes are tried in order, at click time
+    rather than at load, since a Settings category can register after login:
+
+      1. Settings.KEYBINDINGS_CATEGORY_ID, where the client names it outright.
+      2. The Settings panel's own category list, searched for the category
+         carrying the game's Key Bindings title (KEY_BINDINGS, or
+         SETTINGS_KEYBINDINGS_LABEL where that's the one in use).
+      3. The older standalone KeyBindingFrame, loaded on demand.
+
+    The lookup is protected, because it walks Blizzard's own objects and a
+    client that reshapes them should cost the player a chat line, not an error.
+    When nothing works, the line says where to find the list by hand.
+]]
+local function FindKeyBindingsCategoryID()
+	if Settings and Settings.KEYBINDINGS_CATEGORY_ID then
+		return Settings.KEYBINDINGS_CATEGORY_ID
+	end
+
+	if not (SettingsPanel and SettingsPanel.GetCategoryList) then
+		return nil
+	end
+
+	local ok, categoryId = pcall(function()
+		local list = SettingsPanel:GetCategoryList()
+		local categories = list and list.GetAllCategories and list:GetAllCategories()
+		for _, category in ipairs(categories or {}) do
+			local name = category.GetName and category:GetName()
+			if name and (name == KEY_BINDINGS or name == SETTINGS_KEYBINDINGS_LABEL) and category.GetID then
+				return category:GetID()
+			end
+		end
+		return nil
+	end)
+
+	return ok and categoryId or nil
+end
+
+-- The fallback line names the menus by the client's own labels, so it matches what the player sees in every locale.
+local KEY_BINDINGS_LABEL = SETTINGS_KEYBINDINGS_LABEL ~= nil and SETTINGS_KEYBINDINGS_LABEL or KEY_BINDINGS
+
+function ns:OpenKeyBindings()
+	if InCombatLockdown() then
+		ns:PrintMessage(L["CHAT_KEY_BINDINGS_IN_COMBAT"])
+		return
+	end
+
+	local categoryId = FindKeyBindingsCategoryID()
+	if categoryId and Settings and Settings.OpenToCategory then
+		Settings.OpenToCategory(categoryId)
+		return
+	end
+
+	if not KeyBindingFrame and type(KeyBindingFrame_LoadUI) == "function" then
+		KeyBindingFrame_LoadUI()
+	end
+	if type(KeyBindingFrame) == "table" and type(ShowUIPanel) == "function" then
+		ShowUIPanel(KeyBindingFrame)
+		return
+	end
+
+	ns:PrintMessage(format(L["KEY_BINDINGS_LOCATION"], GAMEMENU_OPTIONS, KEY_BINDINGS_LABEL))
 end

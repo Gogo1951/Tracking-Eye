@@ -12,6 +12,9 @@ L["ADDON_TITLE"] = "Tracking Eye"
 L["CHAT_LOADED"] =
 	"Versione %s. Le impostazioni (inclusa l'opzione per disabilitare questo messaggio) si trovano in Opzioni > Add-on > Tracking Eye. Ti piace l'add-on? Parlane a un amico! (="
 L["CHAT_OPTIONS_IN_COMBAT"] = "Per precauzione, l'Interfaccia Opzioni non può essere aperta durante il combattimento."
+L["CHAT_KEY_BINDINGS_IN_COMBAT"] =
+	"Per precauzione, l'elenco delle assegnazioni dei tasti non può essere aperto durante il combattimento."
+L["KEY_BINDINGS_LOCATION"] = "Apri il menu di gioco, poi %s, poi %s, e cerca la sezione di Tracking Eye."
 
 --------------------------------------------------------------------------------
 -- Feature Names & Descriptions
@@ -39,25 +42,21 @@ L["FARM_PAUSED_DEAD"] = "Sei morto."
 L["FARM_PAUSED_TAXI"] = "Su una rotta di volo."
 L["FARM_PAUSED_INSTANCE"] = "All'interno di un'istanza."
 L["FARM_PAUSED_RESTING"] = "In una città o locanda."
-L["FARM_PAUSED_NO_ABILITIES"] = "Non hai selezionato nessuna abilità da alternare per la Modalità Raccolta."
-L["FARM_PAUSED_NOT_LEARNED"] =
-	"Non conosci nessuna delle abilità che hai selezionato da alternare per la Modalità Raccolta."
-L["FARM_PAUSED_CAT_FORM"] = "Il tracciamento del druido si alterna solo in Forma Felina."
+L["FARM_PAUSED_NO_ABILITIES"] = "Nessuna Abilità della Modalità Raccolta è spuntata."
+L["FARM_PAUSED_NOT_LEARNED"] = "Non conosci nessuna delle tue Abilità della Modalità Raccolta spuntate."
+L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s: il tracciamento si alterna solo in %s."
 L["FARM_PAUSED_NO_STATES"] = "Nessuna delle Condizioni della Modalità Raccolta è attiva."
 L["FARM_PAUSED_NOT_MOUNTED"] = "Non sei in sella."
 L["FARM_PAUSED_NOT_TRAVEL"] = "Non sei in una forma di viaggio."
-L["FARM_PAUSED_NOT_CHEETAH"] = "Non stai usando Aspetto del Ghepardo."
-L["FARM_PAUSED_NOT_PACK"] = "Non stai usando Aspetto del Branco."
-L["FARM_PAUSED_NOT_GHOST_WOLF"] = "Non sei in forma di Lupo Spettrale."
+L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "Non stai usando %s."
+L["FARM_PAUSED_NOT_GHOST_WOLF_NAMED"] = "Non sei in forma di %s."
 L["FARM_PAUSED_NOT_MOUNTED_TRAVEL"] = "Non sei in sella né in una forma di viaggio."
-L["FARM_PAUSED_NOT_MOUNTED_CHEETAH"] = "Non sei in sella né stai usando Aspetto del Ghepardo."
-L["FARM_PAUSED_NOT_MOUNTED_PACK"] = "Non sei in sella né stai usando Aspetto del Branco."
-L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF"] = "Non sei in sella né in forma di Lupo Spettrale."
+L["FARM_PAUSED_NOT_MOUNTED_ASPECT_NAMED"] = "Non sei in sella né stai usando %s."
+L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF_NAMED"] = "Non sei in sella né in forma di %s."
 L["FARM_PAUSED_MOUNTED_OFF"] = "La Modalità Raccolta non è impostata per funzionare in sella."
 L["FARM_PAUSED_TRAVEL_OFF"] = "La Modalità Raccolta non è impostata per le forme di viaggio."
-L["FARM_PAUSED_CHEETAH_OFF"] = "La Modalità Raccolta non è impostata per Aspetto del Ghepardo."
-L["FARM_PAUSED_PACK_OFF"] = "La Modalità Raccolta non è impostata per Aspetto del Branco."
-L["FARM_PAUSED_GHOST_WOLF_OFF"] = "La Modalità Raccolta non è impostata per la forma di Lupo Spettrale."
+L["FARM_PAUSED_ASPECT_OFF_NAMED"] = "La Modalità Raccolta non è impostata per %s."
+L["FARM_PAUSED_GHOST_WOLF_OFF_NAMED"] = "La Modalità Raccolta non è impostata per la forma di %s."
 L["FARM_PAUSED_COMBAT"] = "In combattimento."
 L["FARM_PAUSED_CASTING"] = "Stai lanciando un incantesimo."
 L["FARM_PAUSED_STEALTHED"] = "In furtività."
@@ -92,19 +91,21 @@ L["TOOLTIP_OPTIONS"] = "Opzioni di Tracking Eye"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Cicla Abilità della Modalità Raccolta"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"Nessuna abilità di tracciamento è selezionata per la Modalità Raccolta. Selezionane alcune in Opzioni > Add-on > Tracking Eye > Modalità Raccolta."
-L["BINDING_NOTHING_LEARNED"] =
-	"Non conosci nessuna delle abilità che hai selezionato da alternare per la Modalità Raccolta."
-L["BINDING_NEEDS_CAT_FORM"] = "Il tracciamento del druido si può lanciare solo in Forma Felina."
+	"Nessuna Abilità della Modalità Raccolta è spuntata. Spuntane alcune in Opzioni > Add-on > Tracking Eye > Modalità Raccolta."
 
 --------------------------------------------------------------------------------
 -- Options Interface
 --------------------------------------------------------------------------------
 
+--[[
+    Each section's description sells the feature. Each control's description is
+    its mouseover tooltip: a pro tip the label and section don't already say.
+]]
+
 -- General
 
 L["OPTIONS_DESCRIPTION"] =
-	"Menu Tracciamento migliorato e commutatore automatico del tracciamento che alterna Trova Erbe e Trova Minerali durante la raccolta e riapplica il tracciamento dopo la morte. Supporta ogni abilità di tracciamento. Non perdere mai di vista le risorse a cui dai la caccia."
+	"Menu Tracciamento migliorato e commutatore automatico del tracciamento che alterna Trova Erbe e Trova Minerali durante la raccolta, riapplica il tracciamento dopo la morte e traccia le creature bersagliate durante le missioni. Supporta ogni abilità di tracciamento. Non perdere mai di vista ciò a cui dai la caccia."
 L["OPTIONS_ENABLE_WELCOME"] = "Abilita Messaggio di Benvenuto"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Mostra in chat un saluto di una riga al caricamento di Tracking Eye."
 L["OPTIONS_ENABLE_MINIMAP"] = "Abilita Pulsante Minimappa"
@@ -119,13 +120,11 @@ L["OPTIONS_COMMAND_DESCRIPTION"] = "Apre l'Interfaccia Opzioni di questo add-on.
 -- Key Bindings
 
 L["OPTIONS_KEYBINDS"] = "Assegnazione Tasti"
+L["OPTIONS_KEY_SET"] = "Imposta Tasto"
+L["OPTIONS_KEY_SET_DESCRIPTION"] =
+	"Apre l'elenco delle assegnazioni dei tasti del gioco, dove Tracking Eye ha una sezione tutta sua."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
-	"Passa alla prossima abilità di tracciamento con un solo tasto, anche con la Modalità Raccolta disattivata. Assegnalo in Assegnazione tasti, nel menu di gioco."
-
---[[
-    Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
-]]
+	"Passa alla prossima abilità di tracciamento con un solo tasto, anche con la Modalità Raccolta disattivata."
 
 -- Tracking Menu
 
@@ -133,7 +132,7 @@ L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
 	"Tutte le abilità di tracciamento che conosci, in un unico menu alfabetico. Quella che scegli diventa la tua Abilità di Tracciamento Persistente."
 L["OPTIONS_HOOK_BLIZZARD"] = "Usa il Pulsante di Tracciamento Predefinito"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"Anche il pulsante di tracciamento di Blizzard apre questo menu. Lascia l'opzione disattivata se un altro add-on usa già quel pulsante."
+	"Anche il pulsante di tracciamento predefinito apre questo menu. Lascia l'opzione disattivata se un altro add-on usa già quel pulsante."
 
 -- Persistent Tracking
 
@@ -142,12 +141,12 @@ L["OPTIONS_PERSISTENT_DESCRIPTION"] =
 L["OPTIONS_ENABLE_PERSISTENT"] = "Abilita Tracciamento Persistente"
 L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"] =
 	"Aspetta che tu sia fuori dal combattimento, così non ti costa mai un tempo di recupero globale in piena lotta."
-L["OPTIONS_FISHING_POLE_FISH"] = "Trova Pesci quando Equipaggi una Canna da Pesca"
+L["OPTIONS_FISHING_POLE_FISH_NAMED"] = "%s quando Equipaggi %s"
 L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"] = "La tua scelta torna quando togli la canna."
-L["OPTIONS_CAT_FORM_HUMANOIDS"] = "Druido: Individua Umanoidi quando Passi in Forma Felina"
-L["OPTIONS_CAT_FORM_HUMANOIDS_DESCRIPTION"] =
-	"Aspetta la fine di Movimento Furtivo, e la tua scelta torna quando esci dalla forma."
-L["OPTIONS_BATTLEGROUND_HUMANOIDS"] = "Cacciatore: Individua Umanoidi nei Campi di Battaglia"
+L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s: %s quando Passi in %s"
+L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"] =
+	"Aspetta che tu lasci la furtività, e la tua scelta torna quando esci dalla forma."
+L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"] = "%s: %s nei Campi di Battaglia"
 L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"] = "Valgono anche le arene, e la tua scelta torna quando esci."
 
 -- Automatic Target Tracking
@@ -204,14 +203,13 @@ L["OPTIONS_FARM_MOUNTED"] = "In Sella"
 L["OPTIONS_FARM_MOUNTED_DESCRIPTION"] = "Smonta vicino a un nodo e il ciclo aspetta mentre raccogli."
 L["OPTIONS_FARM_NOT_MOUNTED"] = "Non in Sella"
 L["OPTIONS_FARM_NOT_MOUNTED_DESCRIPTION"] = "Fermati a raccogliere o a mangiare e il ciclo aspetta finché non riparti."
-L["OPTIONS_FARM_TRAVEL_FORMS"] = "Druido: Forme di Viaggio"
-L["OPTIONS_FARM_TRAVEL_FORMS_DESCRIPTION"] = "Valgono anche Forma Acquatica e Forma di Volo."
-L["OPTIONS_FARM_CHEETAH"] = "Cacciatore: Aspetto del Ghepardo"
+L["OPTIONS_FARM_TRAVEL_FORMS_NAMED"] = "%s: Forme di Viaggio"
+L["OPTIONS_FARM_TRAVEL_FORMS_ONE_DESCRIPTION"] = "Vale anche %s."
+L["OPTIONS_FARM_TRAVEL_FORMS_TWO_DESCRIPTION"] = "Valgono anche %s e %s."
+L["OPTIONS_FARM_CLASS_STATE"] = "%s: %s"
 L["OPTIONS_FARM_CHEETAH_DESCRIPTION"] = "Alterna solo mentre ti muovi, come ogni altra condizione."
-L["OPTIONS_FARM_PACK"] = "Cacciatore: Aspetto del Branco"
-L["OPTIONS_FARM_PACK_DESCRIPTION"] =
-	"Utile nei giri di raccolta in gruppo, quando tutto il gruppo si muove alla velocità del ghepardo."
-L["OPTIONS_FARM_GHOST_WOLF"] = "Sciamano: Lupo Spettrale"
+L["OPTIONS_FARM_PACK_GROUP_DESCRIPTION"] =
+	"Utile nei giri di raccolta in gruppo, dove tutto il gruppo tiene il tuo passo."
 L["OPTIONS_FARM_GHOST_WOLF_DESCRIPTION"] = "Ottimo per i giri di raccolta prima della tua prima cavalcatura."
 L["OPTIONS_CYCLE_SPEED"] = "Velocità del Ciclo"
 L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
@@ -221,7 +219,7 @@ L["OPTIONS_FARM_ABILITIES"] = "Abilità della Modalità Raccolta"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Spunta ciò che vuoi trovare. La Modalità Raccolta alterna ogni abilità spuntata che questo personaggio conosce e salta le altre."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Professioni e Abilità Razziali"
-L["OPTIONS_FARM_CAT_FORM_NOTE"] = "Si alterna solo in Forma Felina, che conta come Non in Sella."
+L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] = "Si alterna solo in %s, che conta come Non in Sella."
 L["OPTIONS_FARM_PERSISTENT"] = "Includi Abilità di Tracciamento Persistente"
 L["OPTIONS_FARM_PERSISTENT_DESCRIPTION"] =
 	"Non compare mai due volte, anche se è spuntata anche qui sotto. Il Tracciamento Automatico del Bersaglio la sostituisce con la specie del tuo bersaglio."
@@ -280,7 +278,3 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"Gilda raggiunge tutti i membri della gilda online, qualunque sia il loro layer o la loro zona."
 L["OPTIONS_OUTPUT_NOTE"] = "Nota: Locale (/1) raggiunge solo i giocatori sul tuo layer."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Locale (/1)"
-L["OPTIONS_OUTPUT_SAY"] = "Parla"
-L["OPTIONS_OUTPUT_YELL"] = "Urla"
-L["OPTIONS_OUTPUT_PARTY"] = "Gruppo"
-L["OPTIONS_OUTPUT_GUILD"] = "Gilda"

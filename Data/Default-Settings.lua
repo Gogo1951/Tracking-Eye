@@ -8,10 +8,9 @@ local _, ns = ...
     The AceDB-3.0 defaults table. profile holds the per-character tracking,
     Farm Mode, and Come & Get It settings — each character owns its profile
     (see Core.lua), so a hunter and a priest never share a persistent tracking
-    ability. global holds the account-wide UI: the LibDBIcon minimap payload,
-    the free-frame position (freePos, written on drag and at logout while the
-    frame is shown, so no default here), the free-placement layout, and the
-    login greeting — identical on every character.
+    ability. global holds the account-wide presentation, identical on every
+    character. freePos has no default: it is written on drag and at logout while
+    the free frame is shown.
 
     selectedSpellId is intentionally absent: it is nil until the user picks a
     tracking ability, and nil cannot be stored as a default. farmCycleSpells is a

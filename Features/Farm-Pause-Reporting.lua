@@ -1,5 +1,7 @@
 local _, ns = ...
 
+local L = ns.L
+
 --------------------------------------------------------------------------------
 -- Pause Reporting
 --------------------------------------------------------------------------------
@@ -85,29 +87,30 @@ end
 local FOOT_REASONS = {
 	mounted = "FARM_PAUSED_NOT_MOUNTED",
 	travelForms = "FARM_PAUSED_NOT_TRAVEL",
-	cheetah = "FARM_PAUSED_NOT_CHEETAH",
-	pack = "FARM_PAUSED_NOT_PACK",
-	ghostWolf = "FARM_PAUSED_NOT_GHOST_WOLF",
+	cheetah = "FARM_PAUSED_NOT_ASPECT_NAMED",
+	pack = "FARM_PAUSED_NOT_ASPECT_NAMED",
+	ghostWolf = "FARM_PAUSED_NOT_GHOST_WOLF_NAMED",
 	mountedTravelForms = "FARM_PAUSED_NOT_MOUNTED_TRAVEL",
-	mountedCheetah = "FARM_PAUSED_NOT_MOUNTED_CHEETAH",
-	mountedPack = "FARM_PAUSED_NOT_MOUNTED_PACK",
-	mountedGhostWolf = "FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF",
+	mountedCheetah = "FARM_PAUSED_NOT_MOUNTED_ASPECT_NAMED",
+	mountedPack = "FARM_PAUSED_NOT_MOUNTED_ASPECT_NAMED",
+	mountedGhostWolf = "FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF_NAMED",
 }
 
 -- The player is in this state, but its own toggle is switched off.
 local STATE_OFF_REASONS = {
 	mounted = "FARM_PAUSED_MOUNTED_OFF",
 	travelForms = "FARM_PAUSED_TRAVEL_OFF",
-	cheetah = "FARM_PAUSED_CHEETAH_OFF",
-	pack = "FARM_PAUSED_PACK_OFF",
-	ghostWolf = "FARM_PAUSED_GHOST_WOLF_OFF",
+	cheetah = "FARM_PAUSED_ASPECT_OFF_NAMED",
+	pack = "FARM_PAUSED_ASPECT_OFF_NAMED",
+	ghostWolf = "FARM_PAUSED_GHOST_WOLF_OFF_NAMED",
 }
 
+-- Returns the reason key, then the movement state whose buff its sentence names.
 local function GetMovementReason(movementState)
 	local db = ns.db.profile
 
 	if movementState ~= "foot" then
-		return STATE_OFF_REASONS[movementState]
+		return STATE_OFF_REASONS[movementState], movementState
 	end
 
 	-- On foot with the on-foot toggle off: name the states that would start it.
@@ -124,10 +127,13 @@ local function GetMovementReason(movementState)
 	end
 
 	if db.farmMounted then
-		return classState and FOOT_REASONS["mounted" .. classState:gsub("^%l", string.upper)] or FOOT_REASONS.mounted
+		if classState then
+			return FOOT_REASONS["mounted" .. classState:gsub("^%l", string.upper)], classState
+		end
+		return FOOT_REASONS.mounted
 	end
 	if classState then
-		return FOOT_REASONS[classState]
+		return FOOT_REASONS[classState], classState
 	end
 	return "FARM_PAUSED_NO_STATES"
 end
@@ -136,13 +142,39 @@ end
 local EMPTY_CYCLE_REASONS = {
 	none = "FARM_PAUSED_NO_ABILITIES",
 	unlearned = "FARM_PAUSED_NOT_LEARNED",
-	catForm = "FARM_PAUSED_CAT_FORM",
+	catForm = "FARM_PAUSED_CAT_FORM_NAMED",
 }
 
 --[[
+    Reason keys whose sentence names a movement state's buff. Cheetah and Pack
+    share one sentence, so the buff comes from the state ns.GetFarmPauseReason
+    returns beside the key, never from the key.
+]]
+local STATE_NAMED_REASONS = {
+	FARM_PAUSED_NOT_ASPECT_NAMED = true,
+	FARM_PAUSED_NOT_GHOST_WOLF_NAMED = true,
+	FARM_PAUSED_NOT_MOUNTED_ASPECT_NAMED = true,
+	FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF_NAMED = true,
+	FARM_PAUSED_ASPECT_OFF_NAMED = true,
+	FARM_PAUSED_GHOST_WOLF_OFF_NAMED = true,
+}
+
+-- The sentence for a reason and state from ns.GetFarmPauseReason, with its game names filled in.
+function ns.FormatFarmPauseReason(reason, state)
+	if reason == EMPTY_CYCLE_REASONS.catForm then
+		return L[reason]:format(ns.GetCatFormNames())
+	end
+	if STATE_NAMED_REASONS[reason] then
+		return L[reason]:format(ns.GetMovementStateName(state))
+	end
+	return L[reason]
+end
+
+--[[
     Why Farm Mode is sitting idle right now, as a locale key, or nil when the
-    cycle is free to run. Farm Mode switched off is not a pause — the tooltip
-    reports Disabled for that.
+    cycle is free to run. A movement reason also returns the movement state
+    whose buff its sentence names. Farm Mode switched off is not a pause — the
+    tooltip reports Disabled for that.
 ]]
 function ns.GetFarmPauseReason(ownTooltipShowing)
 	if not ns.db or not ns.db.profile.farmMode then

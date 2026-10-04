@@ -12,6 +12,8 @@ L["ADDON_TITLE"] = "Tracking Eye"
 L["CHAT_LOADED"] =
 	"Version %s. Settings (including the option to disable this message) can be found under Options > AddOns > Tracking Eye. Enjoying the add-on? Tell a friend about it! (="
 L["CHAT_OPTIONS_IN_COMBAT"] = "As a safety precaution, the Options Interface cannot be opened during combat."
+L["CHAT_KEY_BINDINGS_IN_COMBAT"] = "As a safety precaution, the key binding list cannot be opened during combat."
+L["KEY_BINDINGS_LOCATION"] = "Open the game menu, then %s, then %s, and find the Tracking Eye section."
 
 --------------------------------------------------------------------------------
 -- Feature Names & Descriptions
@@ -39,24 +41,21 @@ L["FARM_PAUSED_DEAD"] = "Dead."
 L["FARM_PAUSED_TAXI"] = "On a flight path."
 L["FARM_PAUSED_INSTANCE"] = "Inside an instance."
 L["FARM_PAUSED_RESTING"] = "In a town or inn."
-L["FARM_PAUSED_NO_ABILITIES"] = "You haven't selected any abilities to cycle for Farm Mode."
-L["FARM_PAUSED_NOT_LEARNED"] = "You don't know any of the abilities you have selected to cycle for Farm Mode."
-L["FARM_PAUSED_CAT_FORM"] = "Druid tracking only cycles in Cat Form."
+L["FARM_PAUSED_NO_ABILITIES"] = "No Farm Mode Abilities are ticked."
+L["FARM_PAUSED_NOT_LEARNED"] = "You don't know any of your ticked Farm Mode Abilities."
+L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s tracking only cycles in %s."
 L["FARM_PAUSED_NO_STATES"] = "No Farm Mode Conditions are switched on."
 L["FARM_PAUSED_NOT_MOUNTED"] = "Not mounted."
 L["FARM_PAUSED_NOT_TRAVEL"] = "Not in a travel form."
-L["FARM_PAUSED_NOT_CHEETAH"] = "Not using Aspect of the Cheetah."
-L["FARM_PAUSED_NOT_PACK"] = "Not using Aspect of the Pack."
-L["FARM_PAUSED_NOT_GHOST_WOLF"] = "Not in Ghost Wolf."
+L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "Not using %s."
+L["FARM_PAUSED_NOT_GHOST_WOLF_NAMED"] = "Not in %s."
 L["FARM_PAUSED_NOT_MOUNTED_TRAVEL"] = "Not mounted or in a travel form."
-L["FARM_PAUSED_NOT_MOUNTED_CHEETAH"] = "Not mounted or using Aspect of the Cheetah."
-L["FARM_PAUSED_NOT_MOUNTED_PACK"] = "Not mounted or using Aspect of the Pack."
-L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF"] = "Not mounted or in Ghost Wolf."
+L["FARM_PAUSED_NOT_MOUNTED_ASPECT_NAMED"] = "Not mounted or using %s."
+L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF_NAMED"] = "Not mounted or in %s."
 L["FARM_PAUSED_MOUNTED_OFF"] = "Farm Mode is not set to run while mounted."
 L["FARM_PAUSED_TRAVEL_OFF"] = "Farm Mode is not set to run in travel forms."
-L["FARM_PAUSED_CHEETAH_OFF"] = "Farm Mode is not set to run under Aspect of the Cheetah."
-L["FARM_PAUSED_PACK_OFF"] = "Farm Mode is not set to run under Aspect of the Pack."
-L["FARM_PAUSED_GHOST_WOLF_OFF"] = "Farm Mode is not set to run in Ghost Wolf."
+L["FARM_PAUSED_ASPECT_OFF_NAMED"] = "Farm Mode is not set to run under %s."
+L["FARM_PAUSED_GHOST_WOLF_OFF_NAMED"] = "Farm Mode is not set to run in %s."
 L["FARM_PAUSED_COMBAT"] = "In combat."
 L["FARM_PAUSED_CASTING"] = "Casting."
 L["FARM_PAUSED_STEALTHED"] = "Stealthed."
@@ -91,13 +90,16 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye Options"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Cycle Farm Mode Ability"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"No tracking abilities are selected for Farm Mode. Pick some under Options > AddOns > Tracking Eye > Farm Mode."
-L["BINDING_NOTHING_LEARNED"] = "You don't know any of the abilities you have selected to cycle for Farm Mode."
-L["BINDING_NEEDS_CAT_FORM"] = "Druid tracking can only be cast in Cat Form."
+	"No Farm Mode Abilities are ticked. Tick some under Options > AddOns > Tracking Eye > Farm Mode."
 
 --------------------------------------------------------------------------------
 -- Options Interface
 --------------------------------------------------------------------------------
+
+--[[
+    Each section's description sells the feature. Each control's description is
+    its mouseover tooltip: a pro tip the label and section don't already say.
+]]
 
 -- General
 
@@ -117,13 +119,9 @@ L["OPTIONS_COMMAND_DESCRIPTION"] = "Opens the Options Interface for this add-on.
 -- Key Bindings
 
 L["OPTIONS_KEYBINDS"] = "Key Bindings"
-L["OPTIONS_KEYBINDS_DESCRIPTION"] =
-	"Jump to the next tracking ability with one key, even with Farm Mode off. Bind it under Key Bindings in the game menu."
-
---[[
-    Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
-]]
+L["OPTIONS_KEY_SET"] = "Set Key"
+L["OPTIONS_KEY_SET_DESCRIPTION"] = "Opens the game's key binding list, where Tracking Eye has its own section."
+L["OPTIONS_KEYBINDS_DESCRIPTION"] = "Jump to the next tracking ability with one key, even with Farm Mode off."
 
 -- Tracking Menu
 
@@ -131,7 +129,7 @@ L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
 	"Every tracking ability you know, in one alphabetical menu. Whatever you pick becomes your Persistent Tracking Ability."
 L["OPTIONS_HOOK_BLIZZARD"] = "Use the Default Tracking Button"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"Blizzard's tracking button opens this menu too. Leave it off if another add-on already uses that button."
+	"The default tracking button opens this menu too. Leave it off if another add-on already uses that button."
 
 -- Persistent Tracking
 
@@ -140,11 +138,12 @@ L["OPTIONS_PERSISTENT_DESCRIPTION"] =
 L["OPTIONS_ENABLE_PERSISTENT"] = "Enable Persistent Tracking"
 L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"] =
 	"Waits until you're out of combat, so it never costs you a global cooldown mid-fight."
-L["OPTIONS_FISHING_POLE_FISH"] = "Find Fish when you Equip a Fishing Pole"
+L["OPTIONS_FISHING_POLE_FISH_NAMED"] = "%s when you Equip a %s"
 L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"] = "Your own pick comes back when you put the pole away."
-L["OPTIONS_CAT_FORM_HUMANOIDS"] = "Druid: Track Humanoids when you Shift into Cat Form"
-L["OPTIONS_CAT_FORM_HUMANOIDS_DESCRIPTION"] = "Waits out Prowl, and your own pick comes back when you shift out."
-L["OPTIONS_BATTLEGROUND_HUMANOIDS"] = "Hunter: Track Humanoids in Battlegrounds"
+L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s: %s when you Shift into %s"
+L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"] =
+	"Waits until you leave stealth, and your own pick comes back when you shift out."
+L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"] = "%s: %s in Battlegrounds"
 L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"] = "Arenas count too, and your own pick comes back when you leave."
 
 -- Automatic Target Tracking
@@ -200,13 +199,12 @@ L["OPTIONS_FARM_MOUNTED"] = "Mounted"
 L["OPTIONS_FARM_MOUNTED_DESCRIPTION"] = "Dismount at a node and the cycle waits while you gather."
 L["OPTIONS_FARM_NOT_MOUNTED"] = "Not Mounted"
 L["OPTIONS_FARM_NOT_MOUNTED_DESCRIPTION"] = "Stop to gather or eat and the cycle waits until you move on."
-L["OPTIONS_FARM_TRAVEL_FORMS"] = "Druid: Travel Forms"
-L["OPTIONS_FARM_TRAVEL_FORMS_DESCRIPTION"] = "Aquatic Form and Flight Form count too."
-L["OPTIONS_FARM_CHEETAH"] = "Hunter: Aspect of the Cheetah"
+L["OPTIONS_FARM_TRAVEL_FORMS_NAMED"] = "%s: Travel Forms"
+L["OPTIONS_FARM_TRAVEL_FORMS_ONE_DESCRIPTION"] = "%s counts too."
+L["OPTIONS_FARM_TRAVEL_FORMS_TWO_DESCRIPTION"] = "%s and %s count too."
+L["OPTIONS_FARM_CLASS_STATE"] = "%s: %s"
 L["OPTIONS_FARM_CHEETAH_DESCRIPTION"] = "Only cycles while you're on the move, like every other condition."
-L["OPTIONS_FARM_PACK"] = "Hunter: Aspect of the Pack"
-L["OPTIONS_FARM_PACK_DESCRIPTION"] = "Handy on group gathering runs, where the whole party moves at Cheetah speed."
-L["OPTIONS_FARM_GHOST_WOLF"] = "Shaman: Ghost Wolf"
+L["OPTIONS_FARM_PACK_GROUP_DESCRIPTION"] = "Handy on group gathering runs, where the whole party keeps your pace."
 L["OPTIONS_FARM_GHOST_WOLF_DESCRIPTION"] = "Great for gathering runs before your first mount."
 L["OPTIONS_CYCLE_SPEED"] = "Cycle Speed"
 L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
@@ -216,7 +214,7 @@ L["OPTIONS_FARM_ABILITIES"] = "Farm Mode Abilities"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Tick what you want to find. Farm Mode cycles every ticked ability this character knows and skips the rest."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Professions & Racial Abilities"
-L["OPTIONS_FARM_CAT_FORM_NOTE"] = "Only cycles in Cat Form, which counts as Not Mounted."
+L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] = "Only cycles in %s, which counts as Not Mounted."
 L["OPTIONS_FARM_PERSISTENT"] = "Include Persistent Tracking Ability"
 L["OPTIONS_FARM_PERSISTENT_DESCRIPTION"] =
 	"Never comes up twice, even if it's also ticked below. Automatic Target Tracking swaps your target's kind in for it."
@@ -273,7 +271,3 @@ L["OPTIONS_OUTPUT_NAME"] = "Default Output"
 L["OPTIONS_OUTPUT_DESCRIPTION"] = "Guild reaches every guildmate online, whatever their layer or zone."
 L["OPTIONS_OUTPUT_NOTE"] = "Note: Local (/1) only reaches players on your layer."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Local (/1)"
-L["OPTIONS_OUTPUT_SAY"] = "Say"
-L["OPTIONS_OUTPUT_YELL"] = "Yell"
-L["OPTIONS_OUTPUT_PARTY"] = "Party"
-L["OPTIONS_OUTPUT_GUILD"] = "Guild"

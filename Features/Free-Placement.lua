@@ -117,7 +117,6 @@ function ns.CreateFreeFrame()
 	frame:SetClampedToScreen(true)
 	frame:SetFrameStrata("HIGH")
 
-	-- Circle elements
 	frame.circleBg = frame:CreateTexture(nil, "BACKGROUND")
 	frame.circleBg:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
 	frame.circleBg:SetSize(24, 24)
@@ -129,7 +128,6 @@ function ns.CreateFreeFrame()
 	frame.circleBorder:SetSize(62, 62)
 	frame.circleBorder:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
 
-	-- Square elements
 	frame.squareBorder = frame:CreateTexture(nil, "BACKGROUND")
 	frame.squareBorder:SetColorTexture(0, 0, 0, 0.8)
 	frame.squareBorder:SetSize(27, 27)
@@ -140,7 +138,6 @@ function ns.CreateFreeFrame()
 	frame.squareBg:SetSize(1, 1)
 	frame.squareBg:SetPoint("CENTER")
 
-	-- Shared icon
 	frame.icon = frame:CreateTexture(nil, "ARTWORK")
 	frame.icon:SetSize(24, 24)
 	frame.icon:SetPoint("CENTER")

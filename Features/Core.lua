@@ -100,7 +100,7 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
                 farm cycle) lives in ns.db.profile; account-wide layout and
                 presentation live in ns.db.global, which is profile-independent.
             ]]
-		ns.db = LibStub("AceDB-3.0"):New("TrackingEyeDB", ns.DATABASE_DEFAULTS)
+		ns.db = LibStub("AceDB-3.0"):New(ns.SAVED_VARIABLES_NAME, ns.DATABASE_DEFAULTS)
 
 		for _, message in ipairs({ "OnProfileChanged", "OnProfileCopied", "OnProfileReset" }) do
 			ns.db.RegisterCallback(ns, message, "ApplyProfile")
@@ -194,6 +194,9 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
 		if ns.OnUIErrorMessage then
 			ns.OnUIErrorMessage(arg1, ...)
 		end
+	elseif event == "UPDATE_BINDINGS" then
+		-- The General panel shows the bound key, and the player changes it in the game's own list.
+		LibStub("AceConfigRegistry-3.0"):NotifyChange(ns.OPTIONS_REGISTRY.General)
 	elseif event == "PLAYER_UPDATE_RESTING" then
 		--[[
                 Resting flipped (entered/left a city or inn). Re-run the farm
@@ -303,6 +306,7 @@ ns.EVENT_NAMES = {
 	"LOOT_CLOSED",
 	"PLAYER_TARGET_CHANGED",
 	"UI_ERROR_MESSAGE",
+	"UPDATE_BINDINGS",
 }
 
 -- Unit-filtered events: register scoped to the player so the dispatcher isn't woken for other units' casts.

@@ -98,13 +98,22 @@ function ns.BuildTooltip(tooltip)
     ]]
 	if ns.db and ns.db.profile.farmMode then
 		-- Drawn before it shows, so the live own-tooltip check can't see this tooltip yet: pass it in.
-		local pauseReason = ns.GetFarmPauseReason and ns.GetFarmPauseReason(true)
+		local pauseReason, pauseState
+		if ns.GetFarmPauseReason then
+			pauseReason, pauseState = ns.GetFarmPauseReason(true)
+		end
 		-- Gray for paused, matching the house three-way: OFF red, paused gray, ON green.
 		local statusText = pauseReason and (GetColor("SEPARATOR") .. L["FARM_STATUS_PAUSED"] .. "|r")
 			or (GetColor("ON") .. L["FARM_STATUS_ACTIVE"] .. "|r")
 		tooltip:AddDoubleLine(GetColor("TITLE") .. L["FARM_STATUS"] .. "|r", statusText)
 		if pauseReason then
-			tooltip:AddLine(GetColor("BODY") .. L[pauseReason] .. "|r", 1, 1, 1, true)
+			tooltip:AddLine(
+				GetColor("BODY") .. ns.FormatFarmPauseReason(pauseReason, pauseState) .. "|r",
+				1,
+				1,
+				1,
+				true
+			)
 		end
 		tooltip:AddLine(" ")
 	end
@@ -117,7 +126,6 @@ function ns.BuildTooltip(tooltip)
 	tooltip:AddDoubleLine(GetColor("INFO") .. L["SHIFT_RIGHT"] .. "|r", GetColor("INFO") .. L["TOGGLE"] .. "|r")
 	tooltip:AddLine(" ")
 
-	-- Options (Shift + Middle-Click opens the options panel)
 	tooltip:AddLine(GetColor("TITLE") .. L["TOOLTIP_OPTIONS"] .. "|r")
 	tooltip:AddLine(GetColor("INFO") .. L["SHIFT_MIDDLE"] .. "|r")
 end
@@ -176,6 +184,10 @@ function ns.HandleLauncherClick(self, button)
 			ns.SetTargetTracking(not ns.db.profile.targetTracking)
 			updateNeeded = true
 		end
+		-- Both toggles are settings, so an options panel already on screen redraws with the new value.
+		if updateNeeded and ns.RefreshOptionsPanels then
+			ns.RefreshOptionsPanels()
+		end
 	else
 		if button == "LeftButton" then
 			ns.ToggleMenu(self)
@@ -206,6 +218,15 @@ function ns.InitMinimap()
 
 	if ns.db and ns.db.global.minimap then
 		LibDBIcon:Register(ADDON_NAME, ns.ldb, ns.db.global.minimap)
+
+		if ns.FLAVOR == "Camelot" or ns.FLAVOR == "Mainline" then
+			LibDBIcon:SetButtonIcon(ADDON_NAME, nil, 20, "CENTER", 1, -0.35)
+			local fitButton = LibDBIcon:GetMinimapButton(ADDON_NAME)
+			local mask = fitButton:CreateMaskTexture()
+			mask:SetTexture(130924, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE") -- Interface\CharacterFrame\TempPortraitAlphaMask
+			mask:SetAllPoints(fitButton.icon)
+			fitButton.icon:AddMaskTexture(mask)
+		end
 	end
 
 	local button = LibDBIcon:GetMinimapButton(ADDON_NAME)

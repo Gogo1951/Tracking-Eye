@@ -12,6 +12,9 @@ L["ADDON_TITLE"] = "Tracking Eye"
 L["CHAT_LOADED"] =
 	"Version %s. Einstellungen (einschließlich der Option, diese Nachricht zu deaktivieren) findet Ihr unter Optionen > Addons > Tracking Eye. Gefällt Euch das Add-on? Erzählt einem Freund davon! (="
 L["CHAT_OPTIONS_IN_COMBAT"] = "Aus Sicherheitsgründen kann die Optionsoberfläche im Kampf nicht geöffnet werden."
+L["CHAT_KEY_BINDINGS_IN_COMBAT"] =
+	"Aus Sicherheitsgründen kann die Liste der Tastaturbelegungen im Kampf nicht geöffnet werden."
+L["KEY_BINDINGS_LOCATION"] = "Öffnet das Spielmenü, dann %s, dann %s, und sucht den Abschnitt Tracking Eye."
 
 --------------------------------------------------------------------------------
 -- Feature Names & Descriptions
@@ -39,24 +42,21 @@ L["FARM_PAUSED_DEAD"] = "Ihr seid tot."
 L["FARM_PAUSED_TAXI"] = "Auf einer Flugroute."
 L["FARM_PAUSED_INSTANCE"] = "In einer Instanz."
 L["FARM_PAUSED_RESTING"] = "In einer Stadt oder einem Gasthaus."
-L["FARM_PAUSED_NO_ABILITIES"] = "Ihr habt keine Fähigkeiten für den Farming-Modus ausgewählt."
-L["FARM_PAUSED_NOT_LEARNED"] = "Ihr beherrscht keine der Fähigkeiten, die Ihr für den Farming-Modus ausgewählt habt."
-L["FARM_PAUSED_CAT_FORM"] = "Die Druiden-Aufspürung wechselt nur in Katzengestalt."
+L["FARM_PAUSED_NO_ABILITIES"] = "Es sind keine Farming-Modus-Fähigkeiten angekreuzt."
+L["FARM_PAUSED_NOT_LEARNED"] = "Ihr beherrscht keine Eurer angekreuzten Farming-Modus-Fähigkeiten."
+L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s: Die Aufspürung wechselt nur in %s."
 L["FARM_PAUSED_NO_STATES"] = "Es sind keine Farming-Modus-Bedingungen aktiviert."
 L["FARM_PAUSED_NOT_MOUNTED"] = "Nicht beritten."
 L["FARM_PAUSED_NOT_TRAVEL"] = "Nicht in einer Reisegestalt."
-L["FARM_PAUSED_NOT_CHEETAH"] = "Kein Aspekt des Geparden aktiv."
-L["FARM_PAUSED_NOT_PACK"] = "Kein Aspekt des Rudels aktiv."
-L["FARM_PAUSED_NOT_GHOST_WOLF"] = "Nicht in Geisterwolfgestalt."
+L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "%s nicht aktiv."
+L["FARM_PAUSED_NOT_GHOST_WOLF_NAMED"] = "Nicht als %s unterwegs."
 L["FARM_PAUSED_NOT_MOUNTED_TRAVEL"] = "Weder beritten noch in einer Reisegestalt."
-L["FARM_PAUSED_NOT_MOUNTED_CHEETAH"] = "Weder beritten noch mit Aspekt des Geparden."
-L["FARM_PAUSED_NOT_MOUNTED_PACK"] = "Weder beritten noch mit Aspekt des Rudels."
-L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF"] = "Weder beritten noch in Geisterwolfgestalt."
+L["FARM_PAUSED_NOT_MOUNTED_ASPECT_NAMED"] = "Weder beritten noch mit %s."
+L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF_NAMED"] = "Weder beritten noch als %s."
 L["FARM_PAUSED_MOUNTED_OFF"] = "Der Farming-Modus ist nicht fürs Reiten eingestellt."
 L["FARM_PAUSED_TRAVEL_OFF"] = "Der Farming-Modus ist nicht für Reisegestalten eingestellt."
-L["FARM_PAUSED_CHEETAH_OFF"] = "Der Farming-Modus ist nicht für Aspekt des Geparden eingestellt."
-L["FARM_PAUSED_PACK_OFF"] = "Der Farming-Modus ist nicht für Aspekt des Rudels eingestellt."
-L["FARM_PAUSED_GHOST_WOLF_OFF"] = "Der Farming-Modus ist nicht für die Geisterwolfgestalt eingestellt."
+L["FARM_PAUSED_ASPECT_OFF_NAMED"] = "Der Farming-Modus ist nicht für %s eingestellt."
+L["FARM_PAUSED_GHOST_WOLF_OFF_NAMED"] = "Der Farming-Modus ist nicht für %s eingestellt."
 L["FARM_PAUSED_COMBAT"] = "Im Kampf."
 L["FARM_PAUSED_CASTING"] = "Beim Zaubern."
 L["FARM_PAUSED_STEALTHED"] = "Getarnt."
@@ -91,18 +91,21 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye-Optionen"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Farming-Modus-Fähigkeit wechseln"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"Es sind keine Aufspürungsfähigkeiten für den Farming-Modus ausgewählt. Wählt welche unter Optionen > Addons > Tracking Eye > Farming-Modus aus."
-L["BINDING_NOTHING_LEARNED"] = "Ihr beherrscht keine der Fähigkeiten, die Ihr für den Farming-Modus ausgewählt habt."
-L["BINDING_NEEDS_CAT_FORM"] = "Die Druiden-Aufspürung kann nur in Katzengestalt gewirkt werden."
+	"Es sind keine Farming-Modus-Fähigkeiten angekreuzt. Kreuzt welche unter Optionen > Addons > Tracking Eye > Farming-Modus an."
 
 --------------------------------------------------------------------------------
 -- Options Interface
 --------------------------------------------------------------------------------
 
+--[[
+    Each section's description sells the feature. Each control's description is
+    its mouseover tooltip: a pro tip the label and section don't already say.
+]]
+
 -- General
 
 L["OPTIONS_DESCRIPTION"] =
-	"Verbessertes Aufspürungsmenü und automatischer Aufspürungs-Wechsler, der beim Farmen zwischen Kräutersuche und Mineraliensuche wechselt und die Aufspürung nach dem Tod wiederherstellt. Unterstützt jede Aufspürungsfähigkeit. Verliert die Ressourcen, die Ihr jagt, nie aus den Augen."
+	"Verbessertes Aufspürungsmenü und automatischer Aufspürungs-Wechsler, der beim Farmen zwischen Kräutersuche und Mineraliensuche wechselt, die Aufspürung nach dem Tod wiederherstellt und beim Questen anvisierte Kreaturen aufspürt. Unterstützt jede Aufspürungsfähigkeit. Verliert nie aus den Augen, was Ihr jagt."
 L["OPTIONS_ENABLE_WELCOME"] = "Begrüßungsnachricht aktivieren"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Gibt im Chat eine einzeilige Begrüßung aus, wenn Tracking Eye geladen wird."
@@ -118,13 +121,11 @@ L["OPTIONS_COMMAND_DESCRIPTION"] = "Öffnet die Optionsoberfläche für dieses A
 -- Key Bindings
 
 L["OPTIONS_KEYBINDS"] = "Tastaturbelegung"
+L["OPTIONS_KEY_SET"] = "Taste belegen"
+L["OPTIONS_KEY_SET_DESCRIPTION"] =
+	"Öffnet die Liste der Tastaturbelegungen des Spiels, in der Tracking Eye einen eigenen Abschnitt hat."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
-	"Springt mit einer Taste zur nächsten Aufspürungsfähigkeit, auch bei ausgeschaltetem Farming-Modus. Belegt die Taste im Spielmenü unter Tastaturbelegung."
-
---[[
-    Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
-]]
+	"Springt mit einer Taste zur nächsten Aufspürungsfähigkeit, auch bei ausgeschaltetem Farming-Modus."
 
 -- Tracking Menu
 
@@ -132,7 +133,7 @@ L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
 	"Jede Aufspürungsfähigkeit, die Ihr beherrscht, in einem alphabetischen Menü. Was Ihr wählt, wird zu Eurer Dauerhaften Aufspürungsfähigkeit."
 L["OPTIONS_HOOK_BLIZZARD"] = "Standard-Aufspürungsbutton verwenden"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"Blizzards Aufspürungsbutton öffnet dieses Menü ebenfalls. Lasst die Option aus, wenn ein anderes Add-on diesen Button bereits nutzt."
+	"Der Standard-Aufspürungsbutton öffnet dieses Menü ebenfalls. Lasst die Option aus, wenn ein anderes Add-on diesen Button bereits nutzt."
 
 -- Persistent Tracking
 
@@ -141,12 +142,12 @@ L["OPTIONS_PERSISTENT_DESCRIPTION"] =
 L["OPTIONS_ENABLE_PERSISTENT"] = "Dauerhafte Aufspürung aktivieren"
 L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"] =
 	"Wartet, bis Ihr den Kampf verlasst, und kostet Euch so nie eine globale Abklingzeit mitten im Gefecht."
-L["OPTIONS_FISHING_POLE_FISH"] = "Fischsuche, wenn Ihr eine Angel anlegt"
+L["OPTIONS_FISHING_POLE_FISH_NAMED"] = "%s, wenn Ihr %s anlegt"
 L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"] = "Eure eigene Wahl kehrt zurück, sobald Ihr die Angel wieder ablegt."
-L["OPTIONS_CAT_FORM_HUMANOIDS"] = "Druide: Humanoide aufspüren beim Wechsel in Katzengestalt"
-L["OPTIONS_CAT_FORM_HUMANOIDS_DESCRIPTION"] =
-	"Wartet Schleichen ab, und Eure eigene Wahl kehrt zurück, sobald Ihr die Gestalt verlasst."
-L["OPTIONS_BATTLEGROUND_HUMANOIDS"] = "Jäger: Humanoide aufspüren auf Schlachtfeldern"
+L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s: %s beim Wechsel in %s"
+L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"] =
+	"Wartet, bis Ihr nicht mehr getarnt seid, und Eure eigene Wahl kehrt zurück, sobald Ihr die Gestalt verlasst."
+L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"] = "%s: %s auf Schlachtfeldern"
 L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"] =
 	"Arenen zählen auch, und Eure eigene Wahl kehrt zurück, sobald Ihr sie verlasst."
 
@@ -204,14 +205,13 @@ L["OPTIONS_FARM_MOUNTED_DESCRIPTION"] = "Steigt an einem Vorkommen ab, und der W
 L["OPTIONS_FARM_NOT_MOUNTED"] = "Nicht beritten"
 L["OPTIONS_FARM_NOT_MOUNTED_DESCRIPTION"] =
 	"Haltet an, um zu sammeln oder zu essen, und der Wechsel wartet, bis Ihr weiterzieht."
-L["OPTIONS_FARM_TRAVEL_FORMS"] = "Druide: Reisegestalten"
-L["OPTIONS_FARM_TRAVEL_FORMS_DESCRIPTION"] = "Wassergestalt und Fluggestalt zählen auch."
-L["OPTIONS_FARM_CHEETAH"] = "Jäger: Aspekt des Geparden"
+L["OPTIONS_FARM_TRAVEL_FORMS_NAMED"] = "%s: Reisegestalten"
+L["OPTIONS_FARM_TRAVEL_FORMS_ONE_DESCRIPTION"] = "%s zählt auch."
+L["OPTIONS_FARM_TRAVEL_FORMS_TWO_DESCRIPTION"] = "%s und %s zählen auch."
+L["OPTIONS_FARM_CLASS_STATE"] = "%s: %s"
 L["OPTIONS_FARM_CHEETAH_DESCRIPTION"] = "Wechselt nur, solange Ihr in Bewegung seid, wie bei jeder anderen Bedingung."
-L["OPTIONS_FARM_PACK"] = "Jäger: Aspekt des Rudels"
-L["OPTIONS_FARM_PACK_DESCRIPTION"] =
-	"Praktisch bei Sammelrunden in der Gruppe, wenn alle mit Gepardentempo unterwegs sind."
-L["OPTIONS_FARM_GHOST_WOLF"] = "Schamane: Geisterwolf"
+L["OPTIONS_FARM_PACK_GROUP_DESCRIPTION"] =
+	"Praktisch bei Sammelrunden in der Gruppe, wenn alle mit Eurem Tempo mithalten."
 L["OPTIONS_FARM_GHOST_WOLF_DESCRIPTION"] = "Ideal für Sammelrunden vor Eurem ersten Reittier."
 L["OPTIONS_CYCLE_SPEED"] = "Wechselgeschwindigkeit"
 L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
@@ -221,7 +221,7 @@ L["OPTIONS_FARM_ABILITIES"] = "Farming-Modus-Fähigkeiten"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Kreuzt an, was Ihr finden wollt. Der Farming-Modus wechselt durch jede angekreuzte Fähigkeit, die dieser Charakter beherrscht, und überspringt den Rest."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Berufe & Volksfähigkeiten"
-L["OPTIONS_FARM_CAT_FORM_NOTE"] = "Wechselt nur in Katzengestalt, die als Nicht beritten zählt."
+L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] = "Wechselt nur in %s, was als Nicht beritten zählt."
 L["OPTIONS_FARM_PERSISTENT"] = "Dauerhafte Aufspürungsfähigkeit einbeziehen"
 L["OPTIONS_FARM_PERSISTENT_DESCRIPTION"] =
 	"Kommt nie doppelt vor, auch wenn sie unten ebenfalls angekreuzt ist. Die Automatische Zielaufspürung setzt stattdessen die Art Eures Ziels ein."
@@ -280,7 +280,3 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"Gilde erreicht jedes Gildenmitglied, das online ist, egal auf welchem Layer oder in welcher Zone."
 L["OPTIONS_OUTPUT_NOTE"] = "Hinweis: Lokal (/1) erreicht nur Spieler auf Eurem Layer."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Lokal (/1)"
-L["OPTIONS_OUTPUT_SAY"] = "Sagen"
-L["OPTIONS_OUTPUT_YELL"] = "Schreien"
-L["OPTIONS_OUTPUT_PARTY"] = "Gruppe"
-L["OPTIONS_OUTPUT_GUILD"] = "Gilde"

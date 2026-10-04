@@ -13,6 +13,10 @@ L["CHAT_LOADED"] =
 	"Версия %s. Настройки (включая возможность отключить это сообщение) находятся в разделе Параметры > Модификации > Tracking Eye. Нравится аддон? Расскажите другу! (="
 L["CHAT_OPTIONS_IN_COMBAT"] =
 	"В целях безопасности интерфейс настроек нельзя открыть в бою."
+L["CHAT_KEY_BINDINGS_IN_COMBAT"] =
+	"В целях безопасности список назначения клавиш нельзя открыть в бою."
+L["KEY_BINDINGS_LOCATION"] =
+	"Откройте игровое меню, затем пункт %s, затем пункт %s и найдите раздел Tracking Eye."
 
 --------------------------------------------------------------------------------
 -- Feature Names & Descriptions
@@ -42,31 +46,25 @@ L["FARM_PAUSED_DEAD"] = "Вы мертвы."
 L["FARM_PAUSED_TAXI"] = "На маршруте полета."
 L["FARM_PAUSED_INSTANCE"] = "Внутри подземелья."
 L["FARM_PAUSED_RESTING"] = "В городе или таверне."
-L["FARM_PAUSED_NO_ABILITIES"] =
-	"Вы не выбрали ни одной способности для Режима фарма."
+L["FARM_PAUSED_NO_ABILITIES"] = "Не отмечено ни одной способности Режима фарма."
 L["FARM_PAUSED_NOT_LEARNED"] =
-	"Вы не знаете ни одной из способностей, выбранных для Режима фарма."
-L["FARM_PAUSED_CAT_FORM"] =
-	"Отслеживание друида переключается только в Облике кошки."
+	"Вы не знаете ни одной из отмеченных способностей Режима фарма."
+L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s: для переключения отслеживания требуется %s."
 L["FARM_PAUSED_NO_STATES"] = "Ни одно из Условий Режима фарма не включено."
 L["FARM_PAUSED_NOT_MOUNTED"] = "Вы не верхом."
 L["FARM_PAUSED_NOT_TRAVEL"] = "Вы не в походном облике."
-L["FARM_PAUSED_NOT_CHEETAH"] = "Дух гепарда не используется."
-L["FARM_PAUSED_NOT_PACK"] = "Дух стаи не используется."
-L["FARM_PAUSED_NOT_GHOST_WOLF"] = "Вы не в облике Призрачного волка."
+L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "%s не используется."
+L["FARM_PAUSED_NOT_GHOST_WOLF_NAMED"] = "Вы не в облике: %s."
 L["FARM_PAUSED_NOT_MOUNTED_TRAVEL"] = "Вы не верхом и не в походном облике."
-L["FARM_PAUSED_NOT_MOUNTED_CHEETAH"] = "Вы не верхом и не используете Дух гепарда."
-L["FARM_PAUSED_NOT_MOUNTED_PACK"] = "Вы не верхом и не используете Дух стаи."
-L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF"] =
-	"Вы не верхом и не в облике Призрачного волка."
+L["FARM_PAUSED_NOT_MOUNTED_ASPECT_NAMED"] = "Вы не верхом, и %s не используется."
+L["FARM_PAUSED_NOT_MOUNTED_GHOST_WOLF_NAMED"] = "Вы не верхом и не в облике: %s."
 L["FARM_PAUSED_MOUNTED_OFF"] = "Режим фарма не настроен на работу верхом."
 L["FARM_PAUSED_TRAVEL_OFF"] =
 	"Режим фарма не настроен на работу в походных обликах."
-L["FARM_PAUSED_CHEETAH_OFF"] =
-	"Режим фарма не настроен на работу с Духом гепарда."
-L["FARM_PAUSED_PACK_OFF"] = "Режим фарма не настроен на работу с Духом стаи."
-L["FARM_PAUSED_GHOST_WOLF_OFF"] =
-	"Режим фарма не настроен на работу в облике Призрачного волка."
+L["FARM_PAUSED_ASPECT_OFF_NAMED"] =
+	"Режим фарма не настроен на работу, когда используется %s."
+L["FARM_PAUSED_GHOST_WOLF_OFF_NAMED"] =
+	"Режим фарма не настроен на работу в облике: %s."
 L["FARM_PAUSED_COMBAT"] = "В бою."
 L["FARM_PAUSED_CASTING"] = "Идет применение заклинания."
 L["FARM_PAUSED_STEALTHED"] = "В незаметности."
@@ -101,20 +99,21 @@ L["TOOLTIP_OPTIONS"] = "Настройки Tracking Eye"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Переключить способность Режима фарма"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"Для Режима фарма не выбрано ни одной способности отслеживания. Выберите их в разделе Параметры > Модификации > Tracking Eye > Режим фарма."
-L["BINDING_NOTHING_LEARNED"] =
-	"Вы не знаете ни одной из способностей, выбранных для Режима фарма."
-L["BINDING_NEEDS_CAT_FORM"] =
-	"Отслеживание друида можно применить только в Облике кошки."
+	"Не отмечено ни одной способности Режима фарма. Отметьте нужные в разделе Параметры > Модификации > Tracking Eye > Режим фарма."
 
 --------------------------------------------------------------------------------
 -- Options Interface
 --------------------------------------------------------------------------------
 
+--[[
+    Each section's description sells the feature. Each control's description is
+    its mouseover tooltip: a pro tip the label and section don't already say.
+]]
+
 -- General
 
 L["OPTIONS_DESCRIPTION"] =
-	"Улучшенное меню отслеживания и автоматический переключатель, который чередует Поиск трав и Поиск минералов во время фарма и восстанавливает отслеживание после смерти. Поддерживает все способности отслеживания. Никогда не теряйте из виду ресурсы, за которыми охотитесь."
+	"Улучшенное меню отслеживания и автоматический переключатель, который чередует Поиск трав и Поиск минералов во время фарма, восстанавливает отслеживание после смерти, а во время заданий отслеживает существ, взятых в цель. Поддерживает все способности отслеживания. Никогда не упускайте добычу из виду."
 L["OPTIONS_ENABLE_WELCOME"] = "Включить приветственное сообщение"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Выводит в чат однострочное приветствие при загрузке Tracking Eye."
@@ -131,13 +130,11 @@ L["OPTIONS_COMMAND_DESCRIPTION"] = "Открывает интерфейс нас
 -- Key Bindings
 
 L["OPTIONS_KEYBINDS"] = "Назначение клавиш"
+L["OPTIONS_KEY_SET"] = "Назначить клавишу"
+L["OPTIONS_KEY_SET_DESCRIPTION"] =
+	"Открывает игровой список назначения клавиш, где у Tracking Eye есть собственный раздел."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
-	"Переход к следующей способности отслеживания одной клавишей, даже при выключенном Режиме фарма. Назначьте ее в разделе Назначение клавиш игрового меню."
-
---[[
-    Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
-]]
+	"Переход к следующей способности отслеживания одной клавишей, даже при выключенном Режиме фарма."
 
 -- Tracking Menu
 
@@ -145,7 +142,7 @@ L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
 	"Все известные вам способности отслеживания в одном меню по алфавиту. Выбранная становится вашей способностью постоянного отслеживания."
 L["OPTIONS_HOOK_BLIZZARD"] = "Использовать стандартную кнопку отслеживания"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"Кнопка отслеживания Blizzard тоже открывает это меню. Не включайте, если эту кнопку уже использует другой аддон."
+	"Стандартная кнопка отслеживания тоже открывает это меню. Не включайте, если эту кнопку уже использует другой аддон."
 
 -- Persistent Tracking
 
@@ -154,15 +151,13 @@ L["OPTIONS_PERSISTENT_DESCRIPTION"] =
 L["OPTIONS_ENABLE_PERSISTENT"] = "Включить Постоянное отслеживание"
 L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"] =
 	"Ждет, пока вы выйдете из боя, поэтому никогда не тратит глобальное время восстановления посреди схватки."
-L["OPTIONS_FISHING_POLE_FISH"] = "Поиск рыбы, когда вы берете в руки удочку"
+L["OPTIONS_FISHING_POLE_FISH_NAMED"] = "%s при экипировке: %s"
 L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"] =
 	"Ваш собственный выбор вернется, когда вы уберете удочку."
-L["OPTIONS_CAT_FORM_HUMANOIDS"] =
-	"Друид: Выслеживание гуманоидов при переходе в Облик кошки"
-L["OPTIONS_CAT_FORM_HUMANOIDS_DESCRIPTION"] =
-	"Дожидается окончания Крадущегося зверя, а ваш выбор вернется, когда вы выйдете из облика."
-L["OPTIONS_BATTLEGROUND_HUMANOIDS"] =
-	"Охотник: Выслеживание гуманоидов на полях боя"
+L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s: %s при переходе в %s"
+L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"] =
+	"Дожидается выхода из незаметности, а ваш выбор вернется, когда вы покинете облик."
+L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"] = "%s: %s на полях боя"
 L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"] =
 	"Арены тоже считаются, а ваш выбор вернется, когда вы их покинете."
 
@@ -223,16 +218,14 @@ L["OPTIONS_FARM_MOUNTED_DESCRIPTION"] =
 L["OPTIONS_FARM_NOT_MOUNTED"] = "Пешком"
 L["OPTIONS_FARM_NOT_MOUNTED_DESCRIPTION"] =
 	"Остановитесь, чтобы собрать ресурс или поесть, и цикл подождет, пока вы не двинетесь дальше."
-L["OPTIONS_FARM_TRAVEL_FORMS"] = "Друид: походные облики"
-L["OPTIONS_FARM_TRAVEL_FORMS_DESCRIPTION"] =
-	"Водный облик и Облик птицы тоже считаются."
-L["OPTIONS_FARM_CHEETAH"] = "Охотник: Дух гепарда"
+L["OPTIONS_FARM_TRAVEL_FORMS_NAMED"] = "%s: походные облики"
+L["OPTIONS_FARM_TRAVEL_FORMS_ONE_DESCRIPTION"] = "%s тоже считается."
+L["OPTIONS_FARM_TRAVEL_FORMS_TWO_DESCRIPTION"] = "%s и %s тоже считаются."
+L["OPTIONS_FARM_CLASS_STATE"] = "%s: %s"
 L["OPTIONS_FARM_CHEETAH_DESCRIPTION"] =
 	"Переключает только в движении, как и при любом другом условии."
-L["OPTIONS_FARM_PACK"] = "Охотник: Дух стаи"
-L["OPTIONS_FARM_PACK_DESCRIPTION"] =
-	"Удобно при групповом сборе, когда вся группа движется со скоростью гепарда."
-L["OPTIONS_FARM_GHOST_WOLF"] = "Шаман: Призрачный волк"
+L["OPTIONS_FARM_PACK_GROUP_DESCRIPTION"] =
+	"Удобно при групповом сборе, когда вся группа держит ваш темп."
 L["OPTIONS_FARM_GHOST_WOLF_DESCRIPTION"] =
 	"Отлично подходит для сбора ресурсов до первого средства передвижения."
 L["OPTIONS_CYCLE_SPEED"] = "Скорость цикла"
@@ -243,8 +236,8 @@ L["OPTIONS_FARM_ABILITIES"] = "Способности Режима фарма"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Отметьте то, что хотите найти. Режим фарма переключает все отмеченные способности, известные этому персонажу, и пропускает остальные."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Профессии и расовые способности"
-L["OPTIONS_FARM_CAT_FORM_NOTE"] =
-	"Переключается только в Облике кошки, который относится к условию Пешком."
+L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] =
+	"Переключается только в облике: %s. Он относится к условию Пешком."
 L["OPTIONS_FARM_PERSISTENT"] = "Включать способность постоянного отслеживания"
 L["OPTIONS_FARM_PERSISTENT_DESCRIPTION"] =
 	"Никогда не появляется дважды, даже если отмечена и ниже. Автоматическое отслеживание цели подставляет вместо нее вид вашей цели."
@@ -283,9 +276,9 @@ L["MATCH_MINE"] = "Горное дело"
     in chat, and the line reads as the player talking.
 ]]
 
-L["MSG_FORMAT_LOCKED"] = "Эй, Разбойники! %s (%s, %s) в %s."
-L["MSG_FORMAT_HERB"] = "Эй, Травники! %s (%s, %s) в %s."
-L["MSG_FORMAT_MINE"] = "Эй, Рудокопы! %s (%s, %s) в %s."
+L["MSG_FORMAT_LOCKED"] = "Эй, разбойники! %s (%s, %s), %s."
+L["MSG_FORMAT_HERB"] = "Эй, травники! %s (%s, %s), %s."
+L["MSG_FORMAT_MINE"] = "Эй, рудокопы! %s (%s, %s), %s."
 
 L["CHAT_TOO_LONG"] =
 	"Этот черновик занимает %d байт и превышает лимит чата в %d байт. Сократите его перед отправкой."
@@ -294,7 +287,7 @@ L["CHAT_TOO_LONG"] =
 
 L["TAB_COME_AND_GET_IT"] = "Come & Get It"
 L["OPTIONS_COME_AND_GET_IT_DESCRIPTION"] =
-	"Нашли траву, которую не можете собрать, рудную жилу, которую не можете разработать, или запертый сундук с сокровищами, а Разбойника рядом нет? Щелкните по находке правой кнопкой мыши, и Come & Get It создаст сообщение, с помощью которого можно поделиться координатами или объявить их всем. Быть героем еще никогда не было так просто."
+	"Нашли траву, которую не можете собрать, рудную жилу, которую не можете разработать, или запертый сундук с сокровищами, а разбойника рядом нет? Щелкните по находке правой кнопкой мыши, и Come & Get It создаст сообщение, с помощью которого можно поделиться координатами или объявить их всем. Быть героем еще никогда не было так просто."
 L["OPTIONS_ENABLE_COME_AND_GET_IT"] = "Включить Come & Get It"
 L["OPTIONS_ENABLE_COME_AND_GET_IT_DESCRIPTION"] =
 	"Молчит в бою и в подземельях, чтобы окно чата не перехватывало клавиатуру посреди схватки."
@@ -304,7 +297,3 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 L["OPTIONS_OUTPUT_NOTE"] =
 	"Примечание: Локальный (/1) доходит только до игроков на вашем слое."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Локальный (/1)"
-L["OPTIONS_OUTPUT_SAY"] = "Речь"
-L["OPTIONS_OUTPUT_YELL"] = "Крик"
-L["OPTIONS_OUTPUT_PARTY"] = "Группа"
-L["OPTIONS_OUTPUT_GUILD"] = "Гильдия"
