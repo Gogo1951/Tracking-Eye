@@ -8,7 +8,8 @@ This document combines architecture notes and contribution guidance for develope
 TrackingEye/
 ├── .github/
 │   └── workflows/
-│       └── package.yml              CurseForge and Wago release plus library vendoring, no GitHub token by design
+│       ├── ci.yml                   Calls Common-Core: Lua 5.1 syntax, luacheck, StyLua and tests on every PR
+│       └── package.yml              Calls Common-Core: CurseForge and Wago release plus library vendoring, no GitHub token by design
 ├── .gitattributes                   Line-ending normalization
 ├── .gitignore                       Dev-clutter ignore list
 ├── .luacheckrc                      Lint config, skips Includes/ and .claude/
@@ -64,8 +65,8 @@ TrackingEye/
 │   ├── Options-Come-and-Get-It.lua  Come & Get It child panel, directly beneath Farm Mode
 │   ├── Options-Profiles.lua         Stock AceDBOptions-3.0 table, returned unmodified
 │   └── Options.lua                  Registration, the options opener, the /te command
-├── tools/                           Dev-only: no TOC lists it and .pkgmeta strips it
-│   └── Test-Event-Log-Noise.lua     Offline tests for the event log's noise filter
+├── Tests/                           Dev-only: no TOC lists it and .pkgmeta strips it
+│   └── Run.lua                      Offline tests for the event log's noise filter
 ├── LICENSE                          MIT
 ├── README.md                        End-user documentation
 ├── README-Notes.md                  The maintainer's settled exceptions and decisions
@@ -81,7 +82,7 @@ There are five TOCs, one per flavor, identical line for line except `## Interfac
 
 The folders differ where the clients do. Classic Era has no Find Fish, and neither it nor WoW Forever has Flight Form or Swift Flight Form. MoP Classic has no Sense Demons, Sense Undead, or Find Treasure, and adds Track Pets. Retail adds Track Mechanicals, the druid's Cat Form Track Beasts, and Track Pets, keeps Sense Undead but not Sense Demons or Find Treasure, and has no buff row for Aspect of the Cheetah or Aspect of the Pack.
 
-`.pkgmeta`'s ignore list strips the repo scaffolding, `LICENSE`, `tools`, and `Data/Wrath`, so a copy installed from CurseForge or Wago carries none of them. The release workflow re-exports `Includes/Libraries/` from `.pkgmeta`'s externals on every tag, so a hand edit there is lost at the next release. `Bindings.xml` has no TOC line on purpose; see *Key Bindings*.
+`.pkgmeta`'s ignore list strips the repo scaffolding, `LICENSE`, `Tests`, and `Data/Wrath`, so a copy installed from CurseForge or Wago carries none of them. The release workflow re-exports `Includes/Libraries/` from `.pkgmeta`'s externals on every tag, so a hand edit there is lost at the next release. `Bindings.xml` has no TOC line on purpose; see *Key Bindings*.
 
 ## Architecture
 
@@ -541,7 +542,7 @@ The Diagnostic Tools system (the `Diagnostics/` folder) exists to make bug repor
 
 ### Offline Tests
 
-`tools/Test-Event-Log-Noise.lua` pins the noise filter with the three cases Build Reference → DIAGNOSTIC TOOLS → Event Log Noise requires: spam collapses to one counted row, a correlated ID still logs a full line, and an event with no ID logs verbatim. It loads `Features/Come-and-Get-It.lua`, `Diagnostics/Diagnostics-Core.lua` and `Diagnostics/Event-Log.lua` into a stubbed sandbox, so it runs outside the game: `lua tools/Test-Event-Log-Noise.lua` from the add-on root, with Lua 5.2 or later, since it passes an environment to `loadfile`. It prints one PASS or FAIL line per test and exits non-zero on any failure. No TOC lists `tools/`, and `.pkgmeta` keeps it out of the release.
+`Tests/Run.lua` pins the noise filter with the three cases Build Reference → DIAGNOSTIC TOOLS → Event Log Noise requires: spam collapses to one counted row, a correlated ID still logs a full line, and an event with no ID logs verbatim. It loads `Features/Come-and-Get-It.lua`, `Diagnostics/Diagnostics-Core.lua` and `Diagnostics/Event-Log.lua` into a stubbed sandbox, so it runs outside the game: `lua5.1 Tests/Run.lua` from the add-on root. It runs on Lua 5.1, the version WoW embeds and what CI uses on every PR, setting the sandbox with `setfenv` because 5.1's `loadfile` takes no environment. It prints one PASS or FAIL line per test and exits non-zero on any failure. No TOC lists `Tests/`, and `.pkgmeta` keeps it out of the release.
 
 ## Saved Variables
 
@@ -684,7 +685,7 @@ Everything else, including the Spanish file pairing, the overflow canary, and th
 - **Reusing a retired locale key name**: its old translations stay in the other ten files, and AceLocale falls back to English only for keys a locale doesn't define. Search every locale file for a new key name before using it.
 - **Adding an unsuffixed `TrackingEye.toc`**: a client with no TOC of its own suffix falls back to it and would load the add-on under whatever `X-Flavor` it names. One suffixed TOC per flavor and nothing else.
 - **Listing `Bindings.xml` in a TOC**: the UI parser rejects the file and the binding never appears. The client loads it from the root on its own.
-- **Adding a GitHub token to `package.yml`**: given `GITHUB_OAUTH` or `GITHUB_API_TOKEN`, the packager rewrites the GitHub release's name and body from commit messages on every build, replacing the hand-written release notes. The workflow deliberately carries neither.
+- **Adding a GitHub token to Common-Core's `package.yml`**: given `GITHUB_OAUTH` or `GITHUB_API_TOKEN`, the packager rewrites the GitHub release's name and body from commit messages on every build, replacing the hand-written release notes. The workflow deliberately carries neither.
 - **Renaming *Restricted Zones* in this document**: `Features/Core.lua` cites that section by name.
 
 ## Contributing
@@ -699,7 +700,7 @@ Everything else, including the Spanish file pairing, the overflow canary, and th
     - Read *Reading and Clearing Tracking*, *Decide → Cast → Confirm*, and *Persistent Tracking* before touching those paths.
     - Migration discipline: a change to the shape, name, or scope of saved data ships with its own 30-day migration, tagged `MIGRATION (remove after YYYY-MM-DD)` (Style Guide → SAVED VARIABLES → Migration Windows). A new or removed `ns.FARM_CYCLE_DEFAULTS` entry reaches existing characters; the release notes say so.
     - Output length: Tracking Eye writes no macros and sends no chat itself. The Come & Get It `MSG_FORMAT_*` bodies are its one chat line, sent by the player, so a change to them is checked against 255 bytes in the widest-encoding locale (Style Guide → MESSAGES → Message Length), with the four `%s` kept in order.
-    - Run `lua tools/Test-Event-Log-Noise.lua` after touching Come & Get It's matcher or the event log, and `README-Testing.md` on each flavor before a release.
+    - Run `lua5.1 Tests/Run.lua` after touching Come & Get It's matcher or the event log, and `README-Testing.md` on each flavor before a release.
     - When the architecture or file map changes, update this document in the same PR.
 - **Commit and PR descriptions require a User Story.** Don't just say "I changed X" or "I fixed Y." Frame the change in terms of who it helps and why:
 
