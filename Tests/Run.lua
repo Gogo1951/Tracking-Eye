@@ -1,7 +1,8 @@
 --[[
     Offline tests for the Diagnostics event log's noise filter (Build Reference →
     Event Log Noise). Dev-only: never listed in a TOC, and kept out of the release
-    by .pkgmeta. Run from the add-on root: lua tools/Test-Event-Log-Noise.lua
+    by .pkgmeta. Run from the add-on root with Lua 5.1, the version WoW embeds:
+    lua5.1 Tests/Run.lua
 ]]
 
 local LOCKED_ID = 1
@@ -45,7 +46,11 @@ for _, path in ipairs({
 	"Diagnostics/Diagnostics-Core.lua",
 	"Diagnostics/Event-Log.lua",
 }) do
+	-- Lua 5.1 has no environment argument to loadfile, so the sandbox is set afterwards.
 	local chunk = assert(loadfile(path, "t", sandbox))
+	if setfenv then
+		setfenv(chunk, sandbox)
+	end
 	chunk("TrackingEye", ns)
 end
 
