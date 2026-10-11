@@ -89,7 +89,7 @@ globals = {
 	-- exactly the add-on's own sanctioned globals
 	"TrackingEyeDB",
 	"SLASH_TRACKINGEYE1",
-	"SlashCmdList",
+	SlashCmdList = { fields = { "TRACKINGEYE" } }, -- a field, so only the add-on's own slash entry is writable
 	"TrackingEye_CycleFarmAbility",
 	"BINDING_NAME_TRACKINGEYE_CYCLE_FARM_ABILITY",
 }
