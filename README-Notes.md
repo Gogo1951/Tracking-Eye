@@ -24,7 +24,7 @@
 
 ### Two History lead lines
 
-- **Departs from:** Optional - ReadMe File Prompt → Appreciation & History → pick the one lead line that is true.
+- **Departs from:** `09 - Optional Create README.md` → Appreciation & History, "Pick the one lead line that is true."
 - **Instead:** The README's History carries both lead lines: the takeover line over LindenRyuujin's Tracking Eye, and the shoulders line over Come & Get It.
 - **Why:** Both are true of this add-on: Gogo1951 took it over from its original author and later rolled another Gogo1951 add-on into it.
 
