@@ -219,9 +219,13 @@ function ns.InitMinimap()
 	if ns.db and ns.db.global.minimap then
 		LibDBIcon:Register(ADDON_NAME, ns.ldb, ns.db.global.minimap)
 
-		if ns.FLAVOR == "Camelot" or ns.FLAVOR == "Mainline" then
-			LibDBIcon:SetButtonIcon(ADDON_NAME, nil, 20, "CENTER", 1, -0.35)
-			local fitButton = LibDBIcon:GetMinimapButton(ADDON_NAME)
+		-- Fitted by hand, not SetButtonIcon: its ResetButtonIcon calls icon:UpdateCoord(),
+		-- which errors when another add-on has replaced the button's icon.
+		local fitButton = LibDBIcon:GetMinimapButton(ADDON_NAME)
+		if (ns.FLAVOR == "Camelot" or ns.FLAVOR == "Mainline") and fitButton and fitButton.icon then
+			fitButton.icon:SetSize(20, 20)
+			fitButton.icon:ClearAllPoints()
+			fitButton.icon:SetPoint("CENTER", 1, -0.35)
 			local mask = fitButton:CreateMaskTexture()
 			mask:SetTexture(130924, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE") -- Interface\CharacterFrame\TempPortraitAlphaMask
 			mask:SetAllPoints(fitButton.icon)
