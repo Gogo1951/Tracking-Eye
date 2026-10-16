@@ -22,7 +22,8 @@ local _, ns = ...
     don't exist until the client loads them. This is a plain namespace table, so
     it starts false at every login and is never persisted.
 
-    outputs holds each report tab's one output box (settings, code, data),
+    outputs holds each report tab's one output box (settings, code, data,
+    localization),
     status each report's last run state, and running the tab whose run is in
     flight, or nil.
 ]]
@@ -60,9 +61,11 @@ ns.DiagnosticsStrings = {
 	TAB_SETTINGS = "Settings",
 	TAB_CODE = "Code",
 	TAB_DATA = "Data",
+	TAB_LOCALIZATION = "Localization",
 	SECTION_SETTINGS = "Settings & Configuration",
 	SECTION_CODE = "Code",
 	SECTION_DATA = "Data",
+	SECTION_LOCALIZATION = "Localization",
 
 	RUN_TESTS_INTRO = "Live tools for catching a problem as it happens. Turn on what you need, reproduce the problem, then copy what they caught.",
 	EVENT_LOG_TITLE = "Event Log",
@@ -78,6 +81,7 @@ ns.DiagnosticsStrings = {
 	EVENT_LOG_STOP_DESCRIPTION = "Stops capturing and keeps what was captured, ready to show.",
 	EVENT_LOG_SHOW = "Show",
 	EVENT_LOG_SHOW_DESCRIPTION = "Prints the captured events in the box below, ready to copy.",
+	EVENT_LOG_PRIVACY = "The log includes the text of chat messages it catches, whispers too. Read it through before you paste it anywhere.",
 	TAINT_TITLE = "Taint Log",
 	TAINT_INTRO = 'Seeing "action blocked" or "interface action failed" errors? Turn this on and the game records the cause to a file. Send the file along with your bug report.',
 	TAINT_STATE = "Taint logging is currently set to level %d (0 = off, 2 = verbose).",
@@ -115,8 +119,12 @@ ns.DiagnosticsStrings = {
 		.. TITLE
 		.. " relies on is present on this client.",
 	CODE_RUN_ALL = "Run All Code Reports",
-	DATA_INTRO = "Checks every spell the add-on ships against this client. Paste a result into a spreadsheet and sort by STATUS to find what needs pruning.",
+	DATA_INTRO = "Checks every spell and zone the add-on ships against this client. Paste a result into a spreadsheet and sort by STATUS to find what needs pruning.",
 	DATA_RUN_ALL = "Validate All Data Files",
+	LOCALIZATION_INTRO = "Playing in a language other than English and a name or prompt reads wrong? These show what your client calls everything "
+		.. TITLE
+		.. " names.",
+	LOCALIZATION_RUN_ALL = "Run All Localization Reports",
 	RUN_ALL_DESCRIPTION = "Runs %s, one after another.",
 
 	EVENTS_TITLE = "Event Registration",
@@ -126,23 +134,34 @@ ns.DiagnosticsStrings = {
 	API_TITLE = "API Endpoints",
 	API_DESCRIPTION = "Checks that every game function " .. TITLE .. " calls exists on this client.",
 	PLAYER_TITLE = "Player & Spell Context",
-	PLAYER_DESCRIPTION = "Shows your class and level, and which tracking spells this character knows.",
+	PLAYER_DESCRIPTION = "Shows your character and profile, which tracking spells it knows, and what the game says is being tracked right now.",
+	PERSISTENT_TITLE = "Persistent Tracking Context",
+	PERSISTENT_DESCRIPTION = "Shows the ability Persistent Tracking keeps up and why, every check that can hold its recast, and where Target Tracking stands on your current target.",
 	FARM_TITLE = "Farm Mode Context",
-	FARM_DESCRIPTION = "Shows Farm Mode's settings, what it sees you doing, why it is paused, and the cycle it would cast.",
+	FARM_DESCRIPTION = "Shows Farm Mode's settings, what it sees you doing, why it is paused, the cycle it would cast, and your Cycle Farm Mode Ability key.",
 	CGI_TITLE = "Come & Get It Context",
-	CGI_DESCRIPTION = "Shows Come & Get It's settings, what it matches, and the map position it would announce.",
+	CGI_DESCRIPTION = "Shows Come & Get It's settings, what it matches, every check that can stop a callout, and the map position it would announce.",
 	VALIDATE_TITLE = "Validate Data: %s",
 	VALIDATE_DESCRIPTION = "Checks every id in this data file against this client and exports the results as tab-separated text.",
 	VALIDATE_PROGRESS = "%s / %s IDs",
-	VALIDATE_HINT = "Checks every spell id a data file ships against this client and exports what the client knows about each one as tab-separated text, ready to paste into a spreadsheet. Spell rows carry every spell API return, the file's own values in the DATA columns so you can sort for mismatches, whether this character knows the spell, and the whole tooltip in one TOOLTIP cell, its lines joined by // and a right-hand text after >>. Tables of ids no client API looks up print their row count instead. STATUS reads OK, NOT ON CLIENT for an id this client does not have or never answers for, INCOMPLETE when a spell loaded but its description or tooltip never did, ERROR with the message in the name cell when a read throws, or TABLE MISSING when this client's folder never built a table.",
 	DISPLAY_TITLE = "Display Context",
-	DISPLAY_DESCRIPTION = "Shows your screen size, UI scale, the mini-map button's saved position, the free-placement icon, and the mini-map zoom.",
+	DISPLAY_DESCRIPTION = "Shows your screen size, UI scale, the mini-map button's saved position, the free-placement icon and the mini-map zoom.",
 	ADDONS_TITLE = "Other Add-ons",
 	ADDONS_DESCRIPTION = "Lists every installed add-on with its version, and whether it is loadable or disabled.",
 	SAVED_TITLE = "Saved Variables",
 	SAVED_DESCRIPTION = "Prints " .. TITLE .. "'s saved settings and lists as readable text.",
 	LIBS_TITLE = "Library Versions",
 	LIBS_DESCRIPTION = "Lists the version of every library " .. TITLE .. " loaded.",
+	LOCALE_TITLE = "Locale Context",
+	LOCALE_DESCRIPTION = "Shows your client's language, its text and audio language settings, and how many of "
+		.. TITLE
+		.. "'s own strings loaded.",
+	NAMES_TITLE = "Game Names",
+	NAMES_DESCRIPTION = "Shows the name your client gives every game string " .. TITLE .. " shows or matches.",
+	NAMES_ALL_FOUND = "all found",
+	NAMES_SOME_NIL = "%d NIL",
+	MESSAGES_TITLE = "Message Length",
+	MESSAGES_DESCRIPTION = "Builds each Come & Get It callout with the longest zone name your client has, and shows its length against the chat limit and the room left for the node's name. Nothing is sent.",
 
 	STATUS_WAITING = "Waiting",
 	STATUS_RUNNING = "Running",
