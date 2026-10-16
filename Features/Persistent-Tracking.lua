@@ -314,5 +314,6 @@ function ns.RecastAfterResurrection()
 		return
 	end
 	resurrectRecastPending = true
+	-- The 1.5-second wait before the first attempt is the maintainer's choice.
 	C_Timer.After(1.5, AttemptResurrectionRecast)
 end

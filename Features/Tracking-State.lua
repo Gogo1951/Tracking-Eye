@@ -115,6 +115,11 @@ function ns.UpdateIcon()
 		ns.state.farmPauseReason, ns.state.farmPauseState = ns.GetFarmPauseReason()
 	end
 
+	--[[
+	    The icon never dims while Farm Mode is paused: on foot is a pause by
+	    default, so a dimmed icon read as the add-on switched off. The tooltip's
+	    Farm Mode Status is the only place a pause shows.
+	]]
 	if ns.ldb then
 		ns.ldb.icon = ns.state.currentIcon
 	end

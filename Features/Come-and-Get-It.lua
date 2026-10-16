@@ -9,8 +9,8 @@ local L = ns.L
     Right-click an herb you can't pick, a vein you can't mine, or a locked chest,
     and the error it raises becomes a chat draft naming the node and where it is.
     Nothing is ever sent: the draft opens in the chat box for the player to send
-    or delete. Ported from the standalone Come & Get It add-on with its pipeline
-    unchanged — gate, detect, compose, write — behind its own master toggle.
+    or delete. The pipeline is gate, detect, compose, write, behind its own
+    master toggle.
 ]]
 
 local ANNOUNCE_COOLDOWN = ns.ANNOUNCE_COOLDOWN

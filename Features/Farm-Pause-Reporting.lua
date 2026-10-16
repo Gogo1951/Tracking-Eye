@@ -216,6 +216,7 @@ function ns.GetFarmPauseReason(ownTooltipShowing)
 	if ns.IsTooltipShowing() then
 		return "FARM_PAUSED_TOOLTIP"
 	end
+	-- A fight that starts while mounted pauses as combat too, like any other fight.
 	if UnitAffectingCombat("player") then
 		return "FARM_PAUSED_COMBAT"
 	end

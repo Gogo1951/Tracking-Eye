@@ -18,7 +18,7 @@ local _, ns = ...
 
     A hunt starts or switches only out in the world and out of combat, from a
     living, attackable creature. A target picked mid-fight never counts and is
-    never queued. A hunt ends at a context break: a town, an inn, an instance, a
+    never queued. A hunt has no fade timer; it ends only at a context break: a town, an inn, an instance, a
     flight, a Tracking Menu pick, Clear Tracking, switching the feature off, or a
     profile change. Every break except the menu pick and Clear Tracking brings the
     Persistent Tracking Ability back through ns.TryRecastPersistent.

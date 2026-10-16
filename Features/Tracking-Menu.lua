@@ -9,12 +9,7 @@ local LibUIDropDownMenu = LibStub("LibUIDropDownMenu-4.0")
 
 local dropdown = LibUIDropDownMenu:Create_UIDropDownMenu(ADDON_NAME .. "TrackingMenu", UIParent)
 
---[[
-    Larger font for the menu. LibUIDropDownMenu only honours info.fontObject on enabled
-    buttons, so the title is rendered as an enabled button with no func to pick
-    this up. Text colour comes from the inline colour codes already embedded in
-    the button text.
-]]
+-- The menu's larger font. Text color comes from the inline color codes in each button's text.
 local menuFont = CreateFont(ADDON_NAME .. "TrackingMenuFont")
 do
 	local file, _, flags = _G.GameFontHighlightSmallLeft:GetFont()
