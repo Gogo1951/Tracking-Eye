@@ -1,35 +1,35 @@
 # Tracking Eye
 
-Improved Tracking Menu and automatic switcher that cycles Find Herbs and Find Minerals while farming, restores tracking after death, and tracks targeted creatures while questing. Supports every tracking ability. Never lose track of what you're hunting.
+Mini-map tracking menu and auto switcher for herb and ore gathering. Cycles Find Herbs and Find Minerals while you farm, restores tracking after death, and tracks targeted creatures while questing. Supports every tracking ability. Never miss a node.
 
-**TL;DR**: Work smarter, not harder. Farm Mode keeps both gathering types covered as you move, Automatic Target Tracking helps you stay on top of kill quests, and Come & Get It turns unusable nodes into opportunities for other players.
+**TL;DR**: A pro tracking tool for anyone who farms. Farm Mode flips herb and ore tracking for you as you ride, so you gather more and click less.
+
+<img width="300" src="https://github.com/user-attachments/assets/ca1d9801-20eb-4b35-9593-6c9e30685554" />
 
 ## Features
 
-🎯 **Tracking Menu & Persistent Tracking** // Keep every tracking ability in one place, with automatic swaps when needed and tracking restored after death.
+🚜 **Farm Mode** // Herbs and ore on one mini-map, swapped for you on the move, so no node slips past.
 
-🚜 **Farm Mode** // Automatically cycle between herb and ore tracking while you're moving, so you don't miss nodes hidden by the wrong tracking type.
+🎯 **Tracking Menu & Persistent Tracking** // Every tracking ability in one menu, and your pick comes right back after you die.
 
-🐾 **Automatic Target Tracking** // Target a creature and automatically track its kind, making kill quests faster and easier to follow.
+🐾 **Automatic Target Tracking** // Target a creature and the rest of its kind lights up on your mini-map. Kill quests, done faster.
 
-📣 **Come & Get It** // Right-click an herb, vein, or chest you can't use and generate a ready-to-send chat callout with its coordinates. Let someone else come get it.
-
-⚙️ **Highly Configurable** // Customize tracking, automation, and callouts to fit the way you play, quest, and farm.
+📣 **Come & Get It** // Right-click a node you can't use and draft a callout with its coordinates for someone who can.
 
 ## Setup
 
-1. Install the add-on, ideally using [CurseForge](https://www.curseforge.com/wow/addons/tracking-eye-classic) or [Wago](https://addons.wago.io/addons/tracking-eye).
+1. Install the add-on, ideally using [CurseForge](https://www.curseforge.com/wow/addons/tracking-eye-revisited) or [Wago](https://addons.wago.io/addons/tracking-eye).
 2. Log in.
 3. Left-click the mini-map button and pick your tracking.
 4. Mount up and ride. Farm Mode does the rest.
-5. Something not behaving the way you want it to? Type `/te` and tune settings to your heart's desire.
+5. Want it your way? Type `/te` and tune it to your heart's desire.
 6. _"All your nodes are belong to us."_
 
 ## How It Works
 
 ### Tracking Menu & Persistent Tracking
 
-Hunters, Druids, Warlocks, Paladins, Dwarves, and anyone with Herbalism, Mining, or Fishing: it all lives in one menu. Persistent Tracking can even swap in the right tracking for the moment:
+Hunters, Druids, Warlocks, Paladins, Dwarves, and anyone with Herbalism, Mining, or Fishing: it all lives in one menu, and it can swap in the right tracking for the moment:
 
 * **Equip a fishing pole** // Find Fish takes over until you put it away.
 * **Druids in Cat Form** // Track Humanoids takes over.
@@ -37,7 +37,7 @@ Hunters, Druids, Warlocks, Paladins, Dwarves, and anyone with Herbalism, Mining,
 
 ### Farm Mode
 
-* **Stays out of your way** // No casts in combat, while you gather or loot, or while you're standing still, and it sits out towns, instances, and flights.
+* **Stays out of your way** // Never switches in combat or in town, so it never costs you a global cooldown when it matters.
 * **Quiet** // Every switch makes a sound, so Farm Mode mutes game sound effects for a split second around each one. Turn that off if another sound ever gets clipped.
 * **Sees farther** // Your mini-map zooms all the way out when a farming run starts, so more nodes fit on it.
 
@@ -47,7 +47,7 @@ You don't need the profession to use this, you need to *not* have it.
 
 > Hey Miners! Rich Thorium Vein at 25, 54 in Eastern Plaguelands.
 
-Drafts open in Local (/1), and nothing goes out until you press Enter.
+Nothing goes out until you press Enter.
 
 ### Mini-Map Button
 
@@ -59,9 +59,7 @@ Drafts open in Local (/1), and nothing goes out until you press Enter.
 | Shift + Right-Click | Toggle Automatic Target Tracking |
 | Shift + Middle-Click | Open the Options Interface |
 
-The icon shows what you're tracking, and hovering it tells you exactly why Farm Mode is paused. Crowded mini-map? Free Placement Mode lets you park the icon anywhere on screen.
-
-<img width="300" src="https://github.com/user-attachments/assets/ca1d9801-20eb-4b35-9593-6c9e30685554" />
+Hover the icon to see exactly why Farm Mode is paused. Crowded mini-map? Free Placement Mode parks the icon anywhere on screen.
 
 ### Options
 
@@ -71,6 +69,7 @@ Type `/te`, or find it under **Options > AddOns > Tracking Eye**.
 * **Farm Mode** // What cycles, when, and how fast.
 * **Come & Get It** // Where your callouts go.
 * **Profiles** // Copy one character's setup to another.
+* **Feedback & Support** // Links to share feedback, report bugs, or spread the word.
 * **Diagnostic Tools** // Reports to paste into a bug report.
 
 <img width="800" src="https://github.com/user-attachments/assets/fbaf3a78-3cbe-49b5-978a-43efd6ee43ae" />
@@ -115,7 +114,7 @@ Type `/te`, or find it under **Options > AddOns > Tracking Eye**.
 * hizuro\_de's [FarmHud](https://www.curseforge.com/wow/addons/farmhud)
 * moonfann's [GatherMate2](https://www.curseforge.com/wow/addons/gathermate2)
 * nevcairiel's [GatherMate2 Classic](https://www.curseforge.com/wow/addons/gathermate2-classic)
-* Xinhuan's [HandyNotes](https://www.curseforge.com/wow/addons/handynotes)
+* Wuild's [GatherLite](https://www.curseforge.com/wow/addons/gatherlite)
 * Xinhuan's [Routes](https://www.curseforge.com/wow/addons/routes)
 
 ### 🟡 Overlaps
