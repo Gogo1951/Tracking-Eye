@@ -10,7 +10,7 @@ L["ADDON_TITLE"] = "Tracking Eye"
 --------------------------------------------------------------------------------
 
 L["CHAT_LOADED"] =
-	"Version %s. Settings (including the option to disable this message) can be found under Options > AddOns > Tracking Eye. Enjoying the add-on? Tell a friend about it! (="
+	"Version %s. Settings (including the option to disable this message) are under Options > AddOns > Tracking Eye. Enjoying this add-on? Tell a friend, Favorite it on CurseForge, or Star it on GitHub. (="
 L["CHAT_OPTIONS_IN_COMBAT"] = "As a safety precaution, the Options Interface cannot be opened during combat."
 L["CHAT_KEY_BINDINGS_IN_COMBAT"] = "As a safety precaution, the key binding list cannot be opened during combat."
 L["KEY_BINDINGS_LOCATION"] = "Open the game menu, then %s, then %s, and find the Tracking Eye section."
@@ -44,7 +44,7 @@ L["FARM_PAUSED_RESTING"] = "In a town or inn."
 L["FARM_PAUSED_NO_ABILITIES"] = "No Farm Mode Abilities are ticked."
 L["FARM_PAUSED_NOT_LEARNED"] = "You don't know any of your ticked Farm Mode Abilities."
 L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s tracking only cycles in %s."
-L["FARM_PAUSED_NO_STATES"] = "No Farm Mode Conditions are switched on."
+L["FARM_PAUSED_NO_STATES"] = "No Farm Mode Conditions are ticked."
 L["FARM_PAUSED_NOT_MOUNTED"] = "Not mounted."
 L["FARM_PAUSED_NOT_TRAVEL"] = "Not in a travel form."
 L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "Not using %s."
@@ -104,7 +104,7 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 -- General
 
 L["OPTIONS_DESCRIPTION"] =
-	"Improved Tracking Menu and automatic switcher that cycles Find Herbs and Find Minerals while farming, restores tracking after death, and tracks targeted creatures while questing. Supports every tracking ability. Never lose track of what you're hunting."
+	"Mini-map tracking menu and auto switcher for herb and ore gathering. Cycles Find Herbs and Find Minerals while you farm, restores tracking after death, and tracks targeted creatures while questing. Supports every tracking ability. Never miss a node."
 L["OPTIONS_ENABLE_WELCOME"] = "Enable Welcome Message"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Prints a one-line greeting in chat when Tracking Eye loads."
 L["OPTIONS_ENABLE_MINIMAP"] = "Enable Mini-map Button"
@@ -138,9 +138,9 @@ L["OPTIONS_PERSISTENT_DESCRIPTION"] =
 L["OPTIONS_ENABLE_PERSISTENT"] = "Enable Persistent Tracking"
 L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"] =
 	"Waits until you're out of combat, so it never costs you a global cooldown mid-fight."
-L["OPTIONS_FISHING_POLE_FISH_NAMED"] = "%s when you Equip a %s"
+L["OPTIONS_FISHING_POLE_FISH_NAMED"] = "%s When You Equip a %s"
 L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"] = "Your own pick comes back when you put the pole away."
-L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s: %s when you Shift into %s"
+L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s: %s When You Shift into %s"
 L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"] =
 	"Waits until you leave stealth, and your own pick comes back when you shift out."
 L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"] = "%s: %s in Battlegrounds"
@@ -168,15 +168,6 @@ L["OPTIONS_SHAPE_CIRCLE"] = "Circle"
 L["OPTIONS_SHAPE_SQUARE"] = "Square"
 L["OPTIONS_ICON_SCALE"] = "Icon Size"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "Resizes in place, so the icon keeps its spot."
-
--- Feedback & Support
-
-L["OPTIONS_LINKS"] = "Feedback & Support"
-L["OPTIONS_DISCORD"] = "Discord"
-L["OPTIONS_GITHUB"] = "GitHub"
-L["OPTIONS_CURSEFORGE"] = "CurseForge"
-L["OPTIONS_WAGO"] = "Wago"
-L["OPTIONS_VERSION"] = "Version %s"
 
 -- Farm Mode
 
@@ -269,5 +260,32 @@ L["OPTIONS_ENABLE_COME_AND_GET_IT_DESCRIPTION"] =
 	"Stays quiet in combat and in instances, so the chat box never grabs your keyboard mid-fight."
 L["OPTIONS_OUTPUT_NAME"] = "Default Output"
 L["OPTIONS_OUTPUT_DESCRIPTION"] = "Guild reaches every guildmate online, whatever their layer or zone."
-L["OPTIONS_OUTPUT_NOTE"] = "Note: Local (/1) only reaches players on your layer."
+L["OPTIONS_OUTPUT_NOTE"] = "Note: %s only reaches players on your layer."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Local (/1)"
+
+--------------------------------------------------------------------------------
+-- Feedback & Support
+--------------------------------------------------------------------------------
+
+L["OPTIONS_LEVEL_UP_TITLE"] = "Help Tracking Eye Level Up"
+L["OPTIONS_LEVEL_UP_INTRO"] =
+	"This add-on was built by players who love this game and want to make it as fun as possible for everyone. We'll never ask for donations. The real satisfaction comes from knowing our work makes the game a little better for you. If it does, we'd love to hear about it!"
+L["OPTIONS_LEVEL_UP_WAYS"] = "Here are a few ways you can help us reach more players."
+L["OPTIONS_LEVEL_UP_FEEDBACK"] =
+	"• Share Feedback: Found a bug or have an idea? Let us know on Discord. Your feedback helps us improve the add-on, and pull requests are always welcome."
+L["OPTIONS_LEVEL_UP_FRIEND"] =
+	"• Tell a Friend: Know someone who might enjoy this add-on? Tell them about it. Word of mouth helps more players discover great add-ons."
+L["OPTIONS_LEVEL_UP_CURSEFORGE"] =
+	"• Favorite on CurseForge: Open the CurseForge link below, sign in, and click the star beneath the Download button. Favorites help more players discover the add-on."
+L["OPTIONS_LEVEL_UP_GITHUB"] =
+	"• Star on GitHub: Open the GitHub link below, sign in, and click Star in the top right. Stars help the project qualify for more free developer tools."
+L["OPTIONS_LEVEL_UP_THANKS"] = "Thanks for choosing Tracking Eye!"
+
+L["OPTIONS_FEEDBACK"] = "Feedback & Support"
+L["OPTIONS_FEEDBACK_LINKS_HEADER"] = "Feedback & Support Links"
+L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_GITHUB"] = "GitHub"
+L["OPTIONS_CURSEFORGE"] = "CurseForge"
+L["OPTIONS_WAGO"] = "Wago"
+L["OPTIONS_COPY_LINK"] = "To copy a link, click its box, then press Ctrl+A and Ctrl+C."
+L["OPTIONS_VERSION"] = "Version %s"

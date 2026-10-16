@@ -27,6 +27,7 @@ local mainCategoryID
 local farmModePanel
 local comeAndGetItPanel
 local profilesPanel
+local feedbackSupportPanel
 local diagnosticsPanel
 
 function ns.RegisterOptionsPanels()
@@ -57,12 +58,22 @@ function ns.RegisterOptionsPanels()
 		)
 	end
 
-	-- Profiles panel, registered second-to-last (the stock AceDBOptions table).
+	-- Profiles panel (the stock AceDBOptions table), registered after the feature panels.
 	if ns.BuildProfilesOptions then
 		local profilesTable = ns.BuildProfilesOptions()
 		AceConfigRegistry:RegisterOptionsTable(ns.OPTIONS_REGISTRY.Profiles, profilesTable)
 		profilesPanel =
 			AceConfigDialog:AddToBlizOptions(ns.OPTIONS_REGISTRY.Profiles, profilesTable.name, L["ADDON_TITLE"])
+	end
+
+	-- Feedback & Support panel, registered between Profiles and Diagnostic Tools.
+	if ns.BuildFeedbackSupportOptions then
+		AceConfigRegistry:RegisterOptionsTable(ns.OPTIONS_REGISTRY.FeedbackSupport, ns.BuildFeedbackSupportOptions)
+		feedbackSupportPanel = AceConfigDialog:AddToBlizOptions(
+			ns.OPTIONS_REGISTRY.FeedbackSupport,
+			L["OPTIONS_FEEDBACK"],
+			L["ADDON_TITLE"]
+		)
 	end
 
 	-- Diagnostic Tools panel, registered last so it sits at the bottom of the tree
@@ -94,6 +105,7 @@ function ns.IsOptionsPanelOpen()
 		or (farmModePanel and farmModePanel:IsVisible())
 		or (comeAndGetItPanel and comeAndGetItPanel:IsVisible())
 		or (profilesPanel and profilesPanel:IsVisible())
+		or (feedbackSupportPanel and feedbackSupportPanel:IsVisible())
 		or (diagnosticsPanel and diagnosticsPanel:IsVisible())
 		or false
 end

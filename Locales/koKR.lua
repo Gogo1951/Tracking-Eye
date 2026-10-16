@@ -10,7 +10,7 @@ L["ADDON_TITLE"] = "Tracking Eye"
 --------------------------------------------------------------------------------
 
 L["CHAT_LOADED"] =
-	"버전 %s. 설정(이 메시지를 비활성화하는 옵션 포함)은 설정 > 애드온 > Tracking Eye에서 찾을 수 있습니다. 애드온이 마음에 드시나요? 친구에게 알려주세요! (="
+	"버전 %s. 설정(이 메시지를 비활성화하는 옵션 포함)은 설정 > 애드온 > Tracking Eye에 있습니다. 이 애드온이 마음에 드시나요? 친구에게 알려 주시거나, CurseForge에서 즐겨찾기에 추가하거나, GitHub에서 Star를 눌러 주세요. (="
 L["CHAT_OPTIONS_IN_COMBAT"] = "안전을 위해 전투 중에는 옵션 인터페이스를 열 수 없습니다."
 L["CHAT_KEY_BINDINGS_IN_COMBAT"] = "안전을 위해 전투 중에는 단축키 목록을 열 수 없습니다."
 L["KEY_BINDINGS_LOCATION"] =
@@ -45,7 +45,7 @@ L["FARM_PAUSED_RESTING"] = "마을 또는 여관에 있습니다."
 L["FARM_PAUSED_NO_ABILITIES"] = "체크된 파밍 모드 능력이 없습니다."
 L["FARM_PAUSED_NOT_LEARNED"] = "체크한 파밍 모드 능력을 하나도 배우지 않았습니다."
 L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s 추적은 %s 상태에서만 순환합니다."
-L["FARM_PAUSED_NO_STATES"] = "켜져 있는 파밍 모드 조건이 없습니다."
+L["FARM_PAUSED_NO_STATES"] = "체크된 파밍 모드 조건이 없습니다."
 L["FARM_PAUSED_NOT_MOUNTED"] = "탈것에 타고 있지 않습니다."
 L["FARM_PAUSED_NOT_TRAVEL"] = "여행 변신 상태가 아닙니다."
 L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "%s 사용 중이 아닙니다."
@@ -107,7 +107,7 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 -- General
 
 L["OPTIONS_DESCRIPTION"] =
-	"개선된 추적 메뉴와 자동 추적 전환기로, 파밍 중에는 약초 찾기와 광물 찾기를 순환하고, 사망 후에는 추적을 다시 적용하며, 퀘스트 중에는 대상으로 지정한 생물을 추적합니다. 모든 추적 능력을 지원합니다. 쫓고 있는 대상을 절대 놓치지 마세요."
+	"미니맵 추적 메뉴이자 약초와 광석 채집을 위한 자동 전환기입니다. 파밍 중에는 약초 찾기와 광물 찾기를 순환하고, 사망 후에는 추적을 다시 적용하며, 퀘스트 중에는 대상으로 지정한 생물을 추적합니다. 모든 추적 능력을 지원합니다. 채집물을 하나도 놓치지 마세요."
 L["OPTIONS_ENABLE_WELCOME"] = "환영 메시지 활성화"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Tracking Eye가 로드될 때 대화창에 한 줄짜리 인사말을 출력합니다."
@@ -176,15 +176,6 @@ L["OPTIONS_SHAPE_SQUARE"] = "사각형"
 L["OPTIONS_ICON_SCALE"] = "아이콘 크기"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] =
 	"제자리에서 크기가 바뀌므로 아이콘 위치가 그대로 유지됩니다."
-
--- Feedback & Support
-
-L["OPTIONS_LINKS"] = "피드백 및 지원"
-L["OPTIONS_DISCORD"] = "Discord"
-L["OPTIONS_GITHUB"] = "GitHub"
-L["OPTIONS_CURSEFORGE"] = "CurseForge"
-L["OPTIONS_WAGO"] = "Wago"
-L["OPTIONS_VERSION"] = "버전 %s"
 
 -- Farm Mode
 
@@ -282,5 +273,33 @@ L["OPTIONS_ENABLE_COME_AND_GET_IT_DESCRIPTION"] =
 L["OPTIONS_OUTPUT_NAME"] = "기본 출력"
 L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"길드는 레이어나 지역에 상관없이 접속 중인 모든 길드원에게 전달됩니다."
-L["OPTIONS_OUTPUT_NOTE"] = "참고: 지역 (/1)은 같은 레이어에 있는 플레이어에게만 전달됩니다."
+L["OPTIONS_OUTPUT_NOTE"] = "참고: %s 채널은 같은 레이어에 있는 플레이어에게만 전달됩니다."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "지역 (/1)"
+
+--------------------------------------------------------------------------------
+-- Feedback & Support
+--------------------------------------------------------------------------------
+
+L["OPTIONS_LEVEL_UP_TITLE"] = "Tracking Eye의 레벨 업을 도와주세요"
+L["OPTIONS_LEVEL_UP_INTRO"] =
+	"이 애드온은 이 게임을 사랑하고 모두가 최대한 즐겁게 플레이하기를 바라는 플레이어들이 만들었습니다. 후원을 요청하는 일은 절대 없을 것입니다. 우리의 작업이 여러분의 게임을 조금이라도 더 낫게 만든다는 사실이 진정한 보람입니다. 그렇다면 꼭 이야기를 들려주세요!"
+L["OPTIONS_LEVEL_UP_WAYS"] =
+	"더 많은 플레이어에게 다가갈 수 있도록 도와주실 수 있는 몇 가지 방법을 소개합니다."
+L["OPTIONS_LEVEL_UP_FEEDBACK"] =
+	"• 피드백 공유: 버그를 발견했거나 아이디어가 있으신가요? Discord에서 알려 주세요. 여러분의 피드백은 애드온을 개선하는 데 도움이 되며, 풀 리퀘스트는 언제나 환영합니다."
+L["OPTIONS_LEVEL_UP_FRIEND"] =
+	"• 친구에게 소개: 이 애드온을 좋아할 만한 분을 알고 계신가요? 그분께 알려 주세요. 입소문은 더 많은 플레이어가 좋은 애드온을 발견하는 데 도움이 됩니다."
+L["OPTIONS_LEVEL_UP_CURSEFORGE"] =
+	"• CurseForge에서 즐겨찾기: 아래 CurseForge 링크를 열고 로그인한 다음, Download 버튼 아래의 별을 클릭하세요. 즐겨찾기는 더 많은 플레이어가 이 애드온을 발견하는 데 도움이 됩니다."
+L["OPTIONS_LEVEL_UP_GITHUB"] =
+	"• GitHub에서 Star 누르기: 아래 GitHub 링크를 열고 로그인한 다음, 오른쪽 위의 Star를 클릭하세요. Star는 프로젝트가 더 많은 무료 개발 도구를 지원받는 데 도움이 됩니다."
+L["OPTIONS_LEVEL_UP_THANKS"] = "Tracking Eye를 선택해 주셔서 감사합니다!"
+
+L["OPTIONS_FEEDBACK"] = "피드백 및 지원"
+L["OPTIONS_FEEDBACK_LINKS_HEADER"] = "피드백 및 지원 링크"
+L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_GITHUB"] = "GitHub"
+L["OPTIONS_CURSEFORGE"] = "CurseForge"
+L["OPTIONS_WAGO"] = "Wago"
+L["OPTIONS_COPY_LINK"] = "링크를 복사하려면 해당 상자를 클릭한 다음 Ctrl+A와 Ctrl+C를 누르세요."
+L["OPTIONS_VERSION"] = "버전 %s"

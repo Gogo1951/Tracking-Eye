@@ -8,10 +8,13 @@ ns.SAVED_VARIABLES_NAME = "TrackingEyeDB"
 --------------------------------------------------------------------------------
 
 ns.ICON_DEFAULT = "Interface\\Icons\\inv_misc_map_01"
-ns.CURSEFORGE_URL = "https://www.curseforge.com/wow/addons/tracking-eye-classic"
-ns.DISCORD_URL = "https://discord.gg/eh8hKq992Q"
-ns.GITHUB_URL = "https://github.com/Gogo1951/Tracking-Eye"
-ns.WAGO_URL = "https://addons.wago.io/addons/tracking-eye"
+
+ns.LINKS = {
+	CURSEFORGE = "https://www.curseforge.com/wow/addons/tracking-eye-classic",
+	GITHUB = "https://github.com/Gogo1951/Tracking-Eye",
+	DISCORD = "https://discord.gg/eh8hKq992Q",
+	WAGO = "https://addons.wago.io/addons/tracking-eye",
+}
 
 --[[
     AceConfig registry names, derived from ADDON_NAME. Stable identifiers
@@ -22,6 +25,7 @@ ns.OPTIONS_REGISTRY = {
 	FarmMode = ADDON_NAME .. "_FarmMode",
 	ComeAndGetIt = ADDON_NAME .. "_ComeAndGetIt",
 	Profiles = ADDON_NAME .. "_Profiles",
+	FeedbackSupport = ADDON_NAME .. "_FeedbackSupport",
 	Diagnostics = ADDON_NAME .. "_Diagnostics",
 }
 

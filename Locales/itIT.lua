@@ -10,7 +10,7 @@ L["ADDON_TITLE"] = "Tracking Eye"
 --------------------------------------------------------------------------------
 
 L["CHAT_LOADED"] =
-	"Versione %s. Le impostazioni (inclusa l'opzione per disabilitare questo messaggio) si trovano in Opzioni > Add-on > Tracking Eye. Ti piace l'add-on? Parlane a un amico! (="
+	"Versione %s. Le impostazioni (inclusa l'opzione per disabilitare questo messaggio) si trovano in Opzioni > Add-on > Tracking Eye. Ti piace questo add-on? Parlane a un amico, aggiungilo ai preferiti su CurseForge o dagli una Star su GitHub. (="
 L["CHAT_OPTIONS_IN_COMBAT"] = "Per precauzione, l'Interfaccia Opzioni non può essere aperta durante il combattimento."
 L["CHAT_KEY_BINDINGS_IN_COMBAT"] =
 	"Per precauzione, l'elenco delle assegnazioni dei tasti non può essere aperto durante il combattimento."
@@ -45,7 +45,7 @@ L["FARM_PAUSED_RESTING"] = "In una città o locanda."
 L["FARM_PAUSED_NO_ABILITIES"] = "Nessuna Abilità della Modalità Raccolta è spuntata."
 L["FARM_PAUSED_NOT_LEARNED"] = "Non conosci nessuna delle tue Abilità della Modalità Raccolta spuntate."
 L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s: il tracciamento si alterna solo in %s."
-L["FARM_PAUSED_NO_STATES"] = "Nessuna delle Condizioni della Modalità Raccolta è attiva."
+L["FARM_PAUSED_NO_STATES"] = "Nessuna Condizione della Modalità Raccolta è spuntata."
 L["FARM_PAUSED_NOT_MOUNTED"] = "Non sei in sella."
 L["FARM_PAUSED_NOT_TRAVEL"] = "Non sei in una forma di viaggio."
 L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "Non stai usando %s."
@@ -105,7 +105,7 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 -- General
 
 L["OPTIONS_DESCRIPTION"] =
-	"Menu Tracciamento migliorato e commutatore automatico del tracciamento che alterna Trova Erbe e Trova Minerali durante la raccolta, riapplica il tracciamento dopo la morte e traccia le creature bersagliate durante le missioni. Supporta ogni abilità di tracciamento. Non perdere mai di vista ciò a cui dai la caccia."
+	"Menu di tracciamento sulla minimappa e commutatore automatico per la raccolta di erbe e minerali. Alterna Trova Erbe e Trova Minerali durante la raccolta, riapplica il tracciamento dopo la morte e traccia le creature bersagliate durante le missioni. Supporta ogni abilità di tracciamento. Non perderti più nessun nodo."
 L["OPTIONS_ENABLE_WELCOME"] = "Abilita Messaggio di Benvenuto"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Mostra in chat un saluto di una riga al caricamento di Tracking Eye."
 L["OPTIONS_ENABLE_MINIMAP"] = "Abilita Pulsante Minimappa"
@@ -141,9 +141,9 @@ L["OPTIONS_PERSISTENT_DESCRIPTION"] =
 L["OPTIONS_ENABLE_PERSISTENT"] = "Abilita Tracciamento Persistente"
 L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"] =
 	"Aspetta che tu sia fuori dal combattimento, così non ti costa mai un tempo di recupero globale in piena lotta."
-L["OPTIONS_FISHING_POLE_FISH_NAMED"] = "%s quando Equipaggi %s"
+L["OPTIONS_FISHING_POLE_FISH_NAMED"] = "%s Quando Equipaggi %s"
 L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"] = "La tua scelta torna quando togli la canna."
-L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s: %s quando Passi in %s"
+L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s: %s Quando Passi in %s"
 L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"] =
 	"Aspetta che tu lasci la furtività, e la tua scelta torna quando esci dalla forma."
 L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"] = "%s: %s nei Campi di Battaglia"
@@ -172,15 +172,6 @@ L["OPTIONS_SHAPE_CIRCLE"] = "Cerchio"
 L["OPTIONS_SHAPE_SQUARE"] = "Quadrato"
 L["OPTIONS_ICON_SCALE"] = "Dimensione Icona"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "Si ridimensiona sul posto, così l'icona mantiene la sua posizione."
-
--- Feedback & Support
-
-L["OPTIONS_LINKS"] = "Feedback e Supporto"
-L["OPTIONS_DISCORD"] = "Discord"
-L["OPTIONS_GITHUB"] = "GitHub"
-L["OPTIONS_CURSEFORGE"] = "CurseForge"
-L["OPTIONS_WAGO"] = "Wago"
-L["OPTIONS_VERSION"] = "Versione %s"
 
 -- Farm Mode
 
@@ -276,5 +267,32 @@ L["OPTIONS_ENABLE_COME_AND_GET_IT_DESCRIPTION"] =
 L["OPTIONS_OUTPUT_NAME"] = "Uscita Predefinita"
 L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"Gilda raggiunge tutti i membri della gilda online, qualunque sia il loro layer o la loro zona."
-L["OPTIONS_OUTPUT_NOTE"] = "Nota: Locale (/1) raggiunge solo i giocatori sul tuo layer."
+L["OPTIONS_OUTPUT_NOTE"] = "Nota: %s raggiunge solo i giocatori sul tuo layer."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Locale (/1)"
+
+--------------------------------------------------------------------------------
+-- Feedback & Support
+--------------------------------------------------------------------------------
+
+L["OPTIONS_LEVEL_UP_TITLE"] = "Aiuta Tracking Eye a Salire di Livello"
+L["OPTIONS_LEVEL_UP_INTRO"] =
+	"Questo add-on è stato creato da giocatori che amano questo gioco e vogliono renderlo il più divertente possibile per tutti. Non chiederemo mai donazioni. La vera soddisfazione è sapere che il nostro lavoro rende il gioco un po' migliore per te. Se è così, ci farebbe piacere saperlo!"
+L["OPTIONS_LEVEL_UP_WAYS"] = "Ecco alcuni modi in cui puoi aiutarci a raggiungere più giocatori."
+L["OPTIONS_LEVEL_UP_FEEDBACK"] =
+	"• Condividi il tuo Feedback: Hai trovato un bug o hai un'idea? Faccelo sapere su Discord. Il tuo feedback ci aiuta a migliorare l'add-on, e le pull request sono sempre benvenute."
+L["OPTIONS_LEVEL_UP_FRIEND"] =
+	"• Parlane a un Amico: Conosci qualcuno a cui potrebbe piacere questo add-on? Parlagliene. Il passaparola aiuta più giocatori a scoprire ottimi add-on."
+L["OPTIONS_LEVEL_UP_CURSEFORGE"] =
+	"• Aggiungilo ai Preferiti su CurseForge: Apri il link di CurseForge qui sotto, accedi e clicca sulla stella sotto il pulsante Download. I preferiti aiutano più giocatori a scoprire l'add-on."
+L["OPTIONS_LEVEL_UP_GITHUB"] =
+	"• Dagli una Star su GitHub: Apri il link di GitHub qui sotto, accedi e clicca su Star in alto a destra. Le Star aiutano il progetto a ottenere più strumenti gratuiti per sviluppatori."
+L["OPTIONS_LEVEL_UP_THANKS"] = "Grazie per aver scelto Tracking Eye!"
+
+L["OPTIONS_FEEDBACK"] = "Feedback e Supporto"
+L["OPTIONS_FEEDBACK_LINKS_HEADER"] = "Link di Feedback e Supporto"
+L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_GITHUB"] = "GitHub"
+L["OPTIONS_CURSEFORGE"] = "CurseForge"
+L["OPTIONS_WAGO"] = "Wago"
+L["OPTIONS_COPY_LINK"] = "Per copiare un link, clicca nella sua casella, poi premi Ctrl+A e Ctrl+C."
+L["OPTIONS_VERSION"] = "Versione %s"

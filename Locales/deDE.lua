@@ -10,7 +10,7 @@ L["ADDON_TITLE"] = "Tracking Eye"
 --------------------------------------------------------------------------------
 
 L["CHAT_LOADED"] =
-	"Version %s. Einstellungen (einschließlich der Option, diese Nachricht zu deaktivieren) findet Ihr unter Optionen > Addons > Tracking Eye. Gefällt Euch das Add-on? Erzählt einem Freund davon! (="
+	"Version %s. Einstellungen (einschließlich der Option, diese Nachricht zu deaktivieren) findet Ihr unter Optionen > Addons > Tracking Eye. Gefällt Euch dieses Add-on? Erzählt einem Freund davon, favorisiert es auf CurseForge oder gebt ihm auf GitHub einen Star. (="
 L["CHAT_OPTIONS_IN_COMBAT"] = "Aus Sicherheitsgründen kann die Optionsoberfläche im Kampf nicht geöffnet werden."
 L["CHAT_KEY_BINDINGS_IN_COMBAT"] =
 	"Aus Sicherheitsgründen kann die Liste der Tastaturbelegungen im Kampf nicht geöffnet werden."
@@ -45,7 +45,7 @@ L["FARM_PAUSED_RESTING"] = "In einer Stadt oder einem Gasthaus."
 L["FARM_PAUSED_NO_ABILITIES"] = "Es sind keine Farming-Modus-Fähigkeiten angekreuzt."
 L["FARM_PAUSED_NOT_LEARNED"] = "Ihr beherrscht keine Eurer angekreuzten Farming-Modus-Fähigkeiten."
 L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s: Die Aufspürung wechselt nur in %s."
-L["FARM_PAUSED_NO_STATES"] = "Es sind keine Farming-Modus-Bedingungen aktiviert."
+L["FARM_PAUSED_NO_STATES"] = "Es sind keine Farming-Modus-Bedingungen angekreuzt."
 L["FARM_PAUSED_NOT_MOUNTED"] = "Nicht beritten."
 L["FARM_PAUSED_NOT_TRAVEL"] = "Nicht in einer Reisegestalt."
 L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "%s nicht aktiv."
@@ -105,7 +105,7 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 -- General
 
 L["OPTIONS_DESCRIPTION"] =
-	"Verbessertes Aufspürungsmenü und automatischer Aufspürungs-Wechsler, der beim Farmen zwischen Kräutersuche und Mineraliensuche wechselt, die Aufspürung nach dem Tod wiederherstellt und beim Questen anvisierte Kreaturen aufspürt. Unterstützt jede Aufspürungsfähigkeit. Verliert nie aus den Augen, was Ihr jagt."
+	"Aufspürungsmenü an der Minikarte und automatischer Wechsler für das Sammeln von Kräutern und Erz. Wechselt beim Farmen zwischen Kräutersuche und Mineraliensuche, stellt die Aufspürung nach dem Tod wieder her und spürt beim Questen anvisierte Kreaturen auf. Unterstützt jede Aufspürungsfähigkeit. Verpasst nie wieder ein Vorkommen."
 L["OPTIONS_ENABLE_WELCOME"] = "Begrüßungsnachricht aktivieren"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Gibt im Chat eine einzeilige Begrüßung aus, wenn Tracking Eye geladen wird."
@@ -173,15 +173,6 @@ L["OPTIONS_SHAPE_CIRCLE"] = "Kreis"
 L["OPTIONS_SHAPE_SQUARE"] = "Quadrat"
 L["OPTIONS_ICON_SCALE"] = "Symbolgröße"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "Skaliert an Ort und Stelle, sodass das Symbol seinen Platz behält."
-
--- Feedback & Support
-
-L["OPTIONS_LINKS"] = "Feedback & Unterstützung"
-L["OPTIONS_DISCORD"] = "Discord"
-L["OPTIONS_GITHUB"] = "GitHub"
-L["OPTIONS_CURSEFORGE"] = "CurseForge"
-L["OPTIONS_WAGO"] = "Wago"
-L["OPTIONS_VERSION"] = "Version %s"
 
 -- Farm Mode
 
@@ -278,5 +269,32 @@ L["OPTIONS_ENABLE_COME_AND_GET_IT_DESCRIPTION"] =
 L["OPTIONS_OUTPUT_NAME"] = "Standardausgabe"
 L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"Gilde erreicht jedes Gildenmitglied, das online ist, egal auf welchem Layer oder in welcher Zone."
-L["OPTIONS_OUTPUT_NOTE"] = "Hinweis: Lokal (/1) erreicht nur Spieler auf Eurem Layer."
+L["OPTIONS_OUTPUT_NOTE"] = "Hinweis: %s erreicht nur Spieler auf Eurem Layer."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Lokal (/1)"
+
+--------------------------------------------------------------------------------
+-- Feedback & Support
+--------------------------------------------------------------------------------
+
+L["OPTIONS_LEVEL_UP_TITLE"] = "Helft Tracking Eye beim Stufenaufstieg"
+L["OPTIONS_LEVEL_UP_INTRO"] =
+	"Dieses Add-on wurde von Spielern entwickelt, die dieses Spiel lieben und es für alle so unterhaltsam wie möglich machen wollen. Wir werden nie um Spenden bitten. Die wahre Befriedigung liegt für uns darin, zu wissen, dass unsere Arbeit Euer Spiel ein kleines bisschen besser macht. Wenn das so ist, würden wir uns freuen, davon zu hören!"
+L["OPTIONS_LEVEL_UP_WAYS"] = "Hier sind ein paar Möglichkeiten, wie Ihr uns helfen könnt, mehr Spieler zu erreichen."
+L["OPTIONS_LEVEL_UP_FEEDBACK"] =
+	"• Feedback geben: Einen Fehler gefunden oder eine Idee? Sagt es uns auf Discord. Euer Feedback hilft uns, das Add-on zu verbessern, und Pull-Requests sind jederzeit willkommen."
+L["OPTIONS_LEVEL_UP_FRIEND"] =
+	"• Einem Freund davon erzählen: Kennt Ihr jemanden, dem dieses Add-on gefallen könnte? Erzählt ihm davon. Mundpropaganda hilft mehr Spielern, großartige Add-ons zu entdecken."
+L["OPTIONS_LEVEL_UP_CURSEFORGE"] =
+	"• Auf CurseForge favorisieren: Öffnet unten den CurseForge-Link, meldet Euch an und klickt auf den Stern unter dem Download-Button. Favoriten helfen mehr Spielern, das Add-on zu entdecken."
+L["OPTIONS_LEVEL_UP_GITHUB"] =
+	"• Auf GitHub einen Star geben: Öffnet unten den GitHub-Link, meldet Euch an und klickt oben rechts auf Star. Stars helfen dem Projekt, sich für mehr kostenlose Entwicklerwerkzeuge zu qualifizieren."
+L["OPTIONS_LEVEL_UP_THANKS"] = "Danke, dass Ihr Euch für Tracking Eye entschieden habt!"
+
+L["OPTIONS_FEEDBACK"] = "Feedback & Unterstützung"
+L["OPTIONS_FEEDBACK_LINKS_HEADER"] = "Links für Feedback & Unterstützung"
+L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_GITHUB"] = "GitHub"
+L["OPTIONS_CURSEFORGE"] = "CurseForge"
+L["OPTIONS_WAGO"] = "Wago"
+L["OPTIONS_COPY_LINK"] = "Um einen Link zu kopieren, klickt in sein Feld und drückt dann Strg+A und Strg+C."
+L["OPTIONS_VERSION"] = "Version %s"
