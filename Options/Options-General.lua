@@ -9,18 +9,6 @@ local SubRow, SubLabel = ns.OptionsSubRow, ns.OptionsSubLabel
 -- Sized to its caption with slack; never the full row width. See ns.OptionsSubRow.
 local SUB_TOGGLE_WIDTH = 3.2
 
---[[
-    The Feedback & Support rows override the default half-and-half label/control
-    split. Their labels are one short word each, so the standard
-    ns.OPTIONS_LABEL_WIDTH leaves a wide gap after "Wago" and spends half the row
-    on nothing, while the URL beside it — the part the player is there to copy —
-    truncates mid-address. Giving the label only what a word needs and the rest to
-    the input fits every URL but the longest, and the two still total
-    ns.OPTIONS_ROW_WIDTH, so the rows end where every other row ends.
-]]
-local LINK_LABEL_WIDTH = 0.6
-local LINK_URL_WIDTH = ns.OPTIONS_ROW_WIDTH - LINK_LABEL_WIDTH
-
 local function NoBlizzardTrackingButton()
 	return not (ns.HasBlizzardTrackingButton and ns.HasBlizzardTrackingButton())
 end
@@ -268,70 +256,6 @@ function ns.BuildGeneralOptions()
 			GetColor("INFO") .. L["OPTIONS_COMMAND"] .. "|r" .. "  " .. L["OPTIONS_COMMAND_DESCRIPTION"],
 			63
 		),
-
-		-- Feedback & Support (Discord, GitHub, CurseForge, Wago)
-		spaceLinks0 = Spacer(69),
-		headerLinks = Header(L["OPTIONS_LINKS"], 70),
-		spaceLinks1 = Spacer(71),
-		discordLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_DISCORD"] .. "|r", 72, LINK_LABEL_WIDTH),
-		discordURL = {
-			type = "input",
-			name = "",
-			order = 73,
-			width = LINK_URL_WIDTH,
-			get = function()
-				return ns.DISCORD_URL
-			end,
-			set = function() end,
-		},
-		spaceLinks2 = Spacer(74),
-		githubLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_GITHUB"] .. "|r", 75, LINK_LABEL_WIDTH),
-		githubURL = {
-			type = "input",
-			name = "",
-			order = 76,
-			width = LINK_URL_WIDTH,
-			get = function()
-				return ns.GITHUB_URL
-			end,
-			set = function() end,
-		},
-		spaceLinks3 = Spacer(77),
-		curseforgeLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_CURSEFORGE"] .. "|r", 78, LINK_LABEL_WIDTH),
-		curseforgeURL = {
-			type = "input",
-			name = "",
-			order = 79,
-			width = LINK_URL_WIDTH,
-			get = function()
-				return ns.CURSEFORGE_URL
-			end,
-			set = function() end,
-		},
-		spaceLinks4 = Spacer(80),
-		wagoLabel = RowLabel(GetColor("TITLE") .. L["OPTIONS_WAGO"] .. "|r", 81, LINK_LABEL_WIDTH),
-		wagoURL = {
-			type = "input",
-			name = "",
-			order = 82,
-			width = LINK_URL_WIDTH,
-			get = function()
-				return ns.WAGO_URL
-			end,
-			set = function() end,
-		},
-		spaceVersion0 = {
-			type = "description",
-			name = " ",
-			width = "full",
-			order = 998,
-		},
-		versionLine = {
-			type = "description",
-			name = GetColor("MUTED") .. L["OPTIONS_VERSION"]:format(ns.Version) .. "|r",
-			fontSize = "medium",
-			order = 999,
-		},
 	}
 
 	--[[

@@ -516,7 +516,9 @@ end
 
 --[[
     Gate for the add-on's automatic casts only; a tracking-menu click always
-    casts. Three of the bails cost the player something rather than a GCD: a
+    casts. Every automatic cast, the form-leave restore and the post-resurrection
+    recast included, waits for this all-clear, so none costs a global cooldown
+    mid-fight. Three of the bails cost the player something rather than a GCD: a
     cast ends a channel (ns.IsPlayerCasting counts one), a spell cast closes an
     open loot window, so a cycle tick mid-loot can lose the node that was just
     gathered, and casting while the cursor holds an item or spell discards what

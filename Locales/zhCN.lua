@@ -10,7 +10,7 @@ L["ADDON_TITLE"] = "Tracking Eye"
 --------------------------------------------------------------------------------
 
 L["CHAT_LOADED"] =
-	"版本 %s。设置（包含禁用此消息的选项）可以在 设置选项 > 插件 > Tracking Eye 中找到。喜欢这个插件？告诉您的朋友吧！(="
+	"版本 %s。设置（包含禁用此消息的选项）位于 设置选项 > 插件 > Tracking Eye。喜欢这个插件？告诉您的朋友，在 CurseForge 上收藏它，或在 GitHub 上给它点 Star。(="
 L["CHAT_OPTIONS_IN_COMBAT"] = "出于安全考虑，战斗中无法打开选项界面。"
 L["CHAT_KEY_BINDINGS_IN_COMBAT"] = "出于安全考虑，战斗中无法打开快捷键列表。"
 L["KEY_BINDINGS_LOCATION"] = "打开游戏菜单，点击%s，再点击%s，然后找到 Tracking Eye 分类。"
@@ -44,7 +44,7 @@ L["FARM_PAUSED_RESTING"] = "位于城镇或旅店。"
 L["FARM_PAUSED_NO_ABILITIES"] = "未勾选任何采集模式技能。"
 L["FARM_PAUSED_NOT_LEARNED"] = "您尚未学会任何已勾选的采集模式技能。"
 L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s追踪只在%s下循环。"
-L["FARM_PAUSED_NO_STATES"] = "未开启任何采集模式条件。"
+L["FARM_PAUSED_NO_STATES"] = "未勾选任何采集模式条件。"
 L["FARM_PAUSED_NOT_MOUNTED"] = "未骑乘。"
 L["FARM_PAUSED_NOT_TRAVEL"] = "未处于旅行类形态。"
 L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "未使用%s。"
@@ -104,7 +104,7 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 -- General
 
 L["OPTIONS_DESCRIPTION"] =
-	"改进的追踪菜单和自动追踪切换器，在采集时循环寻找草药和寻找矿物，在死亡后恢复追踪，并在做任务时追踪您所选目标的同类生物。支持所有追踪技能。再也不会跟丢您要找的目标。"
+	"小地图追踪菜单，也是草药和矿石采集的自动切换器。在采集时循环寻找草药和寻找矿物，在死亡后恢复追踪，并在做任务时追踪您所选目标的同类生物。支持所有追踪技能。不再错过任何采集点。"
 L["OPTIONS_ENABLE_WELCOME"] = "启用欢迎消息"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Tracking Eye 加载时在聊天中显示一行欢迎语。"
 L["OPTIONS_ENABLE_MINIMAP"] = "启用小地图按钮"
@@ -168,15 +168,6 @@ L["OPTIONS_SHAPE_CIRCLE"] = "圆形"
 L["OPTIONS_SHAPE_SQUARE"] = "方形"
 L["OPTIONS_ICON_SCALE"] = "图标大小"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "原地缩放，图标会保持在原来的位置。"
-
--- Feedback & Support
-
-L["OPTIONS_LINKS"] = "反馈与支持"
-L["OPTIONS_DISCORD"] = "Discord"
-L["OPTIONS_GITHUB"] = "GitHub"
-L["OPTIONS_CURSEFORGE"] = "CurseForge"
-L["OPTIONS_WAGO"] = "Wago"
-L["OPTIONS_VERSION"] = "版本 %s"
 
 -- Farm Mode
 
@@ -269,5 +260,32 @@ L["OPTIONS_ENABLE_COME_AND_GET_IT_DESCRIPTION"] =
 L["OPTIONS_OUTPUT_NAME"] = "默认输出"
 L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"公会频道会送达所有在线的公会成员，无论其位于哪个位面或区域。"
-L["OPTIONS_OUTPUT_NOTE"] = "注意：本地 (/1) 只能送达与您处于同一位面的玩家。"
+L["OPTIONS_OUTPUT_NOTE"] = "注意：%s 只能送达与您处于同一位面的玩家。"
 L["OPTIONS_OUTPUT_CHANNEL1"] = "本地 (/1)"
+
+--------------------------------------------------------------------------------
+-- Feedback & Support
+--------------------------------------------------------------------------------
+
+L["OPTIONS_LEVEL_UP_TITLE"] = "帮助 Tracking Eye 升级"
+L["OPTIONS_LEVEL_UP_INTRO"] =
+	"这个插件由热爱这款游戏、希望让每个人都玩得尽可能开心的玩家打造。我们永远不会请求捐款。真正的满足感来自知道我们的工作让您的游戏变得更好一点。如果确实如此，我们很想听听您的想法！"
+L["OPTIONS_LEVEL_UP_WAYS"] = "您可以通过以下几种方式帮助我们触达更多玩家。"
+L["OPTIONS_LEVEL_UP_FEEDBACK"] =
+	"• 分享反馈：发现了错误或有新点子？请在 Discord 上告诉我们。您的反馈能帮助我们改进插件，也随时欢迎提交拉取请求。"
+L["OPTIONS_LEVEL_UP_FRIEND"] =
+	"• 告诉朋友：认识可能会喜欢这个插件的人吗？把它介绍给他们吧。口碑能帮助更多玩家发现优秀的插件。"
+L["OPTIONS_LEVEL_UP_CURSEFORGE"] =
+	"• 在 CurseForge 上收藏：打开下方的 CurseForge 链接，登录后点击 Download 按钮下方的星标。收藏能帮助更多玩家发现这个插件。"
+L["OPTIONS_LEVEL_UP_GITHUB"] =
+	"• 在 GitHub 上点 Star：打开下方的 GitHub 链接，登录后点击右上角的 Star。Star 能帮助项目获得更多免费开发者工具的资格。"
+L["OPTIONS_LEVEL_UP_THANKS"] = "感谢您选择 Tracking Eye！"
+
+L["OPTIONS_FEEDBACK"] = "反馈与支持"
+L["OPTIONS_FEEDBACK_LINKS_HEADER"] = "反馈与支持链接"
+L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_GITHUB"] = "GitHub"
+L["OPTIONS_CURSEFORGE"] = "CurseForge"
+L["OPTIONS_WAGO"] = "Wago"
+L["OPTIONS_COPY_LINK"] = "要复制链接，请点击其输入框，然后按 Ctrl+A 和 Ctrl+C。"
+L["OPTIONS_VERSION"] = "版本 %s"

@@ -57,7 +57,7 @@ ns.FARM_CYCLE_DEFAULTS = {
 How We Got the Data
 
 Last Validated
-	2026-10-04, WoW Forever 1.60.1.70205
+	2026-10-16, WoW Forever 1.60.1.70425
 
 Notes
 	- TRACKING_SPELLS holds every tracking ability a player can learn on this client: the hunter's eight Track spells, the druid's Track Humanoids, the warlock's Sense Demons, the paladin's Sense Undead, Find Herbs and Find Minerals from the gathering professions, Find Fish from Fishing, and the Dwarf racial Find Treasure.
@@ -66,8 +66,9 @@ Notes
 	- key is the name code looks a spell up by (ns.SPELLS in Features/Utilities.lua); the form keys stay out of the list of tracking abilities.
 	- source decides where a spell sits in the Farm Mode Abilities list: a class name puts it in that class's block (ns.FARM_ABILITY_CLASSES in Data/Data.lua), and a profession or racial puts it under Professions & Racial Abilities.
 	- Left out: 8387 Find Herbs and 8388 Find Minerals, which track the same things as 2383 and 2580 but aren't granted by the profession or any item; and 1284017 Track Beasts and 1241115 Sense Undead, Forever-only copies of 1494 and 5502 that no skill line, spell or item grants.
+	- Also left out: tracking that comes from an item instead of a learned ability, such as 4152 Detect Elven Gems (Goggles of Gem Hunting), 11992 Detect Gahz'ridian (Gahz'ridian Detector), 1246031 Hunting Kobolds (Kobold Tracking Kit) and the Detect Undead and Detect Demon draughts, and timed buffs from NPCs or tests, such as Ryson's All Seeing Eye and Winterax Wisdom. None is an ability a player can cast from the spellbook.
 	- CREATURE_TYPE_DATA lists Target Tracking's candidates for each creature type, in preference order, and each character hunts with the first one it knows (ns.CREATURE_TYPE_SPELLS in Features/Utilities.lua). It's keyed by creature type ID, which is the same in every locale and on every client. The druid's Track Humanoids is left out on purpose: a hunt can't cast it outside Cat Form. Creature types with no tracking ability, such as Critter, Mechanical and Totem, have no row.
-	- MOVEMENT_BUFF_SPELLS holds the movement buffs, other than druid forms, that last until cancelled and count as travelling for Farm Mode: the hunter's Aspect of the Cheetah and Aspect of the Pack, and the shaman's Ghost Wolf, each detected by its buff. Timed speed boosts such as Sprint and Dash end on their own, so they're left out.
+	- MOVEMENT_BUFF_SPELLS holds the movement buffs, other than druid forms, that last until cancelled and count as travelling for Farm Mode: the hunter's Aspect of the Cheetah and Aspect of the Pack, and the shaman's Ghost Wolf, each detected by its buff. Timed speed boosts such as Sprint and Dash end on their own, so they're left out, and so are passive speed bonuses such as Quickness and Pursuit of Justice, which never switch off.
 	- movementState is the Farm Mode condition the buff counts as (ns.MOVEMENT_STATE_TOGGLES in Data/Data.lua). The druid's travel forms come from the form rows in TRACKING_SPELLS instead.
 	- FARM_CYCLE_DEFAULTS is Farm Mode's starting rotation, read into the profile's farmCycleSpells in Data/Default-Settings.lua: Find Herbs, Find Minerals and Find Treasure are on, and every other ability is off. A key added here switches on for existing characters who never saved one.
 	- Find Fish stays off in the rotation: the fishing-pole option under Persistent Tracking brings it up whenever a pole is in hand.
@@ -106,12 +107,18 @@ Wowhead
 	None.
 
 wago.tools
-	https://wago.tools/db2/SpellName?build=1.60.1.70205
-	https://wago.tools/db2/SpellEffect?build=1.60.1.70205
-	https://wago.tools/db2/SkillLineAbility?build=1.60.1.70205
-	https://wago.tools/db2/SpellLevels?build=1.60.1.70205
-	https://wago.tools/db2/SpellMisc?build=1.60.1.70205
-	https://wago.tools/db2/SpellDuration?build=1.60.1.70205
-	https://wago.tools/db2/CreatureType?build=1.60.1.70205
-	https://wago.tools/db2/ItemEffect?build=1.60.1.70205
+	https://wago.tools/db2/SpellName?build=1.60.1.70425
+	https://wago.tools/db2/SpellEffect?build=1.60.1.70425
+	https://wago.tools/db2/SkillLineAbility?build=1.60.1.70425
+	https://wago.tools/db2/SkillLine?build=1.60.1.70425
+	https://wago.tools/db2/SpellLevels?build=1.60.1.70425
+	https://wago.tools/db2/SpellMisc?build=1.60.1.70425
+	https://wago.tools/db2/SpellDuration?build=1.60.1.70425
+	https://wago.tools/db2/CreatureType?build=1.60.1.70425
+	https://wago.tools/db2/ItemEffect?build=1.60.1.70425
+	https://wago.tools/db2/ItemXItemEffect?build=1.60.1.70425
+	https://wago.tools/db2/ItemSparse?build=1.60.1.70425
+
+QuestieDB
+	None.
 ]]

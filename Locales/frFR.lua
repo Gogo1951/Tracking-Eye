@@ -10,7 +10,7 @@ L["ADDON_TITLE"] = "Tracking Eye"
 --------------------------------------------------------------------------------
 
 L["CHAT_LOADED"] =
-	"Version %s. Les paramètres (y compris l'option pour désactiver ce message) se trouvent dans Options > Add-ons > Tracking Eye. Vous appréciez l'add-on ? Parlez-en à un ami ! (="
+	"Version %s. Les paramètres (y compris l'option pour désactiver ce message) se trouvent dans Options > Add-ons > Tracking Eye. Vous appréciez cet add-on ? Parlez-en à un ami, ajoutez-le à vos favoris sur CurseForge ou donnez-lui une Star sur GitHub. (="
 L["CHAT_OPTIONS_IN_COMBAT"] = "Par mesure de sécurité, l'interface des options ne peut pas être ouverte en combat."
 L["CHAT_KEY_BINDINGS_IN_COMBAT"] =
 	"Par mesure de sécurité, la liste des raccourcis clavier ne peut pas être ouverte en combat."
@@ -45,7 +45,7 @@ L["FARM_PAUSED_RESTING"] = "Dans une ville ou une auberge."
 L["FARM_PAUSED_NO_ABILITIES"] = "Aucune des Capacités du Mode de collecte n'est cochée."
 L["FARM_PAUSED_NOT_LEARNED"] = "Vous ne connaissez aucune des Capacités du Mode de collecte que vous avez cochées."
 L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s : le pistage n'alterne qu'en %s."
-L["FARM_PAUSED_NO_STATES"] = "Aucune des Conditions du Mode de collecte n'est activée."
+L["FARM_PAUSED_NO_STATES"] = "Aucune des Conditions du Mode de collecte n'est cochée."
 L["FARM_PAUSED_NOT_MOUNTED"] = "Sans monture."
 L["FARM_PAUSED_NOT_TRAVEL"] = "Pas en forme de voyage."
 L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "Pas sous %s."
@@ -105,7 +105,7 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 -- General
 
 L["OPTIONS_DESCRIPTION"] =
-	"Menu de pistage amélioré et commutateur de pistage automatique qui alterne entre Découverte d'herbes et Découverte de gisements pendant la collecte, réapplique le pistage après la mort et piste les créatures ciblées pendant les quêtes. Prend en charge toutes les capacités de pistage. Ne perdez plus jamais la trace de ce que vous chassez."
+	"Menu de pistage sur la minicarte et commutateur automatique pour la récolte d'herbes et de minerai. Alterne entre Découverte d'herbes et Découverte de gisements pendant la collecte, réapplique le pistage après la mort et piste les créatures ciblées pendant les quêtes. Prend en charge toutes les capacités de pistage. Ne ratez plus aucun point de récolte."
 L["OPTIONS_ENABLE_WELCOME"] = "Activer le message de bienvenue"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Affiche une ligne de bienvenue dans la fenêtre de discussion au chargement de Tracking Eye."
@@ -173,15 +173,6 @@ L["OPTIONS_SHAPE_CIRCLE"] = "Cercle"
 L["OPTIONS_SHAPE_SQUARE"] = "Carré"
 L["OPTIONS_ICON_SCALE"] = "Taille de l'icône"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "Se redimensionne sur place : l'icône garde sa position."
-
--- Feedback & Support
-
-L["OPTIONS_LINKS"] = "Commentaires et assistance"
-L["OPTIONS_DISCORD"] = "Discord"
-L["OPTIONS_GITHUB"] = "GitHub"
-L["OPTIONS_CURSEFORGE"] = "CurseForge"
-L["OPTIONS_WAGO"] = "Wago"
-L["OPTIONS_VERSION"] = "Version %s"
 
 -- Farm Mode
 
@@ -279,5 +270,32 @@ L["OPTIONS_ENABLE_COME_AND_GET_IT_DESCRIPTION"] =
 L["OPTIONS_OUTPUT_NAME"] = "Sortie par défaut"
 L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"Guilde atteint tous les membres connectés, quelles que soient leur strate et leur zone."
-L["OPTIONS_OUTPUT_NOTE"] = "Remarque : Local (/1) n'atteint que les joueurs de votre strate."
+L["OPTIONS_OUTPUT_NOTE"] = "Remarque : %s n'atteint que les joueurs de votre strate."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Local (/1)"
+
+--------------------------------------------------------------------------------
+-- Feedback & Support
+--------------------------------------------------------------------------------
+
+L["OPTIONS_LEVEL_UP_TITLE"] = "Aidez Tracking Eye à monter de niveau"
+L["OPTIONS_LEVEL_UP_INTRO"] =
+	"Cet add-on a été créé par des joueurs qui adorent ce jeu et veulent le rendre aussi amusant que possible pour tout le monde. Nous ne demanderons jamais de dons. Notre vraie satisfaction, c'est de savoir que notre travail rend le jeu un peu meilleur pour vous. Si c'est le cas, nous serions ravis de l'apprendre !"
+L["OPTIONS_LEVEL_UP_WAYS"] = "Voici quelques façons de nous aider à toucher plus de joueurs."
+L["OPTIONS_LEVEL_UP_FEEDBACK"] =
+	"• Donnez votre avis : Vous avez trouvé un bug ou vous avez une idée ? Dites-le-nous sur Discord. Vos retours nous aident à améliorer l'add-on, et les pull requests sont toujours les bienvenues."
+L["OPTIONS_LEVEL_UP_FRIEND"] =
+	"• Parlez-en à un ami : Vous connaissez quelqu'un qui pourrait apprécier cet add-on ? Parlez-lui-en. Le bouche-à-oreille aide plus de joueurs à découvrir de super add-ons."
+L["OPTIONS_LEVEL_UP_CURSEFORGE"] =
+	"• Ajoutez-le à vos favoris sur CurseForge : Ouvrez le lien CurseForge ci-dessous, connectez-vous et cliquez sur l'étoile sous le bouton Download. Les favoris aident plus de joueurs à découvrir l'add-on."
+L["OPTIONS_LEVEL_UP_GITHUB"] =
+	"• Donnez une Star sur GitHub : Ouvrez le lien GitHub ci-dessous, connectez-vous et cliquez sur Star en haut à droite. Les Stars aident le projet à obtenir davantage d'outils de développement gratuits."
+L["OPTIONS_LEVEL_UP_THANKS"] = "Merci d'avoir choisi Tracking Eye !"
+
+L["OPTIONS_FEEDBACK"] = "Commentaires et assistance"
+L["OPTIONS_FEEDBACK_LINKS_HEADER"] = "Liens de commentaires et d'assistance"
+L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_GITHUB"] = "GitHub"
+L["OPTIONS_CURSEFORGE"] = "CurseForge"
+L["OPTIONS_WAGO"] = "Wago"
+L["OPTIONS_COPY_LINK"] = "Pour copier un lien, cliquez dans sa case, puis appuyez sur Ctrl+A et Ctrl+C."
+L["OPTIONS_VERSION"] = "Version %s"

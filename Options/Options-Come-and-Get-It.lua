@@ -33,9 +33,8 @@ end
 --------------------------------------------------------------------------------
 
 --[[
-    The standalone add-on's options, less what Tracking Eye already carries for
-    the whole add-on: the /command section, the welcome message, and the
-    Feedback & Support links.
+    No /command section, welcome toggle, or Feedback & Support links here:
+    Tracking Eye shows those once for the whole add-on.
 ]]
 function ns.BuildComeAndGetItOptions()
 	return {
@@ -100,7 +99,7 @@ function ns.BuildComeAndGetItOptions()
 			]]
 			noteOutput = {
 				type = "description",
-				name = GetColor("HELP") .. L["OPTIONS_OUTPUT_NOTE"] .. "|r",
+				name = GetColor("HELP") .. L["OPTIONS_OUTPUT_NOTE"]:format(L["OPTIONS_OUTPUT_CHANNEL1"]) .. "|r",
 				fontSize = "medium",
 				order = 6,
 				hidden = ComeAndGetItOff,

@@ -242,8 +242,7 @@ end
 
 --[[
     Its own child panel rather than a section merged into General: Farm Mode
-    carries more controls than every other feature combined, and the General page
-    had grown long enough that Cycle Speed sat below the fold.
+    carries more controls than every other feature combined.
 ]]
 function ns.BuildFarmModeOptions()
 	local args = {

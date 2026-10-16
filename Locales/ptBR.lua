@@ -10,7 +10,7 @@ L["ADDON_TITLE"] = "Tracking Eye"
 --------------------------------------------------------------------------------
 
 L["CHAT_LOADED"] =
-	"Versão %s. Configurações (incluindo a opção de desativar esta mensagem) podem ser encontradas em Opções > AddOns > Tracking Eye. Curtindo o add-on? Conte para um amigo! (="
+	"Versão %s. As configurações (incluindo a opção de desativar esta mensagem) ficam em Opções > AddOns > Tracking Eye. Curtindo este add-on? Conte para um amigo, favorite-o no CurseForge ou dê uma Star no GitHub. (="
 L["CHAT_OPTIONS_IN_COMBAT"] = "Por precaução, a Interface de Opções não pode ser aberta durante o combate."
 L["CHAT_KEY_BINDINGS_IN_COMBAT"] =
 	"Por precaução, a lista de atalhos do teclado não pode ser aberta durante o combate."
@@ -45,7 +45,7 @@ L["FARM_PAUSED_RESTING"] = "Em uma cidade ou estalagem."
 L["FARM_PAUSED_NO_ABILITIES"] = "Nenhuma Habilidade do Modo de Coleta está marcada."
 L["FARM_PAUSED_NOT_LEARNED"] = "Você não conhece nenhuma das Habilidades do Modo de Coleta que marcou."
 L["FARM_PAUSED_CAT_FORM_NAMED"] = "%s: o rastreamento só alterna em %s."
-L["FARM_PAUSED_NO_STATES"] = "Nenhuma das Condições do Modo de Coleta está ativada."
+L["FARM_PAUSED_NO_STATES"] = "Nenhuma Condição do Modo de Coleta está marcada."
 L["FARM_PAUSED_NOT_MOUNTED"] = "Não está montado."
 L["FARM_PAUSED_NOT_TRAVEL"] = "Não está em uma forma de viagem."
 L["FARM_PAUSED_NOT_ASPECT_NAMED"] = "Não está usando %s."
@@ -105,7 +105,7 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 -- General
 
 L["OPTIONS_DESCRIPTION"] =
-	"Menu de Rastreamento melhorado e alternador automático de rastreamento que alterna entre Localizar Plantas e Localizar Minérios durante a coleta, reaplica o rastreamento após a morte e rastreia as criaturas que você tem como alvo durante as missões. Suporta todas as habilidades de rastreamento. Nunca perca de vista o que você está caçando."
+	"Menu de rastreamento no minimapa e alternador automático para coleta de plantas e minérios. Alterna entre Localizar Plantas e Localizar Minérios durante a coleta, reaplica o rastreamento após a morte e rastreia as criaturas que você tem como alvo durante as missões. Suporta todas as habilidades de rastreamento. Nunca mais perca um ponto de coleta."
 L["OPTIONS_ENABLE_WELCOME"] = "Habilitar Mensagem de Boas-vindas"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Exibe no bate-papo uma saudação de uma linha quando o Tracking Eye é carregado."
@@ -173,15 +173,6 @@ L["OPTIONS_SHAPE_CIRCLE"] = "Círculo"
 L["OPTIONS_SHAPE_SQUARE"] = "Quadrado"
 L["OPTIONS_ICON_SCALE"] = "Tamanho do Ícone"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "Redimensiona no lugar, então o ícone mantém a posição."
-
--- Feedback & Support
-
-L["OPTIONS_LINKS"] = "Comentários e Suporte"
-L["OPTIONS_DISCORD"] = "Discord"
-L["OPTIONS_GITHUB"] = "GitHub"
-L["OPTIONS_CURSEFORGE"] = "CurseForge"
-L["OPTIONS_WAGO"] = "Wago"
-L["OPTIONS_VERSION"] = "Versão %s"
 
 -- Farm Mode
 
@@ -276,5 +267,32 @@ L["OPTIONS_ENABLE_COME_AND_GET_IT_DESCRIPTION"] =
 	"Fica em silêncio em combate e em instâncias, para que a caixa de bate-papo nunca roube o seu teclado no meio da luta."
 L["OPTIONS_OUTPUT_NAME"] = "Saída Padrão"
 L["OPTIONS_OUTPUT_DESCRIPTION"] = "Guilda alcança todos os membros conectados, seja qual for a camada ou a zona deles."
-L["OPTIONS_OUTPUT_NOTE"] = "Observação: Local (/1) só alcança jogadores na sua camada."
+L["OPTIONS_OUTPUT_NOTE"] = "Observação: %s só alcança jogadores na sua camada."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Local (/1)"
+
+--------------------------------------------------------------------------------
+-- Feedback & Support
+--------------------------------------------------------------------------------
+
+L["OPTIONS_LEVEL_UP_TITLE"] = "Ajude o Tracking Eye a Subir de Nível"
+L["OPTIONS_LEVEL_UP_INTRO"] =
+	"Este add-on foi criado por jogadores que amam este jogo e querem deixá-lo o mais divertido possível para todos. Nunca vamos pedir doações. A verdadeira satisfação está em saber que o nosso trabalho deixa o jogo um pouco melhor para você. Se for o caso, adoraríamos saber!"
+L["OPTIONS_LEVEL_UP_WAYS"] = "Aqui estão algumas formas de você nos ajudar a alcançar mais jogadores."
+L["OPTIONS_LEVEL_UP_FEEDBACK"] =
+	"• Compartilhe Feedback: Encontrou um bug ou tem uma ideia? Conte para a gente no Discord. Seu feedback nos ajuda a melhorar o add-on, e pull requests são sempre bem-vindos."
+L["OPTIONS_LEVEL_UP_FRIEND"] =
+	"• Conte para um Amigo: Conhece alguém que pode gostar deste add-on? Conte para essa pessoa. O boca a boca ajuda mais jogadores a descobrir ótimos add-ons."
+L["OPTIONS_LEVEL_UP_CURSEFORGE"] =
+	"• Favorite no CurseForge: Abra o link do CurseForge abaixo, entre na sua conta e clique na estrela embaixo do botão Download. Os favoritos ajudam mais jogadores a descobrir o add-on."
+L["OPTIONS_LEVEL_UP_GITHUB"] =
+	"• Dê uma Star no GitHub: Abra o link do GitHub abaixo, entre na sua conta e clique em Star no canto superior direito. As Stars ajudam o projeto a se qualificar para mais ferramentas gratuitas de desenvolvimento."
+L["OPTIONS_LEVEL_UP_THANKS"] = "Obrigado por escolher o Tracking Eye!"
+
+L["OPTIONS_FEEDBACK"] = "Comentários e Suporte"
+L["OPTIONS_FEEDBACK_LINKS_HEADER"] = "Links de Comentários e Suporte"
+L["OPTIONS_DISCORD"] = "Discord"
+L["OPTIONS_GITHUB"] = "GitHub"
+L["OPTIONS_CURSEFORGE"] = "CurseForge"
+L["OPTIONS_WAGO"] = "Wago"
+L["OPTIONS_COPY_LINK"] = "Para copiar um link, clique na caixa dele e pressione Ctrl+A e Ctrl+C."
+L["OPTIONS_VERSION"] = "Versão %s"

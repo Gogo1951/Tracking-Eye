@@ -22,7 +22,14 @@ function ns:BuildDisplayContextReport()
 	lines[#lines + 1] = ""
 	local LibDBIcon = LibStub("LibDBIcon-1.0")
 	local button = LibDBIcon:GetMinimapButton(ADDON_NAME)
+	-- Without the data object, login never registers a button and every repaint returns early.
+	lines[#lines + 1] = string.format("Data broker object: %s", ns.ldb and "present" or "MISSING")
 	lines[#lines + 1] = string.format("Minimap button created: %s", button and "yes" or "no")
+	-- ns.UpdatePlacement hides the button and the free-placement icon alike on a character with no tracking ability.
+	lines[#lines + 1] = string.format("Knows a tracking ability: %s", tostring(ns.HasTrackingAbility()))
+	if button then
+		lines[#lines + 1] = string.format("Minimap button shown: %s", tostring(button:IsShown()))
+	end
 
 	local minimap = ns.db and ns.db.global.minimap
 	if type(minimap) == "table" then
@@ -61,21 +68,34 @@ function ns:BuildDisplayContextReport()
 	-- The free-placement icon, which stands in for the mini-map button while Free Placement Mode is on.
 	lines[#lines + 1] = ""
 	local global = ns.db and ns.db.global
-	lines[#lines + 1] = string.format("freePlacement: %s", tostring(global and global.freePlacement))
+	lines[#lines + 1] = string.format(
+		"freePlacement: %s // freeIconScale: %s // freeIconShape: %s",
+		tostring(global and global.freePlacement),
+		tostring(global and global.freeIconScale),
+		tostring(global and global.freeIconShape)
+	)
 	if global and type(global.freePos) == "table" then
 		lines[#lines + 1] = string.format("freePos: x=%s y=%s", tostring(global.freePos.x), tostring(global.freePos.y))
 	else
 		lines[#lines + 1] = "freePos: (none)"
 	end
 	if ns.freeFrame then
+		local x, y = ns.freeFrame:GetCenter()
 		lines[#lines + 1] = string.format(
-			"freeFrame shown: %s // scale: %s",
+			"freeFrame shown: %s // scale: %s // center: %s, %s",
 			tostring(ns.freeFrame:IsShown()),
-			tostring(ns.freeFrame:GetScale())
+			tostring(ns.freeFrame:GetScale()),
+			tostring(x),
+			tostring(y)
 		)
 	else
 		lines[#lines + 1] = "freeFrame: (not created)"
 	end
+	lines[#lines + 1] = string.format(
+		"hookBlizzardTracking: %s // Blizzard tracking button to take over: %s",
+		tostring(global and global.hookBlizzardTracking),
+		tostring(ns.HasBlizzardTrackingButton())
+	)
 	lines[#lines + 1] = string.format(
 		"minimap zoom: %d of %d // farmZoomOut: %s",
 		Minimap:GetZoom(),
@@ -132,7 +152,8 @@ end
 --[[
     Dumps the single AceDB-managed table (profiles, profileKeys, char, global)
     so a player can paste their exact configuration: every setting in each
-    profile and in the account-wide scope.
+    profile, the Farm Mode Abilities list included, and in the account-wide
+    scope.
 ]]
 function ns:BuildSavedVariablesReport()
 	local lines = { GetClientHeader(), "", ns.SAVED_VARIABLES_NAME .. " = {" }
