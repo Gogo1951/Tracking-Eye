@@ -187,12 +187,7 @@ local FLYOUTS = {}
 function FLYOUTS.persistent()
 	local profile = ns.db.profile
 	local entries = {
-		Toggle(
-			profile,
-			"persistentTracking",
-			L["PERSISTENT_TRACKING"],
-			L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"]
-		),
+		Toggle(profile, "persistentTracking", L["PERSISTENT_TRACKING"], L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"]),
 	}
 
 	local abilities = KnownAbilities(false)
