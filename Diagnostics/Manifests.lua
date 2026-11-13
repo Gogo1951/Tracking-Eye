@@ -303,12 +303,6 @@ ns.DIAGNOSTIC_API_CHECKS = {
 		end,
 	},
 	{
-		"IsShiftKeyDown",
-		function()
-			return type(IsShiftKeyDown) == "function"
-		end,
-	},
-	{
 		"GetCVar",
 		function()
 			return type(GetCVar) == "function"
@@ -924,10 +918,10 @@ function ns:BuildFarmContextReport()
 	)
 	-- moving is the boolean, never the raw speed, which can be secret on WoW Forever.
 	lines[#lines + 1] = string.format(
-		"  attackable target: %s // other tooltip: %s // own tooltip: %s // moving: %s",
+		"  attackable target: %s // other tooltip: %s // own menu: %s // moving: %s",
 		tostring(ns.HasAttackableTarget()),
 		tostring(ns.IsTooltipShowing()),
-		tostring(ns.IsOwnTooltipShowing()),
+		tostring(ns.IsOwnMenuShowing()),
 		tostring(ns.IsPlayerMoving())
 	)
 	local _, _, _, _, _, _, _, instanceMapID = GetInstanceInfo()

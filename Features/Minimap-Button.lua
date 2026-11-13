@@ -1,11 +1,9 @@
 local ADDON_NAME, ns = ...
-local L = ns.L
-local GetColor = ns.GetColor
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
 --------------------------------------------------------------------------------
--- Placement & Tooltip
+-- Placement
 --------------------------------------------------------------------------------
 
 function ns.UpdatePlacement()
@@ -51,155 +49,25 @@ function ns.UpdatePlacement()
 	ns.UpdateFreeFrameShape()
 end
 
-function ns.BuildTooltip(tooltip)
-	tooltip:AddDoubleLine(GetColor("TITLE") .. L["ADDON_TITLE"] .. "|r", GetColor("MUTED") .. ns.Version .. "|r")
-	tooltip:AddLine(" ")
-	tooltip:AddLine(" ")
-
-	tooltip:AddLine(GetColor("TITLE") .. L["TRACKING_MENU"] .. "|r")
-	tooltip:AddLine(GetColor("BODY") .. L["TRACKING_MENU_DESCRIPTION"] .. "|r", 1, 1, 1, true)
-	tooltip:AddDoubleLine(GetColor("INFO") .. L["LEFT_CLICK"] .. "|r", GetColor("INFO") .. L["OPEN"] .. "|r")
-	tooltip:AddLine(" ")
-
-	--[[
-        The label takes its own row and the ability sits right-aligned beneath it,
-        the house layout for a current-item value. States such as the Farm Mode
-        Status stay on their label's row. The icon travels with the name so the
-        pair never splits.
-    ]]
-	local selectedSpellId = ns.db and ns.db.profile.selectedSpellId
-	local abilityText
-	if selectedSpellId then
-		local name = C_Spell.GetSpellName(selectedSpellId) or L["NONE_SET"]
-		abilityText = "|T"
-			.. (C_Spell.GetSpellTexture(selectedSpellId) or ns.ICON_DEFAULT)
-			.. ":16|t "
-			.. GetColor("TEXT")
-			.. name
-			.. "|r"
-	else
-		abilityText = "|T" .. ns.ICON_DEFAULT .. ":16|t " .. GetColor("BODY") .. L["NONE_SET"] .. "|r"
-	end
-	tooltip:AddLine(GetColor("TITLE") .. L["PERSISTENT_ABILITY"] .. "|r")
-	tooltip:AddDoubleLine(" ", abilityText)
-	tooltip:AddDoubleLine(GetColor("INFO") .. L["RIGHT_CLICK"] .. "|r", GetColor("INFO") .. L["CLEAR_TRACKING"] .. "|r")
-	tooltip:AddLine(" ")
-
-	local farmState = (ns.db and ns.db.profile.farmMode) and (GetColor("ON") .. L["ENABLED"] .. "|r")
-		or (GetColor("OFF") .. L["DISABLED"] .. "|r")
-	tooltip:AddDoubleLine(GetColor("TITLE") .. L["FARM_MODE"] .. "|r", farmState)
-	tooltip:AddLine(GetColor("BODY") .. L["FARM_MODE_DESCRIPTION"] .. "|r", 1, 1, 1, true)
-	tooltip:AddDoubleLine(GetColor("INFO") .. L["SHIFT_LEFT"] .. "|r", GetColor("INFO") .. L["TOGGLE"] .. "|r")
-	tooltip:AddLine(" ")
-
-	--[[
-        Only while Farm Mode is enabled: with it off there is nothing to report,
-        and the Farm Mode block above already shows Disabled.
-    ]]
-	if ns.db and ns.db.profile.farmMode then
-		-- Drawn before it shows, so the live own-tooltip check can't see this tooltip yet: pass it in.
-		local pauseReason, pauseState
-		if ns.GetFarmPauseReason then
-			pauseReason, pauseState = ns.GetFarmPauseReason(true)
-		end
-		-- Gray for paused, matching the house three-way: OFF red, paused gray, ON green.
-		local statusText = pauseReason and (GetColor("SEPARATOR") .. L["FARM_STATUS_PAUSED"] .. "|r")
-			or (GetColor("ON") .. L["FARM_STATUS_ACTIVE"] .. "|r")
-		tooltip:AddDoubleLine(GetColor("TITLE") .. L["FARM_STATUS"] .. "|r", statusText)
-		if pauseReason then
-			tooltip:AddLine(
-				GetColor("BODY") .. ns.FormatFarmPauseReason(pauseReason, pauseState) .. "|r",
-				1,
-				1,
-				1,
-				true
-			)
-		end
-		tooltip:AddLine(" ")
-	end
-
-	-- Draws on every character, as its options section does. A running hunt isn't named: the icon already shows it.
-	local targetState = (ns.db and ns.db.profile.targetTracking) and (GetColor("ON") .. L["ENABLED"] .. "|r")
-		or (GetColor("OFF") .. L["DISABLED"] .. "|r")
-	tooltip:AddDoubleLine(GetColor("TITLE") .. L["TARGET_TRACKING"] .. "|r", targetState)
-	tooltip:AddLine(GetColor("BODY") .. L["TARGET_TRACKING_DESCRIPTION"] .. "|r", 1, 1, 1, true)
-	tooltip:AddDoubleLine(GetColor("INFO") .. L["SHIFT_RIGHT"] .. "|r", GetColor("INFO") .. L["TOGGLE"] .. "|r")
-	tooltip:AddLine(" ")
-
-	tooltip:AddLine(GetColor("TITLE") .. L["TOOLTIP_OPTIONS"] .. "|r")
-	tooltip:AddLine(GetColor("INFO") .. L["SHIFT_MIDDLE"] .. "|r")
-end
-
-function ns.RefreshTooltip()
-	local function TryRefresh(frame)
-		if frame and frame:IsVisible() then
-			if frame:IsMouseOver() or GameTooltip:GetOwner() == frame then
-				local onEnter = frame:GetScript("OnEnter")
-				if onEnter then
-					GameTooltip:Hide()
-					onEnter(frame)
-				end
-			end
-		end
-	end
-
-	if ns.freeFrame then
-		TryRefresh(ns.freeFrame)
-	end
-
-	local minimapButton = LibDBIcon:GetMinimapButton(ADDON_NAME)
-	if minimapButton then
-		TryRefresh(minimapButton)
-	end
-end
-
 --------------------------------------------------------------------------------
 -- Interaction
 --------------------------------------------------------------------------------
 
--- Shared by the mini-map button and the free-placement frame (Free-Placement.lua).
+--[[
+    Shared by the mini-map button and the free-placement frame (Free-Placement.lua).
+    Hovering opens the menu (Minimap-Menu.lua); a left-click opens it with the
+    Persistent Tracking flyout out, so picking an ability stays one click. No other
+    button and no modifier does anything: every action lives in the menu, where a
+    controller's cursor can reach it.
+]]
 function ns.HandleLauncherClick(self, button)
-	--[[
-        Shift + Middle-Click always opens the options panel. This runs first,
-        before the ns.db guard, so it works regardless of saved-variable state
-        (the same behavior in every add-on). Free Placement Mode is toggled from
-        the options panel, not here.
-    ]]
-	if IsShiftKeyDown() and button == "MiddleButton" then
-		ns:OpenOptionsPanel()
-		return
+	if button == "LeftButton" then
+		ns.ShowMenu(self, "persistent", "click")
 	end
+end
 
-	if not ns.db then
-		return
-	end
-
-	local updateNeeded = false
-
-	if IsShiftKeyDown() then
-		if button == "LeftButton" then
-			ns.db.profile.farmMode = not ns.db.profile.farmMode
-			updateNeeded = true
-		elseif button == "RightButton" then
-			ns.SetTargetTracking(not ns.db.profile.targetTracking)
-			updateNeeded = true
-		end
-		-- Both toggles are settings, so an options panel already on screen redraws with the new value.
-		if updateNeeded and ns.RefreshOptionsPanels then
-			ns.RefreshOptionsPanels()
-		end
-	else
-		if button == "LeftButton" then
-			ns.ToggleMenu(self)
-		elseif button == "RightButton" then
-			ns.ClearTracking()
-			updateNeeded = true
-		end
-	end
-
-	if updateNeeded then
-		ns.RefreshTooltip()
-	end
+function ns.HandleLauncherEnter(self)
+	ns.ShowMenu(self, nil, "hover")
 end
 
 --------------------------------------------------------------------------------
@@ -211,9 +79,13 @@ function ns.InitMinimap()
 		type = "launcher",
 		icon = ns.state.currentIcon or ns.ICON_DEFAULT,
 		OnClick = ns.HandleLauncherClick,
-		OnTooltipShow = function(tooltip)
-			ns.BuildTooltip(tooltip)
-		end,
+		--[[
+			OnEnter rather than OnTooltipShow: LibDBIcon and every LDB display call
+			it on hover, and the menu closes itself once the cursor leaves, so
+			OnLeave has nothing to do.
+		]]
+		OnEnter = ns.HandleLauncherEnter,
+		OnLeave = function() end,
 	})
 
 	if ns.db and ns.db.global.minimap then
@@ -231,21 +103,6 @@ function ns.InitMinimap()
 			mask:SetAllPoints(fitButton.icon)
 			fitButton.icon:AddMaskTexture(mask)
 		end
-	end
-
-	local button = LibDBIcon:GetMinimapButton(ADDON_NAME)
-	-- Kept so ns.IsOwnTooltipShowing can tell our own tooltip from everyone else's.
-	ns.minimapButton = button
-	if button then
-		button:SetScript("OnEnter", function(self)
-			GameTooltip:SetOwner(self, "ANCHOR_NONE")
-			GameTooltip:SetPoint("TOPRIGHT", self, "BOTTOMLEFT")
-			ns.BuildTooltip(GameTooltip)
-			GameTooltip:Show()
-		end)
-		button:SetScript("OnLeave", function()
-			GameTooltip:Hide()
-		end)
 	end
 
 	ns.UpdatePlacement()

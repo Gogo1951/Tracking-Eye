@@ -17,21 +17,16 @@ L["CHAT_KEY_BINDINGS_IN_COMBAT"] =
 L["KEY_BINDINGS_LOCATION"] = "Abra o menu do jogo, depois %s, depois %s, e encontre a seção do Tracking Eye."
 
 --------------------------------------------------------------------------------
--- Feature Names & Descriptions
+-- Feature Names
 --------------------------------------------------------------------------------
-
--- The descriptions show in the mini-map tooltip: bare bones, two lines at most.
 
 L["TRACKING_MENU"] = "Menu de Rastreamento"
-L["TRACKING_MENU_DESCRIPTION"] = "Escolha a sua Habilidade de Rastreamento Persistente."
 L["PERSISTENT_TRACKING"] = "Rastreamento Persistente"
 L["TARGET_TRACKING"] = "Rastreamento Automático de Alvo"
-L["TARGET_TRACKING_DESCRIPTION"] = "Rastreia a espécie de qualquer criatura que você tenha como alvo."
 L["FARM_MODE"] = "Modo de Coleta"
-L["FARM_MODE_DESCRIPTION"] = "Alterna suas habilidades de rastreamento enquanto você viaja."
 
 --------------------------------------------------------------------------------
--- Minimap Button Tooltip
+-- Mini-map Menu
 --------------------------------------------------------------------------------
 
 L["FARM_STATUS"] = "Status do Modo de Coleta"
@@ -72,16 +67,9 @@ L["PERSISTENT_ABILITY"] = "Habilidade de Rastreamento Persistente"
 L["NONE_SET"] = "Nenhuma definida"
 L["CLEAR_TRACKING"] = "Limpar Rastreamento"
 
-L["ENABLED"] = "Habilitado"
-L["DISABLED"] = "Desabilitado"
-L["TOGGLE"] = "Alternar"
-
+L["MENU_ON"] = "Ligado"
+L["MENU_OFF"] = "Desligado"
 L["OPEN"] = "Abrir"
-L["LEFT_CLICK"] = "Clique Esquerdo"
-L["RIGHT_CLICK"] = "Clique Direito"
-L["SHIFT_LEFT"] = "Shift + Clique Esquerdo"
-L["SHIFT_RIGHT"] = "Shift + Clique Direito"
-L["SHIFT_MIDDLE"] = "Shift + Clique do Meio"
 
 L["TOOLTIP_OPTIONS"] = "Opções do Tracking Eye"
 
@@ -99,7 +87,9 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 
 --[[
     Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
+    its mouseover tooltip: a pro tip the label and section don't already say. The
+    mini-map menu reuses the same strings, as a feature's summary and as a menu
+    row's tooltip, so it shows two lines at most there.
 ]]
 
 -- General

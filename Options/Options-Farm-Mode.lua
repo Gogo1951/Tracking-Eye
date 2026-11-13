@@ -107,6 +107,10 @@ local function TravelFormsDescription()
 	return nil
 end
 
+-- The mini-map menu's Farm Mode Conditions rows reuse both, so they read exactly as the options do.
+ns.GetFarmClassStateLabel = ClassStateLabel
+ns.GetFarmTravelFormsDescription = TravelFormsDescription
+
 --------------------------------------------------------------------------------
 -- Farm Ability Groups
 --------------------------------------------------------------------------------

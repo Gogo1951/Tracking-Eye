@@ -16,21 +16,16 @@ L["CHAT_KEY_BINDINGS_IN_COMBAT"] = "基於安全考量，戰鬥中無法開啟�
 L["KEY_BINDINGS_LOCATION"] = "開啟遊戲選單，點選%s，再點選%s，然後找到 Tracking Eye 分類。"
 
 --------------------------------------------------------------------------------
--- Feature Names & Descriptions
+-- Feature Names
 --------------------------------------------------------------------------------
-
--- The descriptions show in the mini-map tooltip: bare bones, two lines at most.
 
 L["TRACKING_MENU"] = "追蹤選單"
-L["TRACKING_MENU_DESCRIPTION"] = "選擇您的持久追蹤技能。"
 L["PERSISTENT_TRACKING"] = "持久追蹤"
 L["TARGET_TRACKING"] = "自動目標追蹤"
-L["TARGET_TRACKING_DESCRIPTION"] = "追蹤您所選目標的同類生物。"
 L["FARM_MODE"] = "採集模式"
-L["FARM_MODE_DESCRIPTION"] = "在旅途中循環切換您的追蹤技能。"
 
 --------------------------------------------------------------------------------
--- Minimap Button Tooltip
+-- Mini-map Menu
 --------------------------------------------------------------------------------
 
 L["FARM_STATUS"] = "採集模式狀態"
@@ -71,16 +66,9 @@ L["PERSISTENT_ABILITY"] = "持久追蹤技能"
 L["NONE_SET"] = "未設定"
 L["CLEAR_TRACKING"] = "清除追蹤"
 
-L["ENABLED"] = "已開啟"
-L["DISABLED"] = "已關閉"
-L["TOGGLE"] = "切換"
-
+L["MENU_ON"] = "開啟"
+L["MENU_OFF"] = "關閉"
 L["OPEN"] = "開啟"
-L["LEFT_CLICK"] = "左鍵"
-L["RIGHT_CLICK"] = "右鍵"
-L["SHIFT_LEFT"] = "Shift + 左鍵"
-L["SHIFT_RIGHT"] = "Shift + 右鍵"
-L["SHIFT_MIDDLE"] = "Shift + 中鍵"
 
 L["TOOLTIP_OPTIONS"] = "Tracking Eye 選項"
 
@@ -98,7 +86,9 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 
 --[[
     Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
+    its mouseover tooltip: a pro tip the label and section don't already say. The
+    mini-map menu reuses the same strings, as a feature's summary and as a menu
+    row's tooltip, so it shows two lines at most there.
 ]]
 
 -- General

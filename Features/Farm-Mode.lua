@@ -93,7 +93,7 @@ function ns.GetFarmCycle()
 end
 
 --[[
-    Why the cycle is empty, for the two places that explain it: the tooltip's
+    Why the cycle is empty, for the two places that explain it: the menu's
     pause reason and the key binding's chat line. "none" means nothing is picked;
     "catForm" means the only picked abilities this character knows are the
     druid's Cat Form tracking, outside Cat Form; "unlearned" means nothing picked
@@ -204,7 +204,7 @@ function ns.RunFarmLogic()
 	end
 
 	--[[
-        Keep an open tooltip's Farm Mode Status honest before any bail. The ticker
+        Keep an open menu's Farm Mode Status honest before any bail. The ticker
         is the only thing that notices conditions firing no registered event — a
         taxi flight above all — so the pause reason is re-resolved here and the
         display refreshed only when it actually changed.
@@ -218,8 +218,8 @@ function ns.RunFarmLogic()
 		return
 	end
 
-	-- Hold while any window is open, something attackable is targeted, or any tooltip shows, ours included.
-	if ns.IsBlockingWindowOpen() or ns.HasAttackableTarget() or ns.IsTooltipShowing() or ns.IsOwnTooltipShowing() then
+	-- Hold while any window is open, something attackable is targeted, any tooltip shows, or our own menu is open.
+	if ns.IsBlockingWindowOpen() or ns.HasAttackableTarget() or ns.IsTooltipShowing() or ns.IsOwnMenuShowing() then
 		return
 	end
 

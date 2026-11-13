@@ -10,13 +10,14 @@ local L = ns.L
     True while the mouse is over something showing a tooltip. Farm Mode holds off
     then, so a cycle cast never fires under the player mid-inspection.
 
-    Our own tooltip holds it too, but is checked apart, by ns.IsOwnTooltipShowing.
-    The mini-map button and the free-placement frame both draw into GameTooltip,
-    and hovering them is how the player reads the Farm Mode Status, so the pause
-    reason for our own tooltip ranks last and the status names any other cause.
+    Our own mini-map menu holds it too, but is checked apart, by
+    ns.IsOwnMenuShowing. Opening the menu is how the player reads the Farm Mode
+    Status, so its pause reason ranks last and the status names any other cause.
+    A tooltip drawn by one of the menu's own rows counts as the menu, not as
+    another tooltip.
 ]]
 local function IsOwnTooltipOwner(owner)
-	return owner ~= nil and (owner == ns.freeFrame or owner == ns.minimapButton)
+	return owner ~= nil and ns.IsMenuFrame ~= nil and ns.IsMenuFrame(owner)
 end
 
 function ns.IsTooltipShowing()
@@ -26,11 +27,8 @@ function ns.IsTooltipShowing()
 	return not IsOwnTooltipOwner(GameTooltip:GetOwner())
 end
 
-function ns.IsOwnTooltipShowing()
-	if not GameTooltip or not GameTooltip:IsVisible() then
-		return false
-	end
-	return IsOwnTooltipOwner(GameTooltip:GetOwner())
+function ns.IsOwnMenuShowing()
+	return ns.IsMenuShown ~= nil and ns.IsMenuShown() or false
 end
 
 --[[
@@ -174,9 +172,9 @@ end
     Why Farm Mode is sitting idle right now, as a locale key, or nil when the
     cycle is free to run. A movement reason also returns the movement state
     whose buff its sentence names. Farm Mode switched off is not a pause — the
-    tooltip reports Disabled for that.
+    menu reports Disabled for that.
 ]]
-function ns.GetFarmPauseReason(ownTooltipShowing)
+function ns.GetFarmPauseReason(ownMenuShowing)
 	if not ns.db or not ns.db.profile.farmMode then
 		return nil
 	end
@@ -238,7 +236,7 @@ function ns.GetFarmPauseReason(ownTooltipShowing)
 	if not ns.IsPlayerMoving() then
 		return "FARM_PAUSED_STANDING_STILL"
 	end
-	if ownTooltipShowing or ns.IsOwnTooltipShowing() then
+	if ownMenuShowing or ns.IsOwnMenuShowing() then
 		return "FARM_PAUSED_TOOLTIP"
 	end
 

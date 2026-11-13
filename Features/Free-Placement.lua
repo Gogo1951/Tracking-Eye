@@ -163,14 +163,8 @@ function ns.CreateFreeFrame()
 		ApplyFreePosition(self)
 	end)
 	frame:SetScript("OnClick", ns.HandleLauncherClick)
-	frame:SetScript("OnEnter", function(self)
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
-		ns.BuildTooltip(GameTooltip)
-		GameTooltip:Show()
-	end)
-	frame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+	-- The menu closes itself once the cursor leaves, so there is no OnLeave.
+	frame:SetScript("OnEnter", ns.HandleLauncherEnter)
 
 	ns.freeFrame = frame
 	--[[
