@@ -3,7 +3,8 @@ if not L then
 	return
 end
 
-L["ADDON_TITLE"] = "Tracking Eye"
+L["ADDON_TITLE"] = "Tracking Eye" -- Full Name
+L["ADDON_SHORT_NAME"] = "Tracking Eye" -- Short Name
 
 --------------------------------------------------------------------------------
 -- Printed Messages
@@ -25,7 +26,6 @@ L["KEY_BINDINGS_LOCATION"] =
 L["TRACKING_MENU"] = "Меню отслеживания"
 L["PERSISTENT_TRACKING"] = "Постоянное отслеживание"
 L["TARGET_TRACKING"] = "Автоматическое отслеживание цели"
-L["FARM_MODE"] = "Режим фарма"
 
 --------------------------------------------------------------------------------
 -- Mini-map Menu
@@ -69,13 +69,17 @@ L["FARM_PAUSED_TOOLTIP"] = "Вы читаете подсказку."
 L["FARM_PAUSED_TARGET"] = "У вас в цели тот, кого можно атаковать."
 L["FARM_PAUSED_STANDING_STILL"] = "Вы стоите на месте."
 
-L["PERSISTENT_ABILITY"] = "Способность постоянного отслеживания"
-L["NONE_SET"] = "Не выбрано"
 L["CLEAR_TRACKING"] = "Очистить отслеживание"
 
 L["MENU_ON"] = "Вкл."
 L["MENU_OFF"] = "Выкл."
 L["OPEN"] = "Открыть"
+L["MENU_PERSISTENT_DESCRIPTION"] =
+	"Выберите способность постоянного отслеживания."
+L["MENU_FARM_DESCRIPTION"] = "Переключает способности отслеживания в пути."
+L["MENU_TARGET_DESCRIPTION"] =
+	"Отслеживает существ того же вида, что и ваша цель."
+L["MENU_TOGGLE"] = "Переключить"
 
 L["TOOLTIP_OPTIONS"] = "Настройки Tracking Eye"
 
@@ -94,8 +98,8 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 --[[
     Each section's description sells the feature. Each control's description is
     its mouseover tooltip: a pro tip the label and section don't already say. The
-    mini-map menu reuses the same strings, as a feature's summary and as a menu
-    row's tooltip, so it shows two lines at most there.
+    mini-map menu reuses a control's label and description as its row's tooltip;
+    the menu's feature summaries are the MENU_*_DESCRIPTION strings above.
 ]]
 
 -- General
@@ -182,7 +186,8 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 L["OPTIONS_ENABLE_FARM"] = "Включить Режим фарма"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
 	"Сам встает на паузу в бою, в городах, подземельях и во время полетов. Наведите курсор на кнопку Tracking Eye, чтобы узнать причину."
-L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Заглушить звуки способностей отслеживания"
+L["OPTIONS_SILENCE_TRACKING_SOUNDS"] =
+	"Заглушить звуки применения способностей отслеживания"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"Затихают только переключения самого Режима фарма. Отслеживание, выбранное вами, по-прежнему звучит."
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "Отдалить мини-карту"
@@ -276,6 +281,8 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 L["OPTIONS_OUTPUT_NOTE"] =
 	"Примечание: %s доходит только до игроков на вашем слое."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Локальный (/1)"
+L["SAMPLE_EXAMPLE"] = "Пример: %s"
+L["SAMPLE_LOADING_ITEM"] = "Загрузка ID: %d"
 
 --------------------------------------------------------------------------------
 -- Feedback & Support

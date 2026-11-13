@@ -5,10 +5,10 @@ local _, ns = ...
 --------------------------------------------------------------------------------
 
 --[[
-    The AceDB-3.0 defaults table. profile holds the per-character tracking,
-    Farm Mode, and Come & Get It settings — each character owns its profile
-    (see Core.lua), so a hunter and a priest never share a persistent tracking
-    ability. global holds the account-wide presentation, identical on every
+    The AceDB-3.0 defaults table. profile holds the per-character tracking and
+    Farm Mode settings — each character owns its profile (see Core.lua), so a
+    hunter and a priest never share a persistent tracking ability. global holds
+    the account-wide presentation and Come & Get It, identical on every
     character. freePos has no default: it is written on drag and at logout while
     the free frame is shown.
 
@@ -49,9 +49,6 @@ ns.DATABASE_DEFAULTS = {
 		targetTracking = false,
 		-- On by default: the cycle's repeated cast sound is the add-on's own noise.
 		muteCycleSound = true,
-		-- On by default: it only drafts a chat line, and nothing is sent until the player presses Enter.
-		comeAndGetIt = true,
-		comeAndGetItOutput = ns.DEFAULT_OUTPUT_CHANNEL,
 	},
 	global = {
 		minimap = {},
@@ -64,5 +61,8 @@ ns.DATABASE_DEFAULTS = {
 		hookBlizzardTracking = false,
 		-- On by default, and account-wide like the rest of the presentation: it zooms the client's own mini-map.
 		farmZoomOut = true,
+		-- On by default: it only drafts a chat line, and nothing is sent until the player presses Enter.
+		comeAndGetIt = true,
+		comeAndGetItOutput = ns.DEFAULT_OUTPUT_CHANNEL,
 	},
 }

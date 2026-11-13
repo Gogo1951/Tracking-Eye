@@ -2,71 +2,61 @@
 
 Mini-map tracking menu and auto switcher for herb and ore gathering. Cycles Find Herbs and Find Minerals while you farm, restores tracking after death, and tracks targeted creatures while questing. Supports every tracking ability. Never miss a node.
 
-**TL;DR**: A pro tracking tool for anyone who farms. Farm Mode flips herb and ore tracking for you as you ride, so you gather more and click less.
+**TL;DR:** Gather herbs and ore on the same ride without ever touching your tracking, and never lose it to a corpse run again.
 
-<img width="300" src="https://github.com/user-attachments/assets/ca1d9801-20eb-4b35-9593-6c9e30685554" />
+### Farm Mode
 
-## Features
+* **Herbs and Ore, One Mini-map** // Swaps your tracking for you as you ride, so no node slips past.
+* **Never Gets in Your Way** // Holds off in combat and in town, so it never costs you a global cooldown when it counts.
+* **Sees Farther** // Zooms your mini-map all the way out as a run starts, so nodes show up from much farther away.
+* **Farm Your Way** // Pick what it cycles, how fast, and whether it runs mounted, on foot, or in travel form, or switch it off.
 
-🚜 **Farm Mode** // Herbs and ore on one mini-map, swapped for you on the move, so no node slips past.
+### Persistent Tracking
 
-🎯 **Tracking Menu & Persistent Tracking** // Every tracking ability in one menu, and your pick comes right back after you die.
+* **Every Tracking Ability, One Menu** // Herbs, ore, fish, treasure, beasts, and the rest, one click from your mini-map.
+* **It Comes Back** // Die, shapeshift, or zone, and your tracking turns right back on.
+* **Right Tracking, Right Moment** // Grab a fishing pole and Find Fish takes over. Druids in Cat Form and Hunters in battlegrounds can have Track Humanoids step in too.
+* **Your Call** // Pick which swaps you want, or switch it off entirely.
 
-🐾 **Automatic Target Tracking** // Target a creature and the rest of its kind lights up on your mini-map. Kill quests, done faster.
+### Automatic Target Tracking
 
-📣 **Come & Get It** // Right-click a node you can't use and draft a callout with its coordinates for someone who can.
+* **Kill Quests, Done Faster** // Target a creature and the rest of its kind lights up on your mini-map.
+* **Off Until You Want It** // Starts off. Turn it on in the options whenever you're ready.
+
+### Come & Get It
+
+* **Be the Hero** // Right-click an herb you can't pick, a vein you can't mine, or a locked chest, and a callout with its coordinates lands in your chat box.
+* **Nothing Goes Out by Accident** // It only writes the line. You press Enter to send it.
+* **Your Channel** // Send it to Local, Guild, Party, Say, or Yell, or switch it off.
+
+> Sample Messages
+
+> **Right-Click a Vein You Can't Mine, Local (/1):** Hey Miners! Rich Thorium Vein at 25, 54 in Eastern Plaguelands.
+
+> **Right-Click a Locked Chest, Local (/1):** Hey Rogues! Large Iron Bound Chest at 38, 49 in Stranglethorn Vale.
 
 ## Setup
 
 1. Install the add-on, ideally using [CurseForge](https://www.curseforge.com/wow/addons/tracking-eye-revisited) or [Wago](https://addons.wago.io/addons/tracking-eye).
-2. Log in.
-3. Left-click the mini-map button and pick your tracking.
+2. Type `/te`, or pick Tracking Eye Options in the mini-map menu, to open the Options Interface.
+3. Hover the mini-map button and pick your tracking.
 4. Mount up and ride. Farm Mode does the rest.
-5. Want it your way? Type `/te` and tune it to your heart's desire.
-6. _"All your nodes are belong to us."_
+5. _"All your nodes are belong to us."_
 
-## How It Works
+## Tips & Tricks
 
-### Tracking Menu & Persistent Tracking
+### Mini-Map Button
 
-Hunters, Druids, Warlocks, Paladins, Dwarves, and anyone with Herbalism, Mining, or Fishing: it all lives in one menu, and it can swap in the right tracking for the moment:
+| Action | Result |
+|---|---|
+| Hover or Left-Click | Opens the Mini-map Menu |
 
-* **Equip a fishing pole** // Find Fish takes over until you put it away.
-* **Druids in Cat Form** // Track Humanoids takes over.
-* **Hunters in battlegrounds** // Track Humanoids takes over, so enemy players show up on your mini-map.
+The menu shows every feature and whether it's on, with a Toggle under each, your tracking abilities one click away, and why Farm Mode is paused. It's all plain clicks, so it works with a controller too.
 
-### Farm Mode
+### Good to Know
 
-* **Stays out of your way** // Never switches in combat or in town, so it never costs you a global cooldown when it matters.
-* **Quiet** // Every switch makes a sound, so Farm Mode mutes game sound effects for a split second around each one. Turn that off if another sound ever gets clipped.
-* **Sees farther** // Your mini-map zooms all the way out when a farming run starts, so more nodes fit on it.
-
-### Come & Get It
-
-You don't need the profession to use this, you need to *not* have it.
-
-> Hey Miners! Rich Thorium Vein at 25, 54 in Eastern Plaguelands.
-
-Nothing goes out until you press Enter.
-
-### Mini-Map Menu
-
-Hover the mini-map button and a menu opens: every feature and whether it's on. Hover a feature to switch it on or off, change its settings, or see why Farm Mode is paused. Click the button to pick your tracking straight away. Everything is a plain click, so it works with a controller too.
-
-Crowded mini-map? Free Placement Mode parks the icon anywhere on screen.
-
-### Options
-
-Type `/te`, or find it under **Options > AddOns > Tracking Eye**.
-
-* **Tracking Eye** // Persistent Tracking and its swaps, Automatic Target Tracking, Free Placement Mode, the mini-map button, and a key that cycles your tracking.
-* **Farm Mode** // What cycles, when, and how fast.
-* **Come & Get It** // Where your callouts go.
-* **Profiles** // Copy one character's setup to another.
-* **Feedback & Support** // Links to share feedback, report bugs, or spread the word.
-* **Diagnostic Tools** // Reports to paste into a bug report.
-
-<img width="800" src="https://github.com/user-attachments/assets/fbaf3a78-3cbe-49b5-978a-43efd6ee43ae" />
+* **Free Placement Mode** // Crowded mini-map? Pull the tracking icon off it and park it anywhere on your screen.
+* **One-Key Cycling** // Bind a key to jump to your next tracking ability, even with Farm Mode off.
 
 ## Testing & Localization Status
 
@@ -106,23 +96,20 @@ Type `/te`, or find it under **Options > AddOns > Tracking Eye**.
 ### 🟢 Pairs With
 
 * hizuro\_de's [FarmHud](https://www.curseforge.com/wow/addons/farmhud)
+* Wuild's [GatherLite](https://www.curseforge.com/wow/addons/gatherlite)
 * moonfann's [GatherMate2](https://www.curseforge.com/wow/addons/gathermate2)
 * nevcairiel's [GatherMate2 Classic](https://www.curseforge.com/wow/addons/gathermate2-classic)
-* Wuild's [GatherLite](https://www.curseforge.com/wow/addons/gatherlite)
 * Xinhuan's [Routes](https://www.curseforge.com/wow/addons/routes)
 
 ### 🟡 Overlaps
 
 * kvakvs's [Buffomat Classic](https://www.curseforge.com/wow/addons/buffomat-classic)
 * Epicstrike's [ForeverPlus](https://www.curseforge.com/wow/addons/foreverplus)
-* BetterAddons' [GatherProClassic](https://www.curseforge.com/wow/addons/gatherproclassic)
-* fuba82's [MinimapTrackingMenu_Classic](https://www.curseforge.com/wow/addons/minimaptrackingmenu_classic)
-* ilvec90's [NodeCounter](https://www.curseforge.com/wow/addons/nodecounter)
 
 ### 🔴 Alternatives
 
 * IceDNicco's [Auto Tracker](https://www.curseforge.com/wow/addons/autotracker)
 * shadowstride's [AutoTrackers](https://www.curseforge.com/wow/addons/auto-trackers)
-* Petazo's [Gather Tracker](https://www.curseforge.com/wow/addons/gather-tracker)
+* Earthbane's [Forever Dual Gathering](https://www.curseforge.com/wow/addons/forever-dual-gathering)
 * cyanokaze's [GatherBot](https://www.curseforge.com/wow/addons/gatherbot)
 * executedpoorly's [Tracking Switcher X](https://www.curseforge.com/wow/addons/tracking-switcher-x)

@@ -60,7 +60,7 @@ ns.FARM_CYCLE_DEFAULTS = {
 How We Got the Data
 
 Last Validated
-	2026-10-04, Classic Era 1.15.9.70003
+	2026-11-13, Classic Era 1.15.9.70576
 
 Notes
 	- TRACKING_SPELLS holds every tracking ability a player can learn on this client: the hunter's eight Track spells, the druid's Track Humanoids, the warlock's Sense Demons, the paladin's Sense Undead, Find Herbs and Find Minerals from the gathering professions, and the Dwarf racial Find Treasure.
@@ -70,8 +70,9 @@ Notes
 	- source decides where a spell sits in the Farm Mode Abilities list: a class name puts it in that class's block (ns.FARM_ABILITY_CLASSES in Data/Data.lua), and a profession or racial puts it under Professions & Racial Abilities.
 	- Find Fish and the flight forms don't exist on this client.
 	- 8387 Find Herbs and 8388 Find Minerals are left out: they track the same things as 2383 and 2580, but the profession doesn't grant them and no item does.
+	- The game's other tracking effects aren't abilities a player learns: the Elixir of Detect Undead and Elixir of Detect Demon wear off, the Goggles of Gem Hunting and the Gahz'ridian Detector are quest items, and the rest come from quest buffs or from nothing a player can get.
 	- CREATURE_TYPE_DATA lists Target Tracking's candidates for each creature type, in preference order, and each character hunts with the first one it knows (ns.CREATURE_TYPE_SPELLS in Features/Utilities.lua). It's keyed by creature type ID, which is the same in every locale and on every client. The druid's Track Humanoids is left out on purpose: a hunt can't cast it outside Cat Form. Creature types with no tracking ability, such as Critter, Mechanical and Totem, have no row.
-	- MOVEMENT_BUFF_SPELLS holds the movement buffs, other than druid forms, that last until cancelled and count as travelling for Farm Mode: the hunter's Aspect of the Cheetah and Aspect of the Pack, and the shaman's Ghost Wolf, each detected by its buff. Timed speed boosts such as Sprint and Dash end on their own, so they're left out.
+	- MOVEMENT_BUFF_SPELLS holds the movement buffs, other than druid forms, that last until cancelled and count as travelling for Farm Mode: the hunter's Aspect of the Cheetah and Aspect of the Pack, and the shaman's Ghost Wolf, each detected by its buff. Timed speed boosts such as Sprint and Dash end on their own, so they're left out, and so is the paladin's Pursuit of Justice, a talent that's always on, so it can't mean the player is travelling.
 	- movementState is the Farm Mode condition the buff counts as (ns.MOVEMENT_STATE_TOGGLES in Data/Data.lua). The druid's travel forms come from the form rows in TRACKING_SPELLS instead.
 	- FARM_CYCLE_DEFAULTS is Farm Mode's starting rotation, read into the profile's farmCycleSpells in Data/Default-Settings.lua: Find Herbs, Find Minerals and Find Treasure are on, and every other ability is off. A key added here switches on for existing characters who never saved one.
 	- Find Treasure is a Dwarf racial, so it only reaches the rotation on a character that knows it: BuildCycleCache in Features/Farm-Mode.lua requires IsPlayerSpell.
@@ -109,12 +110,16 @@ Wowhead
 	None.
 
 wago.tools
-	https://wago.tools/db2/SpellName?build=1.15.9.70003
-	https://wago.tools/db2/SpellEffect?build=1.15.9.70003
-	https://wago.tools/db2/SkillLineAbility?build=1.15.9.70003
-	https://wago.tools/db2/SpellLevels?build=1.15.9.70003
-	https://wago.tools/db2/SpellMisc?build=1.15.9.70003
-	https://wago.tools/db2/SpellDuration?build=1.15.9.70003
-	https://wago.tools/db2/CreatureType?build=1.15.9.70003
-	https://wago.tools/db2/ItemEffect?build=1.15.9.70003
+	https://wago.tools/db2/SpellName?build=1.15.9.70576
+	https://wago.tools/db2/SpellEffect?build=1.15.9.70576
+	https://wago.tools/db2/SkillLine?build=1.15.9.70576
+	https://wago.tools/db2/SkillLineAbility?build=1.15.9.70576
+	https://wago.tools/db2/SpellLevels?build=1.15.9.70576
+	https://wago.tools/db2/SpellMisc?build=1.15.9.70576
+	https://wago.tools/db2/SpellDuration?build=1.15.9.70576
+	https://wago.tools/db2/CreatureType?build=1.15.9.70576
+	https://wago.tools/db2/ItemEffect?build=1.15.9.70576
+
+QuestieDB
+	None.
 ]]

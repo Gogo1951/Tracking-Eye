@@ -14,7 +14,7 @@ local ADDON_NAME, ns = ...
     Entries, each a table with a `kind`:
       header     left, right            The add-on's name, its version on the right
       spacer                            A line's room
-      section    left, right            A group's small gold label
+      section    left, right            A group's gold label
       submenu    left, right, submenu   A gold label that opens a flyout, Blizzard's
                                         submenu arrow after its right side
       separator                         A thin line
@@ -23,8 +23,11 @@ local ADDON_NAME, ns = ...
                                         gray, so what's off sits back
       choice     left, selected         One of a set: the pick white with a check,
                                         the rest gray
-      status     left, right            A row with nothing to click
+      status     left, right            A gold label and where it stands, nothing
+                                        to click
       hint       left, right            A click hint, blue, clickable with onClick
+      description left                  What a feature does, white, wrapped wider
+                                        than a note
       note       left                   Gray helper text, wrapped to the panel
 
     Any entry may carry leftColor and rightColor (palette keys), onClick, and
@@ -50,8 +53,11 @@ local PLATE_ALPHA = 0.8 -- The art is black: a little of the world shows through
 
 local MIN_WIDTH = 128
 local NOTE_MAX_WIDTH = 260 -- A note wraps here when nothing else makes the panel wider
+local DESCRIPTION_MAX_WIDTH = 320 -- A description gets more room before it wraps
 local ROW_INSET = SPACE.LINE -- From the plate's edge to a row's highlight
 local TEXT_INSET = SPACE.NEAR -- From a row's edge to its text
+local OPTION_INDENT = SPACE.LINE -- Options sit a little in from the text above them, so a list reads as one
+local OPTIONS = { choice = true, toggle = true }
 local HIGHLIGHT_ALPHA = 0.16
 
 -- Blizzard's own arrow on a dropdown row with a submenu, and its check mark.
@@ -224,21 +230,25 @@ local function Row(panel, index)
 	return row
 end
 
--- What each kind shows: its fonts, colors, and right side, filled in from the entry.
+--[[
+    What each kind shows: its fonts, colors, and right side, filled in from the
+    entry. Every row is the same type size; kinds differ by color only, never by
+    a smaller font.
+]]
 local function Look(entry)
 	local kind = entry.kind
 	local left, right = entry.left, entry.right
 	local leftColor, rightColor = entry.leftColor, entry.rightColor
 	local leftFont, rightFont = "GameFontHighlight", "GameFontHighlight"
-	if kind == "header" or kind == "submenu" then
+	if kind == "header" or kind == "submenu" or kind == "section" then
 		leftFont, rightFont = "GameFontNormal", "GameFontHighlight"
 		leftColor, rightColor = leftColor or "TITLE", rightColor or "MUTED"
 		if kind == "submenu" then
 			right = (right and right .. " " or "") .. Kit.SUBMENU_ARROW
 		end
-	elseif kind == "section" then
-		leftFont, rightFont = "GameFontNormalSmall", "GameFontNormalSmall"
-		leftColor, rightColor = leftColor or "TITLE", rightColor or "MUTED"
+	elseif kind == "status" then
+		-- A status reads as a heading over its reason, so it's gold like every label.
+		leftColor = leftColor or "TITLE"
 	elseif kind == "toggle" then
 		right = entry.on and ON_TEXT or OFF_TEXT
 		leftColor = leftColor or (not entry.on and "MUTED") or "TEXT"
@@ -248,8 +258,9 @@ local function Look(entry)
 		leftColor = leftColor or (not entry.selected and "MUTED") or "TEXT"
 	elseif kind == "hint" then
 		leftColor, rightColor = leftColor or "INFO", rightColor or "INFO"
+	elseif kind == "description" then
+		leftColor = leftColor or "BODY"
 	elseif kind == "note" then
-		leftFont = "GameFontHighlightSmall"
 		leftColor = leftColor or "MUTED"
 	end
 	return {
@@ -268,17 +279,30 @@ end
 
 local Panel = {}
 
+local SPACER = { kind = "spacer" }
+
 --[[
     Lays the entries out and sizes the panel to them: each row as tall as a line
-    and SPACE.LINE above and below, a group's label SPACE.NEAR above instead to set
-    its group apart, a spacer a line's room, a separator SPACE.NEAR. A note wraps
-    to the width the other rows settle on, so it never makes the panel wider than
-    NOTE_MAX_WIDTH on its own.
+    and SPACE.LINE above and below, a spacer a line's room, a separator SPACE.NEAR.
+    Every heading (a section label, a status, or a submenu label) gets a spacer
+    above it, unless it opens the panel or a spacer is already there. A note or a
+    description wraps to the width the other rows settle on, so on its own it never
+    makes the panel wider than NOTE_MAX_WIDTH or DESCRIPTION_MAX_WIDTH.
 ]]
-function Panel:Render(entries)
+local HEADINGS = { section = true, status = true, submenu = true }
+function Panel:Render(source)
 	local rows = self.rows
 	local width = MIN_WIDTH
 	local notes = {}
+
+	local entries = {}
+	for _, entry in ipairs(source) do
+		local previous = entries[#entries]
+		if HEADINGS[entry.kind] and previous and previous.kind ~= "spacer" then
+			entries[#entries + 1] = SPACER
+		end
+		entries[#entries + 1] = entry
+	end
 
 	-- First pass: what each row says, and the width the widest needs.
 	for index, entry in ipairs(entries) do
@@ -294,23 +318,20 @@ function Panel:Render(entries)
 			Paint(row.left, nil)
 			Paint(row.right, nil)
 			row.height = kind == "spacer" and SPACE.GROUP or SPACE.NEAR
-			row.above = SPACE.LINE
 		else
 			local look = Look(entry)
 			row.left:SetFontObject(look.leftFont)
 			row.right:SetFontObject(look.rightFont)
-			row.left:SetWordWrap(kind == "note")
+			row.left:SetWordWrap(kind == "note" or kind == "description")
 			row.left:SetWidth(0)
 			Paint(row.left, look.left, look.leftColor)
 			Paint(row.right, look.right, look.rightColor)
 			local _, size = row.left:GetFont()
-			local above = kind == "section" and SPACE.NEAR or SPACE.LINE
-			row.above = above
-			row.height = (size or 12) + above + SPACE.LINE
-			if kind == "note" then
+			row.height = (size or 12) + 2 * SPACE.LINE
+			if kind == "note" or kind == "description" then
 				notes[#notes + 1] = row
 			else
-				local textWidth = row.left:GetStringWidth() or 0
+				local textWidth = (row.left:GetStringWidth() or 0) + (OPTIONS[kind] and OPTION_INDENT or 0)
 				if look.right then
 					textWidth = textWidth + SPACE.GROUP + (row.right:GetStringWidth() or 0)
 				end
@@ -319,26 +340,27 @@ function Panel:Render(entries)
 		end
 	end
 
-	-- Second pass: notes wrap to that width, or to NOTE_MAX_WIDTH when nothing else is that wide.
+	-- Second pass: notes and descriptions wrap to that width, or to their own cap when nothing else is that wide.
 	local insets = 2 * (TEXT_INSET + ROW_INSET)
 	for _, row in ipairs(notes) do
-		width = math.max(width, math.min((row.left:GetStringWidth() or 0) + insets, NOTE_MAX_WIDTH))
+		local cap = row.entry.kind == "description" and DESCRIPTION_MAX_WIDTH or NOTE_MAX_WIDTH
+		width = math.max(width, math.min((row.left:GetStringWidth() or 0) + insets, cap))
 	end
 	local noteWidth = width - insets
 	for _, row in ipairs(notes) do
 		row.left:SetWidth(noteWidth)
-		row.height = row.left:GetStringHeight() + row.above + SPACE.LINE
+		row.height = row.left:GetStringHeight() + 2 * SPACE.LINE
 	end
 
 	-- Third pass: place them.
 	local y = SPACE.NEAR
 	for index = 1, #entries do
 		local row = rows[index]
-		local drop = (row.above - SPACE.LINE) / 2 -- A label's extra room is all above it
 		row.left:ClearAllPoints()
-		row.left:SetPoint("LEFT", TEXT_INSET, -drop)
+		local indent = row.entry and OPTIONS[row.entry.kind] and OPTION_INDENT or 0
+		row.left:SetPoint("LEFT", TEXT_INSET + indent, 0)
 		row.right:ClearAllPoints()
-		row.right:SetPoint("RIGHT", -TEXT_INSET, -drop)
+		row.right:SetPoint("RIGHT", -TEXT_INSET, 0)
 		row:SetHeight(row.height)
 		row:ClearAllPoints()
 		row:SetPoint("TOPLEFT", self, "TOPLEFT", ROW_INSET, -y)

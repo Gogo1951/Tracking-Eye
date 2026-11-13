@@ -36,7 +36,7 @@ end
 --[[
     A sub-option: a control that only means anything while the toggle above it is
     on. Marked twice over, an indented checkbox and a silver caption, so the
-    dependency reads whether the player is scanning shape or colour.
+    dependency reads whether the player is scanning shape or color.
 
     Three constraints inside SubRow are load-bearing: one unnamed inline group per
     sub-option, or the next control packs onto the leftover space and the indent

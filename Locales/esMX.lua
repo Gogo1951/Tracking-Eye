@@ -3,7 +3,8 @@ if not L then
 	return
 end
 
-L["ADDON_TITLE"] = "Tracking Eye"
+L["ADDON_TITLE"] = "Tracking Eye" -- Full Name
+L["ADDON_SHORT_NAME"] = "Tracking Eye" -- Short Name
 
 --------------------------------------------------------------------------------
 -- Printed Messages
@@ -23,7 +24,6 @@ L["KEY_BINDINGS_LOCATION"] =
 L["TRACKING_MENU"] = "Menú de rastreo"
 L["PERSISTENT_TRACKING"] = "Rastreo persistente"
 L["TARGET_TRACKING"] = "Rastreo automático de objetivo"
-L["FARM_MODE"] = "Modo de recolección"
 
 --------------------------------------------------------------------------------
 -- Mini-map Menu
@@ -63,13 +63,15 @@ L["FARM_PAUSED_TOOLTIP"] = "Estás leyendo una descripción."
 L["FARM_PAUSED_TARGET"] = "Tienes como objetivo algo que puedes atacar."
 L["FARM_PAUSED_STANDING_STILL"] = "Estás quieto."
 
-L["PERSISTENT_ABILITY"] = "Habilidad de rastreo persistente"
-L["NONE_SET"] = "Sin establecer"
 L["CLEAR_TRACKING"] = "Borrar rastreo"
 
 L["MENU_ON"] = "Activado"
 L["MENU_OFF"] = "Desactivado"
 L["OPEN"] = "Abrir"
+L["MENU_PERSISTENT_DESCRIPTION"] = "Elige tu Habilidad de rastreo persistente."
+L["MENU_FARM_DESCRIPTION"] = "Alterna tus habilidades de rastreo mientras viajas."
+L["MENU_TARGET_DESCRIPTION"] = "Rastrea la especie de cualquier criatura que tengas como objetivo."
+L["MENU_TOGGLE"] = "Alternar"
 
 L["TOOLTIP_OPTIONS"] = "Opciones de Tracking Eye"
 
@@ -88,8 +90,8 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 --[[
     Each section's description sells the feature. Each control's description is
     its mouseover tooltip: a pro tip the label and section don't already say. The
-    mini-map menu reuses the same strings, as a feature's summary and as a menu
-    row's tooltip, so it shows two lines at most there.
+    mini-map menu reuses a control's label and description as its row's tooltip;
+    the menu's feature summaries are the MENU_*_DESCRIPTION strings above.
 ]]
 
 -- General
@@ -258,6 +260,8 @@ L["OPTIONS_OUTPUT_NAME"] = "Salida predeterminada"
 L["OPTIONS_OUTPUT_DESCRIPTION"] = "Hermandad llega a todos los miembros conectados, sin importar su capa ni su zona."
 L["OPTIONS_OUTPUT_NOTE"] = "Nota: %s solo llega a los jugadores de tu capa."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Local (/1)"
+L["SAMPLE_EXAMPLE"] = "Ejemplo: %s"
+L["SAMPLE_LOADING_ITEM"] = "Cargando ID: %d"
 
 --------------------------------------------------------------------------------
 -- Feedback & Support

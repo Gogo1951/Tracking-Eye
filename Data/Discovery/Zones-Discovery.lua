@@ -1,17 +1,35 @@
--- Data/Discovery/Zones-Discovery.lua
 local _, ns = ...
 
 if not ns.IS_DISCOVERY then
 	return
 end
 
---[[
-    Copied from Data/Vanilla/. Until Validate Data passes on this client, every
-    table below holds Vanilla's rows.
-]]
-
--- TODO: Add SQL Query
 -- [instanceMapId] = true
 ns.RESTRICTED_MAP_IDS = {
 	[369] = true, -- Deeprun Tram
 }
+
+--[[
+How We Got the Data
+
+Last Validated
+	2026-11-13, Season of Discovery 1.15.9.70576
+
+Notes
+	- RESTRICTED_MAP_IDS lists maps that count as an instance for Farm Mode and Target Tracking even though IsInInstance says otherwise (ns.GetRestrictedKind in Features/Utilities.lua): the Deeprun Tram, the enclosed tram between Stormwind and Ironforge.
+	- It's keyed by instance map ID, the eighth return of GetInstanceInfo. No client API looks a map ID up, so Validate Data confirms only the row count.
+	- The other enclosed maps that aren't instances are left out: two test maps, the unused Stormwind Prison, and the Alliance and Horde PvP Barracks, which no player enters, since the halls players visit stand inside Stormwind City and Orgrimmar.
+	- The row started as a copy of Data/Vanilla/.
+
+SQL (CMaNGOS)
+	TODO: Add SQL Query
+
+Wowhead
+	None.
+
+wago.tools
+	https://wago.tools/db2/Map?build=1.15.9.70576
+
+QuestieDB
+	None.
+]]

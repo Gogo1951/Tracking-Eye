@@ -180,7 +180,7 @@ local function AddFarmAbilityGroups(args, order)
 	--[[
 		Leads the list rather than sitting among the spells: it is a rule about the
 		rotation, not a spell of its own, so it carries no icon. Always shown and
-		never greyed — with no ability selected it simply has nothing to add.
+		never grayed — with no ability selected it simply has nothing to add.
 	]]
 	args.persistentAbility = {
 		type = "toggle",

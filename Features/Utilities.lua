@@ -67,6 +67,20 @@ function ns.IsMovementStateDetectable(state)
 	return buffs == nil or next(buffs) ~= nil
 end
 
+-- True when this character knows a spell that puts them in the state; mounted and on foot need none.
+function ns.KnowsMovementState(state)
+	local buffs = MOVEMENT_STATE_BUFFS[state]
+	if buffs == nil then
+		return true
+	end
+	for spellId in pairs(buffs) do
+		if IsPlayerSpell(spellId) then
+			return true
+		end
+	end
+	return false
+end
+
 -- Keyed by the creature type ID, which is the same in every locale and on every client.
 ns.CREATURE_TYPE_SPELLS = {}
 for _, row in ipairs(ns.CREATURE_TYPE_DATA) do
@@ -80,6 +94,18 @@ for _, row in ipairs(ns.CREATURE_TYPE_DATA) do
 	if ids[1] then
 		ns.CREATURE_TYPE_SPELLS[row[1]] = ids
 	end
+end
+
+-- True when this character knows an ability Automatic Target Tracking can hunt with.
+function ns.KnowsHuntAbility()
+	for _, ids in pairs(ns.CREATURE_TYPE_SPELLS) do
+		for _, spellId in ipairs(ids) do
+			if IsPlayerSpell(spellId) then
+				return true
+			end
+		end
+	end
+	return false
 end
 
 --------------------------------------------------------------------------------
@@ -149,8 +175,8 @@ end
     (combat, in practice) aura reads from add-on code throw, the player's own buffs
     included, and cooldown, casting, and identity reads return values add-on code
     may not test or compare. C_Secrets reports each restriction ahead of the read,
-    so every read that can go secret asks first. All three supported clients ship
-    C_Secrets, so it is called directly.
+    so every read that can go secret asks first. Every client Tracking Eye ships
+    for has C_Secrets, so it is called directly.
 ]]
 
 --[[
@@ -402,116 +428,6 @@ function ns.IsFishingPoleEquipped()
 	-- GetItemInfoInstant reads the client's own item table, so unlike C_Item.GetItemInfo it never comes back empty on a cold call.
 	local _, _, _, _, _, classId, subclassId = C_Item.GetItemInfoInstant(itemId)
 	return classId == Enum.ItemClass.Weapon and subclassId == Enum.ItemWeaponSubclass.Fishingpole
-end
-
---[[
-    Lazily built reverse lookup (texture -> spellId) so every call isn't a linear
-    C_Spell.GetSpellTexture scan over ns.TRACKING_IDS. During the login event storm
-    C_Spell.GetSpellTexture returns nil for spells whose data hasn't loaded, so a cache
-    built then is missing entries and has to be rebuilt once more data arrives.
-
-    Rebuilds are driven by a dirty flag, NOT by testing whether every ID resolved.
-    An ID this client lacks never resolves, so a completeness test can stay false
-    forever and rebuild the whole table on every lookup miss, which is most of
-    them while nothing is tracked. SPELLS_CHANGED and PLAYER_ENTERING_WORLD are
-    the only points where new spell data can appear, so they mark it dirty and the
-    next lookup rebuilds exactly once.
-]]
-local textureToSpellId = nil
-local textureCacheDirty = true
-
-function ns.InvalidateTextureCache()
-	textureCacheDirty = true
-end
-
-local function BuildTextureCache()
-	textureToSpellId = {}
-	for _, id in ipairs(ns.TRACKING_IDS) do
-		local texture = C_Spell.GetSpellTexture(id)
-		if texture then
-			textureToSpellId[texture] = id
-		end
-	end
-	textureCacheDirty = false
-end
-
-local function MatchTrackingTexture(texture)
-	if not texture then
-		return nil
-	end
-	if not textureToSpellId or textureCacheDirty then
-		BuildTextureCache()
-	end
-	return textureToSpellId[texture]
-end
-
---[[
-    The tracking spell an active C_Minimap entry stands for, or nil. Only entries
-    backed by one of this add-on's spells count, so a town service switched on in
-    the minimap menu is never mistaken for tracking. A spell entry without a spell
-    ID is matched by its texture instead.
-]]
-local function GetMinimapEntrySpell(index)
-	local info = C_Minimap.GetTrackingInfo(index)
-	if not info or not info.active then
-		return nil
-	end
-	if info.spellID then
-		return ns.TRACKING_SET[info.spellID] and info.spellID or nil
-	end
-	if info.type == "spell" then
-		return MatchTrackingTexture(info.texture)
-	end
-	return nil
-end
-
---[[
-    Live "which tracking is up right now?" check, returning the active
-    tracking spellId or nil. GetTrackingTexture alone cannot answer this:
-    on Classic Era 1.15.x it returns nil for several active trackers
-    (racials like Find Treasure) and lags state changes. The Blizzard
-    minimap tracking icon is authoritative there — the Vanilla client
-    hides it entirely when nothing is tracked, so it is only read while
-    visible (a hidden frame can retain a stale texture). Falls back to
-    GetTrackingTexture for clients where the icon shows a generic "None"
-    texture instead (TBC+). WoW Forever ships neither the icon nor
-    GetTrackingTexture and reads the C_Minimap tracking list instead.
-]]
-function ns.GetActiveTrackingSpell()
-	if MiniMapTrackingIcon and MiniMapTrackingIcon:IsVisible() then
-		local id = MatchTrackingTexture(MiniMapTrackingIcon:GetTexture())
-		if id then
-			return id
-		end
-	end
-	if GetTrackingTexture then
-		return MatchTrackingTexture(GetTrackingTexture())
-	end
-	for index = 1, C_Minimap.GetNumTrackingTypes() do
-		local id = GetMinimapEntrySpell(index)
-		if id then
-			return id
-		end
-	end
-	return nil
-end
-
---[[
-    Drops the add-on's tracking. CancelTrackingBuff covers Era and TBC. On WoW
-    Forever every active entry backed by one of this add-on's spells is switched
-    off, and any town service beside them is left alone. Never ClearAllTracking:
-    it also clears Blizzard's own quest and target filters.
-]]
-function ns.CancelActiveTracking()
-	if CancelTrackingBuff then
-		CancelTrackingBuff()
-		return
-	end
-	for index = 1, C_Minimap.GetNumTrackingTypes() do
-		if GetMinimapEntrySpell(index) then
-			C_Minimap.SetTracking(index, false)
-		end
-	end
 end
 
 --[[

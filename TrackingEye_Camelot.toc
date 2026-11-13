@@ -57,6 +57,7 @@ Data/Flavor.lua
 Data/Data.lua
 Data/Camelot/Spells-Camelot.lua
 Data/Camelot/Zones-Camelot.lua
+Data/Camelot/Game-IDs-Camelot.lua
 Data/Default-Settings.lua
 
 # Tracking Eye

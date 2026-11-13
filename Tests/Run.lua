@@ -76,10 +76,13 @@ ns:StartEventLog()
 for _ = 1, 50 do
 	ns:LogEvent("UI_ERROR_MESSAGE", UNCORRELATED_ID, "Ability is not ready yet.")
 end
+-- Counters are keyed by event, then id.
 local rows, counted = 0, 0
-for _, entry in pairs(ns.diagnostics.suppressed) do
-	rows = rows + 1
-	counted = counted + entry.count
+for _, counters in pairs(ns.diagnostics.suppressed) do
+	for _, entry in pairs(counters) do
+		rows = rows + 1
+		counted = counted + entry.count
+	end
 end
 Check("spam collapses to one counted row", #ns.diagnostics.log == 0 and rows == 1 and counted == 50)
 
@@ -97,6 +100,86 @@ Check(
 ns:StartEventLog()
 ns:LogEvent("UI_ERROR_MESSAGE", nil, "No id at all")
 Check("an event with no id logs verbatim", #ns.diagnostics.log == 1 and LogHas("No id at all"))
+
+--------------------------------------------------------------------------------
+-- Other-Client Characters
+--------------------------------------------------------------------------------
+
+-- Loads Features/Core.lua against a fake AceDB holding sv, then fires its ADDON_LOADED.
+local function LoadCoreWith(currentKey, sv)
+	local coreNs = { L = {}, UpdateIcon = function() end }
+	local onEvent
+	local frame = {
+		SetScript = function(_, _, handler)
+			onEvent = handler
+		end,
+		RegisterEvent = function() end,
+		RegisterUnitEvent = function() end,
+	}
+	local db = {
+		keys = { char = currentKey, profile = currentKey },
+		sv = sv,
+		global = {},
+		RegisterCallback = function() end,
+	}
+	local coreSandbox = setmetatable({
+		CreateFrame = function()
+			return frame
+		end,
+		C_AddOns = {
+			GetAddOnMetadata = function()
+				return nil
+			end,
+		},
+		LibStub = function()
+			return {
+				New = function()
+					return db
+				end,
+			}
+		end,
+	}, { __index = _G })
+	local chunk = assert(loadfile("Features/Core.lua", "t", coreSandbox))
+	if setfenv then
+		setfenv(chunk, coreSandbox)
+	end
+	chunk("TrackingEye", coreNs)
+	onEvent(frame, "ADDON_LOADED", "TrackingEye")
+end
+
+local foreverSv = {
+	char = { ["Aero Moon"] = {}, ["Spek - Whitemane"] = {} },
+	profileKeys = { ["Aero Moon"] = "Aero Moon", ["Spek - Whitemane"] = "Spek - Whitemane" },
+	profiles = { ["Aero Moon"] = {}, ["Spek - Whitemane"] = {}, Default = {} },
+}
+LoadCoreWith("Aero Moon", foreverSv)
+Check(
+	"a Forever load drops a realm character",
+	foreverSv.char["Spek - Whitemane"] == nil
+		and foreverSv.profileKeys["Spek - Whitemane"] == nil
+		and foreverSv.profiles["Spek - Whitemane"] == nil
+		and foreverSv.profiles.Default ~= nil
+		and foreverSv.char["Aero Moon"] ~= nil
+)
+
+local realmSv = {
+	char = { ["Aero - Whitemane"] = {}, ["Spek Moon"] = {}, ["Katz - Faerlina"] = {} },
+	profileKeys = {
+		["Aero - Whitemane"] = "Aero - Whitemane",
+		["Spek Moon"] = "Spek Moon",
+		["Katz - Faerlina"] = "Katz - Faerlina",
+	},
+	profiles = { ["Aero - Whitemane"] = {}, ["Spek Moon"] = {}, ["Katz - Faerlina"] = {} },
+}
+LoadCoreWith("Aero - Whitemane", realmSv)
+Check(
+	"a realm load drops a Forever character and keeps another realm",
+	realmSv.char["Spek Moon"] == nil
+		and realmSv.profileKeys["Spek Moon"] == nil
+		and realmSv.profiles["Spek Moon"] == nil
+		and realmSv.char["Katz - Faerlina"] ~= nil
+		and realmSv.profiles["Katz - Faerlina"] ~= nil
+)
 
 if failures > 0 then
 	os.exit(1)

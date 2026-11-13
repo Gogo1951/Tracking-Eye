@@ -10,12 +10,6 @@
 - **Instead:** Reads and clears tracking through the legacy tracking calls and Blizzard's mini-map tracking icon on any client that still ships them, and through C_Minimap's tracking list only on a client that doesn't.
 - **Why:** Classic Era ships C_Minimap's tracking calls but reports an empty tracking list, so C_Minimap alone can neither see nor clear tracking there.
 
-### Every option for every class
-
-- **Departs from:** OPTIONS PANEL → Widget Conventions → only show spells the player knows.
-- **Instead:** The options offer every setting a profile holds on every character, tracking spells it hasn't learned and other classes' settings included.
-- **Why:** A profile can be shared by characters of different classes, so every setting it holds has to be reachable from any of them.
-
 ### Default Output note
 
 - **Departs from:** OPTIONS PANEL → Helper Text Lives in the Tooltip → never add a second description line under a control.
@@ -34,20 +28,8 @@
 - **Instead:** Each feature's Enable toggle heads that feature's own section or options page, and the feature's other settings hide while it is off.
 - **Why:** A feature's settings mean nothing while it is off, so its switch sits with them and its section collapses to that one toggle.
 
-### Game names in prose copy
-
-- **Departs from:** GAME NAMES → a string that names a spell, item, skill, zone, class or Blizzard UI label doesn't belong in `Locales/`.
-- **Instead:** The tagline's Find Herbs and Find Minerals and Come & Get It's mentions of Rogues are translated as copy in every locale.
-- **Why:** The tagline must read the same as the TOC Notes and the listings, and a greeting addressed to a group of players isn't a lookup of a game record.
-
 ### Typed herb and ore match words
 
 - **Departs from:** GAME NAMES → a value that is itself the name of a skill doesn't belong in `Locales/`.
 - **Instead:** Come & Get It tells an herb from an ore node by finding the skill word the game's "Requires" error shows, typed into every locale file.
 - **Why:** No client API returns the words that error shows, so they can't be looked up by ID.
-
-### Mini-map menu instead of a tooltip
-
-- **Departs from:** MINIMAP BUTTON → the hover tooltip and its click map (Right-Click, Shift + Left, Shift + Right, Shift + Middle-Click for options).
-- **Instead:** Hovering the button opens a menu laid out like Pretty Wide Quest Log's Quest Arrow menu: a label for each feature, showing where it stands, opens a flyout with its On/Off switch and its settings. A left-click opens the menu with the Persistent Tracking flyout out. No modifier or other mouse button does anything.
-- **Why:** Players on a controller couldn't reach any action behind Shift or the middle button. Meant to become the Style Guide's rule for every add-on (README-Technical → Mini-map Menu → The Rules).

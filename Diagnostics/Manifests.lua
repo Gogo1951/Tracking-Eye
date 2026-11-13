@@ -537,7 +537,71 @@ ns.DIAGNOSTIC_API_CHECKS = {
 			return type(C_Item) == "table" and type(C_Item.GetItemSubClassInfo) == "function"
 		end,
 	},
+	-- The Come & Get It Example's herb name, and the load request it makes while the herb is uncached.
+	{
+		"C_Item.GetItemNameByID",
+		function()
+			return type(C_Item) == "table" and type(C_Item.GetItemNameByID) == "function"
+		end,
+	},
+	{
+		"C_Item.RequestLoadItemDataByID",
+		function()
+			return type(C_Item) == "table" and type(C_Item.RequestLoadItemDataByID) == "function"
+		end,
+	},
+	-- Validate Data's item reads for the Game-IDs file; one a client lacks leaves its columns blank.
+	{
+		"C_Item.DoesItemExistByID",
+		function()
+			return type(C_Item) == "table" and type(C_Item.DoesItemExistByID) == "function"
+		end,
+	},
+	{
+		"C_Item.GetItemInfo",
+		function()
+			return type(C_Item) == "table" and type(C_Item.GetItemInfo) == "function"
+		end,
+	},
+	{
+		"C_Item.GetItemSpell",
+		function()
+			return type(C_Item) == "table" and type(C_Item.GetItemSpell) == "function"
+		end,
+	},
+	{
+		"C_Item.GetDetailedItemLevelInfo",
+		function()
+			return type(C_Item) == "table" and type(C_Item.GetDetailedItemLevelInfo) == "function"
+		end,
+	},
+	{
+		"C_Item.GetItemClassInfo",
+		function()
+			return type(C_Item) == "table" and type(C_Item.GetItemClassInfo) == "function"
+		end,
+	},
+	{
+		"C_Item.GetItemStats",
+		function()
+			return type(C_Item) == "table" and type(C_Item.GetItemStats) == "function"
+		end,
+	},
+	{
+		"GetItemStats (legacy)",
+		function()
+			return type(_G.GetItemStats) == "function"
+		end,
+	},
 }
+
+--[[
+    Validate Data's item stat column reads through ns.GetItemStats, and nothing
+    else in Tracking Eye reads stats, so the accessor lives here. WoW Forever
+    ships C_Item.GetItemStats; Classic Era and TBC Anniversary have only the
+    legacy global, which returns the same table. Resolved once at load.
+]]
+ns.GetItemStats = C_Item.GetItemStats or _G.GetItemStats
 
 --------------------------------------------------------------------------------
 -- Context Probes
@@ -994,7 +1058,7 @@ end
 ]]
 function ns:BuildComeAndGetItContextReport()
 	local lines = { GetClientHeader(), "" }
-	local db = (ns.db and ns.db.profile) or {}
+	local db = (ns.db and ns.db.global) or {}
 
 	local command
 	for _, channel in ipairs(ns.OUTPUT_CHANNELS) do
@@ -1085,6 +1149,12 @@ local function RequestSpell(spellId)
 	end
 end
 
+local function RequestItem(itemId)
+	return function()
+		C_Item.RequestLoadItemDataByID(itemId)
+	end
+end
+
 ns.DIAGNOSTIC_NAME_LOOKUPS = {
 	-- { constant, kind, id, lookup, request }
 	UiLabel("KEY_BINDINGS"),
@@ -1102,11 +1172,28 @@ ns.DIAGNOSTIC_NAME_LOOKUPS = {
 	},
 }
 
--- Come & Get It's output channels the client labels itself.
+-- Come & Get It's output channels the client labels itself, and the chat prefix its Example line draws for each.
 for _, channel in ipairs(ns.OUTPUT_CHANNELS) do
 	if channel.labelGlobal then
 		table.insert(ns.DIAGNOSTIC_NAME_LOOKUPS, UiLabel(channel.labelGlobal))
 	end
+	if channel.prefixGlobal then
+		table.insert(ns.DIAGNOSTIC_NAME_LOOKUPS, UiLabel(channel.prefixGlobal))
+	end
+end
+
+-- The herb the Come & Get It Example line names, read as the Example reads it.
+if ns.SAMPLE_HERB_ITEM_ID then
+	local itemId = ns.SAMPLE_HERB_ITEM_ID
+	table.insert(ns.DIAGNOSTIC_NAME_LOOKUPS, {
+		constant = "SAMPLE_HERB_ITEM_ID",
+		kind = "item",
+		id = itemId,
+		lookup = function()
+			return C_Item.GetItemNameByID(itemId)
+		end,
+		request = RequestItem(itemId),
+	})
 end
 
 -- Every class the options and pause reasons name: the Farm Mode Abilities groups and each movement state's owner.
@@ -1135,7 +1222,8 @@ do
 end
 
 -- The spells the options and messages name in their own sentences, by their ns.SPELLS key.
-for _, key in ipairs({ "CAT", "TRAVEL", "AQUATIC", "FLIGHT", "FISH", "HUMANOIDS", "DRUID_HUMANOIDS" }) do
+local SENTENCE_SPELL_KEYS = { "CAT", "TRAVEL", "AQUATIC", "FLIGHT", "FISH", "HUMANOIDS", "DRUID_HUMANOIDS" }
+for _, key in ipairs(SENTENCE_SPELL_KEYS) do
 	local spellId = ns.SPELLS[key]
 	if spellId then
 		table.insert(ns.DIAGNOSTIC_NAME_LOOKUPS, {
@@ -1147,6 +1235,33 @@ for _, key in ipairs({ "CAT", "TRAVEL", "AQUATIC", "FLIGHT", "FISH", "HUMANOIDS"
 			end,
 			request = RequestSpell(spellId),
 		})
+	end
+end
+
+--[[
+    Every other tracking ability, by its ns.SPELLS key: the mini-map menu, the
+    Persistent Tracking picker and the Farm Mode Abilities list name each one
+    through C_Spell.GetSpellName.
+]]
+do
+	local named = {}
+	for _, key in ipairs(SENTENCE_SPELL_KEYS) do
+		named[key] = true
+	end
+	for _, row in ipairs(ns.TRACKING_SPELLS) do
+		local spellId, key = row[1], row[2]
+		if not named[key] then
+			named[key] = true
+			table.insert(ns.DIAGNOSTIC_NAME_LOOKUPS, {
+				constant = "SPELL_" .. key,
+				kind = "spell",
+				id = spellId,
+				lookup = function()
+					return C_Spell.GetSpellName(spellId)
+				end,
+				request = RequestSpell(spellId),
+			})
+		end
 	end
 end
 
@@ -1180,8 +1295,8 @@ end
     (Diagnostics/Options-Diagnostics.lua). Each entry's label is the table-name
     part of its file name, so ns.DataSourceFileName can name the file this
     client's folder built. Each source names the static table on ns and its kind:
-    "spell", or "other" for ids no client API looks up, which print a row count
-    instead of rows. Ids are reached through rowId(key, row) over the table's
+    "spell", "item", or "other" for ids no client API looks up, which print a row
+    count instead of rows. Ids are reached through rowId(key, row) over the table's
     pairs. dataColumns carries the shipped row's own values as { header,
     getter(key, row) }, so the export sets what the file says beside what the
     client says. Adding a data file adds an entry here, and the panel and the
@@ -1200,6 +1315,14 @@ end
 local function RowValue(_, row)
 	return row
 end
+
+--[[
+    The Game-IDs files set one id rather than a table, and the validator walks
+    tables, so the id is gathered here into a table keyed by its constant's
+    name. A folder that never set it leaves this table unbuilt, which the
+    report flags as TABLE MISSING.
+]]
+ns.DIAGNOSTIC_GAME_IDS = ns.SAMPLE_HERB_ITEM_ID and { SAMPLE_HERB_ITEM_ID = ns.SAMPLE_HERB_ITEM_ID } or nil
 
 ns.DIAGNOSTIC_DATA_SOURCES = {
 	-- { label, sources = { { table, kind, rowId, dataColumns } } }
@@ -1234,6 +1357,17 @@ ns.DIAGNOSTIC_DATA_SOURCES = {
 		label = "Zones",
 		sources = {
 			{ table = "RESTRICTED_MAP_IDS", kind = "other" },
+		},
+	},
+	{
+		label = "Game-IDs",
+		sources = {
+			{
+				table = "DIAGNOSTIC_GAME_IDS",
+				kind = "item",
+				rowId = RowValue,
+				dataColumns = { { "DATA_CONSTANT", KeyIsId } },
+			},
 		},
 	},
 }

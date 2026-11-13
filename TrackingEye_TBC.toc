@@ -57,6 +57,7 @@ Data/Flavor.lua
 Data/Data.lua
 Data/TBC/Spells-TBC.lua
 Data/TBC/Zones-TBC.lua
+Data/TBC/Game-IDs-TBC.lua
 Data/Default-Settings.lua
 
 # Tracking Eye

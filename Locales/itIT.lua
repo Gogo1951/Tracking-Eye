@@ -3,7 +3,8 @@ if not L then
 	return
 end
 
-L["ADDON_TITLE"] = "Tracking Eye"
+L["ADDON_TITLE"] = "Tracking Eye" -- Full Name
+L["ADDON_SHORT_NAME"] = "Tracking Eye" -- Short Name
 
 --------------------------------------------------------------------------------
 -- Printed Messages
@@ -23,7 +24,6 @@ L["KEY_BINDINGS_LOCATION"] = "Apri il menu di gioco, poi %s, poi %s, e cerca la 
 L["TRACKING_MENU"] = "Menu Tracciamento"
 L["PERSISTENT_TRACKING"] = "Tracciamento Persistente"
 L["TARGET_TRACKING"] = "Tracciamento Automatico del Bersaglio"
-L["FARM_MODE"] = "Modalità Raccolta"
 
 --------------------------------------------------------------------------------
 -- Mini-map Menu
@@ -63,13 +63,15 @@ L["FARM_PAUSED_TOOLTIP"] = "Stai leggendo una descrizione."
 L["FARM_PAUSED_TARGET"] = "Stai bersagliando qualcosa che puoi attaccare."
 L["FARM_PAUSED_STANDING_STILL"] = "Sei fermo."
 
-L["PERSISTENT_ABILITY"] = "Abilità di Tracciamento Persistente"
-L["NONE_SET"] = "Nessuna impostata"
 L["CLEAR_TRACKING"] = "Cancella Tracciamento"
 
 L["MENU_ON"] = "Attivo"
 L["MENU_OFF"] = "Disattivo"
 L["OPEN"] = "Apri"
+L["MENU_PERSISTENT_DESCRIPTION"] = "Scegli la tua Abilità di Tracciamento Persistente."
+L["MENU_FARM_DESCRIPTION"] = "Alterna le tue abilità di tracciamento mentre viaggi."
+L["MENU_TARGET_DESCRIPTION"] = "Traccia la specie di qualsiasi creatura che bersagli."
+L["MENU_TOGGLE"] = "Attiva/Disattiva"
 
 L["TOOLTIP_OPTIONS"] = "Opzioni di Tracking Eye"
 
@@ -88,8 +90,8 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 --[[
     Each section's description sells the feature. Each control's description is
     its mouseover tooltip: a pro tip the label and section don't already say. The
-    mini-map menu reuses the same strings, as a feature's summary and as a menu
-    row's tooltip, so it shows two lines at most there.
+    mini-map menu reuses a control's label and description as its row's tooltip;
+    the menu's feature summaries are the MENU_*_DESCRIPTION strings above.
 ]]
 
 -- General
@@ -171,7 +173,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 L["OPTIONS_ENABLE_FARM"] = "Abilita Modalità Raccolta"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
 	"Si mette in pausa da sola in combattimento, in città, nelle istanze e durante i voli. Passa il mouse sul pulsante di Tracking Eye per sapere perché."
-L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Silenzia i Suoni dei Lanci di Tracciamento"
+L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Silenzia i Suoni del Lancio delle Abilità di Tracciamento"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"Solo i cambi della Modalità Raccolta diventano silenziosi. Il tracciamento che scegli tu mantiene il suo suono."
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "Riduci lo Zoom della Minimappa"
@@ -259,6 +261,8 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"Gilda raggiunge tutti i membri della gilda online, qualunque sia il loro layer o la loro zona."
 L["OPTIONS_OUTPUT_NOTE"] = "Nota: %s raggiunge solo i giocatori sul tuo layer."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Locale (/1)"
+L["SAMPLE_EXAMPLE"] = "Esempio: %s"
+L["SAMPLE_LOADING_ITEM"] = "Caricamento ID: %d"
 
 --------------------------------------------------------------------------------
 -- Feedback & Support

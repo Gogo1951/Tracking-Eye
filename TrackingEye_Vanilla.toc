@@ -57,8 +57,10 @@ Data/Flavor.lua
 Data/Data.lua
 Data/Vanilla/Spells-Vanilla.lua
 Data/Vanilla/Zones-Vanilla.lua
+Data/Vanilla/Game-IDs-Vanilla.lua
 Data/Discovery/Spells-Discovery.lua
 Data/Discovery/Zones-Discovery.lua
+Data/Discovery/Game-IDs-Discovery.lua
 Data/Default-Settings.lua
 
 # Tracking Eye

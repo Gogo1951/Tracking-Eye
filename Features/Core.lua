@@ -84,6 +84,107 @@ function ns:ApplyProfile()
 end
 
 --------------------------------------------------------------------------------
+-- Other-Client Characters
+--------------------------------------------------------------------------------
+
+--[[
+    Characters from another game version, dropped without a word. AceDB keys
+    a character "Name - Realm" on realm clients and "First Last" on the
+    realm-free ones (WoW Forever), so a saved key shaped the other way from
+    the one being played came from a copied WTF folder: its char section,
+    its profile choice and, unless someone still uses it, its own profile go.
+]]
+local REALM_KEY_SEPARATOR = " - "
+
+---@param characterKey any
+---@param realmClient boolean
+---@return boolean
+local function IsOtherClientKey(characterKey, realmClient)
+	if type(characterKey) ~= "string" then
+		return true
+	end
+	return (characterKey:find(REALM_KEY_SEPARATOR, 1, true) ~= nil) ~= realmClient
+end
+
+---@param sv table # the saved table, or one of its namespaces
+---@param realmClient boolean
+---@param profilesInUse table<string, boolean>
+---@return nil
+local function PruneSavedTable(sv, realmClient, profilesInUse)
+	local pruned = {}
+	for _, section in ipairs({ "char", "profileKeys" }) do
+		local characters = sv[section]
+		if type(characters) == "table" then
+			for characterKey in pairs(characters) do
+				if IsOtherClientKey(characterKey, realmClient) then
+					characters[characterKey] = nil
+					pruned[characterKey] = true
+				end
+			end
+		end
+	end
+	if type(sv.profiles) == "table" then
+		for characterKey in pairs(pruned) do
+			if not profilesInUse[characterKey] then
+				sv.profiles[characterKey] = nil
+			end
+		end
+	end
+end
+
+---@return nil
+local function PruneOtherClientCharacters()
+	local currentKey = ns.db.keys and ns.db.keys.char
+	local sv = ns.db.sv
+	if type(currentKey) ~= "string" or type(sv) ~= "table" then
+		return
+	end
+	local realmClient = currentKey:find(REALM_KEY_SEPARATOR, 1, true) ~= nil
+	local profilesInUse = { [ns.db.keys.profile or ""] = true }
+	for characterKey, profileName in pairs(sv.profileKeys or {}) do
+		if not IsOtherClientKey(characterKey, realmClient) then
+			profilesInUse[profileName] = true
+		end
+	end
+	PruneSavedTable(sv, realmClient, profilesInUse)
+	for _, namespace in pairs(sv.namespaces or {}) do
+		if type(namespace) == "table" then
+			PruneSavedTable(namespace, realmClient, profilesInUse)
+		end
+	end
+end
+
+--------------------------------------------------------------------------------
+-- Migrations
+--------------------------------------------------------------------------------
+
+--[[
+    Come & Get It's settings moved from each character's profile to the
+    account. The first character to log in carries its saved values over, and
+    the old copies leave every profile in the same run.
+]]
+local COME_AND_GET_IT_KEYS = { "comeAndGetIt", "comeAndGetItOutput" } -- MIGRATION (remove after 2026-12-13)
+
+-- MIGRATION (remove after 2026-12-13)
+local function MigrateComeAndGetItScope()
+	local profiles = ns.db.sv and ns.db.sv.profiles
+	if type(profiles) ~= "table" then
+		return
+	end
+	local current = profiles[ns.db.keys.profile]
+	for _, key in ipairs(COME_AND_GET_IT_KEYS) do
+		if type(current) == "table" and current[key] ~= nil and rawget(ns.db.global, key) == nil then
+			ns.db.global[key] = current[key]
+		end
+		for _, profile in pairs(profiles) do
+			if type(profile) == "table" then
+				profile[key] = nil -- MIGRATION (remove after 2026-12-13)
+			end
+		end
+	end
+end
+
+--------------------------------------------------------------------------------
 -- Event Handling
 --------------------------------------------------------------------------------
 
@@ -96,11 +197,13 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
 		--[[
                 The third AceDB:New argument is omitted, so there is no shared
                 "Default" profile: each character lands on its own profile keyed by
-                name-realm. Per-character tracking state (the selected ability, the
-                farm cycle) lives in ns.db.profile; account-wide layout and
-                presentation live in ns.db.global, which is profile-independent.
+                the character. Per-character tracking state (the selected ability, the
+                farm cycle) lives in ns.db.profile; account-wide layout, presentation and
+                Come & Get It live in ns.db.global, which is profile-independent.
             ]]
 		ns.db = LibStub("AceDB-3.0"):New(ns.SAVED_VARIABLES_NAME, ns.DATABASE_DEFAULTS)
+		PruneOtherClientCharacters()
+		MigrateComeAndGetItScope() -- MIGRATION (remove after 2026-12-13)
 
 		for _, message in ipairs({ "OnProfileChanged", "OnProfileCopied", "OnProfileReset" }) do
 			ns.db.RegisterCallback(ns, message, "ApplyProfile")
@@ -166,6 +269,8 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
 		if ns.RestoreCycleSoundNow then
 			ns.RestoreCycleSoundNow()
 		end
+	elseif event == "PLAYER_DEAD" then
+		ns.NoteDeath()
 	elseif event == "PLAYER_UNGHOST" or event == "PLAYER_ALIVE" then
 		ns.RecastAfterResurrection()
 	elseif event == "PLAYER_STARTED_MOVING" then
@@ -296,6 +401,7 @@ ns.EVENT_NAMES = {
 	"ZONE_CHANGED_NEW_AREA",
 	"UPDATE_SHAPESHIFT_FORM",
 	"SPELLS_CHANGED",
+	"PLAYER_DEAD",
 	"PLAYER_UNGHOST",
 	"PLAYER_ALIVE",
 	"PLAYER_STARTED_MOVING",
