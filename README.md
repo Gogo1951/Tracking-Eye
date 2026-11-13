@@ -49,17 +49,11 @@ You don't need the profession to use this, you need to *not* have it.
 
 Nothing goes out until you press Enter.
 
-### Mini-Map Button
+### Mini-Map Menu
 
-| Action | Effect |
-| --- | --- |
-| Left-Click | Open the Tracking Menu |
-| Right-Click | Clear Tracking |
-| Shift + Left-Click | Toggle Farm Mode |
-| Shift + Right-Click | Toggle Automatic Target Tracking |
-| Shift + Middle-Click | Open the Options Interface |
+Hover the mini-map button and a menu opens: every feature and whether it's on. Hover a feature to switch it on or off, change its settings, or see why Farm Mode is paused. Click the button to pick your tracking straight away. Everything is a plain click, so it works with a controller too.
 
-Hover the icon to see exactly why Farm Mode is paused. Crowded mini-map? Free Placement Mode parks the icon anywhere on screen.
+Crowded mini-map? Free Placement Mode parks the icon anywhere on screen.
 
 ### Options
 

@@ -39,14 +39,15 @@ TrackingEye/
 │   ├── Tracking-State.lua            Runtime state, icon resolution, Clear Tracking, the cast primitive, icon pollers
 │   ├── Persistent-Tracking.lua       The resolver, mid-play recasts, login catch-up, post-resurrection recast
 │   ├── Farm-Mode.lua                 Cycle cache, the farm tick, form-leave restore, manual advance, the ticker
-│   ├── Farm-Pause-Reporting.lua      Why Farm Mode is idle, and the window and tooltip checks behind it
+│   ├── Farm-Pause-Reporting.lua      Why Farm Mode is idle, and the window, tooltip, and own-menu checks behind it
 │   ├── Cycle-Sound-Mute.lua          The cycle's cast seam and its momentary sound-effects mute
 │   ├── Target-Tracking.lua           The hunt: the targeted creature's kind stands in for the player's pick
 │   ├── Come-and-Get-It.lua           A chat draft for a node the player can't gather or a chest they can't open
 │   ├── Key-Bindings.lua              The two globals the binding system requires, and the Set Key route to the game's list
-│   ├── Tracking-Menu.lua             The LibUIDropDownMenu picker and the Blizzard tracking-button takeover
+│   ├── Menu-Kit.lua                  The menu plate and its one-line rows, after PWQL's Quest Arrow menu (add-on agnostic)
+│   ├── Minimap-Menu.lua              The mini-map menu's content, open and close rules, and the Blizzard tracking-button takeover
 │   ├── Free-Placement.lua            The free-placement frame, its position pipeline, scale and shape
-│   └── Minimap-Button.lua            LDB launcher, icon fit, placement, tooltip, click map
+│   └── Minimap-Button.lua            LDB launcher, icon fit, placement, hover and click
 ├── Diagnostics/                      Diagnostic Tools, copied from Magic Eraser's framework
 │   ├── Diagnostics-Core.lua          Runtime state, the English strings, the enable gate, the report header, tooltip reads
 │   ├── Manifests.lua                 Tracking Eye's own surface: API checks, context probes, name lookups, data sources
@@ -59,6 +60,7 @@ TrackingEye/
 │   └── Options-Diagnostics.lua       Diagnostic Tools panel, loaded with the Options block and registered last
 ├── Includes/
 │   ├── Images/
+│   │   ├── Menu-Plate.tga            The mini-map menu's plate, from PWQL's Quest Arrow menu
 │   │   └── Tracking-Eye.tga          Add-on icon, the TOCs' IconTexture
 │   └── Libraries/                    Vendored libraries, never edited by hand
 ├── Locales/                          AceLocale strings
@@ -103,7 +105,7 @@ Every file receives `(ADDON_NAME, ns)` through the `...` vararg, and everything 
 | `SLASH_TRACKINGEYE1`, `SlashCmdList["TRACKINGEYE"]` | The `/te` registration in `Options/Options.lua` |
 | `TrackingEye_CycleFarmAbility` | `Bindings.xml` can only call a global function |
 | `BINDING_NAME_TRACKINGEYE_CYCLE_FARM_ABILITY` | The binding's display name, matching the element's `name` attribute |
-| `TrackingEyeTrackingMenu`, `TrackingEyeTrackingMenuFont` | The Tracking Menu's LibUIDropDownMenu frame and the larger font object (`CreateFont`) its rows use |
+| `TrackingEyeMenu` | The mini-map menu's panel, named only so `UISpecialFrames` can close it on Escape. Its flyout is anonymous |
 | `TrackingEyeScanTooltip` | The hidden tooltip `ns.GetTooltipLines` reads on a client without `C_TooltipInfo`, created on first use, because `GameTooltipTemplate` names its text lines after the frame |
 
 An earlier file may call a function a later file defines, as long as the call happens at runtime. `Core.lua` loads first yet calls into nearly every feature, and that is safe because every call comes from an event handler and `ADDON_LOADED` fires only after all of the add-on's files have run. Most of those calls are guarded (`if ns.RunFarmLogic then`), so a feature left out of a flavor's TOC (Style Guide → COMPATIBILITY) would degrade instead of erroring. The icon, recast, and restricted-zone calls are not guarded, since every feature depends on those files.
@@ -143,13 +145,13 @@ Four timing decisions carry most of the weight:
 
 Nothing in the add-on drives a secure frame or edits a macro, so no work waits behind a dirty flag and no `PLAYER_REGEN_ENABLED` handler exists. Combat still shapes five behaviors, each deliberately different:
 
-- **The options opener refuses outright.** `ns:OpenOptionsPanel` (`Options/Options.lua`) makes `InCombatLockdown()` its first statement, prints `CHAT_OPTIONS_IN_COMBAT`, and returns. Blizzard's Settings panel is protected in combat, and without the gate `/te` or Shift + Middle-Click hands the player an `ADDON_ACTION_BLOCKED` error naming Tracking Eye. It never queues the open. The Key Bindings Set Key button's `ns:OpenKeyBindings` refuses the same way, for the same reason.
+- **The options opener refuses outright.** `ns:OpenOptionsPanel` (`Options/Options.lua`) makes `InCombatLockdown()` its first statement, prints `CHAT_OPTIONS_IN_COMBAT`, and returns. Blizzard's Settings panel is protected in combat, and without the gate `/te` or the mini-map menu's Options section hands the player an `ADDON_ACTION_BLOCKED` error naming Tracking Eye. It never queues the open. The Key Bindings Set Key button's `ns:OpenKeyBindings` refuses the same way, for the same reason.
 - **Automatic casts refuse and retry.** `ns.CanCast()` is false while `UnitAffectingCombat("player")` is true, so the farm cycle, the form-leave restore, the persistent recast, the post-resurrection recast, the hunt cast, and the Cycle Farm Mode Ability binding all decline, and none ever costs a global cooldown mid-fight. Each automatic caller retries on its own: the ticker and the form-leave restore on the next tick, `TryRecastPersistent` through `ScheduleRecast`, the post-resurrection recast after `RECAST_DEBOUNCE_SECONDS`, the hunt cast after `HUNT_RETRY_SECONDS`. The binding does nothing until it is pressed again.
 - **Automatic Target Tracking ignores targets picked in combat.** A target picked mid-fight never starts or switches a hunt, and nothing is queued for after the fight; otherwise whatever attacks the player would become what they track.
 - **Come & Get It drops its draft.** Opening the chat box steals keyboard focus and breaks movement, so its gate refuses under `InCombatLockdown()` and the draft is dropped, never replayed: a callout after the fight is stale, and the node raises its error again on the next right-click.
 - **WoW Forever and Retail hide combat state.** In combat, aura, cooldown, casting, identity, and unit-stat reads can come back secret there; see *Secret Values*.
 
-A fight that starts while mounted is still a fight: the player stays in the `mounted` farm state, `ns.CanCast()` holds the cycle, and the tooltip reports combat like any other fight.
+A fight that starts while mounted is still a fight: the player stays in the `mounted` farm state, `ns.CanCast()` holds the cycle, and the menu's Farm Mode Status reports combat like any other fight.
 
 ### Reading and Clearing Tracking
 
@@ -169,7 +171,7 @@ Reading `C_Minimap` only as the last resort is README-Notes → Exceptions → L
 
 Every tracking cast runs the same three steps, and the bookkeeping between them keeps the add-on from double-casting or giving up.
 
-1. **Decide.** Something picks the spell: the player's Tracking Menu click, `ns.GetPersistentSpell()` for every Persistent Tracking recast (`Features/Persistent-Tracking.lua`), the farm cycle (`Features/Farm-Mode.lua`), or a hunt (`Features/Target-Tracking.lua`). Every automatic caller gates itself with `ns.CanCast()` first.
+1. **Decide.** Something picks the spell: the player's pick in the mini-map menu, `ns.GetPersistentSpell()` for every Persistent Tracking recast (`Features/Persistent-Tracking.lua`), the farm cycle (`Features/Farm-Mode.lua`), or a hunt (`Features/Target-Tracking.lua`). Every automatic caller gates itself with `ns.CanCast()` first.
 2. **Cast.** `ns.CastTracking(spellId)` (`Features/Tracking-State.lua`) checks `IsPlayerSpell`, refuses the druid's Cat Form tracking (`ns.CAT_FORM_ONLY`) outside Cat Form, skips a spell on cooldown or the global cooldown, stamps `ns.state.lastTrackingCastAt`, and calls `CastSpellByID` inside `pcall`. It returns `true` only when it reached `CastSpellByID`. It does not test `ns.CanCast()`: the Tracking Menu calls it directly, because a deliberate click must always cast.
 3. **Confirm.** `UNIT_SPELLCAST_SUCCEEDED` records the spell through `ns.SetLastCast`. `ns.CastTracking` never writes `ns.state.lastCastSpell`, because a cast can still fail silently (line of sight, range, a server reject), and recording the attempt would suppress the retry that fixes it.
 
@@ -189,7 +191,7 @@ Two windows cover the gap while the mirror catches up. For `ns.CAST_IN_FLIGHT_SE
 4. **Latch** `mirrorConfirmedCast` once `activeSpell` equals `lastCastSpell`.
 5. Show `activeSpell`, or `lastCastSpell` for `ns.ICON_IN_FLIGHT_SECONDS` after the add-on's own cast and only until the latch, while the mirror catches up. **There is no fallback to the saved pick**: every such fallback showed a stale icon, such as last session's spell at login with nothing up. Nothing tracked shows `ns.ICON_DEFAULT`.
 
-The texture goes to `ns.state.currentIcon`, the LDB object, and the free frame, and `ns.RefreshTooltip()` redraws a tooltip already on screen. `UpdateIcon` is also the only writer of `ns.state.farmPauseReason`, cached so the farm tick can tell when the reason changed (see *Pause Reporting*). The icon never dims for a pause: on foot is a pause by default, so a dimmed icon read as the whole add-on switched off, and the tooltip's Farm Mode Status is the only place a pause shows.
+The texture goes to `ns.state.currentIcon`, the LDB object, and the free frame, and `ns.RefreshMenu()` redraws the mini-map menu if it is open. `UpdateIcon` is also the only writer of `ns.state.farmPauseReason`, cached so the farm tick can tell when the reason changed (see *Pause Reporting*). The icon never dims for a pause: on foot is a pause by default, so a dimmed icon read as the whole add-on switched off, and the menu's Farm Mode Status is the only place a pause shows.
 
 Two pollers in `Features/Tracking-State.lua` shave latency without making the mirror any fresher:
 
@@ -201,7 +203,7 @@ Two pollers in `Features/Tracking-State.lua` shave latency without making the mi
 Spell names and icons are never stored. The flavor data holds only IDs, and everything the player sees comes from `C_Spell.GetSpellName` and `C_Spell.GetSpellTexture` at runtime, so it localizes for free. That makes cold-call nils the thing to handle:
 
 - **The texture reverse cache.** Matching a texture back to a spell uses a lazy texture-to-spell map built from `ns.TRACKING_IDS` (`Features/Utilities.lua`). During the login storm `C_Spell.GetSpellTexture` returns nil for spells whose data hasn't loaded, so a map built then is missing entries. Rebuilds are driven by a dirty flag that `SPELLS_CHANGED` and `PLAYER_ENTERING_WORLD` set through `ns.InvalidateTextureCache()`, never by testing whether every ID resolved: an ID the client lacks never resolves, so a completeness test would rebuild the whole map on every miss, and a miss is what happens whenever nothing is tracked.
-- **Nil names are a filter.** The Tracking Menu and the Farm Mode Abilities list both skip an ID whose name comes back nil, which is how an ID the client lacks disappears. Diagnostics reports the same condition as *not on this client*, so a bug report separates "this client has never heard of the spell" from "the player hasn't learned it".
+- **Nil names are a filter.** The mini-map menu's ability lists and the options' Farm Mode Abilities list all skip an ID whose name comes back nil, which is how an ID the client lacks disappears. Diagnostics reports the same condition as *not on this client*, so a bug report separates "this client has never heard of the spell" from "the player hasn't learned it".
 - **Names in our own sentences fall back to empty.** The `ns.Get*Name*` helpers in `Features/Utilities.lua` (see *Localization*) return an empty string, never typed text, while the client hasn't loaded the record.
 - **The fishing pole needs no cache.** `ns.IsFishingPoleEquipped()` reads the main-hand item's class and subclass through `C_Item.GetItemInfoInstant`, which reads the client's own item table and never comes back empty on a cold call the way `C_Item.GetItemInfo` can, so there is no static list of fishing poles.
 
@@ -225,7 +227,7 @@ The TOC decides the flavor. `Data/Flavor.lua` sets `ns.FLAVOR` from the chosen T
 
 - **Data.** Each flavor folder carries only what its client has (see *File Map*), and the options hide what the data lacks. The Find Fish When You Equip a Fishing Pole row hides where `ns.SPELLS.FISH` is nil (Classic Era outside Season of Discovery, whose data has it). A Farm Mode Condition whose movement state has no buff rows hides through `ns.IsMovementStateDetectable`, and the pause reason skips it too, which is how Retail drops Aspect of the Cheetah and Aspect of the Pack.
 - **Availability.** The tracking reads and clears (see *Reading and Clearing Tracking*), the mini-map zoom buttons, the Set Key routes, and the tooltip-text read (`C_TooltipInfo` where the client ships it, a hidden `GameTooltipTemplate` tooltip where it doesn't) each pick an API by whether it exists, never by a truthy result.
-- **Frame presence.** The Blizzard tracking-button takeover exists only where `MiniMapTracking` exists and `MiniMapTrackingButton` doesn't, which is Classic Era (see *Tracking Menu*).
+- **Frame presence.** The Blizzard tracking-button takeover exists only where `MiniMapTracking` exists and `MiniMapTrackingButton` doesn't, which is Classic Era (see *Mini-map Menu*).
 - **Secret values**, on WoW Forever and Retail (see *Secret Values*).
 
 The namespaced APIs every current target ships (`C_AddOns`, `C_Item`, `C_Map`, `C_Minimap`, `C_Secrets`, `C_Spell`, `C_UnitAuras`) are called directly with no legacy fallback. The legacy tracking reads are the one sanctioned exception (README-Notes → Exceptions → Legacy tracking reads).
@@ -246,7 +248,7 @@ Persistent Tracking keeps one ability up and puts it back whenever something tak
 
 Everything that restores the ability reads the resolver: `TryRecastPersistent`, the post-resurrection recast, the form-leave restore, and the farm cycle's persistent entry. None of them knows about overrides or hunts, and "your own pick comes back" costs nothing: when an override's condition ends, the resolver answers with the pick again and the next recast trigger casts it. `UPDATE_SHAPESHIFT_FORM` covers Cat Form, `PLAYER_EQUIPMENT_CHANGED` on the main hand covers the pole, and the `PLAYER_ENTERING_WORLD` catch-up covers a battleground. Switching an override on or off invalidates the farm cache and calls `ns.TryRecastPersistent()`, so the change applies at once. A hunt never runs inside an instance, so it never meets the battleground override, and the resolver ignores a hunt outside the world as a backstop against a missed event that should already have ended it.
 
-The mini-map tooltip's Persistent Tracking Ability row always shows the pick, never an override or a hunt.
+The mini-map menu's Persistent Tracking label always shows the pick on its right, never an override or a hunt.
 
 ### Mid-Play Recasts
 
@@ -291,9 +293,9 @@ Farm Mode cycles the player's ticked tracking abilities while they travel in a f
 `ns.RunFarmLogic()` (`Features/Farm-Mode.lua`) runs on the ticker, every 3.5 seconds by default and 2 to 10 in half-second steps through `ns.db.profile.farmInterval`, and on demand from `PLAYER_UPDATE_RESTING`:
 
 1. `ns.HandleFlightState()` (`Features/Target-Tracking.lua`): taking off ends a running hunt, and landing afterwards brings the Persistent Tracking Ability back.
-2. Re-resolve the pause reason and refresh the icon and any open tooltip when it changed. This sits above every hold, so the Farm Mode Status stays honest on ticks that do nothing else.
+2. Re-resolve the pause reason and refresh the icon and any open menu when it changed. This sits above every hold, so the Farm Mode Status stays honest on ticks that do nothing else.
 3. Hold while one of the add-on's options panels is visible (`ns.IsOptionsPanelOpen()`).
-4. Hold while a window is open, while a living target the player can attack is selected, or while any tooltip shows, the add-on's own included. Targeting yourself, a party member, a friendly NPC, or a corpse doesn't hold it.
+4. Hold while a window is open, while a living target the player can attack is selected, while any tooltip shows, or while the add-on's own menu is open. Targeting yourself, a party member, a friendly NPC, or a corpse doesn't hold it.
 5. Hold until `ns.db` exists.
 6. Hold while the player stands still.
 7. **Form-leave restore.** If the player just left the farm state (`ns.state.wasFarming` is set and the state isn't), cast the resolved ability back unless it is provably up or the add-on's own cast is in flight, then return. A refusal by the all-clear, a cooldown, or the GCD keeps `wasFarming` set so the next tick retries; it clears only once the restore has cast or has nothing left to do. The restore runs ahead of the Farm Mode and restricted-zone gates, so switching Farm Mode off mid-run, or dismounting in an instance or a town, still brings the ability back. Holds 3, 4, and 6 hold it too.
@@ -335,12 +337,12 @@ The scan sits behind a **frame-scoped memo** keyed on `GetTime()`, which is cons
 
 ### Pause Reporting
 
-Farm Mode goes quiet for reasons the player can't see, and "is it broken?" is the most common report. `ns.GetFarmPauseReason()` (`Features/Farm-Pause-Reporting.lua`) answers it in one place, returning a locale key or nil. A movement reason also returns the movement state whose buff its sentence names, since the hunter Aspects share their sentences; `ns.FormatFarmPauseReason(reason, state)` fills the names in, and the cache that tells an open tooltip to redraw (`ns.state.farmPauseReason` and `farmPauseState`) compares both. It returns nil when Farm Mode is off: that isn't a pause, and the tooltip already reports Disabled. Settled reasons come first; the transient ones, which clear on their own within seconds, are checked only while the player is in a farm state:
+Farm Mode goes quiet for reasons the player can't see, and "is it broken?" is the most common report. `ns.GetFarmPauseReason()` (`Features/Farm-Pause-Reporting.lua`) answers it in one place, returning a locale key or nil. A movement reason also returns the movement state whose buff its sentence names, since the hunter Aspects share their sentences; `ns.FormatFarmPauseReason(reason, state)` fills the names in, and the cache that tells an open tooltip to redraw (`ns.state.farmPauseReason` and `farmPauseState`) compares both. It returns nil when Farm Mode is off: that isn't a pause, and the menu already reports Disabled. Settled reasons come first; the transient ones, which clear on their own within seconds, are checked only while the player is in a farm state:
 
 | Kind | Reasons, in order |
 | --- | --- |
 | **Settled** | Dead; on a taxi; inside an instance or on a restricted map; resting; an empty cycle; the current state's toggle off; on foot with the on-foot toggle off |
-| **Transient** | An options panel open; a window open; someone else's tooltip showing; in combat; casting; stealthed; looting; something on the cursor; an attackable target; standing still; the add-on's own tooltip, ranked last |
+| **Transient** | An options panel open; a window open; someone else's tooltip showing; in combat; casting; stealthed; looting; something on the cursor; an attackable target; standing still; the add-on's own menu open, ranked last |
 
 An empty cycle has three causes, told apart by `ns.GetEmptyCycleKind()` (`Features/Farm-Mode.lua`): nothing ticked (`FARM_PAUSED_NO_ABILITIES`), nothing ticked that this character knows, like Find Herbs ticked with no Herbalism (`FARM_PAUSED_NOT_LEARNED`), or only the druid's Cat Form tracking known, outside Cat Form (`FARM_PAUSED_CAT_FORM_NAMED`). Reporting the first for the second tells a player to tick abilities that are already ticked, and the second for the third tells a druid they don't know a spell they do. The binding's chat line splits the same three ways.
 
@@ -348,9 +350,9 @@ On foot, `GetMovementReason` names the states that *would* start the cycle, cons
 
 Several transient reasons are Farm Mode's own holds rather than `ns.CanCast()` conditions, so they stop the cycle without touching the manual binding: an options panel, a window, a tooltip, an attackable target, and standing still. All but standing still leave the persistent recast alone too; standing still holds it through its own check (see *Waiting for Movement*).
 
-Tooltips are checked in two halves. The mini-map button and the free frame both draw into `GameTooltip`, and hovering them is how the player reads the Farm Mode Status, so `ns.IsTooltipShowing()` covers everyone else's tooltips and `ns.IsOwnTooltipShowing()` the add-on's own, ranked last so the status names any other cause first. `ns.BuildTooltip` draws before its tooltip shows, when the live check can't see it yet, so it passes `true` as `ns.GetFarmPauseReason`'s `ownTooltipShowing` argument. `ns.minimapButton` is stored in `ns.InitMinimap` for that owner comparison. `ns.IsBlockingWindowOpen()` sweeps `UIPanelWindows` rather than a hand-written list, so every standard window stays covered when Blizzard adds one, plus a short `EXTRA_BLOCKING_FRAMES` list for frames never registered there, such as the game menu, the Settings panel, and `StaticPopup1`. `ns.IsOptionsPanelOpen()` (`Options/Options.lua`) evaluates `IsVisible()` live on every call, across all six panels: closing the Settings window hides the window, not the add-on's canvas, so a cached flag or an `IsShown()` read would stay true and pause Farm Mode until the next reload.
+Tooltips and the menu are checked apart. Opening the mini-map menu is how the player reads the Farm Mode Status, so `ns.IsOwnMenuShowing()` holds the cycle while it is open and ranks last, so the status names any other cause first. `ns.IsTooltipShowing()` covers everyone else's tooltips: a `GameTooltip` owned by one of the menu's own rows counts as the menu, through `ns.IsMenuFrame`. The menu passes `true` as `ns.GetFarmPauseReason`'s `ownMenuShowing` argument when it draws, since it may draw before it shows. `ns.IsBlockingWindowOpen()` sweeps `UIPanelWindows` rather than a hand-written list, so every standard window stays covered when Blizzard adds one, plus a short `EXTRA_BLOCKING_FRAMES` list for frames never registered there, such as the game menu, the Settings panel, and `StaticPopup1`. `ns.IsOptionsPanelOpen()` (`Options/Options.lua`) evaluates `IsVisible()` live on every call, across all six panels: closing the Settings window hides the window, not the add-on's canvas, so a cached flag or an `IsShown()` read would stay true and pause Farm Mode until the next reload.
 
-The reason has one surface, the Farm Mode Status block in the mini-map tooltip. Because several conditions fire no registered event, a taxi flight above all, `ns.RunFarmLogic()` re-resolves the reason on every tick before its holds and calls `ns.UpdateIcon()` only when the value changed, which redraws an open tooltip.
+The reason has one surface, the Farm Mode Status block in the mini-map menu. Because several conditions fire no registered event, a taxi flight above all, `ns.RunFarmLogic()` re-resolves the reason on every tick before its holds and calls `ns.UpdateIcon()` only when the value changed, which redraws an open menu.
 
 ### Farm Cycle Cache
 
@@ -358,7 +360,7 @@ The reason has one surface, the Farm Mode Status block in the mini-map tooltip. 
 
 With `farmIncludePersistent` on, the cache also appends the resolved ability (`ns.GetPersistentSpell()`, so a running hunt takes the pick's place), guarded by a membership set so an ability that is both the persistent entry and ticked in the list appears **once**; queued twice, it would take double the airtime of everything else.
 
-`ns.InvalidateFarmCache()` nils the cache, and the next read rebuilds it. It runs on `SPELLS_CHANGED`, `PLAYER_ENTERING_WORLD`, and a main-hand change, on every profile change, on every hunt change, on every write of `selectedSpellId` (the Tracking Menu, Clear Tracking), and from the `set` handler of each Farm Mode Abilities toggle, the Include Persistent Tracking Ability toggle, and each Persistent Tracking sub-option. `ns.GetFarmCycleCount()` is the only reader of the cycle's size outside the file, and `ns.GetFarmCycle()` hands Diagnostics a copy, never the live cache.
+`ns.InvalidateFarmCache()` nils the cache, and the next read rebuilds it. It runs on `SPELLS_CHANGED`, `PLAYER_ENTERING_WORLD`, and a main-hand change, on every profile change, on every hunt change, on every write of `selectedSpellId` (a pick in the mini-map menu, Clear Tracking), and from the `set` handler of each Farm Mode Abilities toggle, the Include Persistent Tracking Ability toggle, and each Persistent Tracking sub-option. `ns.GetFarmCycleCount()` is the only reader of the cycle's size outside the file, and `ns.GetFarmCycle()` hands Diagnostics a copy, never the live cache.
 
 ### Cycle Sound Mute
 
@@ -379,7 +381,7 @@ The trade-off: the mute silences every sound effect for that instant, not only t
 
 ### Mini-map Zoom
 
-**Zoom Mini-map Out** (`ns.db.global.farmZoomOut`, a Farm Mode sub-option, on by default) zooms the mini-map all the way out as each Farm Mode run starts, on the tick where the cycle is about to cast and `wasFarming` is still false. Zoomed out, the mini-map shows tracked nodes from farther away. It acts only then, so a player who zooms back in mid-run keeps that until the next run, except that a Tracking Menu pick clears `wasFarming` (see *Tracking Menu*) and the next tick counts as a run start again. It never puts the player's own zoom back, by design. It skips the write when the mini-map is already fully out. The key lives in `global` although it sits on the Farm Mode panel: it changes the client's own mini-map, which every character shares, so per-character copies would only undo each other.
+**Zoom Mini-map Out** (`ns.db.global.farmZoomOut`, a Farm Mode sub-option, on by default) zooms the mini-map all the way out as each Farm Mode run starts, on the tick where the cycle is about to cast and `wasFarming` is still false. Zoomed out, the mini-map shows tracked nodes from farther away. It acts only then, so a player who zooms back in mid-run keeps that until the next run, except that a pick in the mini-map menu clears `wasFarming` (see *Mini-map Menu*) and the next tick counts as a run start again. It never puts the player's own zoom back, by design. It skips the write when the mini-map is already fully out. The key lives in `global` although it sits on the Farm Mode panel: it changes the client's own mini-map, which every character shares, so per-character copies would only undo each other.
 
 `Minimap:SetZoom` alone leaves Blizzard's zoom buttons showing the old state, so a player who was fully zoomed in would find zoom-in greyed out; Blizzard's own zoom clicks set the buttons themselves after the call. `ZoomMinimapOutForRun` does the same, enabling zoom-in and disabling zoom-out on `Minimap.ZoomIn` and `Minimap.ZoomOut` or `MinimapZoomIn` and `MinimapZoomOut`, whichever pair the client has.
 
@@ -387,7 +389,7 @@ The trade-off: the mute silences every sound effect for that instant, not only t
 
 `ns.CAT_FORM_ONLY` (`Features/Utilities.lua`) holds the druid's tracking, which can be cast only in Cat Form: Track Humanoids (`ns.SPELLS.DRUID_HUMANOIDS`, 5225) on every flavor, and Track Beasts (`ns.SPELLS.DRUID_BEASTS`, 210065) on Retail. Each is listed in the Farm Mode Abilities list under Druid, beside the hunter's own, and the cycle admits it, from the list or as the persistent entry, only while the player is in Cat Form. Cat Form counts as on foot, so in practice it cycles for a druid farming with **Not Mounted** ticked; in Travel Form the rest of the cycle runs without it rather than spending a step on a cast that always fails. Every toggle in that list shows its ability's own tooltip on hover (`tooltipHyperlink`), so these carry their catch on the panel instead, muted beside the name (`OPTIONS_FARM_CAT_FORM_NOTE_NAMED`, filled with the client's Cat Form name).
 
-Everywhere Cat Form can't be assumed, the add-on keeps them out of reach: `ns.CastTracking()` refuses them outside Cat Form, the form-leave restore and the post-resurrection recast skip them there, `ns.UpdateIcon` clears them from `lastCastSpell` when the player shifts out, the Tracking Menu hides them unless the player is in Cat Form, and `ns.CREATURE_TYPE_DATA` omits them so a hunt never lands on one.
+Everywhere Cat Form can't be assumed, the add-on keeps them out of reach: `ns.CastTracking()` refuses them outside Cat Form, the form-leave restore and the post-resurrection recast skip them there, `ns.UpdateIcon` clears them from `lastCastSpell` when the player shifts out, the mini-map menu's Persistent Tracking flyout hides them unless the player is in Cat Form, and `ns.CREATURE_TYPE_DATA` omits them so a hunt never lands on one.
 
 **Druid: Track Humanoids When You Shift into Cat Form** (`catFormHumanoids`, off by default) makes Druid Track Humanoids the Persistent Tracking Ability while the druid is in Cat Form, through the resolver. Nothing else is needed: `UPDATE_SHAPESHIFT_FORM` schedules the recast both ways, and like every automatic cast it waits out Prowl, since `ns.CanCast()` refuses while stealthed.
 
@@ -401,7 +403,7 @@ Everywhere Cat Form can't be assumed, the add-on keeps them out of reach: `ns.Ca
 
 `ns.CREATURE_TYPE_SPELLS` (built in `Features/Utilities.lua` from each flavor folder's `ns.CREATURE_TYPE_DATA`) is keyed by the **creature type ID** that `UnitCreatureType` returns as its second value: 1 Beast, 2 Dragonkin, 3 Demon, 4 Elemental, 5 Giant, 6 Undead, 7 Humanoid, 9 Mechanical, the same on every client and in every locale. That is what makes the feature locale-proof without a single locale key of its own. Never match on the name `UnitCreatureType` returns first: it is localized. Each type maps to a list of candidates in preference order, such as Track Undead or Sense Undead, and `ns.GetCreatureTypeSpell()` returns the first one the character knows.
 
-**An automatic signal must never overwrite a choice the player saved.** The hunt is runtime state only (`ns.state.huntSpellId`), never saved, and nothing automatic writes `selectedSpellId`: the Tracking Menu sets it on the player's own click, and Clear Tracking clears it. Login and `/reload` always start without a hunt, and walking into town gives the player's own pick back. The resolver folds the hunt in (see *The Resolver*), so the recasts, the form-leave restore, and the farm cycle's persistent entry follow it without knowing about it. With Persistent Tracking off, hunts still start and switch, but nothing is ever recast.
+**An automatic signal must never overwrite a choice the player saved.** The hunt is runtime state only (`ns.state.huntSpellId`), never saved, and nothing automatic writes `selectedSpellId`: the mini-map menu sets it on the player's own pick, and Clear Tracking clears it. Login and `/reload` always start without a hunt, and walking into town gives the player's own pick back. The resolver folds the hunt in (see *The Resolver*), so the recasts, the form-leave restore, and the farm cycle's persistent entry follow it without knowing about it. With Persistent Tracking off, hunts still start and switch, but nothing is ever recast.
 
 `ns.OnPlayerTargetChanged()` runs on `PLAYER_TARGET_CHANGED`. The bail chain:
 
@@ -412,9 +414,9 @@ Everywhere Cat Form can't be assumed, the add-on keeps them out of reach: `ns.Ca
 5. The hunt is already this spell: stop.
 6. Otherwise start or switch the hunt and cast it at once: one global cooldown per new kind of creature, not per pull.
 
-Every hunt change invalidates the farm cycle cache and refreshes the icon and tooltip. The cast treats `ns.GetActiveTrackingSpell()` only as a positive "already up" signal, and when `ns.CanCast()` or a cooldown refuses, it retries every `HUNT_RETRY_SECONDS` (2) until it lands or the hunt changes or ends; a generation counter retires a retry that belongs to an older hunt. While the player is in a farm state (`isFarming`) with Include Persistent Tracking Ability off (`farmIncludePersistent`), the hunt doesn't cast, even on a tick the cycle itself is holding, and schedules no retry: it stays out of the rotation, and the form-leave restore brings it back when the farm state ends.
+Every hunt change invalidates the farm cycle cache and refreshes the icon and the menu. The cast treats `ns.GetActiveTrackingSpell()` only as a positive "already up" signal, and when `ns.CanCast()` or a cooldown refuses, it retries every `HUNT_RETRY_SECONDS` (2) until it lands or the hunt changes or ends; a generation counter retires a retry that belongs to an older hunt. While the player is in a farm state (`isFarming`) with Include Persistent Tracking Ability off (`farmIncludePersistent`), the hunt doesn't cast, even on a tick the cycle itself is holding, and schedules no retry: it stays out of the rotation, and the form-leave restore brings it back when the farm state ends.
 
-A hunt has no fade timer. It ends only at a context break: resting starting (`PLAYER_UPDATE_RESTING`), arriving in a restricted zone (`PLAYER_ENTERING_WORLD`, `ZONE_CHANGED_NEW_AREA`), a flight starting (seen by the farm tick through `ns.HandleFlightState`), a Tracking Menu pick, Clear Tracking, switching the feature off (the options toggle or Shift + Right-Click, both through `ns.SetTargetTracking`), and a profile change. Killing the target, looting, or clearing the target keeps it. `ns.EndHunt(restorePersistent)` brings the Persistent Tracking Ability back through `ns.TryRecastPersistent` for every break except the menu pick and Clear Tracking, which set tracking themselves; after a flight that ended a hunt, landing triggers that recast.
+A hunt has no fade timer. It ends only at a context break: resting starting (`PLAYER_UPDATE_RESTING`), arriving in a restricted zone (`PLAYER_ENTERING_WORLD`, `ZONE_CHANGED_NEW_AREA`), a flight starting (seen by the farm tick through `ns.HandleFlightState`), a pick in the mini-map menu, Clear Tracking, switching the feature off (the options toggle or the menu's section, both through `ns.SetTargetTracking`), and a profile change. Killing the target, looting, or clearing the target keeps it. `ns.EndHunt(restorePersistent)` brings the Persistent Tracking Ability back through `ns.TryRecastPersistent` for every break except the menu pick and Clear Tracking, which set tracking themselves; after a flight that ended a hunt, landing triggers that recast.
 
 ## Come & Get It
 
@@ -451,17 +453,52 @@ Each `MSG_FORMAT_*` body is the whole line after the command, with four `%s` in 
 
 Beneath the dropdown sits a one-line note, `OPTIONS_OUTPUT_NOTE`, filled with the Local label (`OPTIONS_OUTPUT_CHANNEL1`): Local (/1) only reaches players on your layer. It is there by exception to the rule that helper text lives in the tooltip (README-Notes → Exceptions → Default Output note), and the dropdown's tooltip carries a different tip so the two never repeat each other.
 
-## Tracking Menu
+## Mini-map Menu
 
-`Features/Tracking-Menu.lua` builds one LibUIDropDownMenu dropdown at file scope and exposes `ns.ToggleMenu(anchor)`. Rows are every ID in `ns.TRACKING_IDS` that resolves a name and passes `IsPlayerSpell`, sorted by the **localized** name so the list reads alphabetically in every client. The druid's Cat Form tracking is hidden unless the player is in Cat Form.
+The mini-map button opens a menu rather than a tooltip, so every action is a plain click a controller's cursor can reach: no modifier keys, and no right or middle button. It is laid out as Pretty Wide Quest Log's Quest Arrow menu is: a dark plate with angled corners and a one-line row for each thing to do. At the top are the add-on's name and version. Under them is a gold label for each feature, with where it stands on the right (On in green, Off in gray, Farm Mode's Active or Paused, Persistent Tracking's pick) and Blizzard's submenu arrow. Last come a line and the blue Tracking Eye Options row.
 
-LibUIDropDownMenu honors `info.fontObject` only on enabled buttons, so the title and every ability row are built as enabled entries, the title simply without a `func`; that is the only way to get the larger font. Text color comes from the inline color codes in each row's text. Spacer rows between abilities are `notClickable` entries with empty text.
+### The Rules
 
-Picking a row ends any running hunt (without the restore, since the pick casts itself), writes `ns.db.profile.selectedSpellId`, invalidates the farm cache, clears `ns.state.wasFarming` so the next tick doesn't run a redundant form-leave restore of the ability just cast, and calls `ns.CastTracking` directly, never through `ns.CanCast()`, because a deliberate click must always cast. The Tracking Menu is the only way to choose the pick: a tracking spell cast from an action bar, the spellbook, a macro, or WoW Forever's own tracking menu is never treated as one. The menu only picks; Farm Mode Abilities are ticked on the Farm Mode page.
+These hold for every Gogo1951 add-on's mini-map menu, not just this one.
+
+- **Every feature gets a label.** Each feature on the options' main page has a label in the menu, and hovering or clicking it opens its flyout beside the menu. Tracking Eye has three: Persistent Tracking, Farm Mode, and Automatic Target Tracking. Free Placement Mode and Come & Get It are the exceptions, left to the options page to keep the menu to what's changed mid-session.
+- **The switch comes first in the flyout.** A flyout starts with the feature's Enable switch: its name, with On in green on the right, or Off with the name gray. The feature's settings follow under small gold section labels, hidden while the feature is off, as the options hide them. Persistent Tracking is the exception: its pick works with the feature off, so its flyout always shows the abilities and hides only the overrides.
+- **Nothing new to translate.** A switch's tooltip is its option's own tooltip (`OPTIONS_ENABLE_*_DESCRIPTION` for the Enable switches). The menu's only strings of its own are `MENU_ON` and `MENU_OFF`.
+- **Status rows don't click.** Farm Mode Status has no hover highlight. Its reason is a gray note under it, wrapped to the flyout's width.
+- **Clearing is its own row.** Clear Tracking is a blue row under the abilities, never a label's click, so a stray click can't wipe the pick.
+- **Picks close, switches stay.** Picking from a set (an ability) closes the menu. The pick is white with a check mark, and the rest are gray. Flipping a switch keeps the menu open, so several things can change in one visit.
+- **Left out on purpose.** Display settings (Enable Welcome Message, Enable Mini-map Button, Use the Default Tracking Button) stay on the options page only. So do Free Placement Mode with its Icon Shape and Icon Size, Come & Get It with its Default Output, and so do settings with no menu shape: Cycle Speed has seventeen choices.
+
+### Contents
+
+| Label | Right side | Flyout |
+| --- | --- | --- |
+| Persistent Tracking | The pick, with its icon, or None Set; Off while the feature is off | The switch; every ability this character knows, by localized name, to pick from (Cat Form tracking only in Cat Form); Clear Tracking while something is picked; while Persistent Tracking is on, its three overrides |
+| Farm Mode | Active, Paused, or Off | The switch; while on, Farm Mode Status with its reason, Include Persistent Tracking Ability and the known abilities to cycle (Cat Form tracking included, with its note in the row tooltip), Farm Mode Conditions this flavor can detect, Silence Sounds, Zoom Mini-map Out |
+| Automatic Target Tracking | On or Off | The switch, through `ns.SetTargetTracking()`: switching it off ends any hunt |
+| Tracking Eye Options | Open | None: `ns:OpenOptionsPanel()`, which refuses in combat with its chat line |
+
+Every change goes through `ns.RefreshOptionsPanels()` and redraws the menu, so an options page and the menu never disagree. A pick from the Persistent Tracking flyout does what the old Tracking Menu did: it ends any running hunt (without the restore, since the pick casts itself), writes `ns.db.profile.selectedSpellId`, invalidates the farm cache, clears `ns.state.wasFarming` so the next tick doesn't run a redundant form-leave restore, and calls `ns.CastTracking` directly, never through `ns.CanCast()`, because a deliberate click must always cast. The menu is the only way to choose the pick: a tracking spell cast from an action bar, the spellbook, a macro, or WoW Forever's own tracking menu is never treated as one. The Farm Mode flyout lists only what this character knows; the options page lists every ability, for profiles shared across classes.
+
+### Opening and Closing
+
+- **Hover opens.** `ns.ShowMenu(anchor, flyoutKey, how)` opens the menu from the hovered launcher, on the side away from the nearest screen edges, and the flyout opens on the same side.
+- **Left-click opens with the pick out.** A left-click on the launcher opens it with the Persistent Tracking flyout already out, so choosing an ability is still one click.
+- **A label opens its flyout.** Hovering a label opens its flyout and hovering any other clickable row closes it, as a dropdown's submenu does; a click on a label opens it too, for a cursor that doesn't hover. The open label keeps its highlight.
+- **It closes like a tooltip.** An `OnUpdate` on the menu closes it 0.4 seconds after the cursor has left the launcher, the menu, and the flyout, or 1 second when a click opened it. It also closes when the launcher hides, on Escape (`UISpecialFrames`), and after a pick.
+- **The cursor test reads the cursor.** `ns.MenuKit.IsCursorOver` reads `GetCursorPosition` against the frame's edge, which is where a controller's virtual cursor reports too. The plate's shadow is drawn outside the frame, so it never steals the mouse from the launcher.
+
+### The Menu Kit
+
+`Features/Menu-Kit.lua` knows nothing about Tracking Eye, so it can move to Common-Core and serve every add-on. It is Pretty Wide Quest Log's Quest Arrow menu panel (`Routes-Arrow-Menu-Panel.lua`), made generic. `ns.MenuKit.CreatePanel(name, parent)` returns a panel, and `panel:Render(entries)` lays out a list of one-line rows top to bottom and sizes the panel to the widest. The kinds are `header`, `spacer`, `section`, `submenu`, `separator`, `action`, `toggle`, `choice`, `status`, `hint`, and `note`. Colors are palette keys (`ns.PALETTE`). `ns.MenuKit.SetToggleText(on, off)` gives a toggle its localized words, and `panel:SubmenuRow(name)` finds the label a flyout hangs beside.
+
+- **Plate art.** `Includes/Images/Menu-Plate.tga`, PWQL's `Route-Menu.tga`: 128 pixels square, cut into nine pieces and drawn at half size, so the angled corners stay sharp, at 80% alpha.
+- **Rows.** Each row is a line of text with `SPACE.LINE` above and below, or `SPACE.NEAR` above for a section label. The text is `TEXT_INSET` in from the row and the row is `ROW_INSET` in from the plate. The hover is a faint gold wash.
+- **Stock art only.** The submenu arrow is `ChatFrameExpandArrow` and a choice's check is `UI-CheckBox-Check`, both drawn inline at the font's height.
 
 ### Blizzard Tracking Button Takeover
 
-`ns.ApplyBlizzardTrackingHook()` optionally makes Classic Era's own mini-map tracking icon open the Tracking Menu. It is gated on `ns.db.global.hookBlizzardTracking` (account-wide presentation, off by default) and called at the end of `ns.InitMinimap()`, from `ns:ApplyProfile`, and from the option's `set` handler.
+`ns.ApplyBlizzardTrackingHook()` optionally makes Classic Era's own mini-map tracking icon open the mini-map menu, its Persistent Tracking flyout out. It is gated on `ns.db.global.hookBlizzardTracking` (account-wide presentation, off by default) and called at the end of `ns.InitMinimap()`, from `ns:ApplyProfile`, and from the option's `set` handler.
 
 It is offered on Classic Era only. There the icon is the plain `MiniMapTracking` frame, which has no menu of its own: a right-click cancels tracking, and the takeover replaces that. On TBC Anniversary and MoP Classic, `MiniMapTrackingButton` is a Blizzard dropdown button whose built-in mouse-down opens Blizzard's own tracking menu, which no script swap can stop, so a takeover would open two menus on one click. `ns.HasBlizzardTrackingButton()` therefore reports a frame only when `MiniMapTracking` exists and `MiniMapTrackingButton` doesn't, and the option and its section hide everywhere else.
 
@@ -472,29 +509,20 @@ The frame is neither secure nor protected, so replacing its script raises no tai
 
 ## Mini-map Button and Free Placement
 
-`ns.InitMinimap()` (`Features/Minimap-Button.lua`) registers a LibDataBroker-1.1 launcher and hands it to LibDBIcon-1.0 with the saved `ns.db.global.minimap` table. On Camelot and Mainline it then fits the icon by hand (Style Guide → MINIMAP BUTTON → Icon Fit), since LibDBIcon leaves it off-center in the ring there: it sizes and re-anchors `button.icon` and adds a round mask, and skips the fit when the button has no icon. It never calls `SetButtonIcon`, whose `ResetButtonIcon` calls `icon:UpdateCoord()` and errors at login when another add-on has replaced the button's icon. It replaces the button's `OnEnter` with its own, anchored below and to the left, and stores the button as `ns.minimapButton` for the own-tooltip check (see *Pause Reporting*). `ns.CreateFreeFrame()` (`Features/Free-Placement.lua`) builds the standalone button used in Free Placement Mode: the same launcher drawn somewhere else, sharing the tooltip (`ns.BuildTooltip`) and click handler (`ns.HandleLauncherClick`).
+`ns.InitMinimap()` (`Features/Minimap-Button.lua`) registers a LibDataBroker-1.1 launcher and hands it to LibDBIcon-1.0 with the saved `ns.db.global.minimap` table. On Camelot and Mainline it then fits the icon by hand (Style Guide → MINIMAP BUTTON → Icon Fit), since LibDBIcon leaves it off-center in the ring there: it sizes and re-anchors `button.icon` and adds a round mask, and skips the fit when the button has no icon. It never calls `SetButtonIcon`, whose `ResetButtonIcon` calls `icon:UpdateCoord()` and errors at login when another add-on has replaced the button's icon. The launcher carries `OnEnter` rather than `OnTooltipShow`, so LibDBIcon and every LDB display open the menu on hover. `ns.CreateFreeFrame()` (`Features/Free-Placement.lua`) builds the standalone button used in Free Placement Mode: the same launcher drawn somewhere else, sharing the hover (`ns.HandleLauncherEnter`) and click handler (`ns.HandleLauncherClick`).
 
 `ns.UpdatePlacement()` decides which one shows. A character with no tracking ability (`ns.HasTrackingAbility()`) gets neither. With `ns.db.global.freePlacement` on, the free frame shows and the LibDBIcon button hides without touching `minimap.hide`, so the Enable Mini-map Button preference survives a round trip through Free Placement; otherwise `LibDBIcon:Refresh` honors that preference. The Enable Mini-map Button toggle is disabled while Free Placement is on.
 
-### Tooltip
+### Launcher
 
-`ns.BuildTooltip` draws both surfaces, in order: the title and version, the Tracking Menu, the Persistent Tracking Ability, Farm Mode, the Farm Mode Status (only while Farm Mode is on: gray Paused with its reason, or green Active), Automatic Target Tracking, and the options block. The Persistent Tracking Ability row always shows the saved pick, and the Automatic Target Tracking block doesn't name a running hunt: the icon already shows what is tracked. Persistent Tracking itself has no block, since it is set in the options panel.
+`ns.HandleLauncherEnter` and `ns.HandleLauncherClick` drive both the LibDBIcon button and the free frame:
 
-`ns.RefreshTooltip()` re-runs the owning frame's `OnEnter` while its tooltip is on screen, so a change made by a click updates the text in place.
-
-### Click Map
-
-`ns.HandleLauncherClick` drives both the LibDBIcon button and the free frame:
-
-| Click | Action |
+| Input | Action |
 | --- | --- |
-| Left-Click | Open the Tracking Menu |
-| Right-Click | `ns.ClearTracking()`: cancel tracking and forget the pick |
-| Shift + Left-Click | Toggle Farm Mode |
-| Shift + Right-Click | `ns.SetTargetTracking()`: toggle Automatic Target Tracking; switching it off ends any hunt |
-| Shift + Middle-Click | `ns:OpenOptionsPanel()` |
+| Hover | Open the mini-map menu (see *Mini-map Menu*) |
+| Left-Click | Open the menu with the Persistent Tracking flyout out |
 
-Shift + Middle-Click is handled before the `ns.db` guard, so the options panel opens regardless of saved-variable state. `ns.ClearTracking()` ends any hunt, clears `lastCastSpell` and `selectedSpellId`, invalidates the farm cache, calls `ns.CancelActiveTracking()`, and forces the default icon at once: the cancel is asynchronous, and the mirror would still report the old texture for a frame. Clearing leaves nothing up: a character that has never picked has no starting pick, so Persistent Tracking keeps nothing up until the player chooses one.
+No other button and no modifier does anything: every action lives in the menu. `ns.ClearTracking()`, the Clear Tracking button's action, ends any hunt, clears `lastCastSpell` and `selectedSpellId`, invalidates the farm cache, calls `ns.CancelActiveTracking()`, and forces the default icon at once: the cancel is asynchronous, and the mirror would still report the old texture for a frame. Clearing leaves nothing up: a character that has never picked has no starting pick, so Persistent Tracking keeps nothing up until the player chooses one.
 
 ### Anonymous Free Frame
 
@@ -514,7 +542,7 @@ Shape is a texture swap, not a rebuild: `ns.UpdateFreeFrameShape` shows either t
 
 ## Key Bindings
 
-One binding ships, defined in `Bindings.xml` at the add-on root: `TRACKINGEYE_CYCLE_FARM_ABILITY`, which advances the Farm Mode cycle one step. It is a **manual** control, deliberately not gated on `farmMode`: it works with Farm Mode off, standing still, or anywhere the automatic cycle is paused. It still goes through `ns.AdvanceFarmCycle()`, so it obeys `ns.CanCast()` exactly as the ticker does, and on an empty cycle it prints why rather than failing silently: `BINDING_NOTHING_TO_CYCLE` when nothing is ticked, which also says where to tick them, and otherwise the pause reason's own sentence: `FARM_PAUSED_NOT_LEARNED` when this character knows none of the ticked abilities, and `FARM_PAUSED_CAT_FORM_NAMED` when the only ones it knows are the druid's Cat Form tracking, outside Cat Form (see *Pause Reporting*). There are no bindings for toggling Farm Mode, toggling Automatic Target Tracking, or opening the Tracking Menu: the launcher's clicks already do all three.
+One binding ships, defined in `Bindings.xml` at the add-on root: `TRACKINGEYE_CYCLE_FARM_ABILITY`, which advances the Farm Mode cycle one step. It is a **manual** control, deliberately not gated on `farmMode`: it works with Farm Mode off, standing still, or anywhere the automatic cycle is paused. It still goes through `ns.AdvanceFarmCycle()`, so it obeys `ns.CanCast()` exactly as the ticker does, and on an empty cycle it prints why rather than failing silently: `BINDING_NOTHING_TO_CYCLE` when nothing is ticked, which also says where to tick them, and otherwise the pause reason's own sentence: `FARM_PAUSED_NOT_LEARNED` when this character knows none of the ticked abilities, and `FARM_PAUSED_CAT_FORM_NAMED` when the only ones it knows are the druid's Cat Form tracking, outside Cat Form (see *Pause Reporting*). There are no bindings for toggling Farm Mode, toggling Automatic Target Tracking, or opening the menu: the mini-map menu already does all three.
 
 An AceConfig panel can't set a binding, so the General panel's Key Bindings section shows each binding's caption, the key bound to it (or the client's `NOT_BOUND`), and a Set Key button. The button runs `ns:OpenKeyBindings` (`Features/Key-Bindings.lua`), which refuses in combat the same way the options opener does (`CHAT_KEY_BINDINGS_IN_COMBAT`), then tries each route the clients use to open the game's Key Bindings list and prints where to find it by hand when none works. Core registers `UPDATE_BINDINGS` and redraws the General panel on it, so a key set in the game's list shows as soon as the player comes back.
 
@@ -525,7 +553,7 @@ An AceConfig panel can't set a binding, so the General panel's Key Bindings sect
 `Options/Options.lua` registers six panels in a fixed order, which is the order of the `AddToBlizOptions` calls: General (the root), Farm Mode, Come & Get It, Profiles, Feedback & Support, and Diagnostic Tools. Registration is deferred to `ns.RegisterOptionsPanels()`, which `Core.lua` calls right after `AceDB:New`, because the Profiles builder reads `ns.db`. Every registry name comes from `ns.OPTIONS_REGISTRY` (`Data/Data.lua`), derived from `ADDON_NAME`.
 
 - **The opener routes by captured handles.** `ns:OpenOptionsPanel` gates on combat first (see *Combat Lockdown*), then calls `Settings.OpenToCategory` with the category ID captured from the root panel's `AddToBlizOptions`, and falls back to `AceConfigDialog:Open` only when registration returned no ID. A lookup by the panel's name returns nil wherever AceConfigDialog keeps a generated category ID, which drops the panel into a floating window.
-- **Open panels redraw on outside changes.** AceConfig re-evaluates dynamic `name`, `disabled`, and `get` callbacks only when it redraws, so `ns.RefreshOptionsPanels()` fires `NotifyChange` for every registered name. `ns:ApplyProfile` calls it, and so do the launcher's Shift + Left-Click and Shift + Right-Click toggles; so should any new writer that changes a setting from outside the panel.
+- **Open panels redraw on outside changes.** AceConfig re-evaluates dynamic `name`, `disabled`, and `get` callbacks only when it redraws, so `ns.RefreshOptionsPanels()` fires `NotifyChange` for every registered name. `ns:ApplyProfile` calls it, and so does every change made in the mini-map menu; so should any new writer that changes a setting from outside the panel.
 - **Feature switches sit with their features.** Each feature's Enable toggle heads its own section or page rather than a Features block on the root panel (README-Notes → Exceptions → Feature switches with their features). With Enable Farm Mode or Enable Come & Get It off, everything below it on that page hides outright, so the page is the toggle and nothing else. Persistent Tracking's and Free Placement Mode's sub-options collapse with their toggles the same way.
 - **Sub-option rows** come from `ns.OptionsSubRow` (`Options/Options-Utilities.lua`), and three details there are load-bearing: one unnamed inline group per sub-option, or the next control packs onto the leftover space and the indent stops indenting; controls sized with slack rather than to the full row width, or a control on the wrap boundary tips onto its own line and strands the indent; and `hidden` on the group, not its members, or the indent is left behind when the section collapses.
 - **Label-beside-control rows** (Cycle Speed, Default Output, the Feedback & Support links) pair `ns.OptionsRowLabel` with a control whose `name` is empty, the two totaling `ns.OPTIONS_ROW_WIDTH`. A row that can hide, as Cycle Speed and Default Output do, sits in an unnamed inline group so the pair hides as one. The cycle-interval dropdown needs its `sorting` list: without it the numeric keys sort as strings and "10" lands ahead of "2". The link rows give their one-word captions only 0.6 of the row, so the URL box beside them, the part the player copies, gets the rest.
@@ -589,7 +617,7 @@ Reset is entirely stock: the AceDBOptions Reset Profile control on the Profiles 
 4. If it can be cast only in Cat Form, add its key to the `ns.CAT_FORM_ONLY` list in `Features/Utilities.lua`; every Cat Form gate reads that set, and it stays out of `ns.CREATURE_TYPE_DATA`. Any other form gate needs its own guard everywhere `ns.CAT_FORM_ONLY` is read: `ns.CastTracking`, `BuildCycleCache`'s `CanCycle`, `ns.GetEmptyCycleKind` and the form-leave restore (`Features/Farm-Mode.lua`), the post-resurrection recast, `ns.UpdateIcon`, and the empty-cycle reasons and binding messages. If the gate can change mid-farm, `EnsureCycleCache` has to notice, as it does for Cat Form.
 5. The source field picks its group in the Farm Mode Abilities list: the class `ns.FARM_ABILITY_CLASSES` (`Data/Data.lua`) maps it to, or Professions & Racial Abilities for anything else. A new class needs a row there, and a class newer than Wrath (a Monk, Demon Hunter, or Evoker ability on Mists or Retail) needs one in `ns.CLASS_COLORS` too, which stops at Wrath. A new class also reaches the Game Names report on its own, through `ns.FARM_ABILITY_CLASSES`.
 6. No locale strings are needed: the name and icon come from `C_Spell` at runtime. If an options label or message names the spell inside its own sentence, add its `ns.SPELLS` key to the spell list in `ns.DIAGNOSTIC_NAME_LOOKUPS` (`Diagnostics/Manifests.lua`).
-7. Run the Spells report of Validate Data on each client that got the row, and check the Tracking Menu hides the spell on a character that doesn't know it while the Farm Mode Abilities list shows it on every character.
+7. Run the Spells report of Validate Data on each client that got the row, and check the mini-map menu's ability lists hide the spell on a character that doesn't know it while the options' Farm Mode Abilities list shows it on every character.
 
 ## Adding a New Farm Mode Condition
 
@@ -617,9 +645,10 @@ A new movement state touches every layer, and a state missing from any one of th
 2. Add the widget to the builder of the panel that owns it, reading and writing `ns.db` directly. A control that only means something while a toggle is on goes in an `ns.OptionsSubRow` with `hidden` on the row. It carries a label and one tooltip `desc`, with no second description line under it (Style Guide → OPTIONS PANEL → Helper Text Lives in the Tooltip).
 3. If the setting is applied imperatively (a frame, a timer, a hook), repeat it in `ns:ApplyProfile`, or a profile switch leaves it stale until a `/reload`.
 4. If it changes what Farm Mode cycles, call `ns.InvalidateFarmCache()` in its `set`; if it changes what Persistent Tracking keeps up, call `ns.TryRecastPersistent()` as well, as the three Persistent Tracking sub-options do.
-5. Add its strings to `Locales/enUS.lua` only.
-6. Print it in the context report of the feature it belongs to (`Diagnostics/Manifests.lua`), or in Display Context for presentation; the Saved Variables report dumps it on its own.
-7. A change to an existing key's shape, name, or scope ships with its own migration (see *Saved Variables*).
+5. If it belongs to a feature, add it to that feature's flyout in the mini-map menu (`Features/Minimap-Menu.lua`), with the option's own `desc` as the row tooltip (see *Mini-map Menu → The Rules*).
+6. Add its strings to `Locales/enUS.lua` only.
+7. Print it in the context report of the feature it belongs to (`Diagnostics/Manifests.lua`), or in Display Context for presentation; the Saved Variables report dumps it on its own.
+8. A change to an existing key's shape, name, or scope ships with its own migration (see *Saved Variables*).
 
 ## Adding a New Registered Event
 
@@ -679,7 +708,8 @@ Everything else, including the Spanish file pairing, the overflow canary, and th
 - **Adding a movement state to only some of its tables**: detection and the toggle can work while the on-foot reason never names it, so a player whose only state it is reads "Not mounted." Follow *Adding a New Farm Mode Condition* end to end.
 - **Letting the druid's Cat Form tracking run outside Cat Form, or into the creature-type map**: every cycle step it took would be a cast that always fails, and a hunt could land on it. Keep the `CanCycle` gate, the Cat Form check in `EnsureCycleCache`, and its absence from `ns.CREATURE_TYPE_DATA`.
 - **Assembling a pause reason from fragments**: a comma-spliced sentence can't be translated. Every combination is its own precomposed key.
-- **Ranking the own-tooltip pause reason anywhere but last**: hovering the button is how the player reads the Farm Mode Status, so an earlier rank makes it read "Reading a tooltip." in place of the real cause. Keep `ns.IsTooltipShowing()` to everyone else's tooltips.
+- **Ranking the own-menu pause reason anywhere but last**: opening the menu is how the player reads the Farm Mode Status, so an earlier rank makes it read "Reading a tooltip." in place of the real cause. Keep `ns.IsTooltipShowing()` to everyone else's tooltips.
+- **Putting an action behind a modifier key or the right or middle button**: a controller can't reach it. Every action is a plain click in the mini-map menu.
 - **Caching the options-open state, or reading it with `IsShown()`**: closing the Settings window hides the window, not the canvas, so either one sticks at true and pauses Farm Mode until a reload. `ns.IsOptionsPanelOpen()` reads `IsVisible()` live, and a new panel has to join its list.
 - **Arming the cycle mute before the cast**: `ns.CastTracking` returns `false` on every early bail, and muting for a cast that never happened switches the player's sound off for nothing. Cast first, arm second.
 - **Relying on the mute's timer to restore `Sound_EnableSFX`**: the CVar survives the session and the timer doesn't. Keep the unconditional restores on `PLAYER_LOGOUT` and on switching the option off, and keep the `pcall` around the cast.
