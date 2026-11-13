@@ -10,7 +10,7 @@ ns.SAVED_VARIABLES_NAME = "TrackingEyeDB"
 ns.ICON_DEFAULT = "Interface\\Icons\\inv_misc_map_01"
 
 ns.LINKS = {
-	CURSEFORGE = "https://www.curseforge.com/wow/addons/tracking-eye-classic",
+	CURSEFORGE = "https://www.curseforge.com/wow/addons/tracking-eye-revisited",
 	GITHUB = "https://github.com/Gogo1951/Tracking-Eye",
 	DISCORD = "https://discord.gg/eh8hKq992Q",
 	WAGO = "https://addons.wago.io/addons/tracking-eye",
@@ -161,17 +161,48 @@ ns.CHAT_MESSAGE_MAX_LENGTH = 255
     list, its order, and the command mapping can't drift. Array order is dropdown
     order; keys are saved to the DB and never localized. A Blizzard channel is
     labeled by the client's own string (labelGlobal, a GlobalStrings name); only
-    a label in our own words is a locale key (labelKey).
+    a label in our own words is a locale key (labelKey). chatType, prefixGlobal
+    and hex draw the Example line in Options: the client's chat color for
+    chatType (hex when the client has none) and its GlobalStrings sender
+    prefix. Local has no prefix global, so the Example writes its tag itself.
 ]]
 ns.OUTPUT_CHANNELS = {
-	{ key = "channel1", command = "/1", labelKey = "OPTIONS_OUTPUT_CHANNEL1" },
-	{ key = "say", command = "/say", labelGlobal = "SAY" },
-	{ key = "yell", command = "/yell", labelGlobal = "YELL" },
-	{ key = "party", command = "/party", labelGlobal = "PARTY" },
-	{ key = "guild", command = "/guild", labelGlobal = "GUILD" },
+	{ key = "channel1", command = "/1", labelKey = "OPTIONS_OUTPUT_CHANNEL1", chatType = "CHANNEL1", hex = "FFC0C0" },
+	{
+		key = "say",
+		command = "/say",
+		labelGlobal = "SAY",
+		chatType = "SAY",
+		prefixGlobal = "CHAT_SAY_GET",
+		hex = "FFFFFF",
+	},
+	{
+		key = "yell",
+		command = "/yell",
+		labelGlobal = "YELL",
+		chatType = "YELL",
+		prefixGlobal = "CHAT_YELL_GET",
+		hex = "FF4040",
+	},
+	{
+		key = "party",
+		command = "/party",
+		labelGlobal = "PARTY",
+		chatType = "PARTY",
+		prefixGlobal = "CHAT_PARTY_GET",
+		hex = "AAAAFF",
+	},
+	{
+		key = "guild",
+		command = "/guild",
+		labelGlobal = "GUILD",
+		chatType = "GUILD",
+		prefixGlobal = "CHAT_GUILD_GET",
+		hex = "40FF40",
+	},
 }
 
--- Fallback when ns.db.profile.comeAndGetItOutput is unset or holds a stale key.
+-- Fallback when ns.db.global.comeAndGetItOutput is unset or holds a stale key.
 ns.DEFAULT_OUTPUT_CHANNEL = "channel1"
 
 --------------------------------------------------------------------------------

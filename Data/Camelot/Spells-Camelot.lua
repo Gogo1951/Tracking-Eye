@@ -57,7 +57,7 @@ ns.FARM_CYCLE_DEFAULTS = {
 How We Got the Data
 
 Last Validated
-	2026-10-16, WoW Forever 1.60.1.70425
+	2026-11-13, WoW Forever 1.60.1.70938
 
 Notes
 	- TRACKING_SPELLS holds every tracking ability a player can learn on this client: the hunter's eight Track spells, the druid's Track Humanoids, the warlock's Sense Demons, the paladin's Sense Undead, Find Herbs and Find Minerals from the gathering professions, Find Fish from Fishing, and the Dwarf racial Find Treasure.
@@ -107,17 +107,17 @@ Wowhead
 	None.
 
 wago.tools
-	https://wago.tools/db2/SpellName?build=1.60.1.70425
-	https://wago.tools/db2/SpellEffect?build=1.60.1.70425
-	https://wago.tools/db2/SkillLineAbility?build=1.60.1.70425
-	https://wago.tools/db2/SkillLine?build=1.60.1.70425
-	https://wago.tools/db2/SpellLevels?build=1.60.1.70425
-	https://wago.tools/db2/SpellMisc?build=1.60.1.70425
-	https://wago.tools/db2/SpellDuration?build=1.60.1.70425
-	https://wago.tools/db2/CreatureType?build=1.60.1.70425
-	https://wago.tools/db2/ItemEffect?build=1.60.1.70425
-	https://wago.tools/db2/ItemXItemEffect?build=1.60.1.70425
-	https://wago.tools/db2/ItemSparse?build=1.60.1.70425
+	https://wago.tools/db2/SpellName?build=1.60.1.70938
+	https://wago.tools/db2/SpellEffect?build=1.60.1.70938
+	https://wago.tools/db2/SkillLineAbility?build=1.60.1.70938
+	https://wago.tools/db2/SkillLine?build=1.60.1.70938
+	https://wago.tools/db2/SpellLevels?build=1.60.1.70938
+	https://wago.tools/db2/SpellMisc?build=1.60.1.70938
+	https://wago.tools/db2/SpellDuration?build=1.60.1.70938
+	https://wago.tools/db2/CreatureType?build=1.60.1.70938
+	https://wago.tools/db2/ItemEffect?build=1.60.1.70938
+	https://wago.tools/db2/ItemXItemEffect?build=1.60.1.70938
+	https://wago.tools/db2/ItemSparse?build=1.60.1.70938
 
 QuestieDB
 	None.

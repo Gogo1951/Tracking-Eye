@@ -3,7 +3,8 @@ if not L then
 	return
 end
 
-L["ADDON_TITLE"] = "Tracking Eye"
+L["ADDON_TITLE"] = "Tracking Eye" -- Full Name
+L["ADDON_SHORT_NAME"] = "Tracking Eye" -- Short Name
 
 --------------------------------------------------------------------------------
 -- Printed Messages
@@ -22,7 +23,6 @@ L["KEY_BINDINGS_LOCATION"] = "Open the game menu, then %s, then %s, and find the
 L["TRACKING_MENU"] = "Tracking Menu"
 L["PERSISTENT_TRACKING"] = "Persistent Tracking"
 L["TARGET_TRACKING"] = "Automatic Target Tracking"
-L["FARM_MODE"] = "Farm Mode"
 
 --------------------------------------------------------------------------------
 -- Mini-map Menu
@@ -62,13 +62,15 @@ L["FARM_PAUSED_TOOLTIP"] = "Reading a tooltip."
 L["FARM_PAUSED_TARGET"] = "Targeting something you can attack."
 L["FARM_PAUSED_STANDING_STILL"] = "Standing still."
 
-L["PERSISTENT_ABILITY"] = "Persistent Tracking Ability"
-L["NONE_SET"] = "None Set"
 L["CLEAR_TRACKING"] = "Clear Tracking"
 
 L["MENU_ON"] = "On"
 L["MENU_OFF"] = "Off"
 L["OPEN"] = "Open"
+L["MENU_PERSISTENT_DESCRIPTION"] = "Choose your Persistent Tracking Ability."
+L["MENU_FARM_DESCRIPTION"] = "Cycles your tracking abilities as you travel."
+L["MENU_TARGET_DESCRIPTION"] = "Tracks whatever kind of creature you target."
+L["MENU_TOGGLE"] = "Toggle"
 
 L["TOOLTIP_OPTIONS"] = "Tracking Eye Options"
 
@@ -87,8 +89,8 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 --[[
     Each section's description sells the feature. Each control's description is
     its mouseover tooltip: a pro tip the label and section don't already say. The
-    mini-map menu reuses the same strings, as a feature's summary and as a menu
-    row's tooltip, so it shows two lines at most there.
+    mini-map menu reuses a control's label and description as its row's tooltip;
+    the menu's feature summaries are the MENU_*_DESCRIPTION strings above.
 ]]
 
 -- General
@@ -130,7 +132,7 @@ L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"] =
 	"Waits until you're out of combat, so it never costs you a global cooldown mid-fight."
 L["OPTIONS_FISHING_POLE_FISH_NAMED"] = "%s When You Equip a %s"
 L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"] = "Your own pick comes back when you put the pole away."
-L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s: %s When You Shift into %s"
+L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s: %s When You Shift Into %s"
 L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"] =
 	"Waits until you leave stealth, and your own pick comes back when you shift out."
 L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"] = "%s: %s in Battlegrounds"
@@ -167,7 +169,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 L["OPTIONS_ENABLE_FARM"] = "Enable Farm Mode"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
 	"Pauses on its own in combat, towns, instances, and on flights. Hover the Tracking Eye button to see why."
-L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Silence Sounds from Tracking Ability Casts"
+L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Silence Sounds From Tracking Ability Casts"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"Only Farm Mode's own switches go quiet. Tracking you pick yourself still makes its sound."
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "Zoom Mini-map Out"
@@ -252,6 +254,8 @@ L["OPTIONS_OUTPUT_NAME"] = "Default Output"
 L["OPTIONS_OUTPUT_DESCRIPTION"] = "Guild reaches every guildmate online, whatever their layer or zone."
 L["OPTIONS_OUTPUT_NOTE"] = "Note: %s only reaches players on your layer."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Local (/1)"
+L["SAMPLE_EXAMPLE"] = "Example: %s"
+L["SAMPLE_LOADING_ITEM"] = "Loading ID: %d"
 
 --------------------------------------------------------------------------------
 -- Feedback & Support

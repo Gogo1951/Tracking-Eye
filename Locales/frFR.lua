@@ -3,7 +3,8 @@ if not L then
 	return
 end
 
-L["ADDON_TITLE"] = "Tracking Eye"
+L["ADDON_TITLE"] = "Tracking Eye" -- Full Name
+L["ADDON_SHORT_NAME"] = "Tracking Eye" -- Short Name
 
 --------------------------------------------------------------------------------
 -- Printed Messages
@@ -23,7 +24,6 @@ L["KEY_BINDINGS_LOCATION"] = "Ouvrez le menu du jeu, puis %s, puis %s, et trouve
 L["TRACKING_MENU"] = "Menu de pistage"
 L["PERSISTENT_TRACKING"] = "Pistage persistant"
 L["TARGET_TRACKING"] = "Pistage automatique de la cible"
-L["FARM_MODE"] = "Mode de collecte"
 
 --------------------------------------------------------------------------------
 -- Mini-map Menu
@@ -63,13 +63,15 @@ L["FARM_PAUSED_TOOLTIP"] = "Vous lisez une infobulle."
 L["FARM_PAUSED_TARGET"] = "Vous ciblez quelque chose que vous pouvez attaquer."
 L["FARM_PAUSED_STANDING_STILL"] = "Vous êtes immobile."
 
-L["PERSISTENT_ABILITY"] = "Capacité de pistage persistant"
-L["NONE_SET"] = "Aucune définie"
 L["CLEAR_TRACKING"] = "Effacer le pistage"
 
 L["MENU_ON"] = "Activé"
 L["MENU_OFF"] = "Désactivé"
 L["OPEN"] = "Ouvrir"
+L["MENU_PERSISTENT_DESCRIPTION"] = "Choisissez votre Capacité de pistage persistant."
+L["MENU_FARM_DESCRIPTION"] = "Alterne vos capacités de pistage pendant vos déplacements."
+L["MENU_TARGET_DESCRIPTION"] = "Piste l'espèce de toute créature que vous ciblez."
+L["MENU_TOGGLE"] = "Basculer"
 
 L["TOOLTIP_OPTIONS"] = "Options de Tracking Eye"
 
@@ -88,8 +90,8 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 --[[
     Each section's description sells the feature. Each control's description is
     its mouseover tooltip: a pro tip the label and section don't already say. The
-    mini-map menu reuses the same strings, as a feature's summary and as a menu
-    row's tooltip, so it shows two lines at most there.
+    mini-map menu reuses a control's label and description as its row's tooltip;
+    the menu's feature summaries are the MENU_*_DESCRIPTION strings above.
 ]]
 
 -- General
@@ -172,7 +174,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 L["OPTIONS_ENABLE_FARM"] = "Activer le Mode de collecte"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
 	"Se met en pause tout seul en combat, en ville, en instance et pendant les vols. Survolez le bouton Tracking Eye pour savoir pourquoi."
-L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Couper le son des capacités de pistage"
+L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Couper le son du lancement des capacités de pistage"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"Seuls les changements du Mode de collecte deviennent silencieux. Le pistage que vous choisissez vous-même garde son son."
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "Dézoomer la minicarte"
@@ -262,6 +264,8 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"Guilde atteint tous les membres connectés, quelles que soient leur strate et leur zone."
 L["OPTIONS_OUTPUT_NOTE"] = "Remarque : %s n'atteint que les joueurs de votre strate."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Local (/1)"
+L["SAMPLE_EXAMPLE"] = "Exemple : %s"
+L["SAMPLE_LOADING_ITEM"] = "Chargement de l'ID : %d"
 
 --------------------------------------------------------------------------------
 -- Feedback & Support

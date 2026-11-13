@@ -51,12 +51,126 @@ function ns.SetLastCast(spellId)
 end
 
 --------------------------------------------------------------------------------
+-- Reading and Clearing Tracking
+--------------------------------------------------------------------------------
+
+--[[
+    Lazily built reverse lookup (texture -> spellId) so every call isn't a linear
+    C_Spell.GetSpellTexture scan over ns.TRACKING_IDS. During the login event storm
+    C_Spell.GetSpellTexture returns nil for spells whose data hasn't loaded, so a cache
+    built then is missing entries and has to be rebuilt once more data arrives.
+
+    Rebuilds are driven by a dirty flag, NOT by testing whether every ID resolved.
+    An ID this client lacks never resolves, so a completeness test can stay false
+    forever and rebuild the whole table on every lookup miss, which is most of
+    them while nothing is tracked. SPELLS_CHANGED and PLAYER_ENTERING_WORLD are
+    the only points where new spell data can appear, so they mark it dirty and the
+    next lookup rebuilds exactly once.
+]]
+local textureToSpellId = nil
+local textureCacheDirty = true
+
+function ns.InvalidateTextureCache()
+	textureCacheDirty = true
+end
+
+local function BuildTextureCache()
+	textureToSpellId = {}
+	for _, id in ipairs(ns.TRACKING_IDS) do
+		local texture = C_Spell.GetSpellTexture(id)
+		if texture then
+			textureToSpellId[texture] = id
+		end
+	end
+	textureCacheDirty = false
+end
+
+local function MatchTrackingTexture(texture)
+	if not texture then
+		return nil
+	end
+	if not textureToSpellId or textureCacheDirty then
+		BuildTextureCache()
+	end
+	return textureToSpellId[texture]
+end
+
+--[[
+    The tracking spell an active C_Minimap entry stands for, or nil. Only entries
+    backed by one of this add-on's spells count, so a town service switched on in
+    the minimap menu is never mistaken for tracking. A spell entry without a spell
+    ID is matched by its texture instead.
+]]
+local function GetMinimapEntrySpell(index)
+	local info = C_Minimap.GetTrackingInfo(index)
+	if not info or not info.active then
+		return nil
+	end
+	if info.spellID then
+		return ns.TRACKING_SET[info.spellID] and info.spellID or nil
+	end
+	if info.type == "spell" then
+		return MatchTrackingTexture(info.texture)
+	end
+	return nil
+end
+
+--[[
+    Live "which tracking is up right now?" check, returning the active
+    tracking spellId or nil. GetTrackingTexture alone cannot answer this:
+    on Classic Era 1.15.x it returns nil for several active trackers
+    (racials like Find Treasure) and lags state changes. The Blizzard
+    minimap tracking icon is authoritative there — the Vanilla client
+    hides it entirely when nothing is tracked, so it is only read while
+    visible (a hidden frame can retain a stale texture). Falls back to
+    GetTrackingTexture for clients where the icon shows a generic "None"
+    texture instead (TBC+). WoW Forever ships neither the icon nor
+    GetTrackingTexture and reads the C_Minimap tracking list instead.
+]]
+function ns.GetActiveTrackingSpell()
+	if MiniMapTrackingIcon and MiniMapTrackingIcon:IsVisible() then
+		local id = MatchTrackingTexture(MiniMapTrackingIcon:GetTexture())
+		if id then
+			return id
+		end
+	end
+	if GetTrackingTexture then
+		return MatchTrackingTexture(GetTrackingTexture())
+	end
+	for index = 1, C_Minimap.GetNumTrackingTypes() do
+		local id = GetMinimapEntrySpell(index)
+		if id then
+			return id
+		end
+	end
+	return nil
+end
+
+--[[
+    Drops the add-on's tracking. CancelTrackingBuff covers Era and TBC. On WoW
+    Forever every active entry backed by one of this add-on's spells is switched
+    off, and any town service beside them is left alone. Never ClearAllTracking:
+    it also clears Blizzard's own quest and target filters.
+]]
+function ns.CancelActiveTracking()
+	if CancelTrackingBuff then
+		CancelTrackingBuff()
+		return
+	end
+	for index = 1, C_Minimap.GetNumTrackingTypes() do
+		if GetMinimapEntrySpell(index) then
+			C_Minimap.SetTracking(index, false)
+		end
+	end
+end
+
+--------------------------------------------------------------------------------
 -- Icon Management
 --------------------------------------------------------------------------------
 
 --[[
     Single source of truth for the displayed icon: ns.GetActiveTrackingSpell()
-    (see Utilities.lua). Never read MiniMapTrackingIcon or GetTrackingTexture
+    (above). Never read MiniMapTrackingIcon or GetTrackingTexture
     directly here — a hidden frame keeps its last texture, and a raw read
     resurrects a cleared icon and re-poisons lastCastSpell via the adopt branch.
 ]]

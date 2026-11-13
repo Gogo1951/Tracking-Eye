@@ -61,8 +61,6 @@ end
          SETTINGS_KEYBINDINGS_LABEL where that's the one in use).
       3. The older standalone KeyBindingFrame, loaded on demand.
 
-    The lookup is protected, because it walks Blizzard's own objects and a
-    client that reshapes them should cost the player a chat line, not an error.
     When nothing works, the line says where to find the list by hand.
 ]]
 local function FindKeyBindingsCategoryID()
@@ -74,19 +72,15 @@ local function FindKeyBindingsCategoryID()
 		return nil
 	end
 
-	local ok, categoryId = pcall(function()
-		local list = SettingsPanel:GetCategoryList()
-		local categories = list and list.GetAllCategories and list:GetAllCategories()
-		for _, category in ipairs(categories or {}) do
-			local name = category.GetName and category:GetName()
-			if name and (name == KEY_BINDINGS or name == SETTINGS_KEYBINDINGS_LABEL) and category.GetID then
-				return category:GetID()
-			end
+	local list = SettingsPanel:GetCategoryList()
+	local categories = list and list.GetAllCategories and list:GetAllCategories()
+	for _, category in ipairs(categories or {}) do
+		local name = category.GetName and category:GetName()
+		if name and (name == KEY_BINDINGS or name == SETTINGS_KEYBINDINGS_LABEL) and category.GetID then
+			return category:GetID()
 		end
-		return nil
-	end)
-
-	return ok and categoryId or nil
+	end
+	return nil
 end
 
 -- The fallback line names the menus by the client's own labels, so it matches what the player sees in every locale.

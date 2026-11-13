@@ -271,9 +271,26 @@ function ns.RunFarmLogic()
 		return
 	end
 
-	-- Only as a run starts, so a player who zooms back in mid-run keeps their choice.
 	if not ns.state.wasFarming then
+		-- Only as a run starts, so a player who zooms back in mid-run keeps their choice.
 		ZoomMinimapOutForRun()
+
+		--[[
+            A run starting ends any Automatic Target Tracking hunt, so the cycle's
+            persistent entry and the form-leave restore go back to the player's
+            own pick instead of carrying the hunt until the next town. Targeting
+            another creature mid-run starts a fresh hunt as usual. Ending the hunt
+            empties the cache, so it is rebuilt; if the hunt was its only entry,
+            wasFarming is still set so leaving the farm state restores the pick.
+        ]]
+		if ns.state.huntSpellId then
+			ns.EndHunt(false)
+			EnsureCycleCache()
+			if #cachedCycle == 0 then
+				ns.state.wasFarming = true
+				return
+			end
+		end
 	end
 
 	if #cachedCycle == 1 then

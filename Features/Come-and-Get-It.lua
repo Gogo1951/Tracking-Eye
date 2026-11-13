@@ -131,7 +131,7 @@ end
 
 -- Runs before MatchError, so a suppressed error costs no string work.
 local function CanAnnounce()
-	if not (ns.db and ns.db.profile.comeAndGetIt) then
+	if not (ns.db and ns.db.global.comeAndGetIt) then
 		return false
 	end
 
@@ -177,7 +177,7 @@ local function AnnounceNode(mapping)
 		return
 	end
 
-	-- No fallback name: stay silent rather than announce a generic node. The miss is logged.
+	-- No fallback name: stay silent rather than announce a generic node.
 	local nodeName = GetNodeName()
 	if not nodeName or nodeName == "" then
 		return
@@ -205,7 +205,7 @@ local function AnnounceNode(mapping)
 	end
 
 	-- User-configurable; falls back to the manifest default if the saved key is stale.
-	local channelKey = ns.db and ns.db.profile.comeAndGetItOutput
+	local channelKey = ns.db and ns.db.global.comeAndGetItOutput
 	local command = OUTPUT_COMMAND[channelKey] or OUTPUT_COMMAND[ns.DEFAULT_OUTPUT_CHANNEL]
 
 	local messageLength = #announcement
@@ -229,10 +229,6 @@ function ns.OnUIErrorMessage(messageID, message)
 
 	local mapping = ns.MatchError(messageID, message)
 	if mapping then
-		-- Capture the tooltip read at match time; a nil entry is the read-missed signal.
-		if ns.diagnostics and ns.diagnostics.logging then
-			ns:LogEvent("GetNodeName", GetNodeName())
-		end
 		AnnounceNode(mapping)
 	end
 end

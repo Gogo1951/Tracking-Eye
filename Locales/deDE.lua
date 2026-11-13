@@ -3,7 +3,8 @@ if not L then
 	return
 end
 
-L["ADDON_TITLE"] = "Tracking Eye"
+L["ADDON_TITLE"] = "Tracking Eye" -- Full Name
+L["ADDON_SHORT_NAME"] = "Tracking Eye" -- Short Name
 
 --------------------------------------------------------------------------------
 -- Printed Messages
@@ -23,7 +24,6 @@ L["KEY_BINDINGS_LOCATION"] = "Öffnet das Spielmenü, dann %s, dann %s, und such
 L["TRACKING_MENU"] = "Aufspürungsmenü"
 L["PERSISTENT_TRACKING"] = "Dauerhafte Aufspürung"
 L["TARGET_TRACKING"] = "Automatische Zielaufspürung"
-L["FARM_MODE"] = "Farming-Modus"
 
 --------------------------------------------------------------------------------
 -- Mini-map Menu
@@ -63,13 +63,15 @@ L["FARM_PAUSED_TOOLTIP"] = "Ihr lest einen Tooltip."
 L["FARM_PAUSED_TARGET"] = "Ihr habt etwas im Ziel, das Ihr angreifen könnt."
 L["FARM_PAUSED_STANDING_STILL"] = "Ihr steht still."
 
-L["PERSISTENT_ABILITY"] = "Dauerhafte Aufspürungsfähigkeit"
-L["NONE_SET"] = "Keine gesetzt"
 L["CLEAR_TRACKING"] = "Aufspürung löschen"
 
 L["MENU_ON"] = "An"
 L["MENU_OFF"] = "Aus"
 L["OPEN"] = "Öffnen"
+L["MENU_PERSISTENT_DESCRIPTION"] = "Wählt Eure Dauerhafte Aufspürungsfähigkeit."
+L["MENU_FARM_DESCRIPTION"] = "Wechselt unterwegs zwischen Euren Aufspürungsfähigkeiten."
+L["MENU_TARGET_DESCRIPTION"] = "Spürt die Art jeder Kreatur auf, die Ihr anvisiert."
+L["MENU_TOGGLE"] = "Umschalten"
 
 L["TOOLTIP_OPTIONS"] = "Tracking Eye-Optionen"
 
@@ -88,8 +90,8 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 --[[
     Each section's description sells the feature. Each control's description is
     its mouseover tooltip: a pro tip the label and section don't already say. The
-    mini-map menu reuses the same strings, as a feature's summary and as a menu
-    row's tooltip, so it shows two lines at most there.
+    mini-map menu reuses a control's label and description as its row's tooltip;
+    the menu's feature summaries are the MENU_*_DESCRIPTION strings above.
 ]]
 
 -- General
@@ -172,7 +174,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 L["OPTIONS_ENABLE_FARM"] = "Farming-Modus aktivieren"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
 	"Pausiert von selbst im Kampf, in Städten, in Instanzen und auf Flügen. Fahrt mit der Maus über den Tracking Eye-Button, um den Grund zu sehen."
-L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Zaubergeräusche beim Aufspüren stummschalten"
+L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Zaubergeräusche von Aufspürungsfähigkeiten stummschalten"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"Nur die Wechsel des Farming-Modus werden stumm. Aufspürung, die Ihr selbst wählt, ist weiterhin zu hören."
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "Minikarte herauszoomen"
@@ -261,6 +263,8 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"Gilde erreicht jedes Gildenmitglied, das online ist, egal auf welchem Layer oder in welcher Zone."
 L["OPTIONS_OUTPUT_NOTE"] = "Hinweis: %s erreicht nur Spieler auf Eurem Layer."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Lokal (/1)"
+L["SAMPLE_EXAMPLE"] = "Beispiel: %s"
+L["SAMPLE_LOADING_ITEM"] = "Lade ID: %d"
 
 --------------------------------------------------------------------------------
 -- Feedback & Support

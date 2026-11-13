@@ -3,7 +3,8 @@ if not L then
 	return
 end
 
-L["ADDON_TITLE"] = "Tracking Eye"
+L["ADDON_TITLE"] = "Tracking Eye" -- Full Name
+L["ADDON_SHORT_NAME"] = "Tracking Eye" -- Short Name
 
 --------------------------------------------------------------------------------
 -- Printed Messages
@@ -23,7 +24,6 @@ L["KEY_BINDINGS_LOCATION"] =
 L["TRACKING_MENU"] = "추적 메뉴"
 L["PERSISTENT_TRACKING"] = "지속 추적"
 L["TARGET_TRACKING"] = "자동 대상 추적"
-L["FARM_MODE"] = "파밍 모드"
 
 --------------------------------------------------------------------------------
 -- Mini-map Menu
@@ -65,13 +65,15 @@ L["FARM_PAUSED_TOOLTIP"] = "툴팁을 읽는 중입니다."
 L["FARM_PAUSED_TARGET"] = "공격할 수 있는 대상을 선택하고 있습니다."
 L["FARM_PAUSED_STANDING_STILL"] = "멈춰 서 있습니다."
 
-L["PERSISTENT_ABILITY"] = "지속 추적 능력"
-L["NONE_SET"] = "설정되지 않음"
 L["CLEAR_TRACKING"] = "추적 해제"
 
 L["MENU_ON"] = "켜짐"
 L["MENU_OFF"] = "꺼짐"
 L["OPEN"] = "열기"
+L["MENU_PERSISTENT_DESCRIPTION"] = "지속 추적 능력을 선택하세요."
+L["MENU_FARM_DESCRIPTION"] = "이동하는 동안 추적 능력을 순환합니다."
+L["MENU_TARGET_DESCRIPTION"] = "대상으로 지정한 생물과 같은 종류를 추적합니다."
+L["MENU_TOGGLE"] = "전환"
 
 L["TOOLTIP_OPTIONS"] = "Tracking Eye 옵션"
 
@@ -90,8 +92,8 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 --[[
     Each section's description sells the feature. Each control's description is
     its mouseover tooltip: a pro tip the label and section don't already say. The
-    mini-map menu reuses the same strings, as a feature's summary and as a menu
-    row's tooltip, so it shows two lines at most there.
+    mini-map menu reuses a control's label and description as its row's tooltip;
+    the menu's feature summaries are the MENU_*_DESCRIPTION strings above.
 ]]
 
 -- General
@@ -135,7 +137,7 @@ L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"] =
 	"전투에서 벗어날 때까지 기다리므로 전투 중에 전역 재사용 대기시간을 쓰는 일이 없습니다."
 L["OPTIONS_FISHING_POLE_FISH_NAMED"] = "%s (%s 장착 시)"
 L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"] = "낚싯대를 해제하면 직접 고른 추적이 돌아옵니다."
-L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s: %s (%s 시)"
+L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"] = "%s: %s (%s 변신 시)"
 L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"] =
 	"은신이 끝날 때까지 기다리며, 변신을 풀면 직접 고른 추적이 돌아옵니다."
 L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"] = "%s: 전장에서 %s"
@@ -265,6 +267,8 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"길드는 레이어나 지역에 상관없이 접속 중인 모든 길드원에게 전달됩니다."
 L["OPTIONS_OUTPUT_NOTE"] = "참고: %s 채널은 같은 레이어에 있는 플레이어에게만 전달됩니다."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "지역 (/1)"
+L["SAMPLE_EXAMPLE"] = "예시: %s"
+L["SAMPLE_LOADING_ITEM"] = "ID 불러오는 중: %d"
 
 --------------------------------------------------------------------------------
 -- Feedback & Support

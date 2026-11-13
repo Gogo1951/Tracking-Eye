@@ -57,6 +57,7 @@ Data/Flavor.lua
 Data/Data.lua
 Data/Mists/Spells-Mists.lua
 Data/Mists/Zones-Mists.lua
+Data/Mists/Game-IDs-Mists.lua
 Data/Default-Settings.lua
 
 # Tracking Eye

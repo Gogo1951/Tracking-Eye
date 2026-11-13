@@ -55,14 +55,14 @@ end
 
 --[[
     Shared by the mini-map button and the free-placement frame (Free-Placement.lua).
-    Hovering opens the menu (Minimap-Menu.lua); a left-click opens it with the
-    Persistent Tracking flyout out, so picking an ability stays one click. No other
+    Hovering opens the menu (Minimap-Menu.lua), and so does a left-click; the
+    Persistent Tracking abilities are listed in it, so picking one is one click. No other
     button and no modifier does anything: every action lives in the menu, where a
     controller's cursor can reach it.
 ]]
 function ns.HandleLauncherClick(self, button)
 	if button == "LeftButton" then
-		ns.ShowMenu(self, "persistent", "click")
+		ns.ShowMenu(self, nil, "click")
 	end
 end
 
@@ -91,8 +91,11 @@ function ns.InitMinimap()
 	if ns.db and ns.db.global.minimap then
 		LibDBIcon:Register(ADDON_NAME, ns.ldb, ns.db.global.minimap)
 
-		-- Fitted by hand, not SetButtonIcon: its ResetButtonIcon calls icon:UpdateCoord(),
-		-- which errors when another add-on has replaced the button's icon.
+		--[[
+			Fitted by hand, not SetButtonIcon: its ResetButtonIcon calls
+			icon:UpdateCoord(), which errors when another add-on has replaced the
+			button's icon.
+		]]
 		local fitButton = LibDBIcon:GetMinimapButton(ADDON_NAME)
 		if (ns.FLAVOR == "Camelot" or ns.FLAVOR == "Mainline") and fitButton and fitButton.icon then
 			fitButton.icon:SetSize(20, 20)

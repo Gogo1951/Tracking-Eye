@@ -8,24 +8,32 @@ local Kit = ns.MenuKit
 
 --[[
     The mini-map button's menu, laid out as Pretty Wide Quest Log's Quest Arrow
-    menu is: the add-on's name, a gold label for each feature with where it stands
-    on the right and Blizzard's submenu arrow, then the Options row. A label opens
-    its flyout beside the menu, under the cursor or on a click, and the flyout
-    holds the feature's switch first, then its settings.
+    menu is, with the old tooltip's blocks inside it: the add-on's name, then for
+    each feature a gold title with where it stands on the right, a line saying what
+    it does, and a blue Toggle row, then the Options row. Persistent Tracking's
+    block also lists the abilities to pick from, between its description and its
+    Toggle row, so picking one is a single click in the menu itself, and Clear
+    Tracking under its Toggle row while something is picked. A title with
+    settings to show carries Blizzard's submenu arrow and opens its flyout beside
+    the menu, under the cursor or on a click.
 
     Hovering the launcher opens it, the way the old tooltip did, and moving into
     it keeps it open; it closes a moment after the cursor leaves the launcher, the
-    menu, and the flyout. A left-click opens it with the Persistent Tracking flyout
-    already out, so picking a tracking ability stays one click. Everything is a
+    menu, and the flyout. A left-click opens it too, and keeps it open a little
+    longer once the cursor leaves. Everything is a
     plain click, so a controller's cursor reaches all of it: no modifier keys, no
     right or middle button.
 
     The rules every add-on's menu follows (README-Technical → Mini-map Menu):
-      - Every feature on the options' main page gets a label here, and its flyout
-        starts with the feature's Enable switch. Its settings follow, hidden while
-        the feature is off, as the options hide them.
-      - A switch's tooltip is its option's tooltip, so the menu adds nothing new
-        to translate.
+      - Every feature on the options' main page gets a block here: its title,
+        its description, and a Toggle row for its Enable switch. Its flyout holds
+        its settings, hidden while the feature is off, as the options hide them.
+        Persistent Tracking's pick is the exception: it lives in the block.
+      - A row for one class's spell shows only to a character who knows that
+        spell; the options page lists every row, for profiles shared across
+        classes. Hiding a row never changes its setting.
+      - A switch's tooltip is its option's tooltip, and a Toggle row's is its
+        Enable option's.
       - A pick from a set (an ability) closes the menu; a switch leaves it open.
       - Free Placement Mode and Come & Get It stay on the options page only, to
         keep the menu to what's changed mid-session.
@@ -57,6 +65,11 @@ local state = {
 -- Helpers
 --------------------------------------------------------------------------------
 
+-- True when this client has the spell and this character knows it.
+local function IsKnown(spellId)
+	return spellId ~= nil and IsPlayerSpell(spellId)
+end
+
 local function SpellText(spellId, name)
 	return string.format("|T%s:0|t %s", C_Spell.GetSpellTexture(spellId) or ns.ICON_DEFAULT, name)
 end
@@ -87,13 +100,16 @@ local function AfterPick()
 	end
 end
 
--- Every tracking ability this character knows, by name. Cat Form tracking only in Cat Form unless asked.
+--[[
+    Every tracking ability this character knows, by name. Cat Form tracking is
+    left out of the Persistent Tracking pick in every form, since the menu never
+    changes with what the character is doing; the Cat Form override covers it.
+]]
 local function KnownAbilities(includeCatFormOnly)
-	local isCat = ns.GetPlayerStates()
 	local list = {}
 	for _, id in ipairs(ns.TRACKING_IDS) do
 		local name = C_Spell.GetSpellName(id)
-		if name and IsPlayerSpell(id) and (includeCatFormOnly or not ns.CAT_FORM_ONLY[id] or isCat) then
+		if name and IsPlayerSpell(id) and (includeCatFormOnly or not ns.CAT_FORM_ONLY[id]) then
 			list[#list + 1] = { id = id, name = name }
 		end
 	end
@@ -179,34 +195,34 @@ end
 local FLYOUTS = {}
 
 --[[
-    The switch, then the abilities to pick from, the pick white with a check and
-    the rest gray. The pick is chosen even with Persistent Tracking off, so the
-    list never hides; the three overrides only mean anything while it's on, as on
-    the options page.
+    The abilities to pick from, drawn inside Persistent Tracking's block in the
+    main menu: the pick white with a check and the rest gray. The pick is chosen
+    even with Persistent Tracking off, so the list never hides.
 ]]
-function FLYOUTS.persistent()
+local function PersistentPickRows()
 	local profile = ns.db.profile
-	local entries = {
-		Toggle(profile, "persistentTracking", L["PERSISTENT_TRACKING"], L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"]),
-	}
-
-	local abilities = KnownAbilities(false)
-	if #abilities > 0 then
-		entries[#entries + 1] = Section(L["PERSISTENT_ABILITY"])
-		for _, data in ipairs(abilities) do
-			entries[#entries + 1] = {
-				kind = "choice",
-				left = SpellText(data.id, data.name),
-				selected = profile.selectedSpellId == data.id,
-				tooltip = SpellTooltip(data.id),
-				onClick = function()
-					PickPersistent(data.id)
-				end,
-			}
-		end
+	local rows = {}
+	for _, data in ipairs(KnownAbilities(false)) do
+		rows[#rows + 1] = {
+			kind = "choice",
+			left = SpellText(data.id, data.name),
+			selected = profile.selectedSpellId == data.id,
+			tooltip = SpellTooltip(data.id),
+			onClick = function()
+				PickPersistent(data.id)
+			end,
+		}
 	end
-	if profile.selectedSpellId then
-		entries[#entries + 1] = {
+	return rows
+end
+
+-- Clear Tracking, under Persistent Tracking's Toggle row while something is picked.
+local function PersistentClearRows()
+	if not ns.db.profile.selectedSpellId then
+		return nil
+	end
+	return {
+		{
 			kind = "action",
 			left = L["CLEAR_TRACKING"],
 			leftColor = "INFO",
@@ -214,13 +230,24 @@ function FLYOUTS.persistent()
 				ns.ClearTracking()
 				AfterChange()
 			end,
-		}
-	end
+		},
+	}
+end
 
+--[[
+    Only the three overrides, which mean anything only while Persistent Tracking
+    is on, as on the options page. Each shows only to a character who knows its
+    spell, so on most characters the flyout is empty and the title has no arrow.
+]]
+function FLYOUTS.persistent()
+	local profile = ns.db.profile
+	local entries = {}
+
+	-- Each override shows only to a character who knows its spell; the options page lists all three.
 	if profile.persistentTracking then
-		entries[#entries + 1] = Separator()
-		if ns.SPELLS.FISH then
-			entries[#entries + 1] = Toggle(
+		local overrides = {}
+		if IsKnown(ns.SPELLS.FISH) then
+			overrides[#overrides + 1] = Toggle(
 				profile,
 				"fishingPoleFish",
 				L["OPTIONS_FISHING_POLE_FISH_NAMED"]:format(
@@ -231,33 +258,40 @@ function FLYOUTS.persistent()
 				OnPersistentOverride
 			)
 		end
-		entries[#entries + 1] = Toggle(
-			profile,
-			"catFormHumanoids",
-			L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"]:format(
-				ns.GetClassNameText("DRUID"),
-				ns.GetSpellNameText(ns.SPELLS.DRUID_HUMANOIDS),
-				ns.GetSpellNameText(ns.SPELLS.CAT)
-			),
-			L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"],
-			OnPersistentOverride
-		)
-		entries[#entries + 1] = Toggle(
-			profile,
-			"battlegroundHumanoids",
-			L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"]:format(
-				ns.GetClassNameText("HUNTER"),
-				ns.GetSpellNameText(ns.SPELLS.HUMANOIDS)
-			),
-			L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"],
-			OnPersistentOverride
-		)
+		if IsKnown(ns.SPELLS.DRUID_HUMANOIDS) then
+			overrides[#overrides + 1] = Toggle(
+				profile,
+				"catFormHumanoids",
+				L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"]:format(
+					ns.GetClassNameText("DRUID"),
+					ns.GetSpellNameText(ns.SPELLS.DRUID_HUMANOIDS),
+					ns.GetSpellNameText(ns.SPELLS.CAT)
+				),
+				L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"],
+				OnPersistentOverride
+			)
+		end
+		if IsKnown(ns.SPELLS.HUMANOIDS) then
+			overrides[#overrides + 1] = Toggle(
+				profile,
+				"battlegroundHumanoids",
+				L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"]:format(
+					ns.GetClassNameText("HUNTER"),
+					ns.GetSpellNameText(ns.SPELLS.HUMANOIDS)
+				),
+				L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"],
+				OnPersistentOverride
+			)
+		end
+		for _, entry in ipairs(overrides) do
+			entries[#entries + 1] = entry
+		end
 	end
 	return entries
 end
 
 --[[
-    The switch, then while Farm Mode is on: where it stands and why, the abilities
+    While Farm Mode is on: where it stands and, while paused, why; the abilities
     to cycle, the conditions, and the two extras. Farm Mode Abilities lists what
     this character knows, as the old Tracking Menu did; the options page lists
     every ability for shared profiles. Cycle Speed stays on the options page:
@@ -266,21 +300,20 @@ end
 function FLYOUTS.farm()
 	local profile = ns.db.profile
 	local global = ns.db.global
-	local entries = {
-		Toggle(profile, "farmMode", L["FARM_MODE"], L["OPTIONS_ENABLE_FARM_DESCRIPTION"]),
-	}
+	local entries = {}
 	if not profile.farmMode then
 		return entries
 	end
 
-	-- Gray for paused, the house three-way: Off gray, paused gray, Active green.
+	-- Drawn before it shows, so the live own-menu check can't see this flyout yet: pass it in.
 	local reason, reasonState = ns.GetFarmPauseReason(true)
-	entries[#entries + 1] = {
-		kind = "status",
-		left = L["FARM_STATUS"],
-		right = reason and L["FARM_STATUS_PAUSED"] or L["FARM_STATUS_ACTIVE"],
-		rightColor = reason and "MUTED" or "ON",
-	}
+	local status = Section(L["FARM_STATUS"])
+	if reason then
+		status.right, status.rightColor = L["FARM_STATUS_PAUSED"], "MUTED"
+	else
+		status.right, status.rightColor = L["FARM_STATUS_ACTIVE"], "ON"
+	end
+	entries[#entries + 1] = status
 	if reason then
 		entries[#entries + 1] = { kind = "note", left = ns.FormatFarmPauseReason(reason, reasonState) }
 	end
@@ -311,9 +344,10 @@ function FLYOUTS.farm()
 		}
 	end
 
+	-- A class's travel state shows only to a character who knows a spell for it; the options page lists them all.
 	entries[#entries + 1] = Section(L["OPTIONS_FARM_CONDITIONS"])
 	local function Condition(field, name, desc, movementState)
-		if movementState == nil or ns.IsMovementStateDetectable(movementState) then
+		if movementState == nil or ns.KnowsMovementState(movementState) then
 			entries[#entries + 1] = Toggle(profile, field, name, desc, ns.InvalidatePlayerStates)
 		end
 	end
@@ -352,34 +386,54 @@ function FLYOUTS.farm()
 	return entries
 end
 
--- Just the switch: switching it off ends any hunt.
-function FLYOUTS.targetTracking()
-	local profile = ns.db.profile
-	local entry =
-		Toggle(profile, "targetTracking", L["TARGET_TRACKING"], L["OPTIONS_ENABLE_TARGET_TRACKING_DESCRIPTION"])
-	entry.onClick = function()
-		ns.SetTargetTracking(not profile.targetTracking)
-		AfterChange()
-	end
-	return { entry }
-end
-
 --------------------------------------------------------------------------------
 -- Main Menu
 --------------------------------------------------------------------------------
 
--- A feature's label: where it stands on the right, its flyout under the cursor or a click.
-local function Feature(key, title, right, rightColor)
-	return {
-		kind = "submenu",
-		submenu = key,
+--[[
+    A feature's block, as the old tooltip had it: the gold title with where it
+    stands on the right, what the feature does, any note, any rows of its own
+    (Persistent Tracking's abilities), a blue Toggle row, and any rows after it
+    (Persistent Tracking's Clear Tracking). The title opens its
+    flyout, under the cursor or on a click, only while the flyout has something to
+    show; otherwise it's a plain heading.
+]]
+local function AddFeature(entries, key, title, right, rightColor, description, note, toggle, rows, after)
+	local hasFlyout = FLYOUTS[key] ~= nil and #FLYOUTS[key]() > 0
+	entries[#entries + 1] = {
+		kind = hasFlyout and "submenu" or "status",
+		submenu = hasFlyout and key or nil,
 		left = title,
 		right = right,
 		rightColor = rightColor,
-		onClick = function()
+		onClick = hasFlyout and function()
 			ns.OpenFlyout(key)
+		end or nil,
+	}
+	entries[#entries + 1] = { kind = "description", left = description }
+	if note then
+		entries[#entries + 1] = { kind = "note", left = note }
+	end
+	if rows then
+		for _, row in ipairs(rows) do
+			entries[#entries + 1] = row
+		end
+	end
+	entries[#entries + 1] = {
+		kind = "action",
+		left = L["MENU_TOGGLE"],
+		leftColor = "INFO",
+		tooltip = OptionTooltip(toggle.name, toggle.desc),
+		onClick = function()
+			toggle.flip()
+			AfterChange()
 		end,
 	}
+	if after then
+		for _, row in ipairs(after) do
+			entries[#entries + 1] = row
+		end
+	end
 end
 
 local function BuildMainEntries()
@@ -389,19 +443,28 @@ local function BuildMainEntries()
 		{ kind = "spacer" },
 	}
 
-	-- Persistent Tracking shows its pick while it's on, or None Set.
-	local right, rightColor = OnOff(false)
-	if profile.persistentTracking then
-		local spellId = profile.selectedSpellId
-		if spellId then
-			right, rightColor = SpellText(spellId, ns.GetSpellNameText(spellId)), "TEXT"
-		else
-			right, rightColor = L["NONE_SET"], "MUTED"
-		end
-	end
-	entries[#entries + 1] = Feature("persistent", L["PERSISTENT_TRACKING"], right, rightColor)
+	-- Persistent Tracking reads On or Off like the others; its pick carries the check in the list below.
+	local right, rightColor = OnOff(profile.persistentTracking)
+	AddFeature(
+		entries,
+		"persistent",
+		L["PERSISTENT_TRACKING"],
+		right,
+		rightColor,
+		L["MENU_PERSISTENT_DESCRIPTION"],
+		nil,
+		{
+			name = L["OPTIONS_ENABLE_PERSISTENT"],
+			desc = L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"],
+			flip = function()
+				profile.persistentTracking = not profile.persistentTracking
+			end,
+		},
+		PersistentPickRows(),
+		PersistentClearRows()
+	)
 
-	-- Farm Mode: Active in green, Paused or Off in gray.
+	-- Farm Mode: Active in green, Paused or Off in gray. Why it's paused is in its flyout's Farm Mode Status.
 	right, rightColor = OnOff(false)
 	if profile.farmMode then
 		if ns.GetFarmPauseReason(true) then
@@ -410,10 +473,40 @@ local function BuildMainEntries()
 			right, rightColor = L["FARM_STATUS_ACTIVE"], "ON"
 		end
 	end
-	entries[#entries + 1] = Feature("farm", L["FARM_MODE"], right, rightColor)
+	AddFeature(entries, "farm", L["TAB_FARM_MODE"], right, rightColor, L["MENU_FARM_DESCRIPTION"], nil, {
+		name = L["OPTIONS_ENABLE_FARM"],
+		desc = L["OPTIONS_ENABLE_FARM_DESCRIPTION"],
+		flip = function()
+			profile.farmMode = not profile.farmMode
+		end,
+	})
 
-	entries[#entries + 1] = Feature("targetTracking", L["TARGET_TRACKING"], OnOff(profile.targetTracking))
+	--[[
+		Only for a character with an ability a hunt can cast: a druid's Cat Form
+		Track Humanoids never counts. Switching it off ends any hunt, through
+		SetTargetTracking.
+	]]
+	if ns.KnowsHuntAbility() then
+		right, rightColor = OnOff(profile.targetTracking)
+		AddFeature(
+			entries,
+			"targetTracking",
+			L["TARGET_TRACKING"],
+			right,
+			rightColor,
+			L["MENU_TARGET_DESCRIPTION"],
+			nil,
+			{
+				name = L["OPTIONS_ENABLE_TARGET_TRACKING"],
+				desc = L["OPTIONS_ENABLE_TARGET_TRACKING_DESCRIPTION"],
+				flip = function()
+					ns.SetTargetTracking(not profile.targetTracking)
+				end,
+			}
+		)
+	end
 
+	entries[#entries + 1] = { kind = "spacer" }
 	entries[#entries + 1] = Separator()
 	entries[#entries + 1] = {
 		kind = "hint",
@@ -585,7 +678,7 @@ end
 --[[
     Optional take-over of Classic Era's mini-map tracking icon, which has no menu
     of its own: a right-click there cancels tracking, and the take-over replaces
-    that with this menu, its Persistent Tracking flyout out. On TBC Anniversary
+    that with this menu, where the Persistent Tracking abilities are one click. On TBC Anniversary
     and MoP Classic the icon is a Blizzard dropdown button that opens Blizzard's
     tracking menu on mouse-down, which no script swap can stop, so it is left
     alone and the option doesn't show. Off by default: it reaches into a frame
@@ -622,7 +715,7 @@ function ns.ApplyBlizzardTrackingHook()
 		blizzardHooked = true
 		blizzardSavedHandler = button:GetScript("OnMouseUp")
 		button:SetScript("OnMouseUp", function()
-			ns.ShowMenu(button, "persistent", "click")
+			ns.ShowMenu(button, nil, "click")
 		end)
 	elseif not enabled and blizzardHooked then
 		button:SetScript("OnMouseUp", blizzardSavedHandler)

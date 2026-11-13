@@ -3,7 +3,8 @@ if not L then
 	return
 end
 
-L["ADDON_TITLE"] = "Tracking Eye"
+L["ADDON_TITLE"] = "Tracking Eye" -- Full Name
+L["ADDON_SHORT_NAME"] = "Tracking Eye" -- Short Name
 
 --------------------------------------------------------------------------------
 -- Printed Messages
@@ -22,7 +23,6 @@ L["KEY_BINDINGS_LOCATION"] = "開啟遊戲選單，點選%s，再點選%s，然�
 L["TRACKING_MENU"] = "追蹤選單"
 L["PERSISTENT_TRACKING"] = "持久追蹤"
 L["TARGET_TRACKING"] = "自動目標追蹤"
-L["FARM_MODE"] = "採集模式"
 
 --------------------------------------------------------------------------------
 -- Mini-map Menu
@@ -62,13 +62,15 @@ L["FARM_PAUSED_TOOLTIP"] = "正在查看提示資訊。"
 L["FARM_PAUSED_TARGET"] = "正以可攻擊的單位為目標。"
 L["FARM_PAUSED_STANDING_STILL"] = "正站著不動。"
 
-L["PERSISTENT_ABILITY"] = "持久追蹤技能"
-L["NONE_SET"] = "未設定"
 L["CLEAR_TRACKING"] = "清除追蹤"
 
 L["MENU_ON"] = "開啟"
 L["MENU_OFF"] = "關閉"
 L["OPEN"] = "開啟"
+L["MENU_PERSISTENT_DESCRIPTION"] = "選擇您的持久追蹤技能。"
+L["MENU_FARM_DESCRIPTION"] = "在旅途中循環切換您的追蹤技能。"
+L["MENU_TARGET_DESCRIPTION"] = "追蹤您所選目標的同類生物。"
+L["MENU_TOGGLE"] = "切換"
 
 L["TOOLTIP_OPTIONS"] = "Tracking Eye 選項"
 
@@ -87,8 +89,8 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 --[[
     Each section's description sells the feature. Each control's description is
     its mouseover tooltip: a pro tip the label and section don't already say. The
-    mini-map menu reuses the same strings, as a feature's summary and as a menu
-    row's tooltip, so it shows two lines at most there.
+    mini-map menu reuses a control's label and description as its row's tooltip;
+    the menu's feature summaries are the MENU_*_DESCRIPTION strings above.
 ]]
 
 -- General
@@ -252,6 +254,8 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"公會頻道會送達所有線上的公會成員，無論其位於哪個位面或區域。"
 L["OPTIONS_OUTPUT_NOTE"] = "注意：%s 只能送達與您處於同一位面的玩家。"
 L["OPTIONS_OUTPUT_CHANNEL1"] = "本地 (/1)"
+L["SAMPLE_EXAMPLE"] = "範例：%s"
+L["SAMPLE_LOADING_ITEM"] = "正在載入 ID：%d"
 
 --------------------------------------------------------------------------------
 -- Feedback & Support

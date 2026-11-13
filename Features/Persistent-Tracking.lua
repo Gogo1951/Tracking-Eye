@@ -244,6 +244,10 @@ end
 ]]
 function ns.StartLoginGrace()
 	ns.state.enteredWorldAt = GetTime()
+	-- Logged out dead: the resurrection still to come needs its recast.
+	if UnitIsDeadOrGhost("player") then
+		ns.NoteDeath()
+	end
 	C_Timer.After(LOGIN_GRACE_SECONDS + 1, TryRecastPersistent)
 end
 
@@ -270,8 +274,20 @@ end
     like every recast here, so sitting down to eat right after a rez keeps the
     meal; resurrectRecastPending stays set while it waits, so another PLAYER_ALIVE
     can't start a second chain. Every other bail is lasting and ends the chain.
+
+    PLAYER_ALIVE also fires during login, with tracking still up, so the recast
+    is armed only by a death: PLAYER_DEAD, or entering the world dead or a ghost
+    (logged out dead). Without that, every login cast the ability again on the
+    first step, since this path never asks whether tracking is up. A real
+    resurrection disarms it; releasing spirit doesn't, since the player is
+    still a ghost then.
 ]]
 local resurrectRecastPending = false
+local awaitingResurrection = false
+
+function ns.NoteDeath()
+	awaitingResurrection = true
+end
 
 local function EndResurrectionRecast()
 	resurrectRecastPending = false
@@ -284,6 +300,8 @@ local function AttemptResurrectionRecast()
 		EndResurrectionRecast()
 		return
 	end
+	-- Alive again: this chain answers for the death, so a later PLAYER_ALIVE can't start another.
+	awaitingResurrection = false
 
 	local spellId = ns.GetPersistentSpell()
 	if not ns.db or not ns.db.profile.persistentTracking or not spellId then
@@ -310,7 +328,7 @@ local function AttemptResurrectionRecast()
 end
 
 function ns.RecastAfterResurrection()
-	if resurrectRecastPending then
+	if not awaitingResurrection or resurrectRecastPending then
 		return
 	end
 	resurrectRecastPending = true

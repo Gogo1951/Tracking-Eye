@@ -59,7 +59,7 @@ ns.FARM_CYCLE_DEFAULTS = {
 How We Got the Data
 
 Last Validated
-	2026-10-04, TBC Anniversary 2.5.6.69795
+	2026-11-13, TBC Anniversary 2.5.6.70577
 
 Notes
 	- TRACKING_SPELLS holds every tracking ability a player can learn on this client: the hunter's eight Track spells, the druid's Track Humanoids, the warlock's Sense Demons, the paladin's Sense Undead, Find Herbs and Find Minerals from the gathering professions, Find Fish from Fishing, and the Dwarf racial Find Treasure.
@@ -68,8 +68,9 @@ Notes
 	- key is the name code looks a spell up by (ns.SPELLS in Features/Utilities.lua); the form keys stay out of the list of tracking abilities.
 	- source decides where a spell sits in the Farm Mode Abilities list: a class name puts it in that class's block (ns.FARM_ABILITY_CLASSES in Data/Data.lua), and a profession or racial puts it under Professions & Racial Abilities.
 	- Left out: 8387 Find Herbs and 8388 Find Minerals, which track the same things as 2383 and 2580 but aren't granted by the profession or any item; 31886 Track Giants, which no skill line, spell or item grants; and 47524 Sense Demons, a passive on the helm Cursed Vision of Sargeras (32235) that can't be cast or cycled.
+	- The game's other tracking effects aren't abilities a player learns either: Gas Cloud Tracking is a passive on engineering goggles such as the Ultra-Spectropic Detection Goggles, the Elixir of Detect Undead and Elixir of Detect Demon wear off, the Goggles of Gem Hunting, the Gahz'ridian Detector and the Tallstalk Mushroom are quest items, and the rest come from quest buffs or from nothing a player can get.
 	- CREATURE_TYPE_DATA lists Target Tracking's candidates for each creature type, in preference order, and each character hunts with the first one it knows (ns.CREATURE_TYPE_SPELLS in Features/Utilities.lua). It's keyed by creature type ID, which is the same in every locale and on every client. The druid's Track Humanoids is left out on purpose: a hunt can't cast it outside Cat Form. Creature types with no tracking ability, such as Critter, Mechanical and Totem, have no row.
-	- MOVEMENT_BUFF_SPELLS holds the movement buffs, other than druid forms, that last until cancelled and count as travelling for Farm Mode: the hunter's Aspect of the Cheetah and Aspect of the Pack, and the shaman's Ghost Wolf, each detected by its buff. Timed speed boosts such as Sprint and Dash end on their own, so they're left out.
+	- MOVEMENT_BUFF_SPELLS holds the movement buffs, other than druid forms, that last until cancelled and count as travelling for Farm Mode: the hunter's Aspect of the Cheetah and Aspect of the Pack, and the shaman's Ghost Wolf, each detected by its buff. Timed speed boosts such as Sprint and Dash end on their own, so they're left out, and so are the druid's Feral Swiftness and the rogue's Fleet Footed, talents that are always on, so they can't mean the player is travelling.
 	- movementState is the Farm Mode condition the buff counts as (ns.MOVEMENT_STATE_TOGGLES in Data/Data.lua). The druid's travel forms come from the form rows in TRACKING_SPELLS instead.
 	- FARM_CYCLE_DEFAULTS is Farm Mode's starting rotation, read into the profile's farmCycleSpells in Data/Default-Settings.lua: Find Herbs, Find Minerals and Find Treasure are on, and every other ability is off. A key added here switches on for existing characters who never saved one.
 	- Find Fish stays off in the rotation: the fishing-pole option under Persistent Tracking brings it up whenever a pole is in hand.
@@ -108,13 +109,17 @@ Wowhead
 	None.
 
 wago.tools
-	https://wago.tools/db2/SpellName?build=2.5.6.69795
-	https://wago.tools/db2/SpellEffect?build=2.5.6.69795
-	https://wago.tools/db2/SkillLineAbility?build=2.5.6.69795
-	https://wago.tools/db2/SpellLevels?build=2.5.6.69795
-	https://wago.tools/db2/SpellMisc?build=2.5.6.69795
-	https://wago.tools/db2/SpellDuration?build=2.5.6.69795
-	https://wago.tools/db2/CreatureType?build=2.5.6.69795
-	https://wago.tools/db2/ItemEffect?build=2.5.6.69795
-	https://wago.tools/db2/ItemSparse?build=2.5.6.69795
+	https://wago.tools/db2/SpellName?build=2.5.6.70577
+	https://wago.tools/db2/SpellEffect?build=2.5.6.70577
+	https://wago.tools/db2/SkillLine?build=2.5.6.70577
+	https://wago.tools/db2/SkillLineAbility?build=2.5.6.70577
+	https://wago.tools/db2/SpellLevels?build=2.5.6.70577
+	https://wago.tools/db2/SpellMisc?build=2.5.6.70577
+	https://wago.tools/db2/SpellDuration?build=2.5.6.70577
+	https://wago.tools/db2/CreatureType?build=2.5.6.70577
+	https://wago.tools/db2/ItemEffect?build=2.5.6.70577
+	https://wago.tools/db2/ItemSparse?build=2.5.6.70577
+
+QuestieDB
+	None.
 ]]
