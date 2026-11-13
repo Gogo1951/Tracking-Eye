@@ -110,16 +110,3 @@ The menu shows every feature and whether it's on, with a Toggle under each, your
 * moonfann's [GatherMate2](https://www.curseforge.com/wow/addons/gathermate2)
 * nevcairiel's [GatherMate2 Classic](https://www.curseforge.com/wow/addons/gathermate2-classic)
 * Xinhuan's [Routes](https://www.curseforge.com/wow/addons/routes)
-
-### 🟡 Overlaps
-
-* kvakvs's [Buffomat Classic](https://www.curseforge.com/wow/addons/buffomat-classic)
-* Epicstrike's [ForeverPlus](https://www.curseforge.com/wow/addons/foreverplus)
-
-### 🔴 Alternatives
-
-* IceDNicco's [Auto Tracker](https://www.curseforge.com/wow/addons/autotracker)
-* shadowstride's [AutoTrackers](https://www.curseforge.com/wow/addons/auto-trackers)
-* Earthbane's [Forever Dual Gathering](https://www.curseforge.com/wow/addons/forever-dual-gathering)
-* cyanokaze's [GatherBot](https://www.curseforge.com/wow/addons/gatherbot)
-* executedpoorly's [Tracking Switcher X](https://www.curseforge.com/wow/addons/tracking-switcher-x)
