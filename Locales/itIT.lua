@@ -17,21 +17,16 @@ L["CHAT_KEY_BINDINGS_IN_COMBAT"] =
 L["KEY_BINDINGS_LOCATION"] = "Apri il menu di gioco, poi %s, poi %s, e cerca la sezione di Tracking Eye."
 
 --------------------------------------------------------------------------------
--- Feature Names & Descriptions
+-- Feature Names
 --------------------------------------------------------------------------------
-
--- The descriptions show in the mini-map tooltip: bare bones, two lines at most.
 
 L["TRACKING_MENU"] = "Menu Tracciamento"
-L["TRACKING_MENU_DESCRIPTION"] = "Scegli la tua Abilità di Tracciamento Persistente."
 L["PERSISTENT_TRACKING"] = "Tracciamento Persistente"
 L["TARGET_TRACKING"] = "Tracciamento Automatico del Bersaglio"
-L["TARGET_TRACKING_DESCRIPTION"] = "Traccia la specie di qualsiasi creatura che bersagli."
 L["FARM_MODE"] = "Modalità Raccolta"
-L["FARM_MODE_DESCRIPTION"] = "Alterna le tue abilità di tracciamento mentre viaggi."
 
 --------------------------------------------------------------------------------
--- Minimap Button Tooltip
+-- Mini-map Menu
 --------------------------------------------------------------------------------
 
 L["FARM_STATUS"] = "Stato della Modalità Raccolta"
@@ -72,16 +67,9 @@ L["PERSISTENT_ABILITY"] = "Abilità di Tracciamento Persistente"
 L["NONE_SET"] = "Nessuna impostata"
 L["CLEAR_TRACKING"] = "Cancella Tracciamento"
 
-L["ENABLED"] = "Abilitato"
-L["DISABLED"] = "Disabilitato"
-L["TOGGLE"] = "Attiva/Disattiva"
-
+L["MENU_ON"] = "Attivo"
+L["MENU_OFF"] = "Disattivo"
 L["OPEN"] = "Apri"
-L["LEFT_CLICK"] = "Clic Sinistro"
-L["RIGHT_CLICK"] = "Clic Destro"
-L["SHIFT_LEFT"] = "Maiusc + Clic Sinistro"
-L["SHIFT_RIGHT"] = "Maiusc + Clic Destro"
-L["SHIFT_MIDDLE"] = "Maiusc + Clic Centrale"
 
 L["TOOLTIP_OPTIONS"] = "Opzioni di Tracking Eye"
 
@@ -99,7 +87,9 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 
 --[[
     Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
+    its mouseover tooltip: a pro tip the label and section don't already say. The
+    mini-map menu reuses the same strings, as a feature's summary and as a menu
+    row's tooltip, so it shows two lines at most there.
 ]]
 
 -- General

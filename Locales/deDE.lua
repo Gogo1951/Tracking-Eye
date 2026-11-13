@@ -17,21 +17,16 @@ L["CHAT_KEY_BINDINGS_IN_COMBAT"] =
 L["KEY_BINDINGS_LOCATION"] = "Öffnet das Spielmenü, dann %s, dann %s, und sucht den Abschnitt Tracking Eye."
 
 --------------------------------------------------------------------------------
--- Feature Names & Descriptions
+-- Feature Names
 --------------------------------------------------------------------------------
-
--- The descriptions show in the mini-map tooltip: bare bones, two lines at most.
 
 L["TRACKING_MENU"] = "Aufspürungsmenü"
-L["TRACKING_MENU_DESCRIPTION"] = "Wählt Eure Dauerhafte Aufspürungsfähigkeit."
 L["PERSISTENT_TRACKING"] = "Dauerhafte Aufspürung"
 L["TARGET_TRACKING"] = "Automatische Zielaufspürung"
-L["TARGET_TRACKING_DESCRIPTION"] = "Spürt die Art jeder Kreatur auf, die Ihr anvisiert."
 L["FARM_MODE"] = "Farming-Modus"
-L["FARM_MODE_DESCRIPTION"] = "Wechselt unterwegs zwischen Euren Aufspürungsfähigkeiten."
 
 --------------------------------------------------------------------------------
--- Minimap Button Tooltip
+-- Mini-map Menu
 --------------------------------------------------------------------------------
 
 L["FARM_STATUS"] = "Farming-Modus-Status"
@@ -72,16 +67,9 @@ L["PERSISTENT_ABILITY"] = "Dauerhafte Aufspürungsfähigkeit"
 L["NONE_SET"] = "Keine gesetzt"
 L["CLEAR_TRACKING"] = "Aufspürung löschen"
 
-L["ENABLED"] = "Aktiviert"
-L["DISABLED"] = "Deaktiviert"
-L["TOGGLE"] = "Umschalten"
-
+L["MENU_ON"] = "An"
+L["MENU_OFF"] = "Aus"
 L["OPEN"] = "Öffnen"
-L["LEFT_CLICK"] = "Linksklick"
-L["RIGHT_CLICK"] = "Rechtsklick"
-L["SHIFT_LEFT"] = "Umschalt + Linksklick"
-L["SHIFT_RIGHT"] = "Umschalt + Rechtsklick"
-L["SHIFT_MIDDLE"] = "Umschalt + Mittelklick"
 
 L["TOOLTIP_OPTIONS"] = "Tracking Eye-Optionen"
 
@@ -99,7 +87,9 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 
 --[[
     Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
+    its mouseover tooltip: a pro tip the label and section don't already say. The
+    mini-map menu reuses the same strings, as a feature's summary and as a menu
+    row's tooltip, so it shows two lines at most there.
 ]]
 
 -- General

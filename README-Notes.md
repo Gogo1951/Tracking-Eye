@@ -45,3 +45,9 @@
 - **Departs from:** GAME NAMES → a value that is itself the name of a skill doesn't belong in `Locales/`.
 - **Instead:** Come & Get It tells an herb from an ore node by finding the skill word the game's "Requires" error shows, typed into every locale file.
 - **Why:** No client API returns the words that error shows, so they can't be looked up by ID.
+
+### Mini-map menu instead of a tooltip
+
+- **Departs from:** MINIMAP BUTTON → the hover tooltip and its click map (Right-Click, Shift + Left, Shift + Right, Shift + Middle-Click for options).
+- **Instead:** Hovering the button opens a menu laid out like Pretty Wide Quest Log's Quest Arrow menu: a label for each feature, showing where it stands, opens a flyout with its On/Off switch and its settings. A left-click opens the menu with the Persistent Tracking flyout out. No modifier or other mouse button does anything.
+- **Why:** Players on a controller couldn't reach any action behind Shift or the middle button. Meant to become the Style Guide's rule for every add-on (README-Technical → Mini-map Menu → The Rules).

@@ -17,21 +17,16 @@ L["CHAT_KEY_BINDINGS_IN_COMBAT"] =
 L["KEY_BINDINGS_LOCATION"] = "Ouvrez le menu du jeu, puis %s, puis %s, et trouvez la section Tracking Eye."
 
 --------------------------------------------------------------------------------
--- Feature Names & Descriptions
+-- Feature Names
 --------------------------------------------------------------------------------
-
--- The descriptions show in the mini-map tooltip: bare bones, two lines at most.
 
 L["TRACKING_MENU"] = "Menu de pistage"
-L["TRACKING_MENU_DESCRIPTION"] = "Choisissez votre Capacité de pistage persistant."
 L["PERSISTENT_TRACKING"] = "Pistage persistant"
 L["TARGET_TRACKING"] = "Pistage automatique de la cible"
-L["TARGET_TRACKING_DESCRIPTION"] = "Piste l'espèce de toute créature que vous ciblez."
 L["FARM_MODE"] = "Mode de collecte"
-L["FARM_MODE_DESCRIPTION"] = "Alterne vos capacités de pistage pendant vos déplacements."
 
 --------------------------------------------------------------------------------
--- Minimap Button Tooltip
+-- Mini-map Menu
 --------------------------------------------------------------------------------
 
 L["FARM_STATUS"] = "État du Mode de collecte"
@@ -72,16 +67,9 @@ L["PERSISTENT_ABILITY"] = "Capacité de pistage persistant"
 L["NONE_SET"] = "Aucune définie"
 L["CLEAR_TRACKING"] = "Effacer le pistage"
 
-L["ENABLED"] = "Activé"
-L["DISABLED"] = "Désactivé"
-L["TOGGLE"] = "Basculer"
-
+L["MENU_ON"] = "Activé"
+L["MENU_OFF"] = "Désactivé"
 L["OPEN"] = "Ouvrir"
-L["LEFT_CLICK"] = "Clic gauche"
-L["RIGHT_CLICK"] = "Clic droit"
-L["SHIFT_LEFT"] = "Maj + Clic gauche"
-L["SHIFT_RIGHT"] = "Maj + Clic droit"
-L["SHIFT_MIDDLE"] = "Maj + Clic milieu"
 
 L["TOOLTIP_OPTIONS"] = "Options de Tracking Eye"
 
@@ -99,7 +87,9 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 
 --[[
     Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
+    its mouseover tooltip: a pro tip the label and section don't already say. The
+    mini-map menu reuses the same strings, as a feature's summary and as a menu
+    row's tooltip, so it shows two lines at most there.
 ]]
 
 -- General

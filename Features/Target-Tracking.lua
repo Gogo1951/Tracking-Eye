@@ -57,7 +57,7 @@ function ns.EndHunt(restorePersistent)
 	end
 end
 
--- Shared by the options toggle and the launcher's Shift + Right-Click.
+-- Shared by the options toggle and the mini-map menu.
 function ns.SetTargetTracking(enabled)
 	ns.db.profile.targetTracking = enabled
 	if not enabled then

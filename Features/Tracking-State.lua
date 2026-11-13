@@ -110,14 +110,14 @@ function ns.UpdateIcon()
 
 	ns.state.currentIcon = iconSpell and C_Spell.GetSpellTexture(iconSpell) or ns.ICON_DEFAULT
 
-	-- Cached so RunFarmLogic can tell when the reason changes and redraw an open tooltip.
+	-- Cached so RunFarmLogic can tell when the reason changes and redraw an open menu.
 	if ns.GetFarmPauseReason then
 		ns.state.farmPauseReason, ns.state.farmPauseState = ns.GetFarmPauseReason()
 	end
 
 	--[[
 	    The icon never dims while Farm Mode is paused: on foot is a pause by
-	    default, so a dimmed icon read as the add-on switched off. The tooltip's
+	    default, so a dimmed icon read as the add-on switched off. The menu's
 	    Farm Mode Status is the only place a pause shows.
 	]]
 	if ns.ldb then
@@ -127,8 +127,8 @@ function ns.UpdateIcon()
 		ns.freeFrame.icon:SetTexture(ns.state.currentIcon)
 	end
 
-	if ns.RefreshTooltip then
-		ns.RefreshTooltip()
+	if ns.RefreshMenu then
+		ns.RefreshMenu()
 	end
 end
 
@@ -152,8 +152,8 @@ function ns.ClearTracking()
 	if ns.freeFrame and ns.freeFrame.icon then
 		ns.freeFrame.icon:SetTexture(ns.ICON_DEFAULT)
 	end
-	if ns.RefreshTooltip then
-		ns.RefreshTooltip()
+	if ns.RefreshMenu then
+		ns.RefreshMenu()
 	end
 end
 

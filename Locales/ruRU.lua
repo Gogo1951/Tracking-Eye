@@ -19,23 +19,16 @@ L["KEY_BINDINGS_LOCATION"] =
 	"Откройте игровое меню, затем пункт %s, затем пункт %s и найдите раздел Tracking Eye."
 
 --------------------------------------------------------------------------------
--- Feature Names & Descriptions
+-- Feature Names
 --------------------------------------------------------------------------------
-
--- The descriptions show in the mini-map tooltip: bare bones, two lines at most.
 
 L["TRACKING_MENU"] = "Меню отслеживания"
-L["TRACKING_MENU_DESCRIPTION"] =
-	"Выберите способность постоянного отслеживания."
 L["PERSISTENT_TRACKING"] = "Постоянное отслеживание"
 L["TARGET_TRACKING"] = "Автоматическое отслеживание цели"
-L["TARGET_TRACKING_DESCRIPTION"] =
-	"Отслеживает существ того же вида, что и ваша цель."
 L["FARM_MODE"] = "Режим фарма"
-L["FARM_MODE_DESCRIPTION"] = "Переключает способности отслеживания в пути."
 
 --------------------------------------------------------------------------------
--- Minimap Button Tooltip
+-- Mini-map Menu
 --------------------------------------------------------------------------------
 
 L["FARM_STATUS"] = "Состояние Режима фарма"
@@ -80,16 +73,9 @@ L["PERSISTENT_ABILITY"] = "Способность постоянного отс�
 L["NONE_SET"] = "Не выбрано"
 L["CLEAR_TRACKING"] = "Очистить отслеживание"
 
-L["ENABLED"] = "Включено"
-L["DISABLED"] = "Выключено"
-L["TOGGLE"] = "Переключить"
-
+L["MENU_ON"] = "Вкл."
+L["MENU_OFF"] = "Выкл."
 L["OPEN"] = "Открыть"
-L["LEFT_CLICK"] = "ЛКМ"
-L["RIGHT_CLICK"] = "ПКМ"
-L["SHIFT_LEFT"] = "Shift + ЛКМ"
-L["SHIFT_RIGHT"] = "Shift + ПКМ"
-L["SHIFT_MIDDLE"] = "Shift + СКМ"
 
 L["TOOLTIP_OPTIONS"] = "Настройки Tracking Eye"
 
@@ -107,7 +93,9 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 
 --[[
     Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
+    its mouseover tooltip: a pro tip the label and section don't already say. The
+    mini-map menu reuses the same strings, as a feature's summary and as a menu
+    row's tooltip, so it shows two lines at most there.
 ]]
 
 -- General

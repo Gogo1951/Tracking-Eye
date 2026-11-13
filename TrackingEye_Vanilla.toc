@@ -38,7 +38,6 @@ Includes/Libraries/AceConfig-3.0/AceConfig-3.0.lua
 Includes/Libraries/AceDBOptions-3.0/AceDBOptions-3.0.lua
 Includes/Libraries/LibDataBroker-1.1/LibDataBroker-1.1.lua
 Includes/Libraries/LibDBIcon-1.0/LibDBIcon-1.0.lua
-Includes/Libraries/LibUIDropDownMenu/LibUIDropDownMenu.xml
 
 # Localization
 Locales/enUS.lua
@@ -74,7 +73,8 @@ Features/Cycle-Sound-Mute.lua
 Features/Target-Tracking.lua
 Features/Come-and-Get-It.lua
 Features/Key-Bindings.lua
-Features/Tracking-Menu.lua
+Features/Menu-Kit.lua
+Features/Minimap-Menu.lua
 Features/Free-Placement.lua
 Features/Minimap-Button.lua
 

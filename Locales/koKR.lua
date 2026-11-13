@@ -17,21 +17,16 @@ L["KEY_BINDINGS_LOCATION"] =
 	"게임 메뉴를 연 다음 %s, %s 순서로 이동해 Tracking Eye 항목을 찾으세요."
 
 --------------------------------------------------------------------------------
--- Feature Names & Descriptions
+-- Feature Names
 --------------------------------------------------------------------------------
-
--- The descriptions show in the mini-map tooltip: bare bones, two lines at most.
 
 L["TRACKING_MENU"] = "추적 메뉴"
-L["TRACKING_MENU_DESCRIPTION"] = "지속 추적 능력을 선택하세요."
 L["PERSISTENT_TRACKING"] = "지속 추적"
 L["TARGET_TRACKING"] = "자동 대상 추적"
-L["TARGET_TRACKING_DESCRIPTION"] = "대상으로 지정한 생물과 같은 종류를 추적합니다."
 L["FARM_MODE"] = "파밍 모드"
-L["FARM_MODE_DESCRIPTION"] = "이동하는 동안 추적 능력을 순환합니다."
 
 --------------------------------------------------------------------------------
--- Minimap Button Tooltip
+-- Mini-map Menu
 --------------------------------------------------------------------------------
 
 L["FARM_STATUS"] = "파밍 모드 상태"
@@ -74,16 +69,9 @@ L["PERSISTENT_ABILITY"] = "지속 추적 능력"
 L["NONE_SET"] = "설정되지 않음"
 L["CLEAR_TRACKING"] = "추적 해제"
 
-L["ENABLED"] = "활성화됨"
-L["DISABLED"] = "비활성화됨"
-L["TOGGLE"] = "전환"
-
+L["MENU_ON"] = "켜짐"
+L["MENU_OFF"] = "꺼짐"
 L["OPEN"] = "열기"
-L["LEFT_CLICK"] = "왼쪽 클릭"
-L["RIGHT_CLICK"] = "오른쪽 클릭"
-L["SHIFT_LEFT"] = "Shift + 왼쪽 클릭"
-L["SHIFT_RIGHT"] = "Shift + 오른쪽 클릭"
-L["SHIFT_MIDDLE"] = "Shift + 휠 클릭"
 
 L["TOOLTIP_OPTIONS"] = "Tracking Eye 옵션"
 
@@ -101,7 +89,9 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 
 --[[
     Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
+    its mouseover tooltip: a pro tip the label and section don't already say. The
+    mini-map menu reuses the same strings, as a feature's summary and as a menu
+    row's tooltip, so it shows two lines at most there.
 ]]
 
 -- General

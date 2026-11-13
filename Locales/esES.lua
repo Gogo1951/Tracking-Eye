@@ -18,21 +18,16 @@ L["KEY_BINDINGS_LOCATION"] =
 	"Abre el menú del juego, ve a %s y luego a %s. Allí encontrarás la sección de Tracking Eye."
 
 --------------------------------------------------------------------------------
--- Feature Names & Descriptions
+-- Feature Names
 --------------------------------------------------------------------------------
-
--- The descriptions show in the mini-map tooltip: bare bones, two lines at most.
 
 L["TRACKING_MENU"] = "Menú de rastreo"
-L["TRACKING_MENU_DESCRIPTION"] = "Elige tu Habilidad de rastreo persistente."
 L["PERSISTENT_TRACKING"] = "Rastreo persistente"
 L["TARGET_TRACKING"] = "Rastreo automático de objetivo"
-L["TARGET_TRACKING_DESCRIPTION"] = "Rastrea la especie de cualquier criatura que tengas como objetivo."
 L["FARM_MODE"] = "Modo de recolección"
-L["FARM_MODE_DESCRIPTION"] = "Alterna tus habilidades de rastreo mientras viajas."
 
 --------------------------------------------------------------------------------
--- Minimap Button Tooltip
+-- Mini-map Menu
 --------------------------------------------------------------------------------
 
 L["FARM_STATUS"] = "Estado del Modo de recolección"
@@ -73,16 +68,9 @@ L["PERSISTENT_ABILITY"] = "Habilidad de rastreo persistente"
 L["NONE_SET"] = "Sin establecer"
 L["CLEAR_TRACKING"] = "Borrar rastreo"
 
-L["ENABLED"] = "Habilitado"
-L["DISABLED"] = "Deshabilitado"
-L["TOGGLE"] = "Alternar"
-
+L["MENU_ON"] = "Activado"
+L["MENU_OFF"] = "Desactivado"
 L["OPEN"] = "Abrir"
-L["LEFT_CLICK"] = "Clic izquierdo"
-L["RIGHT_CLICK"] = "Clic derecho"
-L["SHIFT_LEFT"] = "Mayús + Clic izquierdo"
-L["SHIFT_RIGHT"] = "Mayús + Clic derecho"
-L["SHIFT_MIDDLE"] = "Mayús + Clic central"
 
 L["TOOLTIP_OPTIONS"] = "Opciones de Tracking Eye"
 
@@ -100,7 +88,9 @@ L["BINDING_NOTHING_TO_CYCLE"] =
 
 --[[
     Each section's description sells the feature. Each control's description is
-    its mouseover tooltip: a pro tip the label and section don't already say.
+    its mouseover tooltip: a pro tip the label and section don't already say. The
+    mini-map menu reuses the same strings, as a feature's summary and as a menu
+    row's tooltip, so it shows two lines at most there.
 ]]
 
 -- General
