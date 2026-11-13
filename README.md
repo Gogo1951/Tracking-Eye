@@ -4,7 +4,11 @@ Mini-map tracking menu and auto switcher for herb and ore gathering. Cycles Find
 
 **TL;DR:** Gather herbs and ore on the same ride without ever touching your tracking, and never lose it to a corpse run again.
 
+<img width="260" src="https://github.com/user-attachments/assets/bdd655a7-8e48-41f3-9e11-4a1c1d19419d" />
+
 ### Farm Mode
+
+<img width="800" alt="README-Infographic-Farm-Mode" src="https://github.com/user-attachments/assets/8a010911-9310-4d44-988e-09e0ea4746c5" />
 
 * **Herbs and Ore, One Mini-map** // Swaps your tracking for you as you ride, so no node slips past.
 * **Never Gets in Your Way** // Holds off in combat and in town, so it never costs you a global cooldown when it counts.
@@ -13,6 +17,8 @@ Mini-map tracking menu and auto switcher for herb and ore gathering. Cycles Find
 
 ### Persistent Tracking
 
+<img width="800" alt="README-Infographic-Persistent-Tracking" src="https://github.com/user-attachments/assets/f9c65113-7bfa-4495-b1b6-2ae0016b3947" />
+
 * **Every Tracking Ability, One Menu** // Herbs, ore, fish, treasure, beasts, and the rest, one click from your mini-map.
 * **It Comes Back** // Die, shapeshift, or zone, and your tracking turns right back on.
 * **Right Tracking, Right Moment** // Grab a fishing pole and Find Fish takes over. Druids in Cat Form and Hunters in battlegrounds can have Track Humanoids step in too.
@@ -20,10 +26,14 @@ Mini-map tracking menu and auto switcher for herb and ore gathering. Cycles Find
 
 ### Automatic Target Tracking
 
+<img width="800" alt="README-Infographic-Automatic-Target-Tracking" src="https://github.com/user-attachments/assets/f0a3b97a-64ae-4206-b2fe-04149bdae2ee" />
+
 * **Kill Quests, Done Faster** // Target a creature and the rest of its kind lights up on your mini-map.
 * **Off Until You Want It** // Starts off. Turn it on in the options whenever you're ready.
 
 ### Come & Get It
+
+<img width="800" alt="README-Infographic-Come-and-Get-It" src="https://github.com/user-attachments/assets/5405d5d6-f7cb-486b-9bcc-7a2531aa0695" />
 
 * **Be the Hero** // Right-click an herb you can't pick, a vein you can't mine, or a locked chest, and a callout with its coordinates lands in your chat box.
 * **Nothing Goes Out by Accident** // It only writes the line. You press Enter to send it.
