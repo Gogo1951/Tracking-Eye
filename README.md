@@ -70,7 +70,7 @@ The menu shows every feature and whether it's on, with a Toggle under each, your
 
 ## Testing & Localization Status
 
-🟢 World of Warcraft // 12.1.0
+🟡 World of Warcraft // 12.1.0
 
 🟢 Mists of Pandaria Classic // 5.5.4
 
