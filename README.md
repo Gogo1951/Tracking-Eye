@@ -4,7 +4,7 @@ Mini-map tracking menu and auto switcher for herb and ore gathering. Cycles Find
 
 **TL;DR:** Gather herbs and ore on the same ride without ever touching your tracking, and never lose it to a corpse run again.
 
-<img width="260" src="https://github.com/user-attachments/assets/bdd655a7-8e48-41f3-9e11-4a1c1d19419d" />
+<img width="300" src="https://github.com/user-attachments/assets/ba8c9433-974c-4044-9bb0-63c867e2793d" />
 
 ### Farm Mode
 
