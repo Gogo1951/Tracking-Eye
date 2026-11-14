@@ -4,50 +4,9 @@ local L = ns.L
 local GetColor = ns.GetColor
 local Header, Desc, Spacer = ns.OptionsHeader, ns.OptionsDesc, ns.OptionsSpacer
 local RowLabel = ns.OptionsRowLabel
-local SubRow, SubLabel = ns.OptionsSubRow, ns.OptionsSubLabel
-
--- Sized to its caption with slack; never the full row width. See ns.OptionsSubRow.
-local SUB_TOGGLE_WIDTH = 3.2
 
 local function NoBlizzardTrackingButton()
 	return not (ns.HasBlizzardTrackingButton and ns.HasBlizzardTrackingButton())
-end
-
-local function PersistentOff()
-	return not (ns.db and ns.db.profile.persistentTracking)
-end
-
--- Find Fish is missing from some flavors' data (Classic Era), so its row never shows there.
-local function FishingPoleRowHidden()
-	return PersistentOff() or not ns.SPELLS.FISH
-end
-
---[[
-    A Persistent Tracking sub-option: an override for the ability Persistent
-    Tracking keeps up, bound to one profile field and hidden with Persistent
-    Tracking unless the row passes its own condition. A change applies at once,
-    even mid-battleground, since the recast and the farm cycle's persistent entry
-    both read the resolver.
-]]
-local function PersistentOverrideRow(order, field, name, desc, hidden)
-	return SubRow(order, hidden or PersistentOff, {
-		{
-			type = "toggle",
-			name = SubLabel(name),
-			desc = desc,
-			width = SUB_TOGGLE_WIDTH,
-			get = function()
-				return ns.db and ns.db.profile[field]
-			end,
-			set = function(_, value)
-				if ns.db then
-					ns.db.profile[field] = value
-					ns.InvalidateFarmCache()
-					ns.TryRecastPersistent()
-				end
-			end,
-		},
-	})
 end
 
 --[[
@@ -127,16 +86,30 @@ end
 -- General Options Panel
 --------------------------------------------------------------------------------
 
+--[[
+    The root page, in the Style Guide's Main Page Layout order: intro, Welcome
+    Message, Mini-map Button, Features (every feature's on/off switch, two to a
+    line), Key Bindings and /Commands. Each Features switch is the same toggle
+    that heads its feature's own panel (ns.OptionsFeatureSwitch).
+
+    Use the Default Tracking Button sits with Mini-map Button: it decides which
+    mini-map button opens the menu, and shows only where the client has a
+    Blizzard tracking button to take over.
+
+    Order values are grouped in spaced blocks so sections can be reordered or
+    extended without renumbering their neighbors.
+]]
 function ns.BuildGeneralOptions()
 	local args = {
 		descIntro = Desc(L["OPTIONS_DESCRIPTION"], 1),
 
-		spaceWelcome0 = Spacer(2),
+		-- Welcome Message
+		spaceWelcome0 = Spacer(10),
 		enableWelcome = {
 			type = "toggle",
 			name = L["OPTIONS_ENABLE_WELCOME"],
 			desc = L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"],
-			order = 3,
+			order = 11,
 			width = "full",
 			get = function()
 				return ns.db and ns.db.global.showWelcome
@@ -145,14 +118,16 @@ function ns.BuildGeneralOptions()
 				if ns.db then
 					ns.db.global.showWelcome = value
 				end
+				ns.RefreshSettings()
 			end,
 		},
 
+		-- Mini-map Button
 		enableMinimap = {
 			type = "toggle",
 			name = L["OPTIONS_ENABLE_MINIMAP"],
 			desc = L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"],
-			order = 3.5,
+			order = 13,
 			width = "full",
 			disabled = function()
 				return ns.db and ns.db.global.freePlacement
@@ -163,28 +138,16 @@ function ns.BuildGeneralOptions()
 			set = function(_, value)
 				if ns.db then
 					ns.db.global.minimap.hide = not value
-					ns.UpdatePlacement()
+					ns:ApplyMinimapButton()
 				end
+				ns.RefreshSettings()
 			end,
 		},
-
-		-- Present only where the client has a Blizzard tracking button to take over.
-		spaceTrackingMenu0 = Spacer(8.1, NoBlizzardTrackingButton),
-		headerTrackingMenu = Header(L["TRACKING_MENU"], 8.2, NoBlizzardTrackingButton),
-		spaceTrackingMenuHeader = Spacer(8.3, NoBlizzardTrackingButton),
-		descTrackingMenu = {
-			type = "description",
-			name = L["OPTIONS_TRACKING_MENU_DESCRIPTION"],
-			fontSize = "medium",
-			order = 8.4,
-			hidden = NoBlizzardTrackingButton,
-		},
-		spaceTrackingMenu1 = Spacer(8.5, NoBlizzardTrackingButton),
 		hookBlizzardTracking = {
 			type = "toggle",
 			name = L["OPTIONS_HOOK_BLIZZARD"],
 			desc = L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"],
-			order = 8.6,
+			order = 14,
 			width = "full",
 			hidden = NoBlizzardTrackingButton,
 			get = function()
@@ -195,84 +158,32 @@ function ns.BuildGeneralOptions()
 					ns.db.global.hookBlizzardTracking = value
 					ns.ApplyBlizzardTrackingHook()
 				end
+				ns.RefreshSettings()
 			end,
 		},
 
-		spacePersistent0 = Spacer(9),
-		headerPersistent = Header(L["PERSISTENT_TRACKING"], 10),
-		spacePersistentHeader = Spacer(10.5),
-		descPersistent = Desc(L["OPTIONS_PERSISTENT_DESCRIPTION"], 11),
-		spacePersistent1 = Spacer(12),
-		enablePersistent = {
-			type = "toggle",
-			name = L["OPTIONS_ENABLE_PERSISTENT"],
-			desc = L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"],
-			order = 13,
-			width = "full",
-			get = function()
-				return ns.db and ns.db.profile.persistentTracking
-			end,
-			set = function(_, value)
-				if ns.db then
-					ns.db.profile.persistentTracking = value
-				end
-			end,
-		},
-		fishingPoleFishRow = PersistentOverrideRow(
-			13.1,
-			"fishingPoleFish",
-			L["OPTIONS_FISHING_POLE_FISH_NAMED"]:format(ns.GetSpellNameText(ns.SPELLS.FISH), ns.GetFishingPoleName()),
-			L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"],
-			FishingPoleRowHidden
-		),
-		catFormHumanoidsRow = PersistentOverrideRow(
-			13.2,
-			"catFormHumanoids",
-			L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"]:format(
-				ns.GetClassNameText("DRUID"),
-				ns.GetSpellNameText(ns.SPELLS.DRUID_HUMANOIDS),
-				ns.GetSpellNameText(ns.SPELLS.CAT)
-			),
-			L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"]
-		),
-		battlegroundHumanoidsRow = PersistentOverrideRow(
-			13.3,
-			"battlegroundHumanoids",
-			L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"]:format(
-				ns.GetClassNameText("HUNTER"),
-				ns.GetSpellNameText(ns.SPELLS.HUMANOIDS)
-			),
-			L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"]
-		),
+		-- Features: the rows fill 23 onward.
+		spaceFeatures0 = Spacer(20),
+		headerFeatures = Header(L["OPTIONS_FEATURES_HEADER"], 21),
+		spaceFeatures1 = Spacer(22),
 
-		spaceKeyBinds0 = Spacer(50),
-		headerKeyBinds = Header(L["OPTIONS_KEYBINDS"], 51),
-		spaceKeyBinds1 = Spacer(52),
+		-- Key Bindings: the rows fill 63 onward.
+		spaceKeyBinds0 = Spacer(60),
+		headerKeyBinds = Header(L["OPTIONS_KEYBINDS"], 61),
+		spaceKeyBinds1 = Spacer(62),
 
-		spaceCommands0 = Spacer(60),
-		headerCommands = Header(L["OPTIONS_COMMANDS_HEADER"], 61),
-		spaceCommands1 = Spacer(62),
+		-- /Commands
+		spaceCommands0 = Spacer(90),
+		headerCommands = Header(L["OPTIONS_COMMANDS_HEADER"], 91),
+		spaceCommands1 = Spacer(92),
 		descCommands = Desc(
 			GetColor("INFO") .. L["OPTIONS_COMMAND"] .. "|r" .. "  " .. L["OPTIONS_COMMAND_DESCRIPTION"],
-			63
+			93
 		),
 	}
 
-	--[[
-		Target Tracking and Free Placement are small enough to live on this page:
-		each owns its widgets in its own file and returns an args fragment, merged
-		in here. Order values are unique across fragments, so the page renders the
-		same regardless of merge sequence. Farm Mode is not among them — it carries
-		enough controls to have earned its own child panel.
-	]]
-	AddKeyBindingRows(args, 53)
-
-	for key, entry in pairs(ns.BuildTargetTrackingOptions()) do
-		args[key] = entry
-	end
-	for key, entry in pairs(ns.BuildFreePlacementOptions()) do
-		args[key] = entry
-	end
+	ns.OptionsFeatureSwitchRows(args, "rowFeatures", 23)
+	AddKeyBindingRows(args, 63)
 
 	return {
 		name = L["ADDON_TITLE"],

@@ -1,12 +1,12 @@
 local _, ns = ...
 
 local L = ns.L
-local Header, Desc, Spacer = ns.OptionsHeader, ns.OptionsDesc, ns.OptionsSpacer
+local Desc, Spacer = ns.OptionsDesc, ns.OptionsSpacer
 local RowLabel = ns.OptionsRowLabel
 local SubRow, SubLabel = ns.OptionsSubRow, ns.OptionsSubLabel
 
 --[[
-    Icon Shape and Icon Size only ever affect ns.freeFrame, which UpdatePlacement
+    Icon Shape and Icon Size only ever affect ns.freeFrame, which ApplyMinimapButton
     hides whenever freePlacement is off, so both are sub-options of Enable Free
     Placement Mode and collapse with it.
 ]]
@@ -20,34 +20,17 @@ local SHAPE_DROPDOWN_WIDTH = 1.0
 local SCALE_SLIDER_WIDTH = 1.9
 
 --------------------------------------------------------------------------------
--- Free Placement Mode Options (composed into the General panel)
+-- Free Placement Mode Panel
 --------------------------------------------------------------------------------
 
+-- Page order: the description, the switch, then Icon Shape and Icon Size, which hide while it is off.
 function ns.BuildFreePlacementOptions()
-	return {
-		spaceFreePlacement0 = Spacer(39),
-		headerFree = Header(L["PLACEMENT_MODE"], 40),
-		spaceFreePlacementHeader = Spacer(40.5),
-		descFree = Desc(L["OPTIONS_PLACEMENT_DESCRIPTION"], 41),
-		spaceFreePlacement1 = Spacer(42),
-		enableFree = {
-			type = "toggle",
-			name = L["OPTIONS_ENABLE_FREE"],
-			desc = L["OPTIONS_ENABLE_FREE_DESCRIPTION"],
-			order = 43,
-			width = "full",
-			get = function()
-				return ns.db and ns.db.global.freePlacement
-			end,
-			set = function(_, value)
-				if ns.db then
-					ns.db.global.freePlacement = value
-					ns.UpdatePlacement()
-				end
-			end,
-		},
+	local args = {
+		descFree = Desc(L["OPTIONS_PLACEMENT_DESCRIPTION"], 1),
+		spaceFree = Spacer(2),
+		enableFree = ns.OptionsFeatureSwitch("freePlacement", 3),
 
-		iconShapeRow = SubRow(45, Hidden, {
+		iconShapeRow = SubRow(3.1, Hidden, {
 			RowLabel(SubLabel(L["OPTIONS_ICON_SHAPE"]), 1, SUB_LABEL_WIDTH),
 			{
 				type = "select",
@@ -67,11 +50,12 @@ function ns.BuildFreePlacementOptions()
 						ns.db.global.freeIconShape = value
 					end
 					ns.UpdateFreeFrameShape()
+					ns.RefreshSettings()
 				end,
 			},
 		}),
 
-		iconScaleRow = SubRow(47, Hidden, {
+		iconScaleRow = SubRow(3.2, Hidden, {
 			RowLabel(SubLabel(L["OPTIONS_ICON_SCALE"]), 1, SUB_LABEL_WIDTH),
 			{
 				type = "range",
@@ -90,8 +74,14 @@ function ns.BuildFreePlacementOptions()
 						ns.db.global.freeIconScale = value
 					end
 					ns.UpdateFreeFrameScale()
+					ns.RefreshSettings()
 				end,
 			},
 		}),
+	}
+	return {
+		type = "group",
+		name = L["PLACEMENT_MODE"],
+		args = args,
 	}
 end

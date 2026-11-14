@@ -20,7 +20,6 @@ L["KEY_BINDINGS_LOCATION"] = "開啟遊戲選單，點選%s，再點選%s，然�
 -- Feature Names
 --------------------------------------------------------------------------------
 
-L["TRACKING_MENU"] = "追蹤選單"
 L["PERSISTENT_TRACKING"] = "持久追蹤"
 L["TARGET_TRACKING"] = "自動目標追蹤"
 
@@ -66,13 +65,17 @@ L["CLEAR_TRACKING"] = "清除追蹤"
 
 L["MENU_ON"] = "開啟"
 L["MENU_OFF"] = "關閉"
-L["OPEN"] = "開啟"
-L["MENU_PERSISTENT_DESCRIPTION"] = "選擇您的持久追蹤技能。"
+L["MENU_PERSISTENT_DESCRIPTION"] = "死亡、變形或切換區域後，自動恢復您的追蹤。"
 L["MENU_FARM_DESCRIPTION"] = "在旅途中循環切換您的追蹤技能。"
 L["MENU_TARGET_DESCRIPTION"] = "追蹤您所選目標的同類生物。"
 L["MENU_TOGGLE"] = "切換"
+L["MENU_CLICK_RIGHT"] = "右鍵"
+L["MENU_CLICK_SHIFT_LEFT"] = "Shift + 左鍵"
+L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + 右鍵"
+L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + 中鍵"
+L["MENU_MORE_FEATURES"] = "更多功能"
 
-L["TOOLTIP_OPTIONS"] = "Tracking Eye 選項"
+L["MENU_OPTIONS"] = "Tracking Eye 選項"
 
 --------------------------------------------------------------------------------
 -- Key Bindings
@@ -80,7 +83,7 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye 選項"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "切換採集模式技能"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"未勾選任何採集模式技能。請在 選項 > 插件 > Tracking Eye > 採集模式 中勾選。"
+	"未勾選任何採集模式技能。請在 選項 > 插件 > Tracking Eye > 採集模式 > 技能 中勾選。"
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -101,12 +104,10 @@ L["OPTIONS_ENABLE_WELCOME"] = "啟用歡迎訊息"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Tracking Eye 載入時在聊天中顯示一行歡迎語。"
 L["OPTIONS_ENABLE_MINIMAP"] = "啟用小地圖按鈕"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "隱藏按鈕後，所有功能照常運作。"
-
--- Slash Commands
-
-L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
-L["OPTIONS_COMMAND"] = "/te"
-L["OPTIONS_COMMAND_DESCRIPTION"] = "開啟此插件的選項介面。"
+L["OPTIONS_HOOK_BLIZZARD"] = "使用預設追蹤按鈕"
+L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
+	"預設追蹤按鈕也會開啟 Tracking Eye 選單。如果其他插件已在使用該按鈕，請保持關閉。"
+L["OPTIONS_FEATURES_HEADER"] = "功能"
 
 -- Key Bindings
 
@@ -115,13 +116,11 @@ L["OPTIONS_KEY_SET"] = "設定按鍵"
 L["OPTIONS_KEY_SET_DESCRIPTION"] = "開啟遊戲的按鍵綁定清單，Tracking Eye 在其中有專屬分類。"
 L["OPTIONS_KEYBINDS_DESCRIPTION"] = "一鍵跳到下一個追蹤技能，即使採集模式已關閉也能使用。"
 
--- Tracking Menu
+-- Slash Commands
 
-L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
-	"您掌握的所有追蹤技能，匯集在一個依名稱排序的選單中。選取的技能將成為您的持久追蹤技能。"
-L["OPTIONS_HOOK_BLIZZARD"] = "使用預設追蹤按鈕"
-L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"預設追蹤按鈕也會開啟此選單。如果其他插件已在使用該按鈕，請保持關閉。"
+L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
+L["OPTIONS_COMMAND"] = "/te"
+L["OPTIONS_COMMAND_DESCRIPTION"] = "開啟此插件的選項介面。"
 
 -- Persistent Tracking
 
@@ -168,7 +167,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 	"草藥和礦石盡在同一張小地圖上。採集模式會在您旅行時輪換追蹤技能，不放過任何一個採集點。"
 L["OPTIONS_ENABLE_FARM"] = "啟用採集模式"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
-	"在戰鬥中、城鎮裡、副本內和飛行途中會自動暫停。將滑鼠游標停在 Tracking Eye 按鈕上即可查看原因。"
+	"在戰鬥中、城鎮裡、副本內和飛行途中會自動暫停。小地圖選單中的採集模式狀態會顯示原因。"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "靜音追蹤技能的施法音效"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"只有採集模式自己的切換會靜音。您親自選擇的追蹤仍會發出聲音。"
@@ -193,6 +192,7 @@ L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
 	"每次切換都會佔用一次共用冷卻時間，因此循環越慢，越少干擾您自己的施法。"
 L["OPTIONS_CYCLE_EVERY"] = "每 %s 秒切換"
 L["OPTIONS_FARM_ABILITIES"] = "採集模式技能"
+L["TAB_FARM_ABILITIES"] = "技能"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"勾選您想找的東西。採集模式會循環此角色已學會的所有勾選技能，並略過其餘技能。"
 L["OPTIONS_FARM_GROUP_GENERAL"] = "專業技能與種族特長"

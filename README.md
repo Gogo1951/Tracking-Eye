@@ -55,11 +55,11 @@ Mini-map tracking menu and auto switcher for herb and ore gathering. Cycles Find
 
 ## Tips & Tricks
 
-### Mini-Map Button
+### Mini-map Button
 
 | Action | Result |
 |---|---|
-| Hover or Left-Click | Opens the Mini-map Menu |
+| Hover or Left-Click | Opens the mini-map menu |
 
 The menu shows every feature and whether it's on, with a Toggle under each, your tracking abilities one click away, and why Farm Mode is paused. It's all plain clicks, so it works with a controller too.
 

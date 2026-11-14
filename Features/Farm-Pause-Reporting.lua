@@ -11,10 +11,10 @@ local L = ns.L
     then, so a cycle cast never fires under the player mid-inspection.
 
     Our own mini-map menu holds it too, but is checked apart, by
-    ns.IsOwnMenuShowing. Opening the menu is how the player reads the Farm Mode
-    Status, so its pause reason ranks last and the status names any other cause.
-    A tooltip drawn by one of the menu's own rows counts as the menu, not as
-    another tooltip.
+    ns.IsOwnMenuShowing, and is never reported as a pause: opening the menu is how
+    the player reads the Farm Mode Status, so the status says what Farm Mode is
+    doing apart from the menu. A tooltip drawn by one of the menu's own rows
+    counts as the menu, not as another tooltip.
 ]]
 local function IsOwnTooltipOwner(owner)
 	return owner ~= nil and ns.IsMenuFrame ~= nil and ns.IsMenuFrame(owner)
@@ -172,9 +172,9 @@ end
     Why Farm Mode is sitting idle right now, as a locale key, or nil when the
     cycle is free to run. A movement reason also returns the movement state
     whose buff its sentence names. Farm Mode switched off is not a pause — the
-    menu reports Disabled for that.
+    menu reports Off for that.
 ]]
-function ns.GetFarmPauseReason(ownMenuShowing)
+function ns.GetFarmPauseReason()
 	if not ns.db or not ns.db.profile.farmMode then
 		return nil
 	end
@@ -235,9 +235,6 @@ function ns.GetFarmPauseReason(ownMenuShowing)
 	end
 	if not ns.IsPlayerMoving() then
 		return "FARM_PAUSED_STANDING_STILL"
-	end
-	if ownMenuShowing or ns.IsOwnMenuShowing() then
-		return "FARM_PAUSED_TOOLTIP"
 	end
 
 	return nil

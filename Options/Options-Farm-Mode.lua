@@ -64,6 +64,7 @@ local function ConditionToggle(field, name, desc, order, state)
 			if ns.db then
 				ns.db.profile[field] = value
 			end
+			ns.RefreshSettings()
 		end,
 	}
 end
@@ -166,6 +167,7 @@ local function AbilityToggle(id, name, order)
 				ns.db.profile.farmCycleSpells[id] = value and true or false
 				ns.InvalidateFarmCache()
 			end
+			ns.RefreshSettings()
 		end,
 	}
 end
@@ -174,7 +176,8 @@ end
     Include Persistent Tracking Ability, then one bordered group per source in
     GROUP_ORDER, the way Control Freak groups its abilities. Each group is its
     own named inline group, so its caption is the class heading; a group with
-    nothing to list is left out.
+    nothing to list is left out. Nothing hides while Farm Mode is off: like
+    Good to Go's sub-panels, these are choices worth making before turning it on.
 ]]
 local function AddFarmAbilityGroups(args, order)
 	--[[
@@ -188,7 +191,6 @@ local function AddFarmAbilityGroups(args, order)
 		desc = L["OPTIONS_FARM_PERSISTENT_DESCRIPTION"],
 		order = order,
 		width = "full",
-		hidden = FarmOff,
 		get = function()
 			return ns.db and ns.db.profile.farmIncludePersistent
 		end,
@@ -197,9 +199,10 @@ local function AddFarmAbilityGroups(args, order)
 				ns.db.profile.farmIncludePersistent = value
 				ns.InvalidateFarmCache()
 			end
+			ns.RefreshSettings()
 		end,
 	}
-	args.spacePersistentAbility = FarmSpacer(order + 0.5)
+	args.spacePersistentAbility = ns.OptionsSpacer(order + 0.5)
 
 	--[[
 		Every tracking spell this client has is listed, learned or not: the list
@@ -232,7 +235,6 @@ local function AddFarmAbilityGroups(args, order)
 				name = GroupLabel(group),
 				inline = true,
 				order = groupOrder,
-				hidden = FarmOff,
 				args = groupArgs,
 			}
 			groupOrder = groupOrder + 1
@@ -244,29 +246,12 @@ end
 -- Farm Mode Panel
 --------------------------------------------------------------------------------
 
---[[
-    Its own child panel rather than a section merged into General: Farm Mode
-    carries more controls than every other feature combined.
-]]
+-- Page order: the description, the switch and its sub-options, then Conditions and Cycle Speed.
 function ns.BuildFarmModeOptions()
 	local args = {
 		descFarm = ns.OptionsDesc(L["OPTIONS_FARM_MODE_DESCRIPTION"], 1),
 		spaceFarmMode1 = ns.OptionsSpacer(2),
-		enableFarm = {
-			type = "toggle",
-			name = L["OPTIONS_ENABLE_FARM"],
-			desc = L["OPTIONS_ENABLE_FARM_DESCRIPTION"],
-			order = 3,
-			width = "full",
-			get = function()
-				return ns.db and ns.db.profile.farmMode
-			end,
-			set = function(_, value)
-				if ns.db then
-					ns.db.profile.farmMode = value
-				end
-			end,
-		},
+		enableFarm = ns.OptionsFeatureSwitch("farmMode", 3),
 		muteCycleSoundRow = SubRow(3.1, FarmOff, {
 			{
 				type = "toggle",
@@ -284,6 +269,7 @@ function ns.BuildFarmModeOptions()
 					if not value and ns.RestoreCycleSoundNow then
 						ns.RestoreCycleSoundNow()
 					end
+					ns.RefreshSettings()
 				end,
 			},
 		}),
@@ -300,26 +286,28 @@ function ns.BuildFarmModeOptions()
 					if ns.db then
 						ns.db.global.farmZoomOut = value
 					end
+					ns.RefreshSettings()
 				end,
 			},
 		}),
 		spaceFarmModeEnable = FarmSpacer(3.5),
 
-		headerFarmActivate = ns.OptionsHeader(L["OPTIONS_FARM_CONDITIONS"], 4, FarmOff),
-		spaceFarmActivate = FarmSpacer(4.5),
-		descFarmActivate = FarmDesc(L["OPTIONS_FARM_CONDITIONS_DESCRIPTION"], 4.6),
-		spaceFarmActivateDesc = FarmSpacer(4.7),
+		-- Conditions and Cycle Speed; Abilities have a panel of their own, under this one.
+		headerFarmActivate = ns.OptionsHeader(L["OPTIONS_FARM_CONDITIONS"], 20, FarmOff),
+		spaceFarmActivate = FarmSpacer(20.5),
+		descFarmActivate = FarmDesc(L["OPTIONS_FARM_CONDITIONS_DESCRIPTION"], 20.6),
+		spaceFarmActivateDesc = FarmSpacer(20.7),
 		farmMounted = ConditionToggle(
 			"farmMounted",
 			L["OPTIONS_FARM_MOUNTED"],
 			L["OPTIONS_FARM_MOUNTED_DESCRIPTION"],
-			5
+			21
 		),
 		farmNotMounted = ConditionToggle(
 			"farmNotMounted",
 			L["OPTIONS_FARM_NOT_MOUNTED"],
 			L["OPTIONS_FARM_NOT_MOUNTED_DESCRIPTION"],
-			6
+			22
 		),
 		--[[
 				The class forms sit apart, each labeled with its class. They are
@@ -328,42 +316,42 @@ function ns.BuildFarmModeOptions()
 				state this character never enters simply never starts the cycle.
 				Only a state this flavor's data can't detect is hidden.
 			]]
-		spaceFarmClassForms = FarmSpacer(6.5),
+		spaceFarmClassForms = FarmSpacer(22.5),
 		farmTravelForms = ConditionToggle(
 			"farmTravelForms",
 			L["OPTIONS_FARM_TRAVEL_FORMS_NAMED"]:format(ns.GetClassNameText("DRUID")),
 			TravelFormsDescription(),
-			7,
+			23,
 			"travelForms"
 		),
 		farmCheetah = ConditionToggle(
 			"farmCheetah",
 			ClassStateLabel("cheetah"),
 			L["OPTIONS_FARM_CHEETAH_DESCRIPTION"],
-			8,
+			24,
 			"cheetah"
 		),
 		farmPack = ConditionToggle(
 			"farmPack",
 			ClassStateLabel("pack"),
 			L["OPTIONS_FARM_PACK_GROUP_DESCRIPTION"],
-			8.1,
+			24.1,
 			"pack"
 		),
 		farmGhostWolf = ConditionToggle(
 			"farmGhostWolf",
 			ClassStateLabel("ghostWolf"),
 			L["OPTIONS_FARM_GHOST_WOLF_DESCRIPTION"],
-			9,
+			25,
 			"ghostWolf"
 		),
-		spaceCycleSpeed = FarmSpacer(9.5),
+		spaceCycleSpeed = FarmSpacer(25.5),
 		-- An unnamed inline group, so the label and its dropdown hide as one row.
 		cycleSpeedRow = {
 			type = "group",
 			name = "",
 			inline = true,
-			order = 9.6,
+			order = 25.6,
 			hidden = FarmOff,
 			args = {
 				label = RowLabel(L["OPTIONS_CYCLE_SPEED"], 1, CYCLE_LABEL_WIDTH),
@@ -390,23 +378,39 @@ function ns.BuildFarmModeOptions()
 							ns.db.profile.farmInterval = value
 						end
 						ns.RestartFarmTicker()
+						ns.RefreshSettings()
 					end,
 				},
 			},
 		},
-
-		spaceFarmMode2 = FarmSpacer(10),
-
-		headerFarmAbilities = ns.OptionsHeader(L["OPTIONS_FARM_ABILITIES"], 10.5, FarmOff),
-		spaceFarmAbilities = FarmSpacer(10.6),
-		descFarmAbilities = FarmDesc(L["OPTIONS_FARM_ABILITIES_DESCRIPTION"], 10.7),
-		spaceFarmAbilitiesDesc = FarmSpacer(10.8),
 	}
-	AddFarmAbilityGroups(args, 11)
-
 	return {
 		type = "group",
 		name = L["TAB_FARM_MODE"],
+		args = args,
+	}
+end
+
+--------------------------------------------------------------------------------
+-- Farm Abilities Panel
+--------------------------------------------------------------------------------
+
+--[[
+    Under Farm Mode: which abilities the cycle rotates through. Page order: the
+    description, Include Persistent Tracking Ability, then one group per source.
+    Its title names its parent (ns.SubPanelTitle); the tree label is the plain
+    name.
+]]
+function ns.BuildFarmAbilitiesOptions()
+	local args = {
+		descFarmAbilities = ns.OptionsDesc(L["OPTIONS_FARM_ABILITIES_DESCRIPTION"], 1),
+		spaceFarmAbilities = ns.OptionsSpacer(2),
+	}
+	AddFarmAbilityGroups(args, 3)
+
+	return {
+		type = "group",
+		name = ns.SubPanelTitle(L["TAB_FARM_MODE"], L["TAB_FARM_ABILITIES"]),
 		args = args,
 	}
 end

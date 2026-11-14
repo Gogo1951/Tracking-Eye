@@ -1,5 +1,8 @@
 local _, ns = ...
 
+local CIRCLE_ICON_SIZE = 24 -- Fitted to Blizzard's tracking border art, like the 37 frame and 62 border
+local SQUARE_ICON_SIZE = 32
+
 --------------------------------------------------------------------------------
 -- Free Frame Position
 --------------------------------------------------------------------------------
@@ -49,7 +52,7 @@ end
 
 --[[
     Backstop only — OnDragStop already saves after every drag. Bail unless the
-    frame is shown, because a hidden frame is never re-anchored: UpdatePlacement
+    frame is shown, because a hidden frame is never re-anchored: ApplyMinimapButton
     returns early for characters with no tracking ability, skipping the
     ApplyFreePosition that reconciles the frame with UIParent's settled effective
     scale. Saving one then re-encodes stale offsets against the live scale and
@@ -63,7 +66,7 @@ ns.SaveFreeFramePosition = function()
 	SaveFreePosition(ns.freeFrame)
 end
 
--- ns.UpdatePlacement (Minimap-Button.lua) re-anchors the frame through this before showing it.
+-- ns:ApplyMinimapButton (Minimap-Button.lua) re-anchors the frame through this before showing it.
 ns.ApplyFreePosition = ApplyFreePosition
 
 --------------------------------------------------------------------------------
@@ -93,8 +96,10 @@ function ns.UpdateFreeFrameShape()
 
 	ns.freeFrame.circleBg:SetShown(not isSquare)
 	ns.freeFrame.circleBorder:SetShown(not isSquare)
-	ns.freeFrame.squareBg:SetShown(isSquare)
 	ns.freeFrame.squareBorder:SetShown(isSquare)
+	-- Circle's icon fits Blizzard's tracking border; Square's lines up with 36-point action buttons.
+	local iconSize = isSquare and SQUARE_ICON_SIZE or CIRCLE_ICON_SIZE
+	ns.freeFrame.icon:SetSize(iconSize, iconSize)
 end
 
 --------------------------------------------------------------------------------
@@ -130,16 +135,12 @@ function ns.CreateFreeFrame()
 
 	frame.squareBorder = frame:CreateTexture(nil, "BACKGROUND")
 	frame.squareBorder:SetColorTexture(0, 0, 0, 0.8)
-	frame.squareBorder:SetSize(27, 27)
+	-- A 1-point border: the square icon plus one point on every side.
+	frame.squareBorder:SetSize(SQUARE_ICON_SIZE + 2, SQUARE_ICON_SIZE + 2)
 	frame.squareBorder:SetPoint("CENTER")
 
-	frame.squareBg = frame:CreateTexture(nil, "BACKGROUND")
-	frame.squareBg:SetColorTexture(0, 0, 0, 0)
-	frame.squareBg:SetSize(1, 1)
-	frame.squareBg:SetPoint("CENTER")
-
 	frame.icon = frame:CreateTexture(nil, "ARTWORK")
-	frame.icon:SetSize(24, 24)
+	frame.icon:SetSize(CIRCLE_ICON_SIZE, CIRCLE_ICON_SIZE)
 	frame.icon:SetPoint("CENTER")
 
 	frame:SetScript("OnDragStart", frame.StartMoving)
@@ -173,5 +174,5 @@ function ns.CreateFreeFrame()
         BOTTOMLEFT anchor.
     ]]
 	ApplyFreePosition(frame)
-	ns.UpdatePlacement()
+	ns:ApplyMinimapButton()
 end

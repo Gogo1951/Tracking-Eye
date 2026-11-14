@@ -20,7 +20,6 @@ L["KEY_BINDINGS_LOCATION"] = "打开游戏菜单，点击%s，再点击%s，然�
 -- Feature Names
 --------------------------------------------------------------------------------
 
-L["TRACKING_MENU"] = "追踪菜单"
 L["PERSISTENT_TRACKING"] = "持久追踪"
 L["TARGET_TRACKING"] = "自动目标追踪"
 
@@ -66,13 +65,17 @@ L["CLEAR_TRACKING"] = "清除追踪"
 
 L["MENU_ON"] = "开启"
 L["MENU_OFF"] = "关闭"
-L["OPEN"] = "打开"
-L["MENU_PERSISTENT_DESCRIPTION"] = "选择您的持久追踪技能。"
+L["MENU_PERSISTENT_DESCRIPTION"] = "死亡、变形或切换区域后，自动恢复您的追踪。"
 L["MENU_FARM_DESCRIPTION"] = "在旅途中循环切换您的追踪技能。"
 L["MENU_TARGET_DESCRIPTION"] = "追踪您所选目标的同类生物。"
 L["MENU_TOGGLE"] = "切换"
+L["MENU_CLICK_RIGHT"] = "右键"
+L["MENU_CLICK_SHIFT_LEFT"] = "Shift + 左键"
+L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + 右键"
+L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + 中键"
+L["MENU_MORE_FEATURES"] = "更多功能"
 
-L["TOOLTIP_OPTIONS"] = "Tracking Eye 选项"
+L["MENU_OPTIONS"] = "Tracking Eye 选项"
 
 --------------------------------------------------------------------------------
 -- Key Bindings
@@ -80,7 +83,7 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye 选项"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "切换采集模式技能"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"未勾选任何采集模式技能。请在 设置选项 > 插件 > Tracking Eye > 采集模式 中勾选。"
+	"未勾选任何采集模式技能。请在 设置选项 > 插件 > Tracking Eye > 采集模式 > 技能 中勾选。"
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -101,12 +104,10 @@ L["OPTIONS_ENABLE_WELCOME"] = "启用欢迎消息"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Tracking Eye 加载时在聊天中显示一行欢迎语。"
 L["OPTIONS_ENABLE_MINIMAP"] = "启用小地图按钮"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "隐藏按钮后，所有功能照常运行。"
-
--- Slash Commands
-
-L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
-L["OPTIONS_COMMAND"] = "/te"
-L["OPTIONS_COMMAND_DESCRIPTION"] = "打开此插件的选项界面。"
+L["OPTIONS_HOOK_BLIZZARD"] = "使用默认追踪按钮"
+L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
+	"默认追踪按钮也会打开 Tracking Eye 菜单。如果其他插件已在使用该按钮，请保持关闭。"
+L["OPTIONS_FEATURES_HEADER"] = "功能"
 
 -- Key Bindings
 
@@ -115,13 +116,11 @@ L["OPTIONS_KEY_SET"] = "设置按键"
 L["OPTIONS_KEY_SET_DESCRIPTION"] = "打开游戏的快捷键列表，Tracking Eye 在其中有专属分类。"
 L["OPTIONS_KEYBINDS_DESCRIPTION"] = "一键跳到下一个追踪技能，即使采集模式已关闭也能使用。"
 
--- Tracking Menu
+-- Slash Commands
 
-L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
-	"您掌握的所有追踪技能，汇集在一个按名称排序的菜单中。选中的技能将成为您的持久追踪技能。"
-L["OPTIONS_HOOK_BLIZZARD"] = "使用默认追踪按钮"
-L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"默认追踪按钮也会打开此菜单。如果其他插件已在使用该按钮，请保持关闭。"
+L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
+L["OPTIONS_COMMAND"] = "/te"
+L["OPTIONS_COMMAND_DESCRIPTION"] = "打开此插件的选项界面。"
 
 -- Persistent Tracking
 
@@ -168,7 +167,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 	"草药和矿石尽在同一张小地图上。采集模式会在您旅行时轮换追踪技能，不放过任何一个采集点。"
 L["OPTIONS_ENABLE_FARM"] = "启用采集模式"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
-	"在战斗中、城镇里、副本内和飞行途中会自动暂停。将鼠标悬停在 Tracking Eye 按钮上即可查看原因。"
+	"在战斗中、城镇里、副本内和飞行途中会自动暂停。小地图菜单中的采集模式状态会显示原因。"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "静音追踪技能的施法音效"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"只有采集模式自己的切换会静音。您亲自选择的追踪仍会发出声音。"
@@ -193,6 +192,7 @@ L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
 	"每次切换都会占用一次公共冷却时间，因此循环越慢，越少干扰您自己的施法。"
 L["OPTIONS_CYCLE_EVERY"] = "每 %s 秒切换"
 L["OPTIONS_FARM_ABILITIES"] = "采集模式技能"
+L["TAB_FARM_ABILITIES"] = "技能"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"勾选您想找的东西。采集模式会循环此角色已掌握的所有勾选技能，并跳过其余技能。"
 L["OPTIONS_FARM_GROUP_GENERAL"] = "专业与种族特长"

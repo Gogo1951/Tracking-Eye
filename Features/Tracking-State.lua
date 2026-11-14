@@ -38,8 +38,10 @@ ns.state = {
 }
 
 --[[
-    Single write-site for the runtime-only lastCastSpell bookkeeping,
-    written from UNIT_SPELLCAST_SUCCEEDED (and cleared on demand). Never
+    Single write-site for the runtime-only lastCastSpell bookkeeping. Set from
+    UNIT_SPELLCAST_SUCCEEDED, from UpdateIcon adopting tracking that predates the
+    session, and from TryRecastPersistent syncing to a spell the mirror shows
+    active; cleared by UpdateIcon and ClearTracking. Never
     persisted: last session's value treated as live bookkeeping makes the
     farm cycle and persistent recast believe tracking is already up at
     login and skip every real cast.
@@ -266,9 +268,8 @@ function ns.ClearTracking()
 	if ns.freeFrame and ns.freeFrame.icon then
 		ns.freeFrame.icon:SetTexture(ns.ICON_DEFAULT)
 	end
-	if ns.RefreshMenu then
-		ns.RefreshMenu()
-	end
+	-- The picked ability is a saved setting, so options redraw along with the menu.
+	ns.RefreshSettings()
 end
 
 --------------------------------------------------------------------------------

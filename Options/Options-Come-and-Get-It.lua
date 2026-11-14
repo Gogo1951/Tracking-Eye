@@ -52,14 +52,18 @@ local function ChatColor(channel)
 	return "|cff" .. channel.hex
 end
 
--- Listens only while the sample herb is loading, then redraws the panel with its name.
-local itemLoadFrame = CreateFrame("Frame")
-itemLoadFrame:SetScript("OnEvent", function(self, _, itemID)
-	if itemID == ns.SAMPLE_HERB_ITEM_ID then
-		self:UnregisterEvent("GET_ITEM_INFO_RECEIVED")
+--[[
+    Core routes GET_ITEM_INFO_RECEIVED here. It acts only while RenderExample is
+    waiting on the sample herb, then redraws the panel with the herb's name.
+]]
+local waitingForSampleHerb = false
+
+function ns.OnItemInfoReceived(itemID)
+	if waitingForSampleHerb and itemID == ns.SAMPLE_HERB_ITEM_ID then
+		waitingForSampleHerb = false
 		LibStub("AceConfigRegistry-3.0"):NotifyChange(ns.OPTIONS_REGISTRY.ComeAndGetIt)
 	end
-end)
+end
 
 --[[
     Draws the herb draft as it would land in the picked channel: the player's
@@ -74,7 +78,7 @@ local function RenderExample()
 
 	local herbName = C_Item.GetItemNameByID(ns.SAMPLE_HERB_ITEM_ID)
 	if not herbName then
-		itemLoadFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+		waitingForSampleHerb = true
 		C_Item.RequestLoadItemDataByID(ns.SAMPLE_HERB_ITEM_ID)
 		herbName = L["SAMPLE_LOADING_ITEM"]:format(ns.SAMPLE_HERB_ITEM_ID)
 	end
@@ -117,24 +121,21 @@ function ns.BuildComeAndGetItOptions()
 		args = {
 			descComeAndGetIt = ns.OptionsDesc(L["OPTIONS_COME_AND_GET_IT_DESCRIPTION"], 1),
 			spaceComeAndGetIt = ns.OptionsSpacer(2),
-			enableComeAndGetIt = {
-				type = "toggle",
-				name = L["OPTIONS_ENABLE_COME_AND_GET_IT"],
-				desc = L["OPTIONS_ENABLE_COME_AND_GET_IT_DESCRIPTION"],
-				order = 3,
-				width = "full",
-				get = function()
-					return ns.db and ns.db.global.comeAndGetIt
-				end,
-				set = function(_, value)
-					if ns.db then
-						ns.db.global.comeAndGetIt = value
-					end
-				end,
-			},
+			enableComeAndGetIt = ns.OptionsFeatureSwitch("comeAndGetIt", 3),
 
 			spaceOutput = ComeAndGetItSpacer(4),
-			-- An unnamed inline group, so the label and its dropdown hide as one row, laid out like Cycle Speed.
+			--[[
+				An unnamed inline group, so the rows hide as one: the label and its
+				dropdown, then the note under the dropdown, a blank label-width cell
+				holding it clear of the label column, as Good to Go's whisper composer
+				lays out its tokens line.
+
+				The note is on the panel rather than in the tooltip, by exception
+				(README-Notes → Default Output note): the layer limit decides whether
+				a callout reaches anyone, so it has to be seen before the channel is
+				picked. The tooltip carries a different tip, so the two never say the
+				same thing.
+			]]
 			outputRow = {
 				type = "group",
 				name = "",
@@ -161,23 +162,22 @@ function ns.BuildComeAndGetItOptions()
 							if ns.db then
 								ns.db.global.comeAndGetItOutput = value
 							end
+							ns.RefreshSettings()
 						end,
+					},
+					noteIndent = RowLabel(" ", 3),
+					note = {
+						type = "description",
+						name = GetColor("HELP")
+							.. L["OPTIONS_OUTPUT_NOTE"]:format(L["OPTIONS_OUTPUT_CHANNEL1"])
+							.. "|r",
+						fontSize = "medium",
+						width = ns.OPTIONS_CONTROL_WIDTH,
+						order = 4,
 					},
 				},
 			},
-			--[[
-				On the panel rather than in the tooltip, by exception (README-Notes →
-				Exceptions): the layer limit decides whether a callout reaches anyone,
-				so it has to be seen before the channel is picked. The tooltip carries
-				a different tip, so the two never say the same thing.
-			]]
-			noteOutput = {
-				type = "description",
-				name = GetColor("HELP") .. L["OPTIONS_OUTPUT_NOTE"]:format(L["OPTIONS_OUTPUT_CHANNEL1"]) .. "|r",
-				fontSize = "medium",
-				order = 6,
-				hidden = ComeAndGetItOff,
-			},
+			spaceExample = ComeAndGetItSpacer(6),
 			exampleOutput = {
 				type = "description",
 				name = RenderExample,

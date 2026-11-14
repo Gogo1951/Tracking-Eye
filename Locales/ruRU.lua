@@ -23,7 +23,6 @@ L["KEY_BINDINGS_LOCATION"] =
 -- Feature Names
 --------------------------------------------------------------------------------
 
-L["TRACKING_MENU"] = "Меню отслеживания"
 L["PERSISTENT_TRACKING"] = "Постоянное отслеживание"
 L["TARGET_TRACKING"] = "Автоматическое отслеживание цели"
 
@@ -73,15 +72,19 @@ L["CLEAR_TRACKING"] = "Очистить отслеживание"
 
 L["MENU_ON"] = "Вкл."
 L["MENU_OFF"] = "Выкл."
-L["OPEN"] = "Открыть"
 L["MENU_PERSISTENT_DESCRIPTION"] =
-	"Выберите способность постоянного отслеживания."
+	"Возвращает отслеживание после смерти, смены облика или перехода в другую зону."
 L["MENU_FARM_DESCRIPTION"] = "Переключает способности отслеживания в пути."
 L["MENU_TARGET_DESCRIPTION"] =
 	"Отслеживает существ того же вида, что и ваша цель."
 L["MENU_TOGGLE"] = "Переключить"
+L["MENU_CLICK_RIGHT"] = "ПКМ"
+L["MENU_CLICK_SHIFT_LEFT"] = "Shift + ЛКМ"
+L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + ПКМ"
+L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + СКМ"
+L["MENU_MORE_FEATURES"] = "Другие функции"
 
-L["TOOLTIP_OPTIONS"] = "Настройки Tracking Eye"
+L["MENU_OPTIONS"] = "Настройки Tracking Eye"
 
 --------------------------------------------------------------------------------
 -- Key Bindings
@@ -89,7 +92,7 @@ L["TOOLTIP_OPTIONS"] = "Настройки Tracking Eye"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Переключить способность Режима фарма"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"Не отмечено ни одной способности Режима фарма. Отметьте нужные в разделе Параметры > Модификации > Tracking Eye > Режим фарма."
+	"Не отмечено ни одной способности Режима фарма. Отметьте нужные в разделе Параметры > Модификации > Tracking Eye > Режим фарма > Способности."
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -112,12 +115,10 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 L["OPTIONS_ENABLE_MINIMAP"] = "Включить кнопку у мини-карты"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] =
 	"Все продолжает работать и со скрытой кнопкой."
-
--- Slash Commands
-
-L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
-L["OPTIONS_COMMAND"] = "/te"
-L["OPTIONS_COMMAND_DESCRIPTION"] = "Открывает интерфейс настроек этого аддона."
+L["OPTIONS_HOOK_BLIZZARD"] = "Использовать стандартную кнопку отслеживания"
+L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
+	"Стандартная кнопка отслеживания тоже открывает меню Tracking Eye. Не включайте, если эту кнопку уже использует другой аддон."
+L["OPTIONS_FEATURES_HEADER"] = "Функции"
 
 -- Key Bindings
 
@@ -128,13 +129,11 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] =
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Переход к следующей способности отслеживания одной клавишей, даже при выключенном Режиме фарма."
 
--- Tracking Menu
+-- Slash Commands
 
-L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
-	"Все известные вам способности отслеживания в одном меню по алфавиту. Выбранная становится вашей способностью постоянного отслеживания."
-L["OPTIONS_HOOK_BLIZZARD"] = "Использовать стандартную кнопку отслеживания"
-L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"Стандартная кнопка отслеживания тоже открывает это меню. Не включайте, если эту кнопку уже использует другой аддон."
+L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
+L["OPTIONS_COMMAND"] = "/te"
+L["OPTIONS_COMMAND_DESCRIPTION"] = "Открывает интерфейс настроек этого аддона."
 
 -- Persistent Tracking
 
@@ -185,7 +184,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 	"Травы и руда на одной мини-карте. Режим фарма переключает способности отслеживания в пути, чтобы ни один ресурс не ускользнул от вас."
 L["OPTIONS_ENABLE_FARM"] = "Включить Режим фарма"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
-	"Сам встает на паузу в бою, в городах, подземельях и во время полетов. Наведите курсор на кнопку Tracking Eye, чтобы узнать причину."
+	"Сам встает на паузу в бою, в городах, подземельях и во время полетов. Причину показывает Состояние Режима фарма в меню у мини-карты."
 L["OPTIONS_SILENCE_TRACKING_SOUNDS"] =
 	"Заглушить звуки применения способностей отслеживания"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
@@ -217,6 +216,7 @@ L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
 	"Каждое переключение тратит глобальное время восстановления, поэтому медленный цикл меньше мешает вашим заклинаниям."
 L["OPTIONS_CYCLE_EVERY"] = "Переключать каждые %s сек."
 L["OPTIONS_FARM_ABILITIES"] = "Способности Режима фарма"
+L["TAB_FARM_ABILITIES"] = "Способности"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Отметьте то, что хотите найти. Режим фарма переключает все отмеченные способности, известные этому персонажу, и пропускает остальные."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Профессии и расовые способности"

@@ -1,6 +1,6 @@
 --[[
     Offline tests for the Diagnostics event log's noise filter (Build Reference →
-    Event Log Noise). Dev-only: never listed in a TOC, and kept out of the release
+    Event Log Noise) and for PruneOtherClientCharacters. Dev-only: never listed in a TOC, and kept out of the release
     by .pkgmeta. Run from the add-on root with Lua 5.1, the version WoW embeds:
     lua5.1 Tests/Run.lua
 ]]
@@ -8,6 +8,8 @@
 local LOCKED_ID = 1
 local UNCORRELATED_ID = 2
 local HERB_ID = 3
+local SAMPLE_HERB_ID = 765
+local OTHER_ITEM_ID = 2589
 
 local MESSAGE_NAMES = {
 	[LOCKED_ID] = "ERR_ITEM_LOCKED",
@@ -20,6 +22,7 @@ local ns = {
 	OUTPUT_CHANNELS = {},
 	ANNOUNCE_COOLDOWN = 5,
 	ERROR_STRING_LOCKED_CHEST = "ERR_ITEM_LOCKED",
+	SAMPLE_HERB_ITEM_ID = SAMPLE_HERB_ID,
 	TRACKING_IDS = {},
 	ADDON_TITLE = "Tracking Eye",
 }
@@ -100,6 +103,21 @@ Check(
 ns:StartEventLog()
 ns:LogEvent("UI_ERROR_MESSAGE", nil, "No id at all")
 Check("an event with no id logs verbatim", #ns.diagnostics.log == 1 and LogHas("No id at all"))
+
+ns:StartEventLog()
+for _ = 1, 20 do
+	ns:LogEvent("GET_ITEM_INFO_RECEIVED", OTHER_ITEM_ID, true)
+end
+ns:LogEvent("GET_ITEM_INFO_RECEIVED", SAMPLE_HERB_ID, true)
+local itemCounters = ns.diagnostics.suppressed.GET_ITEM_INFO_RECEIVED
+Check(
+	"item loads are counted, the sample herb logs a full line",
+	#ns.diagnostics.log == 1
+		and LogHas("GET_ITEM_INFO_RECEIVED(" .. SAMPLE_HERB_ID)
+		and itemCounters ~= nil
+		and itemCounters[OTHER_ITEM_ID] ~= nil
+		and itemCounters[OTHER_ITEM_ID].count == 20
+)
 
 --------------------------------------------------------------------------------
 -- Other-Client Characters

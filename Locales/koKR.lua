@@ -21,7 +21,6 @@ L["KEY_BINDINGS_LOCATION"] =
 -- Feature Names
 --------------------------------------------------------------------------------
 
-L["TRACKING_MENU"] = "추적 메뉴"
 L["PERSISTENT_TRACKING"] = "지속 추적"
 L["TARGET_TRACKING"] = "자동 대상 추적"
 
@@ -69,13 +68,18 @@ L["CLEAR_TRACKING"] = "추적 해제"
 
 L["MENU_ON"] = "켜짐"
 L["MENU_OFF"] = "꺼짐"
-L["OPEN"] = "열기"
-L["MENU_PERSISTENT_DESCRIPTION"] = "지속 추적 능력을 선택하세요."
+L["MENU_PERSISTENT_DESCRIPTION"] =
+	"죽거나, 변신하거나, 지역을 이동해도 추적을 되돌려 놓습니다."
 L["MENU_FARM_DESCRIPTION"] = "이동하는 동안 추적 능력을 순환합니다."
 L["MENU_TARGET_DESCRIPTION"] = "대상으로 지정한 생물과 같은 종류를 추적합니다."
 L["MENU_TOGGLE"] = "전환"
+L["MENU_CLICK_RIGHT"] = "오른쪽 클릭"
+L["MENU_CLICK_SHIFT_LEFT"] = "Shift + 왼쪽 클릭"
+L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + 오른쪽 클릭"
+L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + 휠 클릭"
+L["MENU_MORE_FEATURES"] = "추가 기능"
 
-L["TOOLTIP_OPTIONS"] = "Tracking Eye 옵션"
+L["MENU_OPTIONS"] = "Tracking Eye 옵션"
 
 --------------------------------------------------------------------------------
 -- Key Bindings
@@ -83,7 +87,7 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye 옵션"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "파밍 모드 능력 전환"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"체크된 파밍 모드 능력이 없습니다. 설정 > 애드온 > Tracking Eye > 파밍 모드에서 체크하세요."
+	"체크된 파밍 모드 능력이 없습니다. 설정 > 애드온 > Tracking Eye > 파밍 모드 > 능력에서 체크하세요."
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -105,12 +109,10 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Tracking Eye가 로드될 때 대화창에 한 줄짜리 인사말을 출력합니다."
 L["OPTIONS_ENABLE_MINIMAP"] = "미니맵 버튼 활성화"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "버튼을 숨겨도 모든 기능이 계속 작동합니다."
-
--- Slash Commands
-
-L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
-L["OPTIONS_COMMAND"] = "/te"
-L["OPTIONS_COMMAND_DESCRIPTION"] = "이 애드온의 옵션 인터페이스를 엽니다."
+L["OPTIONS_HOOK_BLIZZARD"] = "기본 추적 버튼 사용"
+L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
+	"기본 추적 버튼으로도 Tracking Eye 메뉴가 열립니다. 다른 애드온이 이미 그 버튼을 사용 중이라면 꺼 두세요."
+L["OPTIONS_FEATURES_HEADER"] = "기능"
 
 -- Key Bindings
 
@@ -120,13 +122,11 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] = "Tracking Eye 전용 항목이 있는 게임 
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"키 하나로 다음 추적 능력으로 넘어갑니다. 파밍 모드가 꺼져 있어도 작동합니다."
 
--- Tracking Menu
+-- Slash Commands
 
-L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
-	"알고 있는 모든 추적 능력을 가나다순 메뉴 하나에 모았습니다. 여기서 고른 능력이 지속 추적 능력이 됩니다."
-L["OPTIONS_HOOK_BLIZZARD"] = "기본 추적 버튼 사용"
-L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"기본 추적 버튼으로도 이 메뉴가 열립니다. 다른 애드온이 이미 그 버튼을 사용 중이라면 꺼 두세요."
+L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
+L["OPTIONS_COMMAND"] = "/te"
+L["OPTIONS_COMMAND_DESCRIPTION"] = "이 애드온의 옵션 인터페이스를 엽니다."
 
 -- Persistent Tracking
 
@@ -176,7 +176,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 	"약초와 광석을 한 미니맵에서. 파밍 모드가 이동 중에 추적 능력을 번갈아 켜 주니 채집물을 하나도 놓치지 않습니다."
 L["OPTIONS_ENABLE_FARM"] = "파밍 모드 활성화"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
-	"전투 중이나 마을, 인스턴스, 비행 중에는 알아서 일시 중지됩니다. Tracking Eye 버튼에 마우스를 올리면 이유를 볼 수 있습니다."
+	"전투 중이나 마을, 인스턴스, 비행 중에는 알아서 일시 중지됩니다. 이유는 미니맵 메뉴의 파밍 모드 상태에서 확인할 수 있습니다."
 L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "추적 능력 시전 소리 끄기"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"파밍 모드의 전환만 조용해집니다. 직접 고른 추적은 여전히 소리가 납니다."
@@ -204,6 +204,7 @@ L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
 	"전환할 때마다 전역 재사용 대기시간이 들기 때문에, 순환이 느릴수록 직접 시전하는 주문과 덜 겹칩니다."
 L["OPTIONS_CYCLE_EVERY"] = "%s초마다 전환"
 L["OPTIONS_FARM_ABILITIES"] = "파밍 모드 능력"
+L["TAB_FARM_ABILITIES"] = "능력"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"찾고 싶은 것을 체크하세요. 파밍 모드는 이 캐릭터가 아는 체크된 능력을 모두 순환하고 나머지는 건너뜁니다."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "전문 기술 및 종족 특성"

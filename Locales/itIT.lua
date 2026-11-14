@@ -21,7 +21,6 @@ L["KEY_BINDINGS_LOCATION"] = "Apri il menu di gioco, poi %s, poi %s, e cerca la 
 -- Feature Names
 --------------------------------------------------------------------------------
 
-L["TRACKING_MENU"] = "Menu Tracciamento"
 L["PERSISTENT_TRACKING"] = "Tracciamento Persistente"
 L["TARGET_TRACKING"] = "Tracciamento Automatico del Bersaglio"
 
@@ -67,13 +66,17 @@ L["CLEAR_TRACKING"] = "Cancella Tracciamento"
 
 L["MENU_ON"] = "Attivo"
 L["MENU_OFF"] = "Disattivo"
-L["OPEN"] = "Apri"
-L["MENU_PERSISTENT_DESCRIPTION"] = "Scegli la tua Abilità di Tracciamento Persistente."
+L["MENU_PERSISTENT_DESCRIPTION"] = "Ripristina il tuo tracciamento dopo che muori, cambi forma o cambi zona."
 L["MENU_FARM_DESCRIPTION"] = "Alterna le tue abilità di tracciamento mentre viaggi."
 L["MENU_TARGET_DESCRIPTION"] = "Traccia la specie di qualsiasi creatura che bersagli."
 L["MENU_TOGGLE"] = "Attiva/Disattiva"
+L["MENU_CLICK_RIGHT"] = "Clic Destro"
+L["MENU_CLICK_SHIFT_LEFT"] = "Maiusc + Clic Sinistro"
+L["MENU_CLICK_SHIFT_RIGHT"] = "Maiusc + Clic Destro"
+L["MENU_CLICK_SHIFT_MIDDLE"] = "Maiusc + Clic Centrale"
+L["MENU_MORE_FEATURES"] = "Altre Funzionalità"
 
-L["TOOLTIP_OPTIONS"] = "Opzioni di Tracking Eye"
+L["MENU_OPTIONS"] = "Opzioni di Tracking Eye"
 
 --------------------------------------------------------------------------------
 -- Key Bindings
@@ -81,7 +84,7 @@ L["TOOLTIP_OPTIONS"] = "Opzioni di Tracking Eye"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Cicla Abilità della Modalità Raccolta"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"Nessuna Abilità della Modalità Raccolta è spuntata. Spuntane alcune in Opzioni > Add-on > Tracking Eye > Modalità Raccolta."
+	"Nessuna Abilità della Modalità Raccolta è spuntata. Spuntane alcune in Opzioni > Add-on > Tracking Eye > Modalità Raccolta > Abilità."
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -102,12 +105,10 @@ L["OPTIONS_ENABLE_WELCOME"] = "Abilita Messaggio di Benvenuto"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Mostra in chat un saluto di una riga al caricamento di Tracking Eye."
 L["OPTIONS_ENABLE_MINIMAP"] = "Abilita Pulsante Minimappa"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Tutto continua a funzionare anche con il pulsante nascosto."
-
--- Slash Commands
-
-L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
-L["OPTIONS_COMMAND"] = "/te"
-L["OPTIONS_COMMAND_DESCRIPTION"] = "Apre l'Interfaccia Opzioni di questo add-on."
+L["OPTIONS_HOOK_BLIZZARD"] = "Usa il Pulsante di Tracciamento Predefinito"
+L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
+	"Anche il pulsante di tracciamento predefinito apre il menu di Tracking Eye. Lascia l'opzione disattivata se un altro add-on usa già quel pulsante."
+L["OPTIONS_FEATURES_HEADER"] = "Funzionalità"
 
 -- Key Bindings
 
@@ -118,13 +119,11 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] =
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Passa alla prossima abilità di tracciamento con un solo tasto, anche con la Modalità Raccolta disattivata."
 
--- Tracking Menu
+-- Slash Commands
 
-L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
-	"Tutte le abilità di tracciamento che conosci, in un unico menu alfabetico. Quella che scegli diventa la tua Abilità di Tracciamento Persistente."
-L["OPTIONS_HOOK_BLIZZARD"] = "Usa il Pulsante di Tracciamento Predefinito"
-L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"Anche il pulsante di tracciamento predefinito apre questo menu. Lascia l'opzione disattivata se un altro add-on usa già quel pulsante."
+L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
+L["OPTIONS_COMMAND"] = "/te"
+L["OPTIONS_COMMAND_DESCRIPTION"] = "Apre l'Interfaccia Opzioni di questo add-on."
 
 -- Persistent Tracking
 
@@ -172,7 +171,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 	"Erbe e minerali sulla stessa minimappa. La Modalità Raccolta alterna le tue abilità di tracciamento mentre viaggi, così nessun nodo ti sfugge."
 L["OPTIONS_ENABLE_FARM"] = "Abilita Modalità Raccolta"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
-	"Si mette in pausa da sola in combattimento, in città, nelle istanze e durante i voli. Passa il mouse sul pulsante di Tracking Eye per sapere perché."
+	"Si mette in pausa da sola in combattimento, in città, nelle istanze e durante i voli. Lo Stato della Modalità Raccolta, nel menu della minimappa, ti dice perché."
 L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Silenzia i Suoni del Lancio delle Abilità di Tracciamento"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"Solo i cambi della Modalità Raccolta diventano silenziosi. Il tracciamento che scegli tu mantiene il suo suono."
@@ -199,6 +198,7 @@ L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
 	"Ogni cambio costa un tempo di recupero globale, quindi un ciclo più lento interferisce meno con i tuoi incantesimi."
 L["OPTIONS_CYCLE_EVERY"] = "Cicla Ogni %s Secondi"
 L["OPTIONS_FARM_ABILITIES"] = "Abilità della Modalità Raccolta"
+L["TAB_FARM_ABILITIES"] = "Abilità"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Spunta ciò che vuoi trovare. La Modalità Raccolta alterna ogni abilità spuntata che questo personaggio conosce e salta le altre."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Professioni e Abilità Razziali"

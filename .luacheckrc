@@ -75,6 +75,7 @@ read_globals = {
 	"IsInInstance",
 	"IsMounted",
 	"IsPlayerSpell",
+	"IsShiftKeyDown",
 	"PlaySound",
 	"SOUNDKIT",
 	"IsResting",

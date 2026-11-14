@@ -1,4 +1,5 @@
 local ADDON_NAME, ns = ...
+local L = ns.L
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
@@ -6,7 +7,7 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 -- Placement
 --------------------------------------------------------------------------------
 
-function ns.UpdatePlacement()
+function ns:ApplyMinimapButton()
 	if not ns.db then
 		return
 	end
@@ -55,13 +56,13 @@ end
 
 --[[
     Shared by the mini-map button and the free-placement frame (Free-Placement.lua).
-    Hovering opens the menu (Minimap-Menu.lua), and so does a left-click; the
-    Persistent Tracking abilities are listed in it, so picking one is one click. No other
-    button and no modifier does anything: every action lives in the menu, where a
-    controller's cursor can reach it.
+    Hovering opens the menu (Minimap-Menu.lua). A click runs its job from the
+    menu's click table (Right-Click Clear Tracking, Shift + Left-Click Farm Mode,
+    Shift + Right-Click Automatic Target Tracking, Shift + Middle-Click Options);
+    a plain Left-Click has no job, so it opens and holds the menu.
 ]]
 function ns.HandleLauncherClick(self, button)
-	if button == "LeftButton" then
+	if not ns.RunButtonClick(button) and button == "LeftButton" then
 		ns.ShowMenu(self, nil, "click")
 	end
 end
@@ -77,6 +78,7 @@ end
 function ns.InitMinimap()
 	ns.ldb = LibDataBroker:NewDataObject(ADDON_NAME, {
 		type = "launcher",
+		label = L["ADDON_TITLE"],
 		icon = ns.state.currentIcon or ns.ICON_DEFAULT,
 		OnClick = ns.HandleLauncherClick,
 		--[[
@@ -108,6 +110,6 @@ function ns.InitMinimap()
 		end
 	end
 
-	ns.UpdatePlacement()
+	ns:ApplyMinimapButton()
 	ns.ApplyBlizzardTrackingHook()
 end

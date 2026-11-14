@@ -8,21 +8,21 @@ local Kit = ns.MenuKit
 
 --[[
     The mini-map button's menu, laid out as Pretty Wide Quest Log's Quest Arrow
-    menu is, with the old tooltip's blocks inside it: the add-on's name, then for
-    each feature a gold title with where it stands on the right, a line saying what
-    it does, and a blue Toggle row, then the Options row. Persistent Tracking's
+    menu is: the add-on's name, then for each feature a gold title with where it
+    stands on the right, a line saying what it does, and a blue Toggle row, then
+    the More Features rows and the Options row. Persistent Tracking's
     block also lists the abilities to pick from, between its description and its
     Toggle row, so picking one is a single click in the menu itself, and Clear
     Tracking under its Toggle row while something is picked. A title with
     settings to show carries Blizzard's submenu arrow and opens its flyout beside
     the menu, under the cursor or on a click.
 
-    Hovering the launcher opens it, the way the old tooltip did, and moving into
-    it keeps it open; it closes a moment after the cursor leaves the launcher, the
-    menu, and the flyout. A left-click opens it too, and keeps it open a little
-    longer once the cursor leaves. Everything is a
-    plain click, so a controller's cursor reaches all of it: no modifier keys, no
-    right or middle button.
+    Hovering the launcher opens it, and moving into it keeps it open; it closes a
+    moment after the cursor leaves the launcher, the menu, and the flyout. A
+    left-click opens it too, and keeps it open a little longer once the cursor
+    leaves. Every row is a plain click, so a controller's cursor reaches all of
+    it, and the button keeps its old clicks, each named on the row that does the
+    same job (Button Clicks, below).
 
     The rules every add-on's menu follows (README-Technical → Mini-map Menu):
       - Every feature on the options' main page gets a block here: its title,
@@ -35,8 +35,9 @@ local Kit = ns.MenuKit
       - A switch's tooltip is its option's tooltip, and a Toggle row's is its
         Enable option's.
       - A pick from a set (an ability) closes the menu; a switch leaves it open.
-      - Free Placement Mode and Come & Get It stay on the options page only, to
-        keep the menu to what's changed mid-session.
+      - Free Placement Mode and Come & Get It aren't changed mid-session, so each
+        is one On/Off row under More Features rather than a block. Free Placement
+        Mode's row opens its options panel instead of switching.
 ]]
 
 local HOVER_CLOSE_DELAY = 0.4
@@ -84,20 +85,94 @@ local function OptionTooltip(name, desc)
 	end
 end
 
--- An open options page redraws with the new value, and so does the menu.
+-- An open options page redraws with the new value, and so does the menu, through ns.RefreshSettings.
 local function AfterChange()
-	if ns.RefreshOptionsPanels then
-		ns.RefreshOptionsPanels()
-	end
-	ns.RefreshMenu()
+	ns.RefreshSettings()
 end
 
 -- A pick from a set closes the menu, and an open options page redraws.
 local function AfterPick()
 	ns.HideMenu()
-	if ns.RefreshOptionsPanels then
-		ns.RefreshOptionsPanels()
+	ns.RefreshSettings()
+end
+
+--------------------------------------------------------------------------------
+-- Button Clicks
+--------------------------------------------------------------------------------
+
+--[[
+    One table, both ways: the button's OnClick looks the click up here, and the
+    row that does the same job names the click on its right, so a row never names
+    a click that does something else. Left-Click has no job here, so it opens and
+    holds the menu (Minimap-Button.lua).
+]]
+local CLICKS = {
+	clear = {
+		button = "RightButton",
+		shift = false,
+		name = "MENU_CLICK_RIGHT",
+		run = function()
+			ns.ClearTracking()
+		end,
+	},
+	farm = {
+		button = "LeftButton",
+		shift = true,
+		name = "MENU_CLICK_SHIFT_LEFT",
+		run = function()
+			ns.db.profile.farmMode = not ns.db.profile.farmMode
+		end,
+	},
+	target = {
+		button = "RightButton",
+		shift = true,
+		name = "MENU_CLICK_SHIFT_RIGHT",
+		run = function()
+			ns.SetTargetTracking(not ns.db.profile.targetTracking)
+		end,
+	},
+	options = {
+		button = "MiddleButton",
+		shift = true,
+		name = "MENU_CLICK_SHIFT_MIDDLE",
+		run = function()
+			ns.HideMenu()
+			ns:OpenOptionsPanel()
+		end,
+	},
+}
+
+-- Runs the click's job and redraws the menu and any open options page; false when the click has none.
+function ns.RunButtonClick(button)
+	local shift = IsShiftKeyDown() and true or false
+	for _, click in pairs(CLICKS) do
+		if click.button == button and click.shift == shift then
+			if not ns.db and click ~= CLICKS.options then
+				return true
+			end
+			click.run()
+			AfterChange()
+			return true
+		end
 	end
+	return false
+end
+
+-- An action row: blue, naming its button click on the right in gray.
+local function ClickRow(label, clickKey, tooltip)
+	local click = CLICKS[clickKey]
+	return {
+		kind = "action",
+		left = label,
+		leftColor = "INFO",
+		right = L[click.name],
+		rightColor = "MUTED",
+		tooltip = tooltip,
+		onClick = function()
+			click.run()
+			AfterChange()
+		end,
+	}
 end
 
 --[[
@@ -221,17 +296,7 @@ local function PersistentClearRows()
 	if not ns.db.profile.selectedSpellId then
 		return nil
 	end
-	return {
-		{
-			kind = "action",
-			left = L["CLEAR_TRACKING"],
-			leftColor = "INFO",
-			onClick = function()
-				ns.ClearTracking()
-				AfterChange()
-			end,
-		},
-	}
+	return { ClickRow(L["CLEAR_TRACKING"], "clear") }
 end
 
 --[[
@@ -293,8 +358,8 @@ end
 --[[
     While Farm Mode is on: where it stands and, while paused, why; the abilities
     to cycle, the conditions, and the two extras. Farm Mode Abilities lists what
-    this character knows, as the old Tracking Menu did; the options page lists
-    every ability for shared profiles. Cycle Speed stays on the options page:
+    this character knows; the options page lists every ability for shared
+    profiles. Cycle Speed stays on the options page:
     seventeen choices are a dropdown, not a menu.
 ]]
 function FLYOUTS.farm()
@@ -305,8 +370,7 @@ function FLYOUTS.farm()
 		return entries
 	end
 
-	-- Drawn before it shows, so the live own-menu check can't see this flyout yet: pass it in.
-	local reason, reasonState = ns.GetFarmPauseReason(true)
+	local reason, reasonState = ns.GetFarmPauseReason()
 	local status = Section(L["FARM_STATUS"])
 	if reason then
 		status.right, status.rightColor = L["FARM_STATUS_PAUSED"], "MUTED"
@@ -391,7 +455,7 @@ end
 --------------------------------------------------------------------------------
 
 --[[
-    A feature's block, as the old tooltip had it: the gold title with where it
+    A feature's block: the gold title with where it
     stands on the right, what the feature does, any note, any rows of its own
     (Persistent Tracking's abilities), a blue Toggle row, and any rows after it
     (Persistent Tracking's Clear Tracking). The title opens its
@@ -419,16 +483,21 @@ local function AddFeature(entries, key, title, right, rightColor, description, n
 			entries[#entries + 1] = row
 		end
 	end
-	entries[#entries + 1] = {
-		kind = "action",
-		left = L["MENU_TOGGLE"],
-		leftColor = "INFO",
-		tooltip = OptionTooltip(toggle.name, toggle.desc),
-		onClick = function()
-			toggle.flip()
-			AfterChange()
-		end,
-	}
+	-- The Toggle row names the button click that does the same, when the feature has one.
+	if toggle.click then
+		entries[#entries + 1] = ClickRow(L["MENU_TOGGLE"], toggle.click, OptionTooltip(toggle.name, toggle.desc))
+	else
+		entries[#entries + 1] = {
+			kind = "action",
+			left = L["MENU_TOGGLE"],
+			leftColor = "INFO",
+			tooltip = OptionTooltip(toggle.name, toggle.desc),
+			onClick = function()
+				toggle.flip()
+				AfterChange()
+			end,
+		}
+	end
 	if after then
 		for _, row in ipairs(after) do
 			entries[#entries + 1] = row
@@ -457,7 +526,7 @@ local function BuildMainEntries()
 			name = L["OPTIONS_ENABLE_PERSISTENT"],
 			desc = L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"],
 			flip = function()
-				profile.persistentTracking = not profile.persistentTracking
+				ns.SetPersistentTracking(not profile.persistentTracking)
 			end,
 		},
 		PersistentPickRows(),
@@ -467,7 +536,7 @@ local function BuildMainEntries()
 	-- Farm Mode: Active in green, Paused or Off in gray. Why it's paused is in its flyout's Farm Mode Status.
 	right, rightColor = OnOff(false)
 	if profile.farmMode then
-		if ns.GetFarmPauseReason(true) then
+		if ns.GetFarmPauseReason() then
 			right, rightColor = L["FARM_STATUS_PAUSED"], "MUTED"
 		else
 			right, rightColor = L["FARM_STATUS_ACTIVE"], "ON"
@@ -476,9 +545,7 @@ local function BuildMainEntries()
 	AddFeature(entries, "farm", L["TAB_FARM_MODE"], right, rightColor, L["MENU_FARM_DESCRIPTION"], nil, {
 		name = L["OPTIONS_ENABLE_FARM"],
 		desc = L["OPTIONS_ENABLE_FARM_DESCRIPTION"],
-		flip = function()
-			profile.farmMode = not profile.farmMode
-		end,
+		click = "farm",
 	})
 
 	--[[
@@ -499,24 +566,36 @@ local function BuildMainEntries()
 			{
 				name = L["OPTIONS_ENABLE_TARGET_TRACKING"],
 				desc = L["OPTIONS_ENABLE_TARGET_TRACKING_DESCRIPTION"],
-				flip = function()
-					ns.SetTargetTracking(not profile.targetTracking)
-				end,
+				click = "target",
 			}
 		)
 	end
 
+	--[[
+        More Features: the set-and-forget features from ns.FEATURES, one On/Off row
+        each. Come & Get It switches in place; Free Placement Mode opens its own
+        options panel, where its icon shape and size are set.
+    ]]
+	entries[#entries + 1] = { kind = "spacer" }
+	entries[#entries + 1] = Section(L["MENU_MORE_FEATURES"])
+	for _, feature in ipairs(ns.FEATURES) do
+		if not feature.block then
+			local store = ns.db[feature.store]
+			local row = Toggle(store, feature.setting, L[feature.name], L[feature.desc])
+			row.tooltip = OptionTooltip(L[feature.caption], L[feature.desc])
+			if feature.opensOptions then
+				row.onClick = function()
+					ns.HideMenu()
+					ns:OpenOptionsPanel(feature.opensOptions)
+				end
+			end
+			entries[#entries + 1] = row
+		end
+	end
+
 	entries[#entries + 1] = { kind = "spacer" }
 	entries[#entries + 1] = Separator()
-	entries[#entries + 1] = {
-		kind = "hint",
-		left = L["TOOLTIP_OPTIONS"],
-		right = L["OPEN"],
-		onClick = function()
-			ns.HideMenu()
-			ns:OpenOptionsPanel()
-		end,
-	}
+	entries[#entries + 1] = ClickRow(L["MENU_OPTIONS"], "options")
 	return entries
 end
 

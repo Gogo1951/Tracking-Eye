@@ -21,7 +21,6 @@ L["KEY_BINDINGS_LOCATION"] = "Öffnet das Spielmenü, dann %s, dann %s, und such
 -- Feature Names
 --------------------------------------------------------------------------------
 
-L["TRACKING_MENU"] = "Aufspürungsmenü"
 L["PERSISTENT_TRACKING"] = "Dauerhafte Aufspürung"
 L["TARGET_TRACKING"] = "Automatische Zielaufspürung"
 
@@ -67,13 +66,18 @@ L["CLEAR_TRACKING"] = "Aufspürung löschen"
 
 L["MENU_ON"] = "An"
 L["MENU_OFF"] = "Aus"
-L["OPEN"] = "Öffnen"
-L["MENU_PERSISTENT_DESCRIPTION"] = "Wählt Eure Dauerhafte Aufspürungsfähigkeit."
+L["MENU_PERSISTENT_DESCRIPTION"] =
+	"Bringt Eure Aufspürung nach dem Tod, einem Gestaltwechsel oder einem Zonenwechsel zurück."
 L["MENU_FARM_DESCRIPTION"] = "Wechselt unterwegs zwischen Euren Aufspürungsfähigkeiten."
 L["MENU_TARGET_DESCRIPTION"] = "Spürt die Art jeder Kreatur auf, die Ihr anvisiert."
 L["MENU_TOGGLE"] = "Umschalten"
+L["MENU_CLICK_RIGHT"] = "Rechtsklick"
+L["MENU_CLICK_SHIFT_LEFT"] = "Umschalt + Linksklick"
+L["MENU_CLICK_SHIFT_RIGHT"] = "Umschalt + Rechtsklick"
+L["MENU_CLICK_SHIFT_MIDDLE"] = "Umschalt + Mittelklick"
+L["MENU_MORE_FEATURES"] = "Weitere Funktionen"
 
-L["TOOLTIP_OPTIONS"] = "Tracking Eye-Optionen"
+L["MENU_OPTIONS"] = "Tracking Eye-Optionen"
 
 --------------------------------------------------------------------------------
 -- Key Bindings
@@ -81,7 +85,7 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye-Optionen"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Farming-Modus-Fähigkeit wechseln"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"Es sind keine Farming-Modus-Fähigkeiten angekreuzt. Kreuzt welche unter Optionen > Addons > Tracking Eye > Farming-Modus an."
+	"Es sind keine Farming-Modus-Fähigkeiten angekreuzt. Kreuzt welche unter Optionen > Addons > Tracking Eye > Farming-Modus > Fähigkeiten an."
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -103,12 +107,10 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Gibt im Chat eine einzeilige Begrüßung aus, wenn Tracking Eye geladen wird."
 L["OPTIONS_ENABLE_MINIMAP"] = "Minikarten-Button aktivieren"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Auch mit ausgeblendetem Button läuft alles weiter."
-
--- Slash Commands
-
-L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
-L["OPTIONS_COMMAND"] = "/te"
-L["OPTIONS_COMMAND_DESCRIPTION"] = "Öffnet die Optionsoberfläche für dieses Add-on."
+L["OPTIONS_HOOK_BLIZZARD"] = "Standard-Aufspürungsbutton verwenden"
+L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
+	"Der Standard-Aufspürungsbutton öffnet ebenfalls das Tracking Eye-Menü. Lasst die Option aus, wenn ein anderes Add-on diesen Button bereits nutzt."
+L["OPTIONS_FEATURES_HEADER"] = "Funktionen"
 
 -- Key Bindings
 
@@ -119,13 +121,11 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] =
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Springt mit einer Taste zur nächsten Aufspürungsfähigkeit, auch bei ausgeschaltetem Farming-Modus."
 
--- Tracking Menu
+-- Slash Commands
 
-L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
-	"Jede Aufspürungsfähigkeit, die Ihr beherrscht, in einem alphabetischen Menü. Was Ihr wählt, wird zu Eurer Dauerhaften Aufspürungsfähigkeit."
-L["OPTIONS_HOOK_BLIZZARD"] = "Standard-Aufspürungsbutton verwenden"
-L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"Der Standard-Aufspürungsbutton öffnet dieses Menü ebenfalls. Lasst die Option aus, wenn ein anderes Add-on diesen Button bereits nutzt."
+L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
+L["OPTIONS_COMMAND"] = "/te"
+L["OPTIONS_COMMAND_DESCRIPTION"] = "Öffnet die Optionsoberfläche für dieses Add-on."
 
 -- Persistent Tracking
 
@@ -173,7 +173,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 	"Kräuter und Erz auf derselben Minikarte. Der Farming-Modus wechselt unterwegs zwischen Euren Aufspürungsfähigkeiten, damit Euch kein Vorkommen entgeht."
 L["OPTIONS_ENABLE_FARM"] = "Farming-Modus aktivieren"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
-	"Pausiert von selbst im Kampf, in Städten, in Instanzen und auf Flügen. Fahrt mit der Maus über den Tracking Eye-Button, um den Grund zu sehen."
+	"Pausiert von selbst im Kampf, in Städten, in Instanzen und auf Flügen. Den Grund nennt Euch der Farming-Modus-Status im Minikartenmenü."
 L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Zaubergeräusche von Aufspürungsfähigkeiten stummschalten"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"Nur die Wechsel des Farming-Modus werden stumm. Aufspürung, die Ihr selbst wählt, ist weiterhin zu hören."
@@ -201,6 +201,7 @@ L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
 	"Jeder Wechsel kostet eine globale Abklingzeit, also kommt ein langsamerer Wechsel Euren eigenen Zaubern seltener in die Quere."
 L["OPTIONS_CYCLE_EVERY"] = "Alle %s Sekunden wechseln"
 L["OPTIONS_FARM_ABILITIES"] = "Farming-Modus-Fähigkeiten"
+L["TAB_FARM_ABILITIES"] = "Fähigkeiten"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Kreuzt an, was Ihr finden wollt. Der Farming-Modus wechselt durch jede angekreuzte Fähigkeit, die dieser Charakter beherrscht, und überspringt den Rest."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Berufe & Volksfähigkeiten"

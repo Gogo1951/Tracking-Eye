@@ -89,11 +89,12 @@ Diagnostics/Report-Runner.lua
 
 # Options
 Options/Options-Utilities.lua
-Options/Options-Target-Tracking.lua
-Options/Options-Free-Placement.lua
 Options/Options-General.lua
+Options/Options-Persistent-Tracking.lua
 Options/Options-Farm-Mode.lua
+Options/Options-Target-Tracking.lua
 Options/Options-Come-and-Get-It.lua
+Options/Options-Free-Placement.lua
 Options/Options-Profiles.lua
 Options/Options-Feedback-Support.lua
 Diagnostics/Options-Diagnostics.lua
