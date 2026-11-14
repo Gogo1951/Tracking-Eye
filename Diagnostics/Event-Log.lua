@@ -13,24 +13,42 @@ local EVENT_LOG_MAX_ARG_LENGTH = 255
 --[[
     Events ns:LogEvent drops before recording -- deliberately empty. The
     dispatcher only ever hands LogEvent the events Tracking Eye registers (Core's
-    ns.EVENT_NAMES). The one firehose among them, UI_ERROR_MESSAGE, is sometimes
-    signal, so it is classified per firing below rather than dropped here. The
-    lookup in LogEvent stays so a firehose can be excluded here if one is ever
-    registered; one that is sometimes signal and carries no id has its deciding
-    handler write those firings back through ns:LogEventNow. Generic offenders
+    ns.EVENT_NAMES). Its two firehoses, UI_ERROR_MESSAGE and
+    GET_ITEM_INFO_RECEIVED, are sometimes signal and carry an id, so each is
+    classified per firing below rather than dropped here. The lookup in LogEvent
+    stays so a firehose can be excluded here if one is ever registered; one that
+    is sometimes signal and carries no id has its deciding handler write those
+    firings back through ns:LogEventNow. Generic offenders
     (COMBAT_LOG_EVENT_UNFILTERED, UNIT_AURA, ...) do not belong here unless
     registered -- the log never sees an event the add-on didn't register.
 ]]
 ns.DIAGNOSTIC_EVENT_EXCLUDE = {}
 
 --[[
-    Events that carry a message id, and the argument position it arrives in,
-    for ns:SuppressUncorrelatedMessage to classify per firing rather than drop
-    wholesale. UI_ERROR_MESSAGE fires on every red error; the ones Come & Get It
-    acts on are its signal.
+    Events that carry an id, and the argument position it arrives in, for
+    ns:SuppressUncorrelatedMessage to classify per firing rather than drop
+    wholesale. UI_ERROR_MESSAGE fires on every red error, and the ones Come &
+    Get It acts on are its signal. GET_ITEM_INFO_RECEIVED fires for every item
+    the client loads, and the Come & Get It panel's sample herb is its signal.
 ]]
 ns.MESSAGE_ID_FILTERED_EVENTS = {
 	UI_ERROR_MESSAGE = 1,
+	GET_ITEM_INFO_RECEIVED = 1,
+}
+
+--[[
+    Per event, whether the add-on acts on a firing, read through the same check
+    its handler makes so the filter can never drift from the feature: Come & Get
+    It's ns.MatchError for an error, and the sample herb's id for an item load,
+    which ns.OnItemInfoReceived compares. text is nil unless it is plain.
+]]
+local CORRELATED = {
+	UI_ERROR_MESSAGE = function(messageID, text)
+		return ns.MatchError ~= nil and ns.MatchError(messageID, text) and true or false
+	end,
+	GET_ITEM_INFO_RECEIVED = function(itemID)
+		return itemID == ns.SAMPLE_HERB_ITEM_ID
+	end,
 }
 
 --[[
@@ -83,10 +101,8 @@ end
     the report, so firehose traffic can't evict the entries the log exists to
     carry. A secret id counts too. A plain firing carrying no numeric id in the
     filtered position is unclassifiable, and unclassifiable is signal: it logs
-    verbatim. A plain firing ns.MatchError correlates -- the exact lookup Come &
-    Get It acts on, so the filter can never drift from the feature -- logs in
-    full; it is handed the text only when that is plain too. The counter's text
-    is the argument after the id, or blank when none follows.
+    verbatim. A plain firing its event's CORRELATED check accepts logs in full.
+    The counter's text is the argument after the id, or blank when none follows.
 
     Returns true when the firing was counted and must not reach the buffer.
 ]]
@@ -103,7 +119,8 @@ function ns:SuppressUncorrelatedMessage(event, ...)
 	if select("#", ...) > idPosition then
 		text = select(idPosition + 1, ...)
 	end
-	if IsPlain(messageID) and ns.MatchError and ns.MatchError(messageID, IsPlain(text) and text or nil) then
+	local correlated = CORRELATED[event]
+	if IsPlain(messageID) and correlated and correlated(messageID, IsPlain(text) and text or nil) then
 		return false
 	end
 	CountUncorrelated(event, messageID, text)

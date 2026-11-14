@@ -9,6 +9,8 @@ local L = ns.L
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
+local REGISTRY = ns.OPTIONS_REGISTRY
+
 --------------------------------------------------------------------------------
 -- Slash Command
 --------------------------------------------------------------------------------
@@ -22,69 +24,76 @@ end
 -- Registration
 --------------------------------------------------------------------------------
 
-local mainPanel
-local mainCategoryID
-local farmModePanel
-local comeAndGetItPanel
-local profilesPanel
-local feedbackSupportPanel
-local diagnosticsPanel
+--[[
+    Registration is deferred to ns.RegisterOptionsPanels, called once from
+    Features/Core.lua after AceDB creates ns.db: the Profiles panel's tree label
+    is read from the stock AceDBOptions-3.0 table, which needs the database.
+
+    One panel per feature directly under the root, in the root panel's Features
+    order (ns.FEATURES):
+
+      Tracking Eye    (welcome, mini-map, Features, Key Bindings, /Commands)
+        Persistent Tracking
+        Farm Mode               Abilities
+        Target Tracking
+        Come & Get It
+        Free Placement Mode
+        Profiles, Feedback & Support, Diagnostic Tools
+
+    Child-panel order is the order of the AddToBlizOptions calls. The last
+    argument is the parent: the root's display name for a feature panel, or a
+    panel's category ID to nest a sub-panel a level deeper. AceConfigDialog maps
+    only root names to IDs, so a sub-panel passes the ID its parent's
+    registration returned; the Settings panel finds a category at any depth by
+    ID and indents each level.
+
+    AddToBlizOptions returns (frame, categoryID). Both are kept by registry key:
+    the frame so ns.IsOptionsPanelOpen can check it, the ID so
+    ns:OpenOptionsPanel can open any panel directly. A lookup by localized name
+    instead is fragile: AceConfigDialog only aliases category.ID to the display
+    name on clients that lack C_SettingsUtil.OpenSettingsPanel, and clients that
+    have that API keep a generated ID, so a name lookup returns nil.
+]]
+local frames = {}
+local categories = {}
+
+local function Register(registryKey, builder, displayName, parent)
+	AceConfigRegistry:RegisterOptionsTable(REGISTRY[registryKey], builder)
+	local frame, categoryID = AceConfigDialog:AddToBlizOptions(REGISTRY[registryKey], displayName, parent)
+	frames[registryKey] = frame
+	categories[registryKey] = categoryID
+	return categoryID
+end
+
+local function RegisterChild(registryKey, builder, displayName, parentID)
+	return Register(registryKey, builder, displayName, parentID or L["ADDON_TITLE"])
+end
 
 function ns.RegisterOptionsPanels()
-	AceConfigRegistry:RegisterOptionsTable(ns.OPTIONS_REGISTRY.General, ns.BuildGeneralOptions)
+	Register("General", ns.BuildGeneralOptions, L["ADDON_TITLE"])
+
+	RegisterChild("PersistentTracking", ns.BuildPersistentTrackingOptions, L["PERSISTENT_TRACKING"])
+	local farmModeID = RegisterChild("FarmMode", ns.BuildFarmModeOptions, L["TAB_FARM_MODE"])
+	RegisterChild("FarmAbilities", ns.BuildFarmAbilitiesOptions, L["TAB_FARM_ABILITIES"], farmModeID)
+	RegisterChild("TargetTracking", ns.BuildTargetTrackingOptions, L["TARGET_TRACKING"])
+	RegisterChild("ComeAndGetIt", ns.BuildComeAndGetItOptions, L["TAB_COME_AND_GET_IT"])
+	RegisterChild("FreePlacement", ns.BuildFreePlacementOptions, L["PLACEMENT_MODE"])
+
 	--[[
-        AddToBlizOptions returns (frame, categoryID). Capture the ID: it is what
-        Settings.OpenToCategory expects. Looking the category up by localized name
-        instead is fragile, because AceConfigDialog only aliases category.ID to the
-        display name on clients that lack C_SettingsUtil.OpenSettingsPanel. Clients
-        that have that API keep a generated ID, so a name lookup returns nil.
+        Profiles panel: the stock AceDBOptions-3.0 table, unmodified. Its display
+        name comes already-localized from AceDBOptions, read off the built table
+        so we neither hardcode it nor add a locale key for a stock widget.
     ]]
-	mainPanel, mainCategoryID = AceConfigDialog:AddToBlizOptions(ns.OPTIONS_REGISTRY.General, L["ADDON_TITLE"])
+	local profilesOptions = ns.BuildProfilesOptions()
+	RegisterChild("Profiles", profilesOptions, profilesOptions.name)
 
-	-- Farm Mode panel, registered after General so it sits directly beneath it.
-	if ns.BuildFarmModeOptions then
-		AceConfigRegistry:RegisterOptionsTable(ns.OPTIONS_REGISTRY.FarmMode, ns.BuildFarmModeOptions)
-		farmModePanel =
-			AceConfigDialog:AddToBlizOptions(ns.OPTIONS_REGISTRY.FarmMode, L["TAB_FARM_MODE"], L["ADDON_TITLE"])
-	end
+	RegisterChild("FeedbackSupport", ns.BuildFeedbackSupportOptions, L["OPTIONS_FEEDBACK"])
 
-	-- Come & Get It panel, registered after Farm Mode so it sits directly beneath it.
-	if ns.BuildComeAndGetItOptions then
-		AceConfigRegistry:RegisterOptionsTable(ns.OPTIONS_REGISTRY.ComeAndGetIt, ns.BuildComeAndGetItOptions)
-		comeAndGetItPanel = AceConfigDialog:AddToBlizOptions(
-			ns.OPTIONS_REGISTRY.ComeAndGetIt,
-			L["TAB_COME_AND_GET_IT"],
-			L["ADDON_TITLE"]
-		)
-	end
-
-	-- Profiles panel (the stock AceDBOptions table), registered after the feature panels.
-	if ns.BuildProfilesOptions then
-		local profilesTable = ns.BuildProfilesOptions()
-		AceConfigRegistry:RegisterOptionsTable(ns.OPTIONS_REGISTRY.Profiles, profilesTable)
-		profilesPanel =
-			AceConfigDialog:AddToBlizOptions(ns.OPTIONS_REGISTRY.Profiles, profilesTable.name, L["ADDON_TITLE"])
-	end
-
-	-- Feedback & Support panel, registered between Profiles and Diagnostic Tools.
-	if ns.BuildFeedbackSupportOptions then
-		AceConfigRegistry:RegisterOptionsTable(ns.OPTIONS_REGISTRY.FeedbackSupport, ns.BuildFeedbackSupportOptions)
-		feedbackSupportPanel = AceConfigDialog:AddToBlizOptions(
-			ns.OPTIONS_REGISTRY.FeedbackSupport,
-			L["OPTIONS_FEEDBACK"],
-			L["ADDON_TITLE"]
-		)
-	end
-
-	-- Diagnostic Tools panel, registered last so it sits at the bottom of the tree
-	if ns.BuildDiagnosticsOptions and ns.OPTIONS_REGISTRY then
-		AceConfigRegistry:RegisterOptionsTable(ns.OPTIONS_REGISTRY.Diagnostics, ns.BuildDiagnosticsOptions)
-		diagnosticsPanel = AceConfigDialog:AddToBlizOptions(
-			ns.OPTIONS_REGISTRY.Diagnostics,
-			ns.DiagnosticsStrings.TAB,
-			L["ADDON_TITLE"]
-		)
-	end
+	--[[
+        Diagnostic Tools last so it sits at the bottom of the tree. Its display
+        name is a plain English string, never a locale key.
+    ]]
+	RegisterChild("Diagnostics", ns.BuildDiagnosticsOptions, ns.DiagnosticsStrings.TAB)
 end
 
 --[[
@@ -101,41 +110,33 @@ end
     ancestor to be shown and so goes false the moment the Settings window closes.
 ]]
 function ns.IsOptionsPanelOpen()
-	return (mainPanel and mainPanel:IsVisible())
-		or (farmModePanel and farmModePanel:IsVisible())
-		or (comeAndGetItPanel and comeAndGetItPanel:IsVisible())
-		or (profilesPanel and profilesPanel:IsVisible())
-		or (feedbackSupportPanel and feedbackSupportPanel:IsVisible())
-		or (diagnosticsPanel and diagnosticsPanel:IsVisible())
-		or false
+	for _, frame in pairs(frames) do
+		if frame:IsVisible() then
+			return true
+		end
+	end
+	return false
 end
+
+--------------------------------------------------------------------------------
+-- Panel Navigation
+--------------------------------------------------------------------------------
 
 --[[
-    Redraw every registered panel. AceConfig only re-evaluates a widget's dynamic
-    name, disabled, or get callbacks when it redraws, so a setting changed from
-    outside the panel — the tracking menu, the mini-map button — leaves an open
-    page showing stale values until something calls this.
-]]
-function ns.RefreshOptionsPanels()
-	local registry = LibStub("AceConfigRegistry-3.0")
-	for _, name in pairs(ns.OPTIONS_REGISTRY) do
-		registry:NotifyChange(name)
-	end
-end
+    Opens the root panel, or the panel named by an ns.OPTIONS_REGISTRY key.
 
-function ns:OpenOptionsPanel()
-	--[[
-        Blizzard's Settings panel is protected in combat: without this gate the
-        player gets an ADDON_ACTION_BLOCKED error naming Tracking Eye. One gate in
-        front of the whole routing chain, and it returns rather than queueing —
-        a refusal the player asked for is printed every time.
-    ]]
+    Blizzard's Settings panel is protected in combat: without this gate the
+    player gets an ADDON_ACTION_BLOCKED error naming Tracking Eye. One gate in
+    front of the whole routing chain, and it returns rather than queueing — a
+    refusal the player asked for is printed every time.
+]]
+function ns:OpenOptionsPanel(panel)
 	if InCombatLockdown() then
 		ns:PrintMessage(L["CHAT_OPTIONS_IN_COMBAT"])
 		return
 	end
 
-	if not mainPanel and not mainCategoryID then
+	if not frames.General and not categories.General then
 		return
 	end
 
@@ -144,8 +145,9 @@ function ns:OpenOptionsPanel()
         title lookup, which returns nil wherever AceConfigDialog keeps a generated
         category ID and drops the panel into a floating standalone window.
     ]]
-	if Settings and Settings.OpenToCategory and mainCategoryID then
-		Settings.OpenToCategory(mainCategoryID)
+	local categoryID = categories[panel] or categories.General
+	if Settings and Settings.OpenToCategory and categoryID then
+		Settings.OpenToCategory(categoryID)
 		return
 	end
 
@@ -154,5 +156,5 @@ function ns:OpenOptionsPanel()
         ID. Opens a standalone window rather than the in-game Settings panel, so it
         is a visible symptom rather than a silent no-op.
     ]]
-	AceConfigDialog:Open(ns.OPTIONS_REGISTRY.General)
+	AceConfigDialog:Open(REGISTRY[panel] or REGISTRY.General)
 end

@@ -6,7 +6,7 @@ local _, ns = ...
 
 --[[
     Mid-play recasts. Post-resurrection recasts go through
-    RecastAfterResurrection instead.
+    ns.OnPlayerAlive instead.
 
     GetTrackingTexture cannot be trusted as a live "is tracking up?" source:
     during the login/reload storm it returns nil for 10+ seconds, and on Era
@@ -212,6 +212,14 @@ end
 -- Target Tracking brings the Persistent Tracking Ability back through this when a hunt ends.
 ns.TryRecastPersistent = TryRecastPersistent
 
+-- Shared by the options toggle and the mini-map menu: switching it on casts the ability.
+function ns.SetPersistentTracking(enabled)
+	ns.db.profile.persistentTracking = enabled
+	if enabled then
+		TryRecastPersistent()
+	end
+end
+
 --[[
     Shapeshift and tracking-change events arrive in bursts (a hunter's aspects
     fire UPDATE_SHAPESHIFT_FORM constantly), so a burst schedules one delayed
@@ -246,7 +254,7 @@ function ns.StartLoginGrace()
 	ns.state.enteredWorldAt = GetTime()
 	-- Logged out dead: the resurrection still to come needs its recast.
 	if UnitIsDeadOrGhost("player") then
-		ns.NoteDeath()
+		ns.OnPlayerDead()
 	end
 	C_Timer.After(LOGIN_GRACE_SECONDS + 1, TryRecastPersistent)
 end
@@ -285,7 +293,7 @@ end
 local resurrectRecastPending = false
 local awaitingResurrection = false
 
-function ns.NoteDeath()
+function ns.OnPlayerDead()
 	awaitingResurrection = true
 end
 
@@ -327,7 +335,7 @@ local function AttemptResurrectionRecast()
 	EndResurrectionRecast()
 end
 
-function ns.RecastAfterResurrection()
+function ns.OnPlayerAlive()
 	if not awaitingResurrection or resurrectRecastPending then
 		return
 	end

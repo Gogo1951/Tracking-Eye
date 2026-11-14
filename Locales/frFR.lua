@@ -21,7 +21,6 @@ L["KEY_BINDINGS_LOCATION"] = "Ouvrez le menu du jeu, puis %s, puis %s, et trouve
 -- Feature Names
 --------------------------------------------------------------------------------
 
-L["TRACKING_MENU"] = "Menu de pistage"
 L["PERSISTENT_TRACKING"] = "Pistage persistant"
 L["TARGET_TRACKING"] = "Pistage automatique de la cible"
 
@@ -67,13 +66,18 @@ L["CLEAR_TRACKING"] = "Effacer le pistage"
 
 L["MENU_ON"] = "Activé"
 L["MENU_OFF"] = "Désactivé"
-L["OPEN"] = "Ouvrir"
-L["MENU_PERSISTENT_DESCRIPTION"] = "Choisissez votre Capacité de pistage persistant."
+L["MENU_PERSISTENT_DESCRIPTION"] =
+	"Rétablit votre pistage après une mort, un changement de forme ou un changement de zone."
 L["MENU_FARM_DESCRIPTION"] = "Alterne vos capacités de pistage pendant vos déplacements."
 L["MENU_TARGET_DESCRIPTION"] = "Piste l'espèce de toute créature que vous ciblez."
 L["MENU_TOGGLE"] = "Basculer"
+L["MENU_CLICK_RIGHT"] = "Clic droit"
+L["MENU_CLICK_SHIFT_LEFT"] = "Maj + Clic gauche"
+L["MENU_CLICK_SHIFT_RIGHT"] = "Maj + Clic droit"
+L["MENU_CLICK_SHIFT_MIDDLE"] = "Maj + Clic milieu"
+L["MENU_MORE_FEATURES"] = "Autres fonctionnalités"
 
-L["TOOLTIP_OPTIONS"] = "Options de Tracking Eye"
+L["MENU_OPTIONS"] = "Options de Tracking Eye"
 
 --------------------------------------------------------------------------------
 -- Key Bindings
@@ -81,7 +85,7 @@ L["TOOLTIP_OPTIONS"] = "Options de Tracking Eye"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Changer de capacité du Mode de collecte"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"Aucune des Capacités du Mode de collecte n'est cochée. Cochez-en dans Options > Add-ons > Tracking Eye > Mode de collecte."
+	"Aucune des Capacités du Mode de collecte n'est cochée. Cochez-en dans Options > Add-ons > Tracking Eye > Mode de collecte > Capacités."
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -103,12 +107,10 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Affiche une ligne de bienvenue dans la fenêtre de discussion au chargement de Tracking Eye."
 L["OPTIONS_ENABLE_MINIMAP"] = "Activer le bouton de la minicarte"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Tout continue de fonctionner quand le bouton est masqué."
-
--- Slash Commands
-
-L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
-L["OPTIONS_COMMAND"] = "/te"
-L["OPTIONS_COMMAND_DESCRIPTION"] = "Ouvre l'interface des options de cet add-on."
+L["OPTIONS_HOOK_BLIZZARD"] = "Utiliser le bouton de pistage par défaut"
+L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
+	"Le bouton de pistage par défaut ouvre aussi le menu de Tracking Eye. Laissez l'option désactivée si un autre add-on utilise déjà ce bouton."
+L["OPTIONS_FEATURES_HEADER"] = "Fonctionnalités"
 
 -- Key Bindings
 
@@ -118,13 +120,11 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] = "Ouvre la liste des raccourcis clavier du jeu
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Passez à la capacité de pistage suivante d'une seule touche, même avec le Mode de collecte désactivé."
 
--- Tracking Menu
+-- Slash Commands
 
-L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
-	"Toutes vos capacités de pistage, dans un seul menu alphabétique. Celle que vous choisissez devient votre Capacité de pistage persistant."
-L["OPTIONS_HOOK_BLIZZARD"] = "Utiliser le bouton de pistage par défaut"
-L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"Le bouton de pistage par défaut ouvre aussi ce menu. Laissez l'option désactivée si un autre add-on utilise déjà ce bouton."
+L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
+L["OPTIONS_COMMAND"] = "/te"
+L["OPTIONS_COMMAND_DESCRIPTION"] = "Ouvre l'interface des options de cet add-on."
 
 -- Persistent Tracking
 
@@ -173,7 +173,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 	"Herbes et minerais sur la même minicarte. Le Mode de collecte alterne vos capacités de pistage pendant vos déplacements, pour qu'aucune ressource ne vous échappe."
 L["OPTIONS_ENABLE_FARM"] = "Activer le Mode de collecte"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
-	"Se met en pause tout seul en combat, en ville, en instance et pendant les vols. Survolez le bouton Tracking Eye pour savoir pourquoi."
+	"Se met en pause tout seul en combat, en ville, en instance et pendant les vols. L'État du Mode de collecte, dans le menu de la minicarte, vous dit pourquoi."
 L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Couper le son du lancement des capacités de pistage"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"Seuls les changements du Mode de collecte deviennent silencieux. Le pistage que vous choisissez vous-même garde son son."
@@ -202,6 +202,7 @@ L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
 	"Chaque changement coûte un temps de recharge global : un cycle plus lent gêne donc moins vos propres sorts."
 L["OPTIONS_CYCLE_EVERY"] = "Alterner toutes les %s secondes"
 L["OPTIONS_FARM_ABILITIES"] = "Capacités du Mode de collecte"
+L["TAB_FARM_ABILITIES"] = "Capacités"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Cochez ce que vous voulez trouver. Le Mode de collecte alterne chaque capacité cochée que ce personnage connaît et ignore le reste."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Métiers et compétences raciales"

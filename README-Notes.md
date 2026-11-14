@@ -22,11 +22,17 @@
 - **Instead:** The README's History carries both lead lines: the takeover line over LindenRyuujin's Tracking Eye, and the shoulders line over Come & Get It.
 - **Why:** Both are true of this add-on: Gogo1951 took it over from its original author and later rolled another Gogo1951 add-on into it.
 
-### Feature switches with their features
+### Menu screenshot under the TL;DR
 
-- **Departs from:** OPTIONS PANEL → Main Page Layout → Features, every feature's on/off switch two to a line.
-- **Instead:** Each feature's Enable toggle heads that feature's own section or options page, and the feature's other settings hide while it is off.
-- **Why:** A feature's settings mean nothing while it is off, so its switch sits with them and its section collapses to that one toggle.
+- **Departs from:** `09 - Optional Create README.md` → Image Handling, "Images live in the feature blocks, one per block, and nowhere else."
+- **Instead:** The README carries a screenshot of the mini-map menu directly under the TL;DR, ahead of the feature blocks.
+- **Why:** The menu is where every feature is switched, so players see it before they read about any one feature.
+
+### Free Placement Mode opens options
+
+- **Departs from:** MINIMAP MENU → Features Mirror, every More Features row a compact `toggle` that switches its feature.
+- **Instead:** Free Placement Mode's More Features row shows On or Off, but a click opens its options panel rather than switching it.
+- **Why:** Turning it on is only the start: the player drags the icon into place and picks its shape and size, all of which they do in options.
 
 ### Typed herb and ore match words
 

@@ -22,8 +22,12 @@ ns.LINKS = {
 ]]
 ns.OPTIONS_REGISTRY = {
 	General = ADDON_NAME,
+	PersistentTracking = ADDON_NAME .. "_PersistentTracking",
 	FarmMode = ADDON_NAME .. "_FarmMode",
+	FarmAbilities = ADDON_NAME .. "_FarmAbilities",
+	TargetTracking = ADDON_NAME .. "_TargetTracking",
 	ComeAndGetIt = ADDON_NAME .. "_ComeAndGetIt",
+	FreePlacement = ADDON_NAME .. "_FreePlacement",
 	Profiles = ADDON_NAME .. "_Profiles",
 	FeedbackSupport = ADDON_NAME .. "_FeedbackSupport",
 	Diagnostics = ADDON_NAME .. "_Diagnostics",

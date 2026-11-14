@@ -25,7 +25,7 @@ function ns:BuildDisplayContextReport()
 	-- Without the data object, login never registers a button and every repaint returns early.
 	lines[#lines + 1] = string.format("Data broker object: %s", ns.ldb and "present" or "MISSING")
 	lines[#lines + 1] = string.format("Minimap button created: %s", button and "yes" or "no")
-	-- ns.UpdatePlacement hides the button and the free-placement icon alike on a character with no tracking ability.
+	-- ns:ApplyMinimapButton hides the button and the free-placement icon alike on a character with no tracking ability.
 	lines[#lines + 1] = string.format("Knows a tracking ability: %s", tostring(ns.HasTrackingAbility()))
 	if button then
 		lines[#lines + 1] = string.format("Minimap button shown: %s", tostring(button:IsShown()))
@@ -152,8 +152,8 @@ end
 --[[
     Dumps the single AceDB-managed table (profiles, profileKeys, char, global)
     so a player can paste their exact configuration: every setting in each
-    profile, the Farm Mode Abilities list included, and in the account-wide
-    scope.
+    profile, the Farm Mode Abilities list included, and every account-wide
+    setting.
 ]]
 function ns:BuildSavedVariablesReport()
 	local lines = { GetClientHeader(), "", ns.SAVED_VARIABLES_NAME .. " = {" }

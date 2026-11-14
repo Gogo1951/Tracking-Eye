@@ -45,10 +45,11 @@ end
 
     Anything applied imperatively has to be repeated here — the placement, the
     scale and shape, the ticker interval, and the Blizzard button hook, none of
-    which re-read themselves — and a running Target Tracking hunt ends, bringing
-    the new profile's Persistent Tracking Ability back. It ends in NotifyChange for
-    every registered panel: without that, an options panel already on screen keeps
-    rendering the previous profile's values until the player clicks away and back.
+    which re-read themselves — and a running Target Tracking hunt ends. The new
+    profile's Persistent Tracking Ability is recast either way. It ends in
+    ns.RefreshSettings: without that, an options panel or menu already on screen
+    keeps showing the previous profile's values until the player clicks away and
+    back.
 ]]
 function ns:ApplyProfile()
 	-- The new profile's per-state toggles change what isFarming resolves to.
@@ -61,8 +62,8 @@ function ns:ApplyProfile()
 	if ns.RestartFarmTicker then
 		ns.RestartFarmTicker()
 	end
-	if ns.UpdatePlacement then
-		ns.UpdatePlacement()
+	if ns.ApplyMinimapButton then
+		ns:ApplyMinimapButton()
 	end
 	if ns.UpdateFreeFrameScale then
 		ns.UpdateFreeFrameScale()
@@ -76,11 +77,13 @@ function ns:ApplyProfile()
 	if ns.EndHunt then
 		ns.EndHunt(true)
 	end
+	-- EndHunt recasts only when a hunt was running.
+	if ns.TryRecastPersistent then
+		ns.TryRecastPersistent()
+	end
 	ns.UpdateIcon()
 
-	if ns.RefreshOptionsPanels then
-		ns.RefreshOptionsPanels()
-	end
+	ns.RefreshSettings()
 end
 
 --------------------------------------------------------------------------------
@@ -270,9 +273,9 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
 			ns.RestoreCycleSoundNow()
 		end
 	elseif event == "PLAYER_DEAD" then
-		ns.NoteDeath()
+		ns.OnPlayerDead()
 	elseif event == "PLAYER_UNGHOST" or event == "PLAYER_ALIVE" then
-		ns.RecastAfterResurrection()
+		ns.OnPlayerAlive()
 	elseif event == "PLAYER_STARTED_MOVING" then
 		if ns.OnPlayerStartedMoving then
 			ns.OnPlayerStartedMoving()
@@ -302,6 +305,11 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
 	elseif event == "UPDATE_BINDINGS" then
 		-- The General panel shows the bound key, and the player changes it in the game's own list.
 		LibStub("AceConfigRegistry-3.0"):NotifyChange(ns.OPTIONS_REGISTRY.General)
+	elseif event == "GET_ITEM_INFO_RECEIVED" then
+		-- Fires for every item the client loads; Come & Get It's handler ignores it unless its sample herb is loading.
+		if ns.OnItemInfoReceived then
+			ns.OnItemInfoReceived(arg1)
+		end
 	elseif event == "PLAYER_UPDATE_RESTING" then
 		--[[
                 Resting flipped (entered/left a city or inn). Re-run the farm
@@ -348,8 +356,8 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
 		end
 
 		if event == "SPELLS_CHANGED" or event == "PLAYER_ENTERING_WORLD" then
-			if ns.UpdatePlacement then
-				ns.UpdatePlacement()
+			if ns.ApplyMinimapButton then
+				ns:ApplyMinimapButton()
 			end
 			if ns.InvalidateFarmCache then
 				ns.InvalidateFarmCache()
@@ -413,6 +421,7 @@ ns.EVENT_NAMES = {
 	"PLAYER_TARGET_CHANGED",
 	"UI_ERROR_MESSAGE",
 	"UPDATE_BINDINGS",
+	"GET_ITEM_INFO_RECEIVED",
 }
 
 -- Unit-filtered events: register scoped to the player so the dispatcher isn't woken for other units' casts.

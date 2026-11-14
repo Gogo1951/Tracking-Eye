@@ -21,7 +21,6 @@ L["KEY_BINDINGS_LOCATION"] = "Abra o menu do jogo, depois %s, depois %s, e encon
 -- Feature Names
 --------------------------------------------------------------------------------
 
-L["TRACKING_MENU"] = "Menu de Rastreamento"
 L["PERSISTENT_TRACKING"] = "Rastreamento Persistente"
 L["TARGET_TRACKING"] = "Rastreamento Automático de Alvo"
 
@@ -67,13 +66,18 @@ L["CLEAR_TRACKING"] = "Limpar Rastreamento"
 
 L["MENU_ON"] = "Ligado"
 L["MENU_OFF"] = "Desligado"
-L["OPEN"] = "Abrir"
-L["MENU_PERSISTENT_DESCRIPTION"] = "Escolha a sua Habilidade de Rastreamento Persistente."
+L["MENU_PERSISTENT_DESCRIPTION"] =
+	"Traz o seu rastreamento de volta depois que você morre, muda de forma ou troca de zona."
 L["MENU_FARM_DESCRIPTION"] = "Alterna suas habilidades de rastreamento enquanto você viaja."
 L["MENU_TARGET_DESCRIPTION"] = "Rastreia a espécie de qualquer criatura que você tenha como alvo."
 L["MENU_TOGGLE"] = "Alternar"
+L["MENU_CLICK_RIGHT"] = "Clique Direito"
+L["MENU_CLICK_SHIFT_LEFT"] = "Shift + Clique Esquerdo"
+L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + Clique Direito"
+L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + Clique do Meio"
+L["MENU_MORE_FEATURES"] = "Mais Recursos"
 
-L["TOOLTIP_OPTIONS"] = "Opções do Tracking Eye"
+L["MENU_OPTIONS"] = "Opções do Tracking Eye"
 
 --------------------------------------------------------------------------------
 -- Key Bindings
@@ -81,7 +85,7 @@ L["TOOLTIP_OPTIONS"] = "Opções do Tracking Eye"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Alternar Habilidade do Modo de Coleta"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"Nenhuma Habilidade do Modo de Coleta está marcada. Marque algumas em Opções > AddOns > Tracking Eye > Modo de Coleta."
+	"Nenhuma Habilidade do Modo de Coleta está marcada. Marque algumas em Opções > AddOns > Tracking Eye > Modo de Coleta > Habilidades."
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -103,12 +107,10 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Exibe no bate-papo uma saudação de uma linha quando o Tracking Eye é carregado."
 L["OPTIONS_ENABLE_MINIMAP"] = "Habilitar Botão do Minimapa"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Tudo continua funcionando com o botão oculto."
-
--- Slash Commands
-
-L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
-L["OPTIONS_COMMAND"] = "/te"
-L["OPTIONS_COMMAND_DESCRIPTION"] = "Abre a Interface de Opções deste add-on."
+L["OPTIONS_HOOK_BLIZZARD"] = "Usar o Botão de Rastreamento Padrão"
+L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
+	"O botão de rastreamento padrão também abre o menu do Tracking Eye. Deixe desativado se outro add-on já usa esse botão."
+L["OPTIONS_FEATURES_HEADER"] = "Recursos"
 
 -- Key Bindings
 
@@ -119,13 +121,11 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] =
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Pule para a próxima habilidade de rastreamento com uma só tecla, mesmo com o Modo de Coleta desligado."
 
--- Tracking Menu
+-- Slash Commands
 
-L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
-	"Todas as habilidades de rastreamento que você conhece, em um único menu em ordem alfabética. A que você escolher vira a sua Habilidade de Rastreamento Persistente."
-L["OPTIONS_HOOK_BLIZZARD"] = "Usar o Botão de Rastreamento Padrão"
-L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"O botão de rastreamento padrão também abre este menu. Deixe desativado se outro add-on já usa esse botão."
+L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
+L["OPTIONS_COMMAND"] = "/te"
+L["OPTIONS_COMMAND_DESCRIPTION"] = "Abre a Interface de Opções deste add-on."
 
 -- Persistent Tracking
 
@@ -173,7 +173,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 	"Plantas e minérios no mesmo minimapa. O Modo de Coleta alterna suas habilidades de rastreamento enquanto você viaja, para que nenhum ponto de coleta passe despercebido."
 L["OPTIONS_ENABLE_FARM"] = "Habilitar Modo de Coleta"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
-	"Pausa sozinho em combate, em cidades, em instâncias e durante voos. Passe o mouse sobre o botão do Tracking Eye para ver o motivo."
+	"Pausa sozinho em combate, em cidades, em instâncias e durante voos. O Status do Modo de Coleta, no menu do minimapa, diz o motivo."
 L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Silenciar Sons da Conjuração de Habilidades de Rastreamento"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"Só as trocas do próprio Modo de Coleta ficam em silêncio. O rastreamento que você mesmo escolhe continua com som."
@@ -200,6 +200,7 @@ L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
 	"Cada troca custa um tempo de recarga global, então um ciclo mais lento atrapalha menos as suas próprias conjurações."
 L["OPTIONS_CYCLE_EVERY"] = "Alternar a Cada %s Segundos"
 L["OPTIONS_FARM_ABILITIES"] = "Habilidades do Modo de Coleta"
+L["TAB_FARM_ABILITIES"] = "Habilidades"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Marque o que você quer encontrar. O Modo de Coleta alterna cada habilidade marcada que este personagem conhece e ignora o resto."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Profissões e Habilidades Raciais"

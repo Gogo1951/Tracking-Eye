@@ -20,7 +20,6 @@ L["KEY_BINDINGS_LOCATION"] = "Open the game menu, then %s, then %s, and find the
 -- Feature Names
 --------------------------------------------------------------------------------
 
-L["TRACKING_MENU"] = "Tracking Menu"
 L["PERSISTENT_TRACKING"] = "Persistent Tracking"
 L["TARGET_TRACKING"] = "Automatic Target Tracking"
 
@@ -66,13 +65,17 @@ L["CLEAR_TRACKING"] = "Clear Tracking"
 
 L["MENU_ON"] = "On"
 L["MENU_OFF"] = "Off"
-L["OPEN"] = "Open"
-L["MENU_PERSISTENT_DESCRIPTION"] = "Choose your Persistent Tracking Ability."
+L["MENU_PERSISTENT_DESCRIPTION"] = "Brings your tracking back after you die, shapeshift, or zone."
 L["MENU_FARM_DESCRIPTION"] = "Cycles your tracking abilities as you travel."
 L["MENU_TARGET_DESCRIPTION"] = "Tracks whatever kind of creature you target."
 L["MENU_TOGGLE"] = "Toggle"
+L["MENU_CLICK_RIGHT"] = "Right-Click"
+L["MENU_CLICK_SHIFT_LEFT"] = "Shift + Left-Click"
+L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + Right-Click"
+L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + Middle-Click"
+L["MENU_MORE_FEATURES"] = "More Features"
 
-L["TOOLTIP_OPTIONS"] = "Tracking Eye Options"
+L["MENU_OPTIONS"] = "Tracking Eye Options"
 
 --------------------------------------------------------------------------------
 -- Key Bindings
@@ -80,7 +83,7 @@ L["TOOLTIP_OPTIONS"] = "Tracking Eye Options"
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Cycle Farm Mode Ability"
 L["BINDING_NOTHING_TO_CYCLE"] =
-	"No Farm Mode Abilities are ticked. Tick some under Options > AddOns > Tracking Eye > Farm Mode."
+	"No Farm Mode Abilities are ticked. Tick some under Options > AddOns > Tracking Eye > Farm Mode > Abilities."
 
 --------------------------------------------------------------------------------
 -- Options Interface
@@ -101,12 +104,10 @@ L["OPTIONS_ENABLE_WELCOME"] = "Enable Welcome Message"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Prints a one-line greeting in chat when Tracking Eye loads."
 L["OPTIONS_ENABLE_MINIMAP"] = "Enable Mini-map Button"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Everything keeps running with the button hidden."
-
--- Slash Commands
-
-L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
-L["OPTIONS_COMMAND"] = "/te"
-L["OPTIONS_COMMAND_DESCRIPTION"] = "Opens the Options Interface for this add-on."
+L["OPTIONS_HOOK_BLIZZARD"] = "Use the Default Tracking Button"
+L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
+	"The default tracking button opens the Tracking Eye menu too. Leave it off if another add-on already uses that button."
+L["OPTIONS_FEATURES_HEADER"] = "Features"
 
 -- Key Bindings
 
@@ -115,13 +116,11 @@ L["OPTIONS_KEY_SET"] = "Set Key"
 L["OPTIONS_KEY_SET_DESCRIPTION"] = "Opens the game's key binding list, where Tracking Eye has its own section."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] = "Jump to the next tracking ability with one key, even with Farm Mode off."
 
--- Tracking Menu
+-- Slash Commands
 
-L["OPTIONS_TRACKING_MENU_DESCRIPTION"] =
-	"Every tracking ability you know, in one alphabetical menu. Whatever you pick becomes your Persistent Tracking Ability."
-L["OPTIONS_HOOK_BLIZZARD"] = "Use the Default Tracking Button"
-L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
-	"The default tracking button opens this menu too. Leave it off if another add-on already uses that button."
+L["OPTIONS_COMMANDS_HEADER"] = "/Commands"
+L["OPTIONS_COMMAND"] = "/te"
+L["OPTIONS_COMMAND_DESCRIPTION"] = "Opens the Options Interface for this add-on."
 
 -- Persistent Tracking
 
@@ -168,7 +167,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 	"Herbs and ore on the same mini-map. Farm Mode flips between your tracking abilities while you travel, so no node slips past."
 L["OPTIONS_ENABLE_FARM"] = "Enable Farm Mode"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
-	"Pauses on its own in combat, towns, instances, and on flights. Hover the Tracking Eye button to see why."
+	"Pauses on its own in combat, towns, instances, and on flights. Farm Mode Status in the mini-map menu says why."
 L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Silence Sounds From Tracking Ability Casts"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"Only Farm Mode's own switches go quiet. Tracking you pick yourself still makes its sound."
@@ -194,6 +193,7 @@ L["OPTIONS_CYCLE_SPEED_DESCRIPTION"] =
 	"Each switch costs a global cooldown, so a slower cycle clashes less with your own casts."
 L["OPTIONS_CYCLE_EVERY"] = "Cycle Every %s Seconds"
 L["OPTIONS_FARM_ABILITIES"] = "Farm Mode Abilities"
+L["TAB_FARM_ABILITIES"] = "Abilities"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Tick what you want to find. Farm Mode cycles every ticked ability this character knows and skips the rest."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Professions & Racial Abilities"

@@ -194,8 +194,9 @@ end
 --[[
     Avoids raw GetTrackingTexture comparisons: the Era mirror lags real state by
     up to minutes, so it's consulted only as positive confirmation, never as a
-    gate. The cycle compares against ns.state.lastCastSpell (written only from
-    UNIT_SPELLCAST_SUCCEEDED), reliable on every client. Recasting an active
+    gate. The cycle compares against ns.state.lastCastSpell (set through
+    ns.SetLastCast, mainly from UNIT_SPELLCAST_SUCCEEDED), reliable on every
+    client. Recasting an active
     spell is a harmless refresh, so the check only avoids burning a GCD on a no-op.
 ]]
 function ns.RunFarmLogic()
@@ -214,16 +215,17 @@ function ns.RunFarmLogic()
 		ns.UpdateIcon()
 	end
 
+	-- Nothing to do with Farm Mode off and no run left to wind down, so skip the hold checks below.
+	if not ns.db or (not ns.db.profile.farmMode and not ns.state.wasFarming) then
+		return
+	end
+
 	if ns.IsOptionsPanelOpen and ns.IsOptionsPanelOpen() then
 		return
 	end
 
 	-- Hold while any window is open, something attackable is targeted, any tooltip shows, or our own menu is open.
 	if ns.IsBlockingWindowOpen() or ns.HasAttackableTarget() or ns.IsTooltipShowing() or ns.IsOwnMenuShowing() then
-		return
-	end
-
-	if not ns.db then
 		return
 	end
 
