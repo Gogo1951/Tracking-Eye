@@ -69,6 +69,17 @@ end
 -- ns:ApplyMinimapButton (Minimap-Button.lua) re-anchors the frame through this before showing it.
 ns.ApplyFreePosition = ApplyFreePosition
 
+-- The options' Reset: forget the saved spot, so ApplyFreePosition puts the icon back in the middle of the screen.
+function ns.ResetFreeFramePosition()
+	if not ns.db then
+		return
+	end
+	ns.db.global.freePos = nil
+	if ns.freeFrame then
+		ApplyFreePosition(ns.freeFrame)
+	end
+end
+
 --------------------------------------------------------------------------------
 -- Scale & Shape
 --------------------------------------------------------------------------------
@@ -166,6 +177,8 @@ function ns.CreateFreeFrame()
 	frame:SetScript("OnClick", ns.HandleLauncherClick)
 	-- The menu closes itself once the cursor leaves, so there is no OnLeave.
 	frame:SetScript("OnEnter", ns.HandleLauncherEnter)
+	frame:EnableMouseWheel(true)
+	frame:SetScript("OnMouseWheel", ns.HandleLauncherWheel)
 
 	ns.freeFrame = frame
 	--[[

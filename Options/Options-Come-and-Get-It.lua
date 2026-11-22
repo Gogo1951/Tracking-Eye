@@ -102,8 +102,7 @@ local function RenderExample()
 		prefix = "[1. " .. (channelName or L["OPTIONS_OUTPUT_CHANNEL1"]) .. "] " .. sender .. color .. ": "
 	end
 
-	local line = color .. prefix .. body .. "|r"
-	return GetColor("HELP") .. L["SAMPLE_EXAMPLE"]:format(line .. GetColor("HELP")) .. "|r"
+	return color .. prefix .. body .. "|r"
 end
 
 --------------------------------------------------------------------------------
@@ -177,14 +176,7 @@ function ns.BuildComeAndGetItOptions()
 					},
 				},
 			},
-			spaceExample = ComeAndGetItSpacer(6),
-			exampleOutput = {
-				type = "description",
-				name = RenderExample,
-				fontSize = "medium",
-				order = 7,
-				hidden = ComeAndGetItOff,
-			},
+			exampleOutput = ns.OptionsExample(6, ComeAndGetItOff, RenderExample),
 		},
 	}
 end

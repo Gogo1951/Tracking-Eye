@@ -31,6 +31,9 @@ L["TARGET_TRACKING"] = "Automatische Zielaufspürung"
 L["FARM_STATUS"] = "Farming-Modus-Status"
 L["FARM_STATUS_ACTIVE"] = "Aktiv"
 L["FARM_STATUS_PAUSED"] = "Pausiert"
+L["MENU_TRACKING_NOW"] = "Aktuelle Aufspürung"
+L["MENU_TRACKING_NONE"] = "Nichts"
+L["MENU_CYCLE_SPEED_EVERY"] = "Wechselgeschwindigkeit: alle %s Sekunden"
 
 L["FARM_PAUSED_DEAD"] = "Ihr seid tot."
 L["FARM_PAUSED_TAXI"] = "Auf einer Flugroute."
@@ -75,6 +78,7 @@ L["MENU_CLICK_RIGHT"] = "Rechtsklick"
 L["MENU_CLICK_SHIFT_LEFT"] = "Umschalt + Linksklick"
 L["MENU_CLICK_SHIFT_RIGHT"] = "Umschalt + Rechtsklick"
 L["MENU_CLICK_SHIFT_MIDDLE"] = "Umschalt + Mittelklick"
+L["MENU_CLICK_WHEEL"] = "Mausrad"
 L["MENU_MORE_FEATURES"] = "Weitere Funktionen"
 
 L["MENU_OPTIONS"] = "Tracking Eye-Optionen"
@@ -84,6 +88,8 @@ L["MENU_OPTIONS"] = "Tracking Eye-Optionen"
 --------------------------------------------------------------------------------
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Farming-Modus-Fähigkeit wechseln"
+L["BINDING_TOGGLE_FARM_MODE"] = "Farming-Modus ein/aus"
+L["BINDING_TOGGLE_TARGET_TRACKING"] = "Automatische Zielaufspürung ein/aus"
 L["BINDING_NOTHING_TO_CYCLE"] =
 	"Es sind keine Farming-Modus-Fähigkeiten angekreuzt. Kreuzt welche unter Optionen > Addons > Tracking Eye > Farming-Modus > Fähigkeiten an."
 
@@ -107,6 +113,8 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Gibt im Chat eine einzeilige Begrüßung aus, wenn Tracking Eye geladen wird."
 L["OPTIONS_ENABLE_MINIMAP"] = "Minikarten-Button aktivieren"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Auch mit ausgeblendetem Button läuft alles weiter."
+L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
+	"%s ist an, daher nimmt sein Symbol den Platz des Buttons ein. Der Schalter befindet sich auf der Seite %s."
 L["OPTIONS_HOOK_BLIZZARD"] = "Standard-Aufspürungsbutton verwenden"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
 	"Der Standard-Aufspürungsbutton öffnet ebenfalls das Tracking Eye-Menü. Lasst die Option aus, wenn ein anderes Add-on diesen Button bereits nutzt."
@@ -120,6 +128,10 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] =
 	"Öffnet die Liste der Tastaturbelegungen des Spiels, in der Tracking Eye einen eigenen Abschnitt hat."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Springt mit einer Taste zur nächsten Aufspürungsfähigkeit, auch bei ausgeschaltetem Farming-Modus."
+L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
+	"Schaltet den Farming-Modus ein oder aus, genau wie Umschalt + Linksklick auf den Minikarten-Button."
+L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
+	"Schaltet die Automatische Zielaufspürung ein oder aus, genau wie Umschalt + Rechtsklick auf den Minikarten-Button."
 
 -- Slash Commands
 
@@ -165,6 +177,9 @@ L["OPTIONS_SHAPE_CIRCLE"] = "Kreis"
 L["OPTIONS_SHAPE_SQUARE"] = "Quadrat"
 L["OPTIONS_ICON_SCALE"] = "Symbolgröße"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "Skaliert an Ort und Stelle, sodass das Symbol seinen Platz behält."
+L["OPTIONS_ICON_POSITION"] = "Symbolposition"
+L["OPTIONS_RESET"] = "Zurücksetzen"
+L["OPTIONS_ICON_POSITION_RESET_DESCRIPTION"] = "Setzt das Symbol zurück in die Mitte Eures Bildschirms."
 
 -- Farm Mode
 
@@ -204,6 +219,8 @@ L["OPTIONS_FARM_ABILITIES"] = "Farming-Modus-Fähigkeiten"
 L["TAB_FARM_ABILITIES"] = "Fähigkeiten"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Kreuzt an, was Ihr finden wollt. Der Farming-Modus wechselt durch jede angekreuzte Fähigkeit, die dieser Charakter beherrscht, und überspringt den Rest."
+L["OPTIONS_FEATURE_OFF_STATUS"] =
+	"%s ist aus, daher werden diese Einstellungen nicht verwendet. Der Schalter befindet sich auf der Seite %s."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Berufe & Volksfähigkeiten"
 L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] = "Wechselt nur in %s, was als Nicht beritten zählt."
 L["OPTIONS_FARM_PERSISTENT"] = "Dauerhafte Aufspürungsfähigkeit einbeziehen"
@@ -249,7 +266,7 @@ L["MSG_FORMAT_HERB"] = "Hey Kräuterkundige! %s bei %s, %s in %s."
 L["MSG_FORMAT_MINE"] = "Hey Bergleute! %s bei %s, %s in %s."
 
 L["CHAT_TOO_LONG"] =
-	"Dieser Entwurf hat %d Bytes und überschreitet das Chat-Limit von %d Bytes. Kürzt ihn vor dem Senden."
+	"Diese Meldung ist zu lang für den Chat, daher sendet das Spiel sie nicht. Kürzt sie, bevor Ihr Enter drückt."
 
 -- Options
 
@@ -264,7 +281,7 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"Gilde erreicht jedes Gildenmitglied, das online ist, egal auf welchem Layer oder in welcher Zone."
 L["OPTIONS_OUTPUT_NOTE"] = "Hinweis: %s erreicht nur Spieler auf Eurem Layer."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Lokal (/1)"
-L["SAMPLE_EXAMPLE"] = "Beispiel: %s"
+L["SAMPLE_EXAMPLE"] = "Beispiel"
 L["SAMPLE_LOADING_ITEM"] = "Lade ID: %d"
 
 --------------------------------------------------------------------------------

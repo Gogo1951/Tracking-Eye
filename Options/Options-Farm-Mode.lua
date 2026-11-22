@@ -8,9 +8,9 @@ local SubRow, SubLabel = ns.OptionsSubRow, ns.OptionsSubLabel
 -- Sized to its caption with slack; never the full row width. See ns.OptionsSubRow.
 local SUB_TOGGLE_WIDTH = 2.4
 
--- The interval dropdown is sized to its longest caption with slack; its label takes the rest of the row.
+-- Cycle Speed's sub-row: its caption and the interval dropdown, each sized to its text with slack. See ns.OptionsSubRow.
+local CYCLE_LABEL_WIDTH = 0.9
 local CYCLE_SELECT_WIDTH = 1.6
-local CYCLE_LABEL_WIDTH = ns.OPTIONS_ROW_WIDTH - CYCLE_SELECT_WIDTH
 
 --[[
     Cycle interval choices, 2 to 10 seconds in half-second steps, built once at
@@ -21,11 +21,9 @@ local CYCLE_LABEL_WIDTH = ns.OPTIONS_ROW_WIDTH - CYCLE_SELECT_WIDTH
 ]]
 local CYCLE_VALUES = {}
 local CYCLE_SORTING = {}
-for halfSeconds = 4, 20 do
-	local seconds = halfSeconds * 0.5
-	-- One decimal throughout, except a bare "10" at the top of the range.
-	local shown = seconds == 10 and "10" or string.format("%.1f", seconds)
-	CYCLE_VALUES[seconds] = L["OPTIONS_CYCLE_EVERY"]:format(shown)
+for halfSeconds = ns.FARM_INTERVAL_MIN * 2, ns.FARM_INTERVAL_MAX * 2 do
+	local seconds = halfSeconds * ns.FARM_INTERVAL_STEP
+	CYCLE_VALUES[seconds] = L["OPTIONS_CYCLE_EVERY"]:format(ns.FormatFarmInterval(seconds))
 	CYCLE_SORTING[#CYCLE_SORTING + 1] = seconds
 end
 
@@ -246,7 +244,7 @@ end
 -- Farm Mode Panel
 --------------------------------------------------------------------------------
 
--- Page order: the description, the switch and its sub-options, then Conditions and Cycle Speed.
+-- Page order: the description, the switch and its sub-options (Cycle Speed among them), then Conditions.
 function ns.BuildFarmModeOptions()
 	local args = {
 		descFarm = ns.OptionsDesc(L["OPTIONS_FARM_MODE_DESCRIPTION"], 1),
@@ -290,9 +288,37 @@ function ns.BuildFarmModeOptions()
 				end,
 			},
 		}),
+		cycleSpeedRow = SubRow(3.3, FarmOff, {
+			RowLabel(SubLabel(L["OPTIONS_CYCLE_SPEED"]), 1, CYCLE_LABEL_WIDTH),
+			{
+				type = "select",
+				name = "",
+				desc = L["OPTIONS_CYCLE_SPEED_DESCRIPTION"],
+				width = CYCLE_SELECT_WIDTH,
+				style = "dropdown",
+				values = CYCLE_VALUES,
+				sorting = CYCLE_SORTING,
+				get = function()
+					local interval = ns.db and ns.db.profile.farmInterval
+					--[[
+						A stored value that is not one of the choices renders the
+						dropdown blank, so fall back to the default for display. The
+						ticker keeps using whatever is stored until the player picks.
+					]]
+					return CYCLE_VALUES[interval] and interval or ns.DATABASE_DEFAULTS.profile.farmInterval
+				end,
+				set = function(_, value)
+					if ns.db then
+						ns.db.profile.farmInterval = value
+					end
+					ns.RestartFarmTicker()
+					ns.RefreshSettings()
+				end,
+			},
+		}),
 		spaceFarmModeEnable = FarmSpacer(3.5),
 
-		-- Conditions and Cycle Speed; Abilities have a panel of their own, under this one.
+		-- Conditions; Abilities have a panel of their own, under this one.
 		headerFarmActivate = ns.OptionsHeader(L["OPTIONS_FARM_CONDITIONS"], 20, FarmOff),
 		spaceFarmActivate = FarmSpacer(20.5),
 		descFarmActivate = FarmDesc(L["OPTIONS_FARM_CONDITIONS_DESCRIPTION"], 20.6),
@@ -345,44 +371,6 @@ function ns.BuildFarmModeOptions()
 			25,
 			"ghostWolf"
 		),
-		spaceCycleSpeed = FarmSpacer(25.5),
-		-- An unnamed inline group, so the label and its dropdown hide as one row.
-		cycleSpeedRow = {
-			type = "group",
-			name = "",
-			inline = true,
-			order = 25.6,
-			hidden = FarmOff,
-			args = {
-				label = RowLabel(L["OPTIONS_CYCLE_SPEED"], 1, CYCLE_LABEL_WIDTH),
-				interval = {
-					type = "select",
-					name = "",
-					desc = L["OPTIONS_CYCLE_SPEED_DESCRIPTION"],
-					width = CYCLE_SELECT_WIDTH,
-					order = 2,
-					style = "dropdown",
-					values = CYCLE_VALUES,
-					sorting = CYCLE_SORTING,
-					get = function()
-						local interval = ns.db and ns.db.profile.farmInterval
-						--[[
-								A stored value that is not one of the choices renders the
-								dropdown blank, so fall back to the default for display. The
-								ticker keeps using whatever is stored until the player picks.
-							]]
-						return CYCLE_VALUES[interval] and interval or ns.DATABASE_DEFAULTS.profile.farmInterval
-					end,
-					set = function(_, value)
-						if ns.db then
-							ns.db.profile.farmInterval = value
-						end
-						ns.RestartFarmTicker()
-						ns.RefreshSettings()
-					end,
-				},
-			},
-		},
 	}
 	return {
 		type = "group",
@@ -397,12 +385,23 @@ end
 
 --[[
     Under Farm Mode: which abilities the cycle rotates through. Page order: the
-    description, Include Persistent Tracking Ability, then one group per source.
+    status line while Farm Mode is off, the description, Include Persistent
+    Tracking Ability, then one group per source.
     Its title names its parent (ns.SubPanelTitle); the tree label is the plain
     name.
 ]]
 function ns.BuildFarmAbilitiesOptions()
 	local args = {
+		-- Only while Farm Mode is off; the ticks below stay editable, so they can be set up first.
+		statusFarmOff = ns.OptionsStatusLine(function()
+			if not FarmOff() then
+				return nil
+			end
+			return L["OPTIONS_FEATURE_OFF_STATUS"]:format(ns.OptionsStatusName(L["TAB_FARM_MODE"]), L["TAB_FARM_MODE"])
+		end, 0.5),
+		spaceStatusFarmOff = ns.OptionsSpacer(0.6, function()
+			return not FarmOff()
+		end),
 		descFarmAbilities = ns.OptionsDesc(L["OPTIONS_FARM_ABILITIES_DESCRIPTION"], 1),
 		spaceFarmAbilities = ns.OptionsSpacer(2),
 	}

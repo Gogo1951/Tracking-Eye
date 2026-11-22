@@ -8,7 +8,7 @@ local format = string.format
 --------------------------------------------------------------------------------
 
 --[[
-    Both globals here are demanded by WoW's binding system and exist nowhere else
+    The globals here are demanded by WoW's binding system and exist nowhere else
     in the add-on: Bindings.xml can only call a global function, and a binding's
     display name must be a BINDING_NAME_<name> global matching the element's
     `name` attribute.
@@ -19,6 +19,17 @@ local format = string.format
 ]]
 
 BINDING_NAME_TRACKINGEYE_CYCLE_FARM_ABILITY = L["BINDING_CYCLE_FARM_ABILITY"]
+BINDING_NAME_TRACKINGEYE_TOGGLE_FARM_MODE = L["BINDING_TOGGLE_FARM_MODE"]
+BINDING_NAME_TRACKINGEYE_TOGGLE_TARGET_TRACKING = L["BINDING_TOGGLE_TARGET_TRACKING"]
+
+-- The same jobs as Shift + Left-Click and Shift + Right-Click on the button (Minimap-Menu.lua's click table).
+function TrackingEye_ToggleFarmMode()
+	ns.RunClickJob("farm")
+end
+
+function TrackingEye_ToggleTargetTracking()
+	ns.RunClickJob("target")
+end
 
 -- ns.GetEmptyCycleKind -> the chat line that explains an empty cycle.
 local EMPTY_CYCLE_MESSAGES = {

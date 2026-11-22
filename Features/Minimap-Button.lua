@@ -71,6 +71,20 @@ function ns.HandleLauncherEnter(self)
 	ns.ShowMenu(self, nil, "hover")
 end
 
+--[[
+    The mouse wheel sets Cycle Speed, half a second a notch: up cycles faster,
+    down slower. The menu opens on Farm Mode's flyout, whose Cycle Speed row
+    shows the new value and names the wheel.
+]]
+function ns.HandleLauncherWheel(self, delta)
+	if not ns.db then
+		return
+	end
+	ns.SetFarmInterval(ns.db.profile.farmInterval - delta * ns.FARM_INTERVAL_STEP)
+	ns.RefreshSettings()
+	ns.ShowMenu(self, ns.db.profile.farmMode and "farm" or nil, "hover")
+end
+
 --------------------------------------------------------------------------------
 -- Initialization
 --------------------------------------------------------------------------------
@@ -99,6 +113,10 @@ function ns.InitMinimap()
 			button's icon.
 		]]
 		local fitButton = LibDBIcon:GetMinimapButton(ADDON_NAME)
+		if fitButton then
+			fitButton:EnableMouseWheel(true)
+			fitButton:SetScript("OnMouseWheel", ns.HandleLauncherWheel)
+		end
 		if (ns.FLAVOR == "Camelot" or ns.FLAVOR == "Mainline") and fitButton and fitButton.icon then
 			fitButton.icon:SetSize(20, 20)
 			fitButton.icon:ClearAllPoints()

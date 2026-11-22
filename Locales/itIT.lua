@@ -31,6 +31,9 @@ L["TARGET_TRACKING"] = "Tracciamento Automatico del Bersaglio"
 L["FARM_STATUS"] = "Stato della Modalità Raccolta"
 L["FARM_STATUS_ACTIVE"] = "Attiva"
 L["FARM_STATUS_PAUSED"] = "In pausa"
+L["MENU_TRACKING_NOW"] = "Tracciamento Attuale"
+L["MENU_TRACKING_NONE"] = "Niente"
+L["MENU_CYCLE_SPEED_EVERY"] = "Velocità del Ciclo: Ogni %s Secondi"
 
 L["FARM_PAUSED_DEAD"] = "Sei morto."
 L["FARM_PAUSED_TAXI"] = "Su una rotta di volo."
@@ -74,6 +77,7 @@ L["MENU_CLICK_RIGHT"] = "Clic Destro"
 L["MENU_CLICK_SHIFT_LEFT"] = "Maiusc + Clic Sinistro"
 L["MENU_CLICK_SHIFT_RIGHT"] = "Maiusc + Clic Destro"
 L["MENU_CLICK_SHIFT_MIDDLE"] = "Maiusc + Clic Centrale"
+L["MENU_CLICK_WHEEL"] = "Rotellina del Mouse"
 L["MENU_MORE_FEATURES"] = "Altre Funzionalità"
 
 L["MENU_OPTIONS"] = "Opzioni di Tracking Eye"
@@ -83,6 +87,8 @@ L["MENU_OPTIONS"] = "Opzioni di Tracking Eye"
 --------------------------------------------------------------------------------
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Cicla Abilità della Modalità Raccolta"
+L["BINDING_TOGGLE_FARM_MODE"] = "Attiva/Disattiva Modalità Raccolta"
+L["BINDING_TOGGLE_TARGET_TRACKING"] = "Attiva/Disattiva Tracciamento Automatico del Bersaglio"
 L["BINDING_NOTHING_TO_CYCLE"] =
 	"Nessuna Abilità della Modalità Raccolta è spuntata. Spuntane alcune in Opzioni > Add-on > Tracking Eye > Modalità Raccolta > Abilità."
 
@@ -105,6 +111,8 @@ L["OPTIONS_ENABLE_WELCOME"] = "Abilita Messaggio di Benvenuto"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Mostra in chat un saluto di una riga al caricamento di Tracking Eye."
 L["OPTIONS_ENABLE_MINIMAP"] = "Abilita Pulsante Minimappa"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Tutto continua a funzionare anche con il pulsante nascosto."
+L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
+	"%s è attiva, quindi la sua icona prende il posto del pulsante. Il suo interruttore è nella pagina %s."
 L["OPTIONS_HOOK_BLIZZARD"] = "Usa il Pulsante di Tracciamento Predefinito"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
 	"Anche il pulsante di tracciamento predefinito apre il menu di Tracking Eye. Lascia l'opzione disattivata se un altro add-on usa già quel pulsante."
@@ -118,6 +126,10 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] =
 	"Apre l'elenco delle assegnazioni dei tasti del gioco, dove Tracking Eye ha una sezione tutta sua."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Passa alla prossima abilità di tracciamento con un solo tasto, anche con la Modalità Raccolta disattivata."
+L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
+	"Attiva o disattiva la Modalità Raccolta, come Maiusc + Clic Sinistro sul pulsante della minimappa."
+L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
+	"Attiva o disattiva il Tracciamento Automatico del Bersaglio, come Maiusc + Clic Destro sul pulsante della minimappa."
 
 -- Slash Commands
 
@@ -163,6 +175,9 @@ L["OPTIONS_SHAPE_CIRCLE"] = "Cerchio"
 L["OPTIONS_SHAPE_SQUARE"] = "Quadrato"
 L["OPTIONS_ICON_SCALE"] = "Dimensione Icona"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "Si ridimensiona sul posto, così l'icona mantiene la sua posizione."
+L["OPTIONS_ICON_POSITION"] = "Posizione dell'Icona"
+L["OPTIONS_RESET"] = "Ripristina"
+L["OPTIONS_ICON_POSITION_RESET_DESCRIPTION"] = "Riporta l'icona al centro dello schermo."
 
 -- Farm Mode
 
@@ -201,6 +216,8 @@ L["OPTIONS_FARM_ABILITIES"] = "Abilità della Modalità Raccolta"
 L["TAB_FARM_ABILITIES"] = "Abilità"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Spunta ciò che vuoi trovare. La Modalità Raccolta alterna ogni abilità spuntata che questo personaggio conosce e salta le altre."
+L["OPTIONS_FEATURE_OFF_STATUS"] =
+	"%s è disattivata, quindi queste impostazioni non vengono usate. Il suo interruttore è nella pagina %s."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Professioni e Abilità Razziali"
 L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] = "Si alterna solo in %s, che conta come Non in Sella."
 L["OPTIONS_FARM_PERSISTENT"] = "Includi Abilità di Tracciamento Persistente"
@@ -246,7 +263,7 @@ L["MSG_FORMAT_HERB"] = "Ehi Erbalisti! %s (%s, %s) in %s."
 L["MSG_FORMAT_MINE"] = "Ehi Minatori! %s (%s, %s) in %s."
 
 L["CHAT_TOO_LONG"] =
-	"Questa bozza è di %d byte e supera il limite della chat di %d byte. Accorciala prima di inviarla."
+	"Questo avviso è troppo lungo per la chat, quindi il gioco non lo invierà. Accorcialo prima di premere Invio."
 
 -- Options
 
@@ -261,7 +278,7 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"Gilda raggiunge tutti i membri della gilda online, qualunque sia il loro layer o la loro zona."
 L["OPTIONS_OUTPUT_NOTE"] = "Nota: %s raggiunge solo i giocatori sul tuo layer."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Locale (/1)"
-L["SAMPLE_EXAMPLE"] = "Esempio: %s"
+L["SAMPLE_EXAMPLE"] = "Esempio"
 L["SAMPLE_LOADING_ITEM"] = "Caricamento ID: %d"
 
 --------------------------------------------------------------------------------

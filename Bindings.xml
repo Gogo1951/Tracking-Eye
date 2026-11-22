@@ -2,4 +2,10 @@
 	<Binding name="TRACKINGEYE_CYCLE_FARM_ABILITY" category="Tracking Eye">
 		TrackingEye_CycleFarmAbility()
 	</Binding>
+	<Binding name="TRACKINGEYE_TOGGLE_FARM_MODE" category="Tracking Eye">
+		TrackingEye_ToggleFarmMode()
+	</Binding>
+	<Binding name="TRACKINGEYE_TOGGLE_TARGET_TRACKING" category="Tracking Eye">
+		TrackingEye_ToggleTargetTracking()
+	</Binding>
 </Bindings>
