@@ -13,9 +13,9 @@ local Kit = ns.MenuKit
     the More Features rows and the Options row. Persistent Tracking's
     block also lists the abilities to pick from, between its description and its
     Toggle row, so picking one is a single click in the menu itself, and Clear
-    Tracking under its Toggle row while something is picked. A title with
-    settings to show carries Blizzard's submenu arrow and opens its flyout beside
-    the menu, under the cursor or on a click.
+    Tracking under its Toggle row while something is picked or tracked. A title
+    with settings to show carries the menu kit's own submenu arrow and opens its
+    flyout beside the menu, under the cursor or on a click.
 
     Hovering the launcher opens it, and moving into it keeps it open; it closes a
     moment after the cursor leaves the launcher, the menu, and the flyout. A
@@ -25,8 +25,9 @@ local Kit = ns.MenuKit
     same job (Button Clicks, below).
 
     The rules every add-on's menu follows (README-Technical → Mini-map Menu):
-      - Every feature on the options' main page gets a block here: its title,
-        its description, and a Toggle row for its Enable switch. Its flyout holds
+      - Each block feature (Persistent Tracking, Farm Mode, Automatic Target
+        Tracking) gets a block here: its title, its description, and a Toggle
+        row for its Enable switch. Its flyout holds
         its settings, hidden while the feature is off, as the options hide them.
         Persistent Tracking's pick is the exception: it lives in the block.
       - A row for one class's spell shows only to a character who knows that
@@ -40,7 +41,7 @@ local Kit = ns.MenuKit
         Mode's row opens its options panel instead of switching.
 ]]
 
-local HOVER_CLOSE_DELAY = 0.4
+local HOVER_CLOSE_DELAY = 0.5
 local CLICK_CLOSE_DELAY = 1.0
 local MENU_GAP = 2 -- From the launcher's corner to the menu's
 
@@ -141,6 +142,15 @@ local CLICKS = {
 		end,
 	},
 }
+
+-- Runs one click's job by its key, as the key bindings do (Key-Bindings.lua), and redraws as a click does.
+function ns.RunClickJob(key)
+	if not ns.db or not CLICKS[key] then
+		return
+	end
+	CLICKS[key].run()
+	AfterChange()
+end
 
 -- Runs the click's job and redraws the menu and any open options page; false when the click has none.
 function ns.RunButtonClick(button)
@@ -291,9 +301,12 @@ local function PersistentPickRows()
 	return rows
 end
 
--- Clear Tracking, under Persistent Tracking's Toggle row while something is picked.
+--[[
+    Clear Tracking, under Persistent Tracking's Toggle row whenever something is
+    picked or tracked: Right-Click clears either, so the row shows for both.
+]]
 local function PersistentClearRows()
-	if not ns.db.profile.selectedSpellId then
+	if not ns.db.profile.selectedSpellId and not ns.GetActiveTrackingSpell() then
 		return nil
 	end
 	return { ClickRow(L["CLEAR_TRACKING"], "clear") }
@@ -356,11 +369,12 @@ function FLYOUTS.persistent()
 end
 
 --[[
-    While Farm Mode is on: where it stands and, while paused, why; the abilities
-    to cycle, the conditions, and the two extras. Farm Mode Abilities lists what
+    While Farm Mode is on: Farm Mode Status and, while paused, why; Tracking
+    Now; the Cycle Speed read-out the button's mouse wheel sets; the abilities to
+    cycle; the conditions; and the two extras. Farm Mode Abilities lists what
     this character knows; the options page lists every ability for shared
-    profiles. Cycle Speed stays on the options page:
-    seventeen choices are a dropdown, not a menu.
+    profiles. Picking a Cycle Speed from its seventeen choices stays on the
+    options page; the flyout only reads it back.
 ]]
 function FLYOUTS.farm()
 	local profile = ns.db.profile
@@ -381,6 +395,27 @@ function FLYOUTS.farm()
 	if reason then
 		entries[#entries + 1] = { kind = "note", left = ns.FormatFarmPauseReason(reason, reasonState) }
 	end
+
+	--[[
+		What the icon shows right now. There is no Next Switch line: the cycle holds
+		while this menu is open (ns.IsOwnMenuShowing), so a countdown read here
+		would never come true.
+	]]
+	local activeId = ns.GetActiveTrackingSpell()
+	local activeName = activeId and C_Spell.GetSpellName(activeId)
+	entries[#entries + 1] = {
+		kind = "value",
+		left = L["MENU_TRACKING_NOW"],
+		right = activeName and SpellText(activeId, activeName) or L["MENU_TRACKING_NONE"],
+		rightColor = activeName and "TEXT" or "MUTED",
+	}
+	-- The button's mouse wheel sets this (ns.HandleLauncherWheel), so the row names it.
+	entries[#entries + 1] = {
+		kind = "value",
+		left = L["MENU_CYCLE_SPEED_EVERY"]:format(ns.FormatFarmInterval(profile.farmInterval)),
+		right = L["MENU_CLICK_WHEEL"],
+		rightColor = "MUTED",
+	}
 
 	local cycleSpells = profile.farmCycleSpells or {}
 	entries[#entries + 1] = Section(L["OPTIONS_FARM_ABILITIES"])

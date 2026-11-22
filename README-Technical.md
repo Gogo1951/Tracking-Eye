@@ -23,7 +23,7 @@ TrackingEye/
 ├── TrackingEye_TBC.toc                  TBC Anniversary
 ├── TrackingEye_Camelot.toc              WoW Forever
 ├── TrackingEye_Mists.toc                MoP Classic
-├── Bindings.xml                         The one key binding; found at the root, never listed in a TOC
+├── Bindings.xml                         The three key bindings; found at the root, never listed in a TOC
 ├── Data/
 │   ├── Flavor.lua                       Flavor identity and the data folder this client built, from the TOC
 │   ├── Data.lua                         Locale handle, links, panel registry, option widths, movement-state maps, timings, channels, palette
@@ -44,19 +44,20 @@ TrackingEye/
 │   ├── Cycle-Sound-Mute.lua             The cycle's one cast seam and its momentary sound-effects mute
 │   ├── Target-Tracking.lua              The hunt, and flight detection for the farm tick
 │   ├── Come-and-Get-It.lua              Error match, gate, compose, chat draft
-│   ├── Key-Bindings.lua                 The binding's two globals and the Set Key routes
-│   ├── Menu-Kit.lua                     Generic menu plate and row kinds, no Tracking Eye knowledge
+│   ├── Key-Bindings.lua                 The three bindings' globals and the Set Key routes
+│   ├── Free-Placement.lua               The anonymous free frame, its position round trip and reset, scale, shape and icon size
+│   ├── Menu-Kit.lua                     Common-Core's Menu-Kit v2, copied unchanged; CI checks it byte for byte
 │   ├── Minimap-Menu.lua                 The menu's content, the button-click table, open and close rules, Blizzard button takeover
-│   ├── Free-Placement.lua               The anonymous free frame, its position round trip, scale, shape and icon size
-│   └── Minimap-Button.lua               LDB launcher, LibDBIcon, icon fit, placement, launcher handlers
+│   └── Minimap-Button.lua               LDB launcher, LibDBIcon, icon fit, placement, launcher handlers, mouse wheel
 ├── Includes/
 │   ├── Images/
-│   │   ├── Menu-Plate.tga               The menu plate, from PWQL's Quest Arrow menu
+│   │   ├── Menu-Arrow.tga               The menu's submenu arrow; Common-Core's Menu-Kit, copied unchanged
+│   │   ├── Menu-Plate.tga               The menu plate; Common-Core's Menu-Kit, copied unchanged
 │   │   └── Tracking-Eye.tga             Add-on icon
 │   └── Libraries/                       Vendored, refreshed from .pkgmeta on every release; never hand-edited
 ├── Locales/                             AceLocale strings
 ├── Options/
-│   ├── Options-Utilities.lua            The feature list ns.FEATURES, its switches and Features rows, row helpers
+│   ├── Options-Utilities.lua            The feature list ns.FEATURES, its switches and Features rows, row, status-line and Example helpers
 │   ├── Options-General.lua              Root panel: intro, Welcome Message, Mini-map Button, Features, Key Bindings, /Commands
 │   ├── Options-Persistent-Tracking.lua  Persistent Tracking panel and its overrides
 │   ├── Options-Farm-Mode.lua            Farm Mode panel and its Abilities sub-panel
@@ -89,7 +90,7 @@ TrackingEye/
 - Globals, each because something outside the add-on's Lua must reach it:
     - `TrackingEyeDB`: the SavedVariables table. Only Diagnostics reads it raw; everything else goes through `ns.db`.
     - `SLASH_TRACKINGEYE1`, `SlashCmdList.TRACKINGEYE`: `/te`, in `Options/Options.lua`.
-    - `TrackingEye_CycleFarmAbility`, `BINDING_NAME_TRACKINGEYE_CYCLE_FARM_ABILITY`: the binding system can only call a global, and names it by a matching global (`Features/Key-Bindings.lua`).
+    - `TrackingEye_CycleFarmAbility`, `TrackingEye_ToggleFarmMode`, `TrackingEye_ToggleTargetTracking` and their `BINDING_NAME_TRACKINGEYE_*` names: the binding system can only call a global, and names it by a matching global (`Features/Key-Bindings.lua`). Each is also listed in `.luacheckrc`'s globals.
     - `TrackingEyeMenu`: the menu panel, named only so `UISpecialFrames` closes it on Escape. Its flyout is anonymous.
     - `TrackingEyeScanTooltip`: the hidden tooltip `ns.GetTooltipLines` reads where `C_TooltipInfo` lacks its getters; `GameTooltipTemplate` names its lines after the frame.
 - `Core.lua` loads first yet calls most features: safe, since every call runs from an event and `ADDON_LOADED` fires after all files ran. Most calls are guarded (`if ns.RunFarmLogic then`); the icon, recast, restricted-zone and settings-refresh calls aren't, since everything depends on them.
@@ -121,7 +122,7 @@ TrackingEye/
 No secure frames, no macros, no `PLAYER_REGEN_ENABLED`: nothing defers behind a dirty flag. Combat still decides:
 
 - **Refuse:** `ns:OpenOptionsPanel` (Style Guide → Combat Guard), whichever way it is reached (`/te`, the menu's Options row or its button click, Free Placement Mode's More Features row), and the Set Key button's `ns:OpenKeyBindings`, which prints `CHAT_KEY_BINDINGS_IN_COMBAT` the same way.
-- **Refuse and retry:** every automatic cast and the binding go through `ns.CanCast()`, false in combat. The ticker and form-leave restore retry next tick, `TryRecastPersistent` through `ScheduleRecast`, the post-resurrection recast after `RECAST_DEBOUNCE_SECONDS`, the hunt after `HUNT_RETRY_SECONDS`. The binding waits for the next press.
+- **Refuse and retry:** every automatic cast and the binding go through `ns.CanCast()`, false in combat. The ticker and form-leave restore retry next tick, `TryRecastPersistent` through `ScheduleRecast`, the post-resurrection recast after `RECAST_DEBOUNCE_SECONDS`, the hunt after `HUNT_RETRY_SECONDS`. The Cycle binding waits for the next press; the two Toggle bindings only switch a setting and cast nothing.
 - **Drop, never replay:** a target picked in combat never starts a hunt; a Come & Get It draft in combat is discarded.
 - **Secret values** on WoW Forever, below.
 
@@ -175,7 +176,7 @@ No secure frames, no macros, no `PLAYER_REGEN_ENABLED`: nothing defers behind a 
 
 ### Settings Refresh
 
-- `ns.RefreshSettings()` (`Features/Utilities.lua`) is where every settings change ends: `NotifyChange` on every `ns.OPTIONS_REGISTRY` panel, then `ns.RefreshMenu()`. Every panel setter, every menu row and button click, `ns.ClearTracking` and `ns:ApplyProfile` call it.
+- `ns.RefreshSettings()` (`Features/Utilities.lua`) is where every settings change ends: `NotifyChange` on every `ns.OPTIONS_REGISTRY` panel, then `ns.RefreshMenu()`. Every panel setter, every menu row, button click and Toggle binding, the mouse wheel, `ns.ClearTracking` and `ns:ApplyProfile` call it.
 - AceConfig re-evaluates a widget's dynamic `name`, `get` and `hidden` only on a redraw, and the menu redraws only when told: a writer that skips it leaves both showing the old value.
 - `UPDATE_BINDINGS` and the sample herb's load notify only their own panel.
 
@@ -202,6 +203,7 @@ No secure frames, no macros, no `PLAYER_REGEN_ENABLED`: nothing defers behind a 
 - **The own menu holds but is never a reason.** Opening the menu is how the player reads Farm Mode Status, so the status names what Farm Mode would be doing apart from the menu. `ns.IsTooltipShowing` ignores a `GameTooltip` owned by a menu row (`ns.IsMenuFrame`); `ns.IsOwnMenuShowing` is checked only by the tick.
 - **Holds vs `ns.CanCast()`:** options panel, window, tooltip, own menu, target and standing still are tick holds; they stop the cycle but not the binding. A `ns.CanCast()` condition stops both.
 - **Window and panel checks:** `ns.IsBlockingWindowOpen` sweeps `UIPanelWindows` plus `EXTRA_BLOCKING_FRAMES`. `ns.IsOptionsPanelOpen` (`Options/Options.lua`) reads `IsVisible()` live across every frame `Register` captured.
+- **Cycle Speed:** `ns.FARM_INTERVAL_MIN`, `_MAX` and `_STEP` (`Features/Farm-Mode.lua`) are the one range, read by the options dropdown's choices and the launchers' mouse wheel; `ns.FormatFarmInterval` is the one number format. `ns.SetFarmInterval` (the wheel's writer) snaps to the step, clamps, and restarts the ticker; the dropdown writes a listed choice and restarts it itself.
 - **Mini-map zoom:** `ZoomMinimapOutForRun` on the run's first casting tick only; never puts the player's zoom back; re-enables zoom-in and disables zoom-out on whichever button pair the client has.
 - **Cat Form tracking:** `ns.CAT_FORM_ONLY` (`Features/Utilities.lua`). Gated in `ns.CastTracking`, `BuildCycleCache`, `ns.GetEmptyCycleKind`, the form-leave restore, the post-resurrection recast and `ns.UpdateIcon`; never a Persistent Tracking pick in the menu (the Cat Form override covers it); absent from `ns.CREATURE_TYPE_DATA`.
 
@@ -235,7 +237,7 @@ No secure frames, no macros, no `PLAYER_REGEN_ENABLED`: nothing defers behind a 
 - **Write** `ChatFrameUtil.OpenChat(command .. " " .. line, ChatFrame1)`, skipped while the player is typing; cooldown stamped only after an open. Over `ns.CHAT_MESSAGE_MAX_LENGTH` bytes prints `CHAT_TOO_LONG` but opens whole, measured without the command.
 - **Draft shape:** `/1 Hey Miners! Rich Thorium Vein at 25, 54 in Eastern Plaguelands.` Each `MSG_FORMAT_*` body has four `%s`: node, x, y, zone. No marker, no add-on name: it is the player's line.
 - **Channels:** `ns.OUTPUT_CHANNELS` (`Data/Data.lua`) drives the command lookup, the dropdown and the Example line. Blizzard channels label with `labelGlobal`; Local uses `labelKey`. A stale saved key falls back to `ns.DEFAULT_OUTPUT_CHANNEL`.
-- **Example line** (`Options/Options-Come-and-Get-It.lua`): the herb draft as it would land in the picked channel, built with the same `ns:BuildAnnounceMessage`, the channel's chat color and `prefixGlobal`, and `ns.SAMPLE_HERB_ITEM_ID`.
+- **Example line** (`Options/Options-Come-and-Get-It.lua`): the herb draft as it would land in the picked channel, built with the same `ns:BuildAnnounceMessage`, the channel's chat color and `prefixGlobal`, and `ns.SAMPLE_HERB_ITEM_ID`. `RenderExample` returns only the chat line; `ns.OptionsExample` draws the Example label and indents the line under it.
 - The Default Output note under the dropdown is on the panel by exception (README-Notes → Default Output note).
 
 ### Mini-map Menu
@@ -243,17 +245,18 @@ No secure frames, no macros, no `PLAYER_REGEN_ENABLED`: nothing defers behind a 
 `Features/Minimap-Menu.lua` cites this section. Every row is a plain click, so a controller cursor reaches everything; the launchers also keep modifier clicks, each a shortcut for one row.
 
 - **Blocks:** header (name, version), then per feature a gold title with its state on the right, a white `MENU_*_DESCRIPTION` line, and a blue Toggle row (tooltip from its Enable option). Then More Features, a separator and the Options row.
-    - **Persistent Tracking:** On/Off. Known abilities as choice rows inside the block (never Cat Form tracking; works with the feature off); Toggle goes through `ns.SetPersistentTracking`; Clear Tracking under Toggle while something is picked. Flyout: the overrides whose spell this character knows, while on.
-    - **Farm Mode:** Active, Paused or Off. Flyout while on: Farm Mode Status and its reason note, Include Persistent Tracking Ability, known abilities (Cat Form tracking included), conditions (`ns.KnowsMovementState`), Silence Sounds, Zoom Mini-map Out.
+    - **Persistent Tracking:** On/Off. Known abilities as choice rows inside the block (never Cat Form tracking; works with the feature off); Toggle goes through `ns.SetPersistentTracking`; Clear Tracking under Toggle while something is picked or tracked (Right-Click clears either). Flyout: the overrides whose spell this character knows, while on.
+    - **Farm Mode:** Active, Paused or Off. Flyout while on: Farm Mode Status and its reason note, Tracking Now (`ns.GetActiveTrackingSpell()`), the Cycle Speed read-out naming the mouse wheel, Include Persistent Tracking Ability, known abilities (Cat Form tracking included), conditions (`ns.KnowsMovementState`), Silence Sounds, Zoom Mini-map Out.
     - **Automatic Target Tracking:** shown only when `ns.KnowsHuntAbility()`; no flyout; Toggle goes through `ns.SetTargetTracking`.
     - **More Features** (`MENU_MORE_FEATURES`): one On/Off row per `ns.FEATURES` entry without `block` (Come & Get It, Free Placement Mode). An entry with `opensOptions` opens that panel instead of switching (README-Notes → Free Placement Mode opens options).
-- **Button clicks:** `CLICKS` is one table read both ways. `ns.HandleLauncherClick` (`Features/Minimap-Button.lua`) asks `ns.RunButtonClick(button)` first, which matches button and Shift state, runs the job and calls `ns.RefreshSettings()`. The row doing the same job is built with `ClickRow`, which shows the click's `MENU_CLICK_*` name on the right in gray and runs the same `run`. Jobs: Clear Tracking, Farm Mode's and Target Tracking's Toggle rows, the Options row. A plain Left-Click has no job, so it opens the menu and holds it longer. Before `ns.db` exists every click except Options is swallowed.
-- **Rules:** a title opens a flyout only when it has rows (else it is a plain `status` heading). Class rows show only to a character who knows the spell, tested by character, never by form, mount, zone or gear; the options keep every row. Picks close the menu; switches keep it open. The display toggles, Cycle Speed, Come & Get It's channel and Free Placement's shape and size stay on the options pages.
+- **Button clicks:** `CLICKS` is one table read both ways. `ns.HandleLauncherClick` (`Features/Minimap-Button.lua`) asks `ns.RunButtonClick(button)` first, which matches button and Shift state, runs the job and calls `ns.RefreshSettings()`. The row doing the same job is built with `ClickRow`, which shows the click's `MENU_CLICK_*` name on the right in gray and runs the same `run`. Jobs: Clear Tracking, Farm Mode's and Target Tracking's Toggle rows, the Options row. A plain Left-Click has no job, so it opens the menu and holds it longer. Before `ns.db` exists every click except Options is swallowed. `ns.RunClickJob(key)` runs one job by its `CLICKS` key, then refreshes; the two Toggle bindings call it, so a binding and its click can't drift.
+- **Rules:** a title opens a flyout only when it has rows (else it is a plain `status` heading). Class rows show only to a character who knows the spell, tested by character, never by form, mount, zone or gear; the options keep every row. Picks close the menu; switches keep it open. The display toggles, Come & Get It's channel and Free Placement's shape, size and position reset stay on the options pages; Cycle Speed is picked there or set by the wheel, and the flyout only reads it back.
+- **No Next Switch row:** the cycle holds while the menu is open (`ns.IsOwnMenuShowing`), so a countdown shown there would never come true. Tracking Now is the only cycle read-out.
 - **Picks** (`PickPersistent`): end any hunt without restore, write `selectedSpellId`, invalidate the farm cache, clear `wasFarming`, `ns.CastTracking` directly. The menu is the only way to set the pick; a cast from anywhere else is never adopted as one.
 - **Every change** ends in `ns.RefreshSettings()`, which redraws the menu and any open panel.
 - **Open and close:** `ns.ShowMenu(anchor, flyoutKey, how)` from hover or left-click, placed away from the nearest screen edges. An `OnUpdate` closes it `HOVER_CLOSE_DELAY` (or `CLICK_CLOSE_DELAY` after a click) once the cursor leaves launcher, menu and flyout; also on launcher hide, Escape, a pick. Entering a title opens its flyout; entering any other row closes it.
 - **Cursor test:** `ns.MenuKit.IsCursorOver` reads `GetCursorPosition`, which a controller's virtual cursor also reports.
-- **Menu Kit** (`Features/Menu-Kit.lua`): add-on agnostic (no Tracking Eye names), meant to move to Common-Core. `CreatePanel`, `panel:Render(entries)`, row kinds listed in its header comment, palette keys for color. One font size; kinds differ by color. A spacer is inserted above every heading. Plate is nine-sliced at half size.
+- **Menu Kit** (`Features/Menu-Kit.lua`, with `Includes/Images/Menu-Plate.tga` and `Menu-Arrow.tga`): Common-Core's Menu-Kit v2, adopted whole and CI-checked byte for byte; row kinds are listed in its header comment. Tracking Eye still drives it through the v1 surface the kit keeps: `Kit.CreatePanel` for the menu and one flyout, `panel:Render(entries)`, `Kit.SetToggleText`, `Kit.IsCursorOver`/`Kit.IsInside`, and its own placement with `Kit.FLYOUT_GAP` (now 0, so the flyout overlaps the menu) and `Kit.FLYOUT_RISE`. v2's `Kit.CreateMenu`, `Kit.SetText` and the dressed game menus are unused, so the kit's own close delays and click routing don't apply here; `Features/Minimap-Menu.lua` keeps its own `HOVER_CLOSE_DELAY`, `CLICK_CLOSE_DELAY` and `MENU_GAP`.
 - **Blizzard button takeover:** `ns.ApplyBlizzardTrackingHook()`, gated on `ns.db.global.hookBlizzardTracking`. Only where `MiniMapTracking` exists without `MiniMapTrackingButton` (Classic Era, `ns.HasBlizzardTrackingButton`); elsewhere that button opens Blizzard's own menu on mouse-down, which no script swap stops, and the option hides. Replaces `OnMouseUp` (not `HookScript`) with a menu open on any button, no click jobs, and restores the saved handler, nil included.
 
 ### Mini-map Button and Free Placement
@@ -261,13 +264,15 @@ No secure frames, no macros, no `PLAYER_REGEN_ENABLED`: nothing defers behind a 
 - `ns.InitMinimap()`: LDB launcher (`label` is the add-on title) with `OnEnter` (not `OnTooltipShow`) so every display opens the menu on hover; LibDBIcon with `ns.db.global.minimap`. On Camelot and Mainline the icon is sized, anchored and masked by hand.
 - `ns:ApplyMinimapButton()`: no tracking ability → neither shows. Free Placement on → free frame shows, LibDBIcon hides without touching `minimap.hide`. Ends by re-applying the free frame's scale and shape.
 - `ns.HandleLauncherEnter`/`ns.HandleLauncherClick` serve both launchers; both take every mouse button (the free frame registers `AnyUp`, and drags on the left button).
-- **Free frame** (`Features/Free-Placement.lua`): created with a `nil` name. Position is `ns.db.global.freePos`, the center times effective scale, anchored `CENTER` to `UIParent` `BOTTOMLEFT`; `SaveFreePosition`/`ApplyFreePosition` round-trip it. Saved on drag stop and at logout only while shown. Re-applied after create, after `SetScale`, before every show, and after a drag. `SetUserPlaced(false)` on every apply.
+- **Mouse wheel:** `ns.HandleLauncherWheel` on both launchers (LibDBIcon's button, fetched in `ns.InitMinimap`, and the free frame) sets Cycle Speed one step a notch, up faster, through `ns.SetFarmInterval`, then refreshes and opens the menu on Farm Mode's flyout while Farm Mode is on (else the plain menu).
+- **Free frame** (`Features/Free-Placement.lua`): created with a `nil` name. Position is `ns.db.global.freePos`, the center times effective scale, anchored `CENTER` to `UIParent` `BOTTOMLEFT`; `SaveFreePosition`/`ApplyFreePosition` round-trip it. Saved on drag stop and at logout only while shown. Re-applied after create, after `SetScale`, before every show, and after a drag. `SetUserPlaced(false)` on every apply. `ns.ResetFreeFramePosition` (Icon Position's Reset, disabled while `freePos` is nil) nils `freePos` and re-applies, which centers the frame.
 - **Shape:** `ns.UpdateFreeFrameShape` swaps prebuilt textures and resizes the icon (`CIRCLE_ICON_SIZE` fits Blizzard's tracking border, `SQUARE_ICON_SIZE` lines up with action buttons); the square border is the square icon plus one point a side.
 
 ### Key Bindings
 
 - `TRACKINGEYE_CYCLE_FARM_ABILITY` → `TrackingEye_CycleFarmAbility` → `ns.AdvanceFarmCycle()`. Manual: not gated on `farmMode`, but obeys `ns.CanCast()`. An empty cycle prints its reason from `EMPTY_CYCLE_MESSAGES`, keyed by `ns.GetEmptyCycleKind`.
-- General's Key Bindings row shows the bound key and a Set Key button. `ns:OpenKeyBindings` tries `Settings.KEYBINDINGS_CATEGORY_ID`, then the Settings category list by title, then `KeyBindingFrame`, then prints `KEY_BINDINGS_LOCATION`.
+- `TRACKINGEYE_TOGGLE_FARM_MODE` and `TRACKINGEYE_TOGGLE_TARGET_TRACKING` → `ns.RunClickJob("farm")` / `("target")`: the Shift + Left-Click and Shift + Right-Click jobs, nothing of their own.
+- General's Key Bindings section has one row per `KEY_BINDINGS` entry (`Options/Options-General.lua`): the bound key and a Set Key button. `ns:OpenKeyBindings` tries `Settings.KEYBINDINGS_CATEGORY_ID`, then the Settings category list by title, then `KeyBindingFrame`, then prints `KEY_BINDINGS_LOCATION`.
 - `Bindings.xml`: root element `<Bindings>`, `category` attribute draws the list section.
 
 ### Options Panels
@@ -279,14 +284,18 @@ No secure frames, no macros, no `PLAYER_REGEN_ENABLED`: nothing defers behind a 
 - **Feature switches:** General's Features section carries every switch, two to a line, each pair its own unnamed inline group (`ns.OptionsFeatureSwitchRows`). The same switch also heads the feature's own panel. Both copies come from `ns.OptionsFeatureSwitch`: one caption, one tooltip, one setter (the feature's `apply`, then `ns.RefreshSettings()`).
 - A sub-panel nests under its feature's panel by the category ID that panel's registration returned, and its title names the parent (`ns.SubPanelTitle`: "Farm Mode > Abilities"); the tree label is the plain name. Nothing on it hides while the feature is off.
 - The opener takes an `ns.OPTIONS_REGISTRY` key (`ns:OpenOptionsPanel("FreePlacement")`) and opens that panel by the category ID captured at registration; no key opens the root. `AceConfigDialog:Open` only when `AddToBlizOptions` returned no category ID.
-- `ns.OptionsSubRow`: one unnamed inline group per sub-option, controls sized with slack, `hidden` on the group. Label-beside-control rows pair `ns.OptionsRowLabel` with an unnamed control totaling `ns.OPTIONS_ROW_WIDTH`. A helper line under a field sits in the control column behind a blank `ns.OptionsRowLabel` cell.
-- Cycle Speed's dropdown needs `CYCLE_SORTING`, or "10" sorts before "2".
+- `ns.OptionsSubRow`: one unnamed inline group per sub-option, controls sized with slack, `hidden` on the group. Label-beside-control rows pair `ns.OptionsRowLabel` with an unnamed control totaling `ns.OPTIONS_ROW_WIDTH`. A helper line under a field sits in the control column behind a blank `ns.OptionsRowLabel` cell. Cycle Speed and Icon Position are such sub-rows under their feature's switch.
+- **Status lines:** `ns.OptionsStatusLine(getText, order)` is a silver line that shows only while something elsewhere changes what the page does (`getText` returns nil to hide it); `ns.OptionsStatusName` golds the feature name inside it. Used on Farm Mode > Abilities while Farm Mode is off, and under General's Enable Mini-map Button while Free Placement Mode is on.
+- **Example:** `ns.OptionsExample(order, hidden, getLines)`: spacer, the silver Example label, then the line (or lines, a blank line apart) indented as a sub-option, redrawn every draw.
+- Both helpers draw as Options-Kit's `Kit.StatusLine` and `Kit.Example` do, so moving onto Options-Kit swaps them one for one.
+- Cycle Speed's dropdown needs `CYCLE_SORTING`, or "10" sorts before "2". Its `get` shows the default for a stored value that isn't a choice, while the ticker keeps the stored one.
 - Every class sees every option (profiles can be shared); only flavor-missing data hides a row.
 
 ### Localization
 
 - `enUS.lua` is the source; `07 - Localization Review.md` owns the other ten files.
 - Keys reached indirectly, which a search for `L["` reports as unused: `MSG_FORMAT_*` (`mapping.formatKey`), `OPTIONS_OUTPUT_CHANNEL1` (`labelKey`), every `FARM_PAUSED_*` (returned by `ns.GetFarmPauseReason`), `EMPTY_CYCLE_MESSAGES`, `MENU_CLICK_*` (`CLICKS` in `Features/Minimap-Menu.lua`), the `name`/`caption`/`desc` keys in `ns.FEATURES`, the `KEY_BINDINGS` table in `Options/Options-General.lua`, `PARAGRAPHS` and `LINKS` in `Options/Options-Feedback-Support.lua`.
+- `SAMPLE_EXAMPLE` is a bare label; `ExampleLabel` (`Options/Options-Utilities.lua`) strips any trailing colon, ASCII or full-width, a translation adds.
 - `MATCH_*` must equal what the client prints, or herb and ore detection silently stops in that locale (README-Notes → Typed herb and ore match words).
 - Creature types are matched by ID and never named; Automatic Target Tracking has no keys.
 - Not localized: `ns.DiagnosticsStrings`, `ns.OPTIONS_REGISTRY`, `Bindings.xml`'s `category`.
@@ -294,8 +303,8 @@ No secure frames, no macros, no `PLAYER_REGEN_ENABLED`: nothing defers behind a 
 ### Diagnostics
 
 - `Diagnostics/Manifests.lua` holds the add-on's surface: `ns.DIAGNOSTIC_API_CHECKS` (both halves of every compatibility pair, so a `[FAIL]` names the branch taken), the four context reports (Player & Spell, Persistent Tracking, Farm Mode, Come & Get It), `ns.DIAGNOSTIC_NAME_LOOKUPS`, `ns.DIAGNOSTIC_DATA_SOURCES`, and `ns.GetItemStats`.
-- Probes read through the features' own accessors, and print every `ns.CanCast()` condition (`AddCanCastLine`) and the secret restrictions in force.
-- Data sources: one entry per data file label (`Spells`, `Zones`, `Game-IDs`). The Game-IDs file sets one constant, so `ns.DIAGNOSTIC_GAME_IDS` wraps it in a table for the validator.
+- Probes read through the features' own accessors, and print every `ns.CanCast()` condition (`AddCanCastLine`) and the secret restrictions in force. The Persistent Tracking and Farm Mode reports print each binding's key; the Display report checks the menu is loaded and wired to the launcher, and that Escape closes it.
+- Data sources: one entry per data file label (`Spells`, `Zones`, `Game-IDs`). The Game-IDs entry names `SAMPLE_HERB_ITEM_ID` directly: the validator's `CollectIds` (`Diagnostics/Validate-Data.lua`) reads a number as a one-row table keyed by its constant's name.
 - Event log: both firehoses, `UI_ERROR_MESSAGE` and `GET_ITEM_INFO_RECEIVED`, are in `ns.MESSAGE_ID_FILTERED_EVENTS`. `ns:SuppressUncorrelatedMessage` logs a firing in full when its event's `CORRELATED` check (`Diagnostics/Event-Log.lua`) accepts it (`ns.MatchError` for an error, `ns.SAMPLE_HERB_ITEM_ID` for an item load), and folds the rest into per-ID counters.
 
 ## Files That Change Together
@@ -306,6 +315,7 @@ No secure frames, no macros, no `PLAYER_REGEN_ENABLED`: nothing defers behind a 
 - **New pause reason:** the key in `Locales/enUS.lua`; its place in `ns.GetFarmPauseReason`; the matching tick hold or `ns.CanCast()` condition; a new `ns.CanCast()` condition also in `AddCanCastLine`.
 - **New setting:** `ns.DATABASE_DEFAULTS` key in the right scope; the panel widget, its `set` ending in `ns.RefreshSettings()`; `ns:ApplyProfile` if applied imperatively; `ns.InvalidateFarmCache()`/`ns.TryRecastPersistent()` in its `set` if it changes the cycle or the resolver; the feature's menu flyout, with the same side effects; `Locales/enUS.lua`; the feature's context report; a migration if it reshapes an existing key.
 - **New button click:** a `CLICKS` entry (`Features/Minimap-Menu.lua`) and its `MENU_CLICK_*` key; the row doing the same job built with `ClickRow`. Both launchers already take every button.
+- **New key binding:** a `<Binding>` in `Bindings.xml`; its global function and `BINDING_NAME_*` in `Features/Key-Bindings.lua` (a click's job goes through `ns.RunClickJob`); both names in `.luacheckrc`'s globals; a `KEY_BINDINGS` row in `Options/Options-General.lua`; its `BINDING_*` and description keys in `Locales/enUS.lua`; its key in the feature's context report.
 - **New registered event:** `ns.EVENT_NAMES` (and `UNIT_FILTERED_EVENTS` if unit-scoped) and an `OnEvent` branch in `Features/Core.lua`; a firehose goes in `ns.DIAGNOSTIC_EVENT_EXCLUDE`, or in `ns.MESSAGE_ID_FILTERED_EVENTS` with a `CORRELATED` check (`Diagnostics/Event-Log.lua`).
 - **New Come & Get It node type:** an error-name constant in `Data/Data.lua` or a `MATCH_*` key; an entry in `ERROR_STRING_MAPPING` or `SKILL_MAPPING`; its `MSG_FORMAT_*` body; the Come & Get It Context report, `ns.DIAGNOSTIC_NAME_LOOKUPS` for a new error name, and Message Length's `CALLOUT_KEYS` (`Diagnostics/Localization-Reports.lua`).
 - **New output channel:** one `ns.OUTPUT_CHANNELS` row (`key` never renamed; `labelGlobal` and `prefixGlobal` checked on every client, or a `labelKey` in `Locales/enUS.lua`); the dropdown, Example line and Game Names pick it up on their own.
@@ -349,6 +359,9 @@ No secure frames, no macros, no `PLAYER_REGEN_ENABLED`: nothing defers behind a 
 - **A settings write that skips `ns.RefreshSettings()`**: the menu and any open panel keep the old value until reopened.
 - **A More Features row for a feature whose `apply` does more than write the key**: the row's `Toggle` writes the setting directly and never calls `apply`. Give it `opensOptions`, as Free Placement Mode has, or route the row through `apply`.
 - **Naming a button click on a row by hand**: the label drifts from what the click does. Build the row with `ClickRow` from `CLICKS`.
+- **A key binding with its own copy of a click's job**: the binding, the click and the description saying they match drift apart. Call `ns.RunClickJob`.
+- **A countdown or Next Switch row in Farm Mode's flyout**: the cycle holds while the menu is open, so it would never come true.
+- **Cycle Speed limits typed anywhere but `ns.FARM_INTERVAL_*`**: the wheel and the dropdown disagree, and a stored value off the dropdown's choices shows blank there.
 - **Arming the cycle mute before the cast**: mutes sound for a cast that never happened. Cast first, arm second.
 - **Relying on the mute's timer**: `Sound_EnableSFX` outlives the session; keep the logout and switch-off restores and the `pcall`.
 - **`LibDBIcon:SetButtonIcon` for the icon fit**: its `ResetButtonIcon` errors when another add-on replaced the icon. Size `button.icon` directly.
@@ -371,5 +384,6 @@ No secure frames, no macros, no `PLAYER_REGEN_ENABLED`: nothing defers behind a 
 - **Reusing a retired locale key**: its stale translations win over the English fallback.
 - **An unsuffixed `TrackingEye.toc`, or `Bindings.xml` in a TOC**: the first loads under the wrong flavor; the second makes the UI parser reject the binding.
 - **Adding a Wrath or Mainline TOC without touching `.pkgmeta`**: both data folders are in its ignore list, so the release would ship a TOC whose data files were stripped.
-- **Editing a Common-Core shared file here**: CI fails the drift. Only `ISSUE_TEMPLATE/config.yml` is this add-on's own.
+- **Editing a Common-Core shared file or the Menu-Kit copy here** (`Features/Menu-Kit.lua`, `Menu-Arrow.tga`, `Menu-Plate.tga`): CI fails the drift. Change Common-Core's kit and sync. Only `ISSUE_TEMPLATE/config.yml` is this add-on's own.
+- **Tuning the menu through Menu-Kit's constants**: this menu runs on the kit's v1 surface with its own close delays and placement in `Features/Minimap-Menu.lua`; the kit's `HOVER_CLOSE_DELAY` and friends never reach it.
 - **Renaming *Restricted Zones* or *Mini-map Menu* here**: `Features/Core.lua` and `Features/Minimap-Menu.lua` cite them by name.

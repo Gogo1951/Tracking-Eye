@@ -7,10 +7,22 @@ local GetClientHeader = ns.GetDiagnosticClientHeader
 --------------------------------------------------------------------------------
 
 --[[
-    Answers "the mini-map button is gone / off-screen" reports: screen size, UI
-    scale, the button's saved placement, and the free-placement icon that
-    replaces it. Read-only.
+    Answers "the mini-map button is gone / off-screen" and "hovering the button
+    shows nothing" reports: screen size, UI scale, the button's saved placement,
+    whether its menu loaded and is wired to the button, and the free-placement
+    icon that replaces it. Read-only.
 ]]
+
+-- True when Escape's list of frames to close holds the menu (Features/Minimap-Menu.lua).
+local function MenuClosesOnEscape()
+	local menuName = ADDON_NAME .. "Menu"
+	for _, name in ipairs(type(UISpecialFrames) == "table" and UISpecialFrames or {}) do
+		if name == menuName then
+			return true
+		end
+	end
+	return false
+end
 function ns:BuildDisplayContextReport()
 	local lines = { GetClientHeader(), "" }
 
@@ -28,7 +40,11 @@ function ns:BuildDisplayContextReport()
 	-- ns:ApplyMinimapButton hides the button and the free-placement icon alike on a character with no tracking ability.
 	lines[#lines + 1] = string.format("Knows a tracking ability: %s", tostring(ns.HasTrackingAbility()))
 	if button then
-		lines[#lines + 1] = string.format("Minimap button shown: %s", tostring(button:IsShown()))
+		lines[#lines + 1] = string.format(
+			"Minimap button shown: %s, visible: %s",
+			tostring(button:IsShown() and true or false),
+			tostring(button:IsVisible() and true or false)
+		)
 	end
 
 	local minimap = ns.db and ns.db.global.minimap
@@ -38,6 +54,39 @@ function ns:BuildDisplayContextReport()
 	else
 		lines[#lines + 1] = "Minimap saved position: (none yet)"
 	end
+
+	--[[
+	    The menu opens from either launcher's hover through ns.ShowMenu, which
+	    returns early until the database is open; a TOC missing the menu's files
+	    leaves ns.ShowMenu nil and the hover does nothing.
+	]]
+	local broker = ns.ldb
+	lines[#lines + 1] = ""
+	lines[#lines + 1] = string.format(
+		"Menu loaded: %s, database open: %s",
+		type(ns.ShowMenu) == "function" and "yes" or "MISSING",
+		ns.db and "yes" or "no"
+	)
+	lines[#lines + 1] = string.format(
+		"Button hover opens menu: %s, click runs menu clicks: %s",
+		tostring(type(broker) == "table" and type(broker.OnEnter) == "function"),
+		tostring(
+			type(broker) == "table" and type(broker.OnClick) == "function" and type(ns.RunButtonClick) == "function"
+		)
+	)
+	lines[#lines + 1] = string.format(
+		"Menu open now: %s, closes on Escape: %s",
+		tostring(type(ns.IsMenuShown) == "function" and ns.IsMenuShown() or false),
+		tostring(MenuClosesOnEscape())
+	)
+	-- More Features lists every feature that isn't a block of its own.
+	local moreFeatures = 0
+	for _, feature in ipairs(ns.FEATURES or {}) do
+		if not feature.block then
+			moreFeatures = moreFeatures + 1
+		end
+	end
+	lines[#lines + 1] = string.format("More Features rows: %d", moreFeatures)
 
 	--[[
 	    Where a dragged position lives, link by link: LibDBIcon's drag handler

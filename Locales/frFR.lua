@@ -31,6 +31,9 @@ L["TARGET_TRACKING"] = "Pistage automatique de la cible"
 L["FARM_STATUS"] = "État du Mode de collecte"
 L["FARM_STATUS_ACTIVE"] = "Actif"
 L["FARM_STATUS_PAUSED"] = "En pause"
+L["MENU_TRACKING_NOW"] = "Pistage actuel"
+L["MENU_TRACKING_NONE"] = "Rien"
+L["MENU_CYCLE_SPEED_EVERY"] = "Vitesse du cycle : toutes les %s secondes"
 
 L["FARM_PAUSED_DEAD"] = "Vous êtes mort."
 L["FARM_PAUSED_TAXI"] = "Sur un trajet aérien."
@@ -75,6 +78,7 @@ L["MENU_CLICK_RIGHT"] = "Clic droit"
 L["MENU_CLICK_SHIFT_LEFT"] = "Maj + Clic gauche"
 L["MENU_CLICK_SHIFT_RIGHT"] = "Maj + Clic droit"
 L["MENU_CLICK_SHIFT_MIDDLE"] = "Maj + Clic milieu"
+L["MENU_CLICK_WHEEL"] = "Molette"
 L["MENU_MORE_FEATURES"] = "Autres fonctionnalités"
 
 L["MENU_OPTIONS"] = "Options de Tracking Eye"
@@ -84,6 +88,8 @@ L["MENU_OPTIONS"] = "Options de Tracking Eye"
 --------------------------------------------------------------------------------
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Changer de capacité du Mode de collecte"
+L["BINDING_TOGGLE_FARM_MODE"] = "Activer/désactiver le Mode de collecte"
+L["BINDING_TOGGLE_TARGET_TRACKING"] = "Activer/désactiver le Pistage automatique de la cible"
 L["BINDING_NOTHING_TO_CYCLE"] =
 	"Aucune des Capacités du Mode de collecte n'est cochée. Cochez-en dans Options > Add-ons > Tracking Eye > Mode de collecte > Capacités."
 
@@ -107,6 +113,8 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Affiche une ligne de bienvenue dans la fenêtre de discussion au chargement de Tracking Eye."
 L["OPTIONS_ENABLE_MINIMAP"] = "Activer le bouton de la minicarte"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Tout continue de fonctionner quand le bouton est masqué."
+L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
+	"%s est activé, son icône remplace donc le bouton. Son interrupteur se trouve sur la page %s."
 L["OPTIONS_HOOK_BLIZZARD"] = "Utiliser le bouton de pistage par défaut"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
 	"Le bouton de pistage par défaut ouvre aussi le menu de Tracking Eye. Laissez l'option désactivée si un autre add-on utilise déjà ce bouton."
@@ -119,6 +127,10 @@ L["OPTIONS_KEY_SET"] = "Définir une touche"
 L["OPTIONS_KEY_SET_DESCRIPTION"] = "Ouvre la liste des raccourcis clavier du jeu, où Tracking Eye a sa propre section."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Passez à la capacité de pistage suivante d'une seule touche, même avec le Mode de collecte désactivé."
+L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
+	"Active ou désactive le Mode de collecte, comme Maj + Clic gauche sur le bouton de la minicarte."
+L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
+	"Active ou désactive le Pistage automatique de la cible, comme Maj + Clic droit sur le bouton de la minicarte."
 
 -- Slash Commands
 
@@ -165,6 +177,9 @@ L["OPTIONS_SHAPE_CIRCLE"] = "Cercle"
 L["OPTIONS_SHAPE_SQUARE"] = "Carré"
 L["OPTIONS_ICON_SCALE"] = "Taille de l'icône"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "Se redimensionne sur place : l'icône garde sa position."
+L["OPTIONS_ICON_POSITION"] = "Position de l'icône"
+L["OPTIONS_RESET"] = "Réinitialiser"
+L["OPTIONS_ICON_POSITION_RESET_DESCRIPTION"] = "Replace l'icône au milieu de votre écran."
 
 -- Farm Mode
 
@@ -205,6 +220,8 @@ L["OPTIONS_FARM_ABILITIES"] = "Capacités du Mode de collecte"
 L["TAB_FARM_ABILITIES"] = "Capacités"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Cochez ce que vous voulez trouver. Le Mode de collecte alterne chaque capacité cochée que ce personnage connaît et ignore le reste."
+L["OPTIONS_FEATURE_OFF_STATUS"] =
+	"%s est désactivé, ces réglages ne sont donc pas utilisés. Son interrupteur se trouve sur la page %s."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Métiers et compétences raciales"
 L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] = "N'alterne qu'en %s, qui compte comme Sans monture."
 L["OPTIONS_FARM_PERSISTENT"] = "Inclure la Capacité de pistage persistant"
@@ -250,7 +267,7 @@ L["MSG_FORMAT_HERB"] = "Hé, Herboristes ! %s (%s, %s) dans %s."
 L["MSG_FORMAT_MINE"] = "Hé, Mineurs ! %s (%s, %s) dans %s."
 
 L["CHAT_TOO_LONG"] =
-	"Ce brouillon fait %d octets et dépasse la limite de %d octets par message. Raccourcissez-le avant de l'envoyer."
+	"Cette annonce est trop longue pour le chat, le jeu ne l'enverra donc pas. Raccourcissez-la avant d'appuyer sur Entrée."
 
 -- Options
 
@@ -265,7 +282,7 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"Guilde atteint tous les membres connectés, quelles que soient leur strate et leur zone."
 L["OPTIONS_OUTPUT_NOTE"] = "Remarque : %s n'atteint que les joueurs de votre strate."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Local (/1)"
-L["SAMPLE_EXAMPLE"] = "Exemple : %s"
+L["SAMPLE_EXAMPLE"] = "Exemple"
 L["SAMPLE_LOADING_ITEM"] = "Chargement de l'ID : %d"
 
 --------------------------------------------------------------------------------

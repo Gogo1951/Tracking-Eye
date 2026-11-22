@@ -75,9 +75,9 @@ Features/Cycle-Sound-Mute.lua
 Features/Target-Tracking.lua
 Features/Come-and-Get-It.lua
 Features/Key-Bindings.lua
+Features/Free-Placement.lua
 Features/Menu-Kit.lua
 Features/Minimap-Menu.lua
-Features/Free-Placement.lua
 Features/Minimap-Button.lua
 
 # Diagnostics

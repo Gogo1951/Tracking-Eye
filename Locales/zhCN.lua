@@ -30,6 +30,9 @@ L["TARGET_TRACKING"] = "自动目标追踪"
 L["FARM_STATUS"] = "采集模式状态"
 L["FARM_STATUS_ACTIVE"] = "运行中"
 L["FARM_STATUS_PAUSED"] = "已暂停"
+L["MENU_TRACKING_NOW"] = "当前追踪"
+L["MENU_TRACKING_NONE"] = "无"
+L["MENU_CYCLE_SPEED_EVERY"] = "循环速度：每 %s 秒"
 
 L["FARM_PAUSED_DEAD"] = "您已死亡。"
 L["FARM_PAUSED_TAXI"] = "正在飞行路线上。"
@@ -73,6 +76,7 @@ L["MENU_CLICK_RIGHT"] = "右键"
 L["MENU_CLICK_SHIFT_LEFT"] = "Shift + 左键"
 L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + 右键"
 L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + 中键"
+L["MENU_CLICK_WHEEL"] = "鼠标滚轮"
 L["MENU_MORE_FEATURES"] = "更多功能"
 
 L["MENU_OPTIONS"] = "Tracking Eye 选项"
@@ -82,6 +86,8 @@ L["MENU_OPTIONS"] = "Tracking Eye 选项"
 --------------------------------------------------------------------------------
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "切换采集模式技能"
+L["BINDING_TOGGLE_FARM_MODE"] = "开关采集模式"
+L["BINDING_TOGGLE_TARGET_TRACKING"] = "开关自动目标追踪"
 L["BINDING_NOTHING_TO_CYCLE"] =
 	"未勾选任何采集模式技能。请在 设置选项 > 插件 > Tracking Eye > 采集模式 > 技能 中勾选。"
 
@@ -104,6 +110,8 @@ L["OPTIONS_ENABLE_WELCOME"] = "启用欢迎消息"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Tracking Eye 加载时在聊天中显示一行欢迎语。"
 L["OPTIONS_ENABLE_MINIMAP"] = "启用小地图按钮"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "隐藏按钮后，所有功能照常运行。"
+L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
+	"%s 已开启，因此它的图标取代了按钮。它的开关位于 %s 页面。"
 L["OPTIONS_HOOK_BLIZZARD"] = "使用默认追踪按钮"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
 	"默认追踪按钮也会打开 Tracking Eye 菜单。如果其他插件已在使用该按钮，请保持关闭。"
@@ -115,6 +123,10 @@ L["OPTIONS_KEYBINDS"] = "快捷键"
 L["OPTIONS_KEY_SET"] = "设置按键"
 L["OPTIONS_KEY_SET_DESCRIPTION"] = "打开游戏的快捷键列表，Tracking Eye 在其中有专属分类。"
 L["OPTIONS_KEYBINDS_DESCRIPTION"] = "一键跳到下一个追踪技能，即使采集模式已关闭也能使用。"
+L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
+	"开启或关闭采集模式，与在小地图按钮上 Shift + 左键相同。"
+L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
+	"开启或关闭自动目标追踪，与在小地图按钮上 Shift + 右键相同。"
 
 -- Slash Commands
 
@@ -159,6 +171,9 @@ L["OPTIONS_SHAPE_CIRCLE"] = "圆形"
 L["OPTIONS_SHAPE_SQUARE"] = "方形"
 L["OPTIONS_ICON_SCALE"] = "图标大小"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "原地缩放，图标会保持在原来的位置。"
+L["OPTIONS_ICON_POSITION"] = "图标位置"
+L["OPTIONS_RESET"] = "重置"
+L["OPTIONS_ICON_POSITION_RESET_DESCRIPTION"] = "将图标放回屏幕中央。"
 
 -- Farm Mode
 
@@ -195,6 +210,7 @@ L["OPTIONS_FARM_ABILITIES"] = "采集模式技能"
 L["TAB_FARM_ABILITIES"] = "技能"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"勾选您想找的东西。采集模式会循环此角色已掌握的所有勾选技能，并跳过其余技能。"
+L["OPTIONS_FEATURE_OFF_STATUS"] = "%s 已关闭，因此这些设置不会生效。它的开关位于 %s 页面。"
 L["OPTIONS_FARM_GROUP_GENERAL"] = "专业与种族特长"
 L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] = "只在%s下循环，该形态算作未骑乘。"
 L["OPTIONS_FARM_PERSISTENT"] = "包含持久追踪技能"
@@ -239,7 +255,7 @@ L["MSG_FORMAT_LOCKED"] = "潜行者们！%s，坐标 %s, %s（%s）。"
 L["MSG_FORMAT_HERB"] = "草药师们！%s，坐标 %s, %s（%s）。"
 L["MSG_FORMAT_MINE"] = "矿工们！%s，坐标 %s, %s（%s）。"
 
-L["CHAT_TOO_LONG"] = "此草稿为 %d 字节，超过了 %d 字节的聊天上限。请在发送前缩短。"
+L["CHAT_TOO_LONG"] = "这条消息对聊天来说太长，游戏不会发送。请在按下回车前缩短它。"
 
 -- Options
 
@@ -254,7 +270,7 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"公会频道会送达所有在线的公会成员，无论其位于哪个位面或区域。"
 L["OPTIONS_OUTPUT_NOTE"] = "注意：%s 只能送达与您处于同一位面的玩家。"
 L["OPTIONS_OUTPUT_CHANNEL1"] = "本地 (/1)"
-L["SAMPLE_EXAMPLE"] = "示例：%s"
+L["SAMPLE_EXAMPLE"] = "示例"
 L["SAMPLE_LOADING_ITEM"] = "正在加载 ID：%d"
 
 --------------------------------------------------------------------------------

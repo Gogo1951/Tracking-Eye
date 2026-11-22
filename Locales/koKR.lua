@@ -31,6 +31,9 @@ L["TARGET_TRACKING"] = "자동 대상 추적"
 L["FARM_STATUS"] = "파밍 모드 상태"
 L["FARM_STATUS_ACTIVE"] = "활성"
 L["FARM_STATUS_PAUSED"] = "일시 중지"
+L["MENU_TRACKING_NOW"] = "현재 추적"
+L["MENU_TRACKING_NONE"] = "없음"
+L["MENU_CYCLE_SPEED_EVERY"] = "순환 속도: %s초마다"
 
 L["FARM_PAUSED_DEAD"] = "사망 상태입니다."
 L["FARM_PAUSED_TAXI"] = "비행 경로 이용 중입니다."
@@ -77,6 +80,7 @@ L["MENU_CLICK_RIGHT"] = "오른쪽 클릭"
 L["MENU_CLICK_SHIFT_LEFT"] = "Shift + 왼쪽 클릭"
 L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + 오른쪽 클릭"
 L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + 휠 클릭"
+L["MENU_CLICK_WHEEL"] = "마우스 휠"
 L["MENU_MORE_FEATURES"] = "추가 기능"
 
 L["MENU_OPTIONS"] = "Tracking Eye 옵션"
@@ -86,6 +90,8 @@ L["MENU_OPTIONS"] = "Tracking Eye 옵션"
 --------------------------------------------------------------------------------
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "파밍 모드 능력 전환"
+L["BINDING_TOGGLE_FARM_MODE"] = "파밍 모드 켜기/끄기"
+L["BINDING_TOGGLE_TARGET_TRACKING"] = "자동 대상 추적 켜기/끄기"
 L["BINDING_NOTHING_TO_CYCLE"] =
 	"체크된 파밍 모드 능력이 없습니다. 설정 > 애드온 > Tracking Eye > 파밍 모드 > 능력에서 체크하세요."
 
@@ -109,6 +115,8 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Tracking Eye가 로드될 때 대화창에 한 줄짜리 인사말을 출력합니다."
 L["OPTIONS_ENABLE_MINIMAP"] = "미니맵 버튼 활성화"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "버튼을 숨겨도 모든 기능이 계속 작동합니다."
+L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
+	"%s 기능이 켜져 있어 해당 아이콘이 버튼을 대신합니다. 켜는 스위치는 %s 페이지에 있습니다."
 L["OPTIONS_HOOK_BLIZZARD"] = "기본 추적 버튼 사용"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
 	"기본 추적 버튼으로도 Tracking Eye 메뉴가 열립니다. 다른 애드온이 이미 그 버튼을 사용 중이라면 꺼 두세요."
@@ -121,6 +129,10 @@ L["OPTIONS_KEY_SET"] = "단축키 지정"
 L["OPTIONS_KEY_SET_DESCRIPTION"] = "Tracking Eye 전용 항목이 있는 게임 단축키 목록을 엽니다."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"키 하나로 다음 추적 능력으로 넘어갑니다. 파밍 모드가 꺼져 있어도 작동합니다."
+L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
+	"미니맵 버튼에서 Shift + 왼쪽 클릭과 같이 파밍 모드를 켜거나 끕니다."
+L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
+	"미니맵 버튼에서 Shift + 오른쪽 클릭과 같이 자동 대상 추적을 켜거나 끕니다."
 
 -- Slash Commands
 
@@ -168,6 +180,9 @@ L["OPTIONS_SHAPE_SQUARE"] = "사각형"
 L["OPTIONS_ICON_SCALE"] = "아이콘 크기"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] =
 	"제자리에서 크기가 바뀌므로 아이콘 위치가 그대로 유지됩니다."
+L["OPTIONS_ICON_POSITION"] = "아이콘 위치"
+L["OPTIONS_RESET"] = "초기화"
+L["OPTIONS_ICON_POSITION_RESET_DESCRIPTION"] = "아이콘을 화면 가운데로 되돌립니다."
 
 -- Farm Mode
 
@@ -207,6 +222,8 @@ L["OPTIONS_FARM_ABILITIES"] = "파밍 모드 능력"
 L["TAB_FARM_ABILITIES"] = "능력"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"찾고 싶은 것을 체크하세요. 파밍 모드는 이 캐릭터가 아는 체크된 능력을 모두 순환하고 나머지는 건너뜁니다."
+L["OPTIONS_FEATURE_OFF_STATUS"] =
+	"%s 기능이 꺼져 있어 이 설정은 사용되지 않습니다. 켜는 스위치는 %s 페이지에 있습니다."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "전문 기술 및 종족 특성"
 L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] =
 	"%s 상태에서만 순환하며, 이 상태는 탈것 미탑승으로 간주됩니다."
@@ -253,7 +270,7 @@ L["MSG_FORMAT_HERB"] = "약초채집가 여러분! %s, 위치 %s, %s (%s)."
 L["MSG_FORMAT_MINE"] = "광부 여러분! %s, 위치 %s, %s (%s)."
 
 L["CHAT_TOO_LONG"] =
-	"이 초안은 %d바이트로 채팅 제한인 %d바이트를 초과합니다. 보내기 전에 줄여주세요."
+	"이 알림은 채팅에 비해 너무 길어서 게임이 보내지 않습니다. Enter를 누르기 전에 줄여주세요."
 
 -- Options
 
@@ -268,7 +285,7 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 	"길드는 레이어나 지역에 상관없이 접속 중인 모든 길드원에게 전달됩니다."
 L["OPTIONS_OUTPUT_NOTE"] = "참고: %s 채널은 같은 레이어에 있는 플레이어에게만 전달됩니다."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "지역 (/1)"
-L["SAMPLE_EXAMPLE"] = "예시: %s"
+L["SAMPLE_EXAMPLE"] = "예시"
 L["SAMPLE_LOADING_ITEM"] = "ID 불러오는 중: %d"
 
 --------------------------------------------------------------------------------

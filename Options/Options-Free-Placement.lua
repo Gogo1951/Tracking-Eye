@@ -6,9 +6,9 @@ local RowLabel = ns.OptionsRowLabel
 local SubRow, SubLabel = ns.OptionsSubRow, ns.OptionsSubLabel
 
 --[[
-    Icon Shape and Icon Size only ever affect ns.freeFrame, which ApplyMinimapButton
-    hides whenever freePlacement is off, so both are sub-options of Enable Free
-    Placement Mode and collapse with it.
+    Icon Shape, Icon Size and Icon Position only ever affect ns.freeFrame, which
+    ApplyMinimapButton hides whenever freePlacement is off, so all three are
+    sub-options of Enable Free Placement Mode and collapse with it.
 ]]
 local function Hidden()
 	return not (ns.db and ns.db.global.freePlacement)
@@ -18,12 +18,13 @@ end
 local SUB_LABEL_WIDTH = 0.9
 local SHAPE_DROPDOWN_WIDTH = 1.0
 local SCALE_SLIDER_WIDTH = 1.9
+local RESET_BUTTON_WIDTH = 1.0
 
 --------------------------------------------------------------------------------
 -- Free Placement Mode Panel
 --------------------------------------------------------------------------------
 
--- Page order: the description, the switch, then Icon Shape and Icon Size, which hide while it is off.
+-- Page order: the description, the switch, then Icon Shape, Icon Size and Icon Position, which hide while it is off.
 function ns.BuildFreePlacementOptions()
 	local args = {
 		descFree = Desc(L["OPTIONS_PLACEMENT_DESCRIPTION"], 1),
@@ -74,6 +75,24 @@ function ns.BuildFreePlacementOptions()
 						ns.db.global.freeIconScale = value
 					end
 					ns.UpdateFreeFrameScale()
+					ns.RefreshSettings()
+				end,
+			},
+		}),
+
+		-- Reset only: the icon still drags freely. Gray until it has been moved.
+		iconPositionRow = SubRow(3.3, Hidden, {
+			RowLabel(SubLabel(L["OPTIONS_ICON_POSITION"]), 1, SUB_LABEL_WIDTH),
+			{
+				type = "execute",
+				name = L["OPTIONS_RESET"],
+				desc = L["OPTIONS_ICON_POSITION_RESET_DESCRIPTION"],
+				width = RESET_BUTTON_WIDTH,
+				disabled = function()
+					return not (ns.db and ns.db.global.freePos)
+				end,
+				func = function()
+					ns.ResetFreeFramePosition()
 					ns.RefreshSettings()
 				end,
 			},

@@ -208,9 +208,8 @@ local function AnnounceNode(mapping)
 	local channelKey = ns.db and ns.db.global.comeAndGetItOutput
 	local command = OUTPUT_COMMAND[channelKey] or OUTPUT_COMMAND[ns.DEFAULT_OUTPUT_CHANNEL]
 
-	local messageLength = #announcement
-	if messageLength > ns.CHAT_MESSAGE_MAX_LENGTH then
-		ns:PrintMessage(format(L["CHAT_TOO_LONG"], messageLength, ns.CHAT_MESSAGE_MAX_LENGTH))
+	if #announcement > ns.CHAT_MESSAGE_MAX_LENGTH then
+		ns:PrintMessage(L["CHAT_TOO_LONG"])
 	end
 
 	ChatFrameUtil.OpenChat(command .. " " .. announcement, ChatFrame1)

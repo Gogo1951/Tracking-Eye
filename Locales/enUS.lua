@@ -30,6 +30,9 @@ L["TARGET_TRACKING"] = "Automatic Target Tracking"
 L["FARM_STATUS"] = "Farm Mode Status"
 L["FARM_STATUS_ACTIVE"] = "Active"
 L["FARM_STATUS_PAUSED"] = "Paused"
+L["MENU_TRACKING_NOW"] = "Tracking Now"
+L["MENU_TRACKING_NONE"] = "Nothing"
+L["MENU_CYCLE_SPEED_EVERY"] = "Cycle Speed: Every %s Seconds"
 
 L["FARM_PAUSED_DEAD"] = "Dead."
 L["FARM_PAUSED_TAXI"] = "On a flight path."
@@ -73,6 +76,7 @@ L["MENU_CLICK_RIGHT"] = "Right-Click"
 L["MENU_CLICK_SHIFT_LEFT"] = "Shift + Left-Click"
 L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + Right-Click"
 L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + Middle-Click"
+L["MENU_CLICK_WHEEL"] = "Mouse Wheel"
 L["MENU_MORE_FEATURES"] = "More Features"
 
 L["MENU_OPTIONS"] = "Tracking Eye Options"
@@ -82,6 +86,8 @@ L["MENU_OPTIONS"] = "Tracking Eye Options"
 --------------------------------------------------------------------------------
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Cycle Farm Mode Ability"
+L["BINDING_TOGGLE_FARM_MODE"] = "Toggle Farm Mode"
+L["BINDING_TOGGLE_TARGET_TRACKING"] = "Toggle Automatic Target Tracking"
 L["BINDING_NOTHING_TO_CYCLE"] =
 	"No Farm Mode Abilities are ticked. Tick some under Options > AddOns > Tracking Eye > Farm Mode > Abilities."
 
@@ -104,6 +110,8 @@ L["OPTIONS_ENABLE_WELCOME"] = "Enable Welcome Message"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Prints a one-line greeting in chat when Tracking Eye loads."
 L["OPTIONS_ENABLE_MINIMAP"] = "Enable Mini-map Button"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Everything keeps running with the button hidden."
+L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
+	"%s is on, so its icon takes the button's place. Its switch is on the %s page."
 L["OPTIONS_HOOK_BLIZZARD"] = "Use the Default Tracking Button"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
 	"The default tracking button opens the Tracking Eye menu too. Leave it off if another add-on already uses that button."
@@ -115,6 +123,10 @@ L["OPTIONS_KEYBINDS"] = "Key Bindings"
 L["OPTIONS_KEY_SET"] = "Set Key"
 L["OPTIONS_KEY_SET_DESCRIPTION"] = "Opens the game's key binding list, where Tracking Eye has its own section."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] = "Jump to the next tracking ability with one key, even with Farm Mode off."
+L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
+	"Turns Farm Mode on or off, the same as Shift + Left-Click on the mini-map button."
+L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
+	"Turns Automatic Target Tracking on or off, the same as Shift + Right-Click on the mini-map button."
 
 -- Slash Commands
 
@@ -159,6 +171,9 @@ L["OPTIONS_SHAPE_CIRCLE"] = "Circle"
 L["OPTIONS_SHAPE_SQUARE"] = "Square"
 L["OPTIONS_ICON_SCALE"] = "Icon Size"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "Resizes in place, so the icon keeps its spot."
+L["OPTIONS_ICON_POSITION"] = "Icon Position"
+L["OPTIONS_RESET"] = "Reset"
+L["OPTIONS_ICON_POSITION_RESET_DESCRIPTION"] = "Puts the icon back in the middle of your screen."
 
 -- Farm Mode
 
@@ -168,7 +183,7 @@ L["OPTIONS_FARM_MODE_DESCRIPTION"] =
 L["OPTIONS_ENABLE_FARM"] = "Enable Farm Mode"
 L["OPTIONS_ENABLE_FARM_DESCRIPTION"] =
 	"Pauses on its own in combat, towns, instances, and on flights. Farm Mode Status in the mini-map menu says why."
-L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Silence Sounds From Tracking Ability Casts"
+L["OPTIONS_SILENCE_TRACKING_SOUNDS"] = "Silence Sounds from Tracking Ability Casts"
 L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"Only Farm Mode's own switches go quiet. Tracking you pick yourself still makes its sound."
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "Zoom Mini-map Out"
@@ -196,6 +211,7 @@ L["OPTIONS_FARM_ABILITIES"] = "Farm Mode Abilities"
 L["TAB_FARM_ABILITIES"] = "Abilities"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Tick what you want to find. Farm Mode cycles every ticked ability this character knows and skips the rest."
+L["OPTIONS_FEATURE_OFF_STATUS"] = "%s is off, so these settings aren't being used. Its switch is on the %s page."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Professions & Racial Abilities"
 L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] = "Only cycles in %s, which counts as Not Mounted."
 L["OPTIONS_FARM_PERSISTENT"] = "Include Persistent Tracking Ability"
@@ -240,7 +256,7 @@ L["MSG_FORMAT_LOCKED"] = "Hey Rogues! %s at %s, %s in %s."
 L["MSG_FORMAT_HERB"] = "Hey Herbalists! %s at %s, %s in %s."
 L["MSG_FORMAT_MINE"] = "Hey Miners! %s at %s, %s in %s."
 
-L["CHAT_TOO_LONG"] = "This draft is %d bytes, over the %d-byte chat limit. Shorten it before sending."
+L["CHAT_TOO_LONG"] = "This callout is too long for chat, so the game won't send it. Shorten it before you press Enter."
 
 -- Options
 
@@ -254,7 +270,7 @@ L["OPTIONS_OUTPUT_NAME"] = "Default Output"
 L["OPTIONS_OUTPUT_DESCRIPTION"] = "Guild reaches every guildmate online, whatever their layer or zone."
 L["OPTIONS_OUTPUT_NOTE"] = "Note: %s only reaches players on your layer."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Local (/1)"
-L["SAMPLE_EXAMPLE"] = "Example: %s"
+L["SAMPLE_EXAMPLE"] = "Example"
 L["SAMPLE_LOADING_ITEM"] = "Loading ID: %d"
 
 --------------------------------------------------------------------------------

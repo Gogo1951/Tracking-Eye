@@ -31,6 +31,9 @@ L["TARGET_TRACKING"] = "Rastreo automático de objetivo"
 L["FARM_STATUS"] = "Estado del Modo de recolección"
 L["FARM_STATUS_ACTIVE"] = "Activo"
 L["FARM_STATUS_PAUSED"] = "En pausa"
+L["MENU_TRACKING_NOW"] = "Rastreo actual"
+L["MENU_TRACKING_NONE"] = "Nada"
+L["MENU_CYCLE_SPEED_EVERY"] = "Velocidad del ciclo: cada %s segundos"
 
 L["FARM_PAUSED_DEAD"] = "Estás muerto."
 L["FARM_PAUSED_TAXI"] = "En una ruta de vuelo."
@@ -74,6 +77,7 @@ L["MENU_CLICK_RIGHT"] = "Clic derecho"
 L["MENU_CLICK_SHIFT_LEFT"] = "Mayús + Clic izquierdo"
 L["MENU_CLICK_SHIFT_RIGHT"] = "Mayús + Clic derecho"
 L["MENU_CLICK_SHIFT_MIDDLE"] = "Mayús + Clic central"
+L["MENU_CLICK_WHEEL"] = "Rueda del mouse"
 L["MENU_MORE_FEATURES"] = "Más funciones"
 
 L["MENU_OPTIONS"] = "Opciones de Tracking Eye"
@@ -83,6 +87,8 @@ L["MENU_OPTIONS"] = "Opciones de Tracking Eye"
 --------------------------------------------------------------------------------
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Alternar habilidad del Modo de recolección"
+L["BINDING_TOGGLE_FARM_MODE"] = "Activar/desactivar Modo de recolección"
+L["BINDING_TOGGLE_TARGET_TRACKING"] = "Activar/desactivar Rastreo automático de objetivo"
 L["BINDING_NOTHING_TO_CYCLE"] =
 	"No hay Habilidades del Modo de recolección marcadas. Marca algunas en Opciones > AddOns > Tracking Eye > Modo de recolección > Habilidades."
 
@@ -105,6 +111,8 @@ L["OPTIONS_ENABLE_WELCOME"] = "Habilitar mensaje de bienvenida"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Muestra un saludo de una línea en el chat al cargarse Tracking Eye."
 L["OPTIONS_ENABLE_MINIMAP"] = "Habilitar botón del minimapa"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Todo sigue funcionando con el botón oculto."
+L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
+	"%s está activado, así que su ícono ocupa el lugar del botón. Su interruptor está en la página %s."
 L["OPTIONS_HOOK_BLIZZARD"] = "Usar el botón de rastreo predeterminado"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
 	"El botón de rastreo predeterminado también abre el menú de Tracking Eye. Déjalo desactivado si otro complemento ya usa ese botón."
@@ -117,6 +125,10 @@ L["OPTIONS_KEY_SET"] = "Asignar tecla"
 L["OPTIONS_KEY_SET_DESCRIPTION"] = "Abre la lista de atajos del juego, donde Tracking Eye tiene su propia sección."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Salta a la siguiente habilidad de rastreo con una sola tecla, incluso con el Modo de recolección desactivado."
+L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
+	"Activa o desactiva el Modo de recolección, igual que Mayús + Clic izquierdo en el botón del minimapa."
+L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
+	"Activa o desactiva el Rastreo automático de objetivo, igual que Mayús + Clic derecho en el botón del minimapa."
 
 -- Slash Commands
 
@@ -152,17 +164,20 @@ L["OPTIONS_ENABLE_TARGET_TRACKING_DESCRIPTION"] =
 
 L["PLACEMENT_MODE"] = "Modo de ubicación libre"
 L["OPTIONS_PLACEMENT_DESCRIPTION"] =
-	"¿Minimapa saturado? Saca de él el icono de rastreo y colócalo donde quieras en la pantalla."
+	"¿Minimapa saturado? Saca de él el ícono de rastreo y colócalo donde quieras en la pantalla."
 L["OPTIONS_ENABLE_FREE"] = "Habilitar Modo de ubicación libre"
 L["OPTIONS_ENABLE_FREE_DESCRIPTION"] =
 	"Su posición la comparten todos tus personajes y se mantiene tras recargar la interfaz o cambiar su escala."
-L["OPTIONS_ICON_SHAPE"] = "Forma del icono"
+L["OPTIONS_ICON_SHAPE"] = "Forma del ícono"
 L["OPTIONS_ICON_SHAPE_DESCRIPTION"] =
 	"El círculo combina con el minimapa; el cuadrado encaja bien junto a las barras de acción."
 L["OPTIONS_SHAPE_CIRCLE"] = "Círculo"
 L["OPTIONS_SHAPE_SQUARE"] = "Cuadrado"
-L["OPTIONS_ICON_SCALE"] = "Tamaño del icono"
-L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "Cambia de tamaño sin moverse, así que el icono conserva su lugar."
+L["OPTIONS_ICON_SCALE"] = "Tamaño del ícono"
+L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "Cambia de tamaño sin moverse, así que el ícono conserva su lugar."
+L["OPTIONS_ICON_POSITION"] = "Posición del ícono"
+L["OPTIONS_RESET"] = "Restablecer"
+L["OPTIONS_ICON_POSITION_RESET_DESCRIPTION"] = "Devuelve el ícono al centro de tu pantalla."
 
 -- Farm Mode
 
@@ -201,6 +216,8 @@ L["OPTIONS_FARM_ABILITIES"] = "Habilidades del Modo de recolección"
 L["TAB_FARM_ABILITIES"] = "Habilidades"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Marca lo que quieras encontrar. El Modo de recolección alterna cada habilidad marcada que conozca este personaje y omite el resto."
+L["OPTIONS_FEATURE_OFF_STATUS"] =
+	"%s está desactivado, así que estos ajustes no se están usando. Su interruptor está en la página %s."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Profesiones y habilidades raciales"
 L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] = "Solo alterna en %s, que cuenta como No montado."
 L["OPTIONS_FARM_PERSISTENT"] = "Incluir Habilidad de rastreo persistente"
@@ -246,7 +263,7 @@ L["MSG_FORMAT_HERB"] = "¡Ey, Herboristas! %s (%s, %s) en %s."
 L["MSG_FORMAT_MINE"] = "¡Ey, Mineros! %s (%s, %s) en %s."
 
 L["CHAT_TOO_LONG"] =
-	"Este borrador tiene %d bytes y supera el límite de %d bytes del chat. Acórtalo antes de enviarlo."
+	"Este aviso es demasiado largo para el chat, así que el juego no lo enviará. Acórtalo antes de presionar Enter."
 
 -- Options
 
@@ -260,7 +277,7 @@ L["OPTIONS_OUTPUT_NAME"] = "Salida predeterminada"
 L["OPTIONS_OUTPUT_DESCRIPTION"] = "Hermandad llega a todos los miembros conectados, sin importar su capa ni su zona."
 L["OPTIONS_OUTPUT_NOTE"] = "Nota: %s solo llega a los jugadores de tu capa."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Local (/1)"
-L["SAMPLE_EXAMPLE"] = "Ejemplo: %s"
+L["SAMPLE_EXAMPLE"] = "Ejemplo"
 L["SAMPLE_LOADING_ITEM"] = "Cargando ID: %d"
 
 --------------------------------------------------------------------------------

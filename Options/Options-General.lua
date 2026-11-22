@@ -20,6 +20,12 @@ end
 local KEY_BINDINGS = {
 	-- { bindingName, captionKey, descKey }
 	{ "TRACKINGEYE_CYCLE_FARM_ABILITY", "BINDING_CYCLE_FARM_ABILITY", "OPTIONS_KEYBINDS_DESCRIPTION" },
+	{ "TRACKINGEYE_TOGGLE_FARM_MODE", "BINDING_TOGGLE_FARM_MODE", "OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION" },
+	{
+		"TRACKINGEYE_TOGGLE_TARGET_TRACKING",
+		"BINDING_TOGGLE_TARGET_TRACKING",
+		"OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION",
+	},
 }
 
 local KEY_LABEL_WIDTH = 1.9
@@ -143,6 +149,16 @@ function ns.BuildGeneralOptions()
 				ns.RefreshSettings()
 			end,
 		},
+		-- Only while Free Placement Mode is on, which is what grays Enable Mini-map Button.
+		statusMinimapFree = ns.OptionsStatusLine(function()
+			if not (ns.db and ns.db.global.freePlacement) then
+				return nil
+			end
+			return L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"]:format(
+				ns.OptionsStatusName(L["PLACEMENT_MODE"]),
+				L["PLACEMENT_MODE"]
+			)
+		end, 13.5),
 		hookBlizzardTracking = {
 			type = "toggle",
 			name = L["OPTIONS_HOOK_BLIZZARD"],

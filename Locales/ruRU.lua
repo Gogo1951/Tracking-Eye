@@ -33,6 +33,9 @@ L["TARGET_TRACKING"] = "Автоматическое отслеживание ц
 L["FARM_STATUS"] = "Состояние Режима фарма"
 L["FARM_STATUS_ACTIVE"] = "Активен"
 L["FARM_STATUS_PAUSED"] = "Приостановлен"
+L["MENU_TRACKING_NOW"] = "Сейчас отслеживается"
+L["MENU_TRACKING_NONE"] = "Ничего"
+L["MENU_CYCLE_SPEED_EVERY"] = "Скорость цикла: каждые %s сек."
 
 L["FARM_PAUSED_DEAD"] = "Вы мертвы."
 L["FARM_PAUSED_TAXI"] = "На маршруте полета."
@@ -82,6 +85,7 @@ L["MENU_CLICK_RIGHT"] = "ПКМ"
 L["MENU_CLICK_SHIFT_LEFT"] = "Shift + ЛКМ"
 L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + ПКМ"
 L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + СКМ"
+L["MENU_CLICK_WHEEL"] = "Колесо мыши"
 L["MENU_MORE_FEATURES"] = "Другие функции"
 
 L["MENU_OPTIONS"] = "Настройки Tracking Eye"
@@ -91,6 +95,8 @@ L["MENU_OPTIONS"] = "Настройки Tracking Eye"
 --------------------------------------------------------------------------------
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Переключить способность Режима фарма"
+L["BINDING_TOGGLE_FARM_MODE"] = "Вкл./выкл. Режим фарма"
+L["BINDING_TOGGLE_TARGET_TRACKING"] = "Вкл./выкл. Автоматическое отслеживание цели"
 L["BINDING_NOTHING_TO_CYCLE"] =
 	"Не отмечено ни одной способности Режима фарма. Отметьте нужные в разделе Параметры > Модификации > Tracking Eye > Режим фарма > Способности."
 
@@ -115,6 +121,8 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 L["OPTIONS_ENABLE_MINIMAP"] = "Включить кнопку у мини-карты"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] =
 	"Все продолжает работать и со скрытой кнопкой."
+L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
+	'%s включён, поэтому его значок заменяет кнопку. Его переключатель находится на странице "%s".'
 L["OPTIONS_HOOK_BLIZZARD"] = "Использовать стандартную кнопку отслеживания"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
 	"Стандартная кнопка отслеживания тоже открывает меню Tracking Eye. Не включайте, если эту кнопку уже использует другой аддон."
@@ -128,6 +136,10 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] =
 	"Открывает игровой список назначения клавиш, где у Tracking Eye есть собственный раздел."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Переход к следующей способности отслеживания одной клавишей, даже при выключенном Режиме фарма."
+L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
+	"Включает или выключает Режим фарма, как Shift + ЛКМ по кнопке у мини-карты."
+L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
+	"Включает или выключает Автоматическое отслеживание цели, как Shift + ПКМ по кнопке у мини-карты."
 
 -- Slash Commands
 
@@ -176,6 +188,9 @@ L["OPTIONS_SHAPE_SQUARE"] = "Квадрат"
 L["OPTIONS_ICON_SCALE"] = "Размер значка"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] =
 	"Меняет размер на месте, так что значок не сдвигается."
+L["OPTIONS_ICON_POSITION"] = "Положение значка"
+L["OPTIONS_RESET"] = "Сбросить"
+L["OPTIONS_ICON_POSITION_RESET_DESCRIPTION"] = "Возвращает значок в центр экрана."
 
 -- Farm Mode
 
@@ -219,6 +234,8 @@ L["OPTIONS_FARM_ABILITIES"] = "Способности Режима фарма"
 L["TAB_FARM_ABILITIES"] = "Способности"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Отметьте то, что хотите найти. Режим фарма переключает все отмеченные способности, известные этому персонажу, и пропускает остальные."
+L["OPTIONS_FEATURE_OFF_STATUS"] =
+	'%s выключен, поэтому эти настройки не используются. Его переключатель находится на странице "%s".'
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Профессии и расовые способности"
 L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] =
 	"Переключается только в облике: %s. Он относится к условию Пешком."
@@ -265,7 +282,7 @@ L["MSG_FORMAT_HERB"] = "Эй, травники! %s (%s, %s), %s."
 L["MSG_FORMAT_MINE"] = "Эй, рудокопы! %s (%s, %s), %s."
 
 L["CHAT_TOO_LONG"] =
-	"Этот черновик занимает %d байт и превышает лимит чата в %d байт. Сократите его перед отправкой."
+	"Это сообщение слишком длинное для чата, поэтому игра его не отправит. Сократите его, прежде чем нажать Enter."
 
 -- Options
 
@@ -281,7 +298,7 @@ L["OPTIONS_OUTPUT_DESCRIPTION"] =
 L["OPTIONS_OUTPUT_NOTE"] =
 	"Примечание: %s доходит только до игроков на вашем слое."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Локальный (/1)"
-L["SAMPLE_EXAMPLE"] = "Пример: %s"
+L["SAMPLE_EXAMPLE"] = "Пример"
 L["SAMPLE_LOADING_ITEM"] = "Загрузка ID: %d"
 
 --------------------------------------------------------------------------------

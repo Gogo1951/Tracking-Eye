@@ -231,3 +231,79 @@ function ns.OptionsRowLabel(text, order, width)
 		order = order,
 	}
 end
+
+--[[
+    A silver line that shows only while something elsewhere changes what this
+    page does, such as the feature that owns it switched off. getText returns nil
+    to hide it. Drawn as Options-Kit's Kit.StatusLine draws it, so the move onto
+    the kit swaps it one for one.
+]]
+function ns.OptionsStatusLine(getText, order)
+	return {
+		type = "description",
+		name = function()
+			local text = getText()
+			return text and (GetColor("HELP") .. text .. "|r") or ""
+		end,
+		fontSize = "medium",
+		order = order,
+		hidden = function()
+			return getText() == nil
+		end,
+	}
+end
+
+--[[
+    A status line's feature name: gold, then back to silver for the rest of the
+    line, since a color's |r ends the line's own silver too.
+]]
+function ns.OptionsStatusName(name)
+	return GetColor("TITLE") .. name .. "|r" .. GetColor("HELP")
+end
+
+--[[
+    What a chat feature will send, drawn as it arrives and closing the field set
+    of the control that decides it: a spacer, the silver Example label on its own
+    line with no colon, then the line indented under it like a sub-option.
+    getLines returns the finished line, or a list of lines, on every draw, so the
+    Example follows the settings. Drawn as Options-Kit's Kit.Example draws it, so
+    the move onto the kit swaps it one for one.
+]]
+local FULL_WIDTH_COLON = "\239\188\154" -- U+FF1A, as Chinese locales write it
+
+local function ExampleLabel()
+	local label = ns.L["SAMPLE_EXAMPLE"]
+	repeat
+		local before = label
+		label = string.gsub(label, "%s+$", "")
+		label = string.gsub(label, ":$", "")
+		label = string.gsub(label, FULL_WIDTH_COLON .. "$", "")
+	until label == before
+	return GetColor("HELP") .. label .. "|r"
+end
+
+function ns.OptionsExample(order, hidden, getLines)
+	return {
+		type = "group",
+		name = "",
+		inline = true,
+		order = order,
+		hidden = hidden,
+		args = {
+			space = ns.OptionsSpacer(1),
+			label = { type = "description", name = ExampleLabel, fontSize = "medium", order = 2 },
+			lines = ns.OptionsSubRow(3, nil, {
+				{
+					type = "description",
+					name = function()
+						local lines = getLines()
+						-- A blank line between lines, so each reads as its own chat line.
+						return type(lines) == "table" and table.concat(lines, "\n\n") or lines
+					end,
+					fontSize = "medium",
+					width = ns.OPTIONS_ROW_WIDTH - ns.OPTIONS_SUB_INDENT_WIDTH,
+				},
+			}),
+		},
+	}
+end

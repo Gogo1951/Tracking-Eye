@@ -31,6 +31,9 @@ L["TARGET_TRACKING"] = "Rastreamento Automático de Alvo"
 L["FARM_STATUS"] = "Status do Modo de Coleta"
 L["FARM_STATUS_ACTIVE"] = "Ativo"
 L["FARM_STATUS_PAUSED"] = "Pausado"
+L["MENU_TRACKING_NOW"] = "Rastreamento Atual"
+L["MENU_TRACKING_NONE"] = "Nada"
+L["MENU_CYCLE_SPEED_EVERY"] = "Velocidade do Ciclo: a Cada %s Segundos"
 
 L["FARM_PAUSED_DEAD"] = "Você está morto."
 L["FARM_PAUSED_TAXI"] = "Em uma rota de voo."
@@ -75,6 +78,7 @@ L["MENU_CLICK_RIGHT"] = "Clique Direito"
 L["MENU_CLICK_SHIFT_LEFT"] = "Shift + Clique Esquerdo"
 L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + Clique Direito"
 L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + Clique do Meio"
+L["MENU_CLICK_WHEEL"] = "Roda do Mouse"
 L["MENU_MORE_FEATURES"] = "Mais Recursos"
 
 L["MENU_OPTIONS"] = "Opções do Tracking Eye"
@@ -84,6 +88,8 @@ L["MENU_OPTIONS"] = "Opções do Tracking Eye"
 --------------------------------------------------------------------------------
 
 L["BINDING_CYCLE_FARM_ABILITY"] = "Alternar Habilidade do Modo de Coleta"
+L["BINDING_TOGGLE_FARM_MODE"] = "Ligar/Desligar Modo de Coleta"
+L["BINDING_TOGGLE_TARGET_TRACKING"] = "Ligar/Desligar Rastreamento Automático de Alvo"
 L["BINDING_NOTHING_TO_CYCLE"] =
 	"Nenhuma Habilidade do Modo de Coleta está marcada. Marque algumas em Opções > AddOns > Tracking Eye > Modo de Coleta > Habilidades."
 
@@ -107,6 +113,8 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Exibe no bate-papo uma saudação de uma linha quando o Tracking Eye é carregado."
 L["OPTIONS_ENABLE_MINIMAP"] = "Habilitar Botão do Minimapa"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Tudo continua funcionando com o botão oculto."
+L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
+	"%s está ligado, então o ícone dele ocupa o lugar do botão. A chave fica na página %s."
 L["OPTIONS_HOOK_BLIZZARD"] = "Usar o Botão de Rastreamento Padrão"
 L["OPTIONS_HOOK_BLIZZARD_DESCRIPTION"] =
 	"O botão de rastreamento padrão também abre o menu do Tracking Eye. Deixe desativado se outro add-on já usa esse botão."
@@ -120,6 +128,10 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] =
 	"Abre a lista de atalhos do teclado do jogo, onde o Tracking Eye tem a sua própria seção."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Pule para a próxima habilidade de rastreamento com uma só tecla, mesmo com o Modo de Coleta desligado."
+L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
+	"Liga ou desliga o Modo de Coleta, igual a Shift + Clique Esquerdo no botão do minimapa."
+L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
+	"Liga ou desliga o Rastreamento Automático de Alvo, igual a Shift + Clique Direito no botão do minimapa."
 
 -- Slash Commands
 
@@ -165,6 +177,9 @@ L["OPTIONS_SHAPE_CIRCLE"] = "Círculo"
 L["OPTIONS_SHAPE_SQUARE"] = "Quadrado"
 L["OPTIONS_ICON_SCALE"] = "Tamanho do Ícone"
 L["OPTIONS_ICON_SCALE_DESCRIPTION"] = "Redimensiona no lugar, então o ícone mantém a posição."
+L["OPTIONS_ICON_POSITION"] = "Posição do Ícone"
+L["OPTIONS_RESET"] = "Redefinir"
+L["OPTIONS_ICON_POSITION_RESET_DESCRIPTION"] = "Coloca o ícone de volta no meio da sua tela."
 
 -- Farm Mode
 
@@ -203,6 +218,8 @@ L["OPTIONS_FARM_ABILITIES"] = "Habilidades do Modo de Coleta"
 L["TAB_FARM_ABILITIES"] = "Habilidades"
 L["OPTIONS_FARM_ABILITIES_DESCRIPTION"] =
 	"Marque o que você quer encontrar. O Modo de Coleta alterna cada habilidade marcada que este personagem conhece e ignora o resto."
+L["OPTIONS_FEATURE_OFF_STATUS"] =
+	"%s está desligado, então estas configurações não estão sendo usadas. A chave fica na página %s."
 L["OPTIONS_FARM_GROUP_GENERAL"] = "Profissões e Habilidades Raciais"
 L["OPTIONS_FARM_CAT_FORM_NOTE_NAMED"] = "Só alterna em %s, que conta como Não Montado."
 L["OPTIONS_FARM_PERSISTENT"] = "Incluir Habilidade de Rastreamento Persistente"
@@ -248,7 +265,7 @@ L["MSG_FORMAT_HERB"] = "Ei, Herboristas! %s (%s, %s) em %s."
 L["MSG_FORMAT_MINE"] = "Ei, Mineiros! %s (%s, %s) em %s."
 
 L["CHAT_TOO_LONG"] =
-	"Este rascunho tem %d bytes e ultrapassa o limite de %d bytes do bate-papo. Encurte-o antes de enviar."
+	"Este aviso é longo demais para o bate-papo, então o jogo não vai enviá-lo. Encurte-o antes de apertar Enter."
 
 -- Options
 
@@ -262,7 +279,7 @@ L["OPTIONS_OUTPUT_NAME"] = "Saída Padrão"
 L["OPTIONS_OUTPUT_DESCRIPTION"] = "Guilda alcança todos os membros conectados, seja qual for a camada ou a zona deles."
 L["OPTIONS_OUTPUT_NOTE"] = "Observação: %s só alcança jogadores na sua camada."
 L["OPTIONS_OUTPUT_CHANNEL1"] = "Local (/1)"
-L["SAMPLE_EXAMPLE"] = "Exemplo: %s"
+L["SAMPLE_EXAMPLE"] = "Exemplo"
 L["SAMPLE_LOADING_ITEM"] = "Carregando ID: %d"
 
 --------------------------------------------------------------------------------

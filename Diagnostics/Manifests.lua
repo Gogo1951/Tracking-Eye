@@ -844,6 +844,12 @@ function ns:BuildPersistentContextReport()
 		tostring(ns.IsOutInTheWorld()),
 		tostring(UnitAffectingCombat("player"))
 	)
+	-- The menu shows Target Tracking's block only to a character that knows a hunt ability.
+	lines[#lines + 1] = string.format(
+		"knows a hunt ability: %s // Toggle Target Tracking key: %s",
+		tostring(ns.KnowsHuntAbility()),
+		tostring(GetBindingKey("TRACKINGEYE_TOGGLE_TARGET_TRACKING") or "not bound")
+	)
 	local targetType = "(no target)"
 	local creatureTypeId
 	if UnitExists("target") then
@@ -1035,8 +1041,9 @@ function ns:BuildFarmContextReport()
 	lines[#lines + 1] = ""
 
 	lines[#lines + 1] = string.format(
-		"Cycle Farm Mode Ability key: %s // farmZoomOut: %s",
+		"Cycle Farm Mode Ability key: %s // Toggle Farm Mode key: %s // farmZoomOut: %s",
 		tostring(GetBindingKey("TRACKINGEYE_CYCLE_FARM_ABILITY") or "not bound"),
+		tostring(GetBindingKey("TRACKINGEYE_TOGGLE_FARM_MODE") or "not bound"),
 		OnOff(global.farmZoomOut)
 	)
 
@@ -1316,14 +1323,6 @@ local function RowValue(_, row)
 	return row
 end
 
---[[
-    The Game-IDs files set one id rather than a table, and the validator walks
-    tables, so the id is gathered here into a table keyed by its constant's
-    name. A folder that never set it leaves this table unbuilt, which the
-    report flags as TABLE MISSING.
-]]
-ns.DIAGNOSTIC_GAME_IDS = ns.SAMPLE_HERB_ITEM_ID and { SAMPLE_HERB_ITEM_ID = ns.SAMPLE_HERB_ITEM_ID } or nil
-
 ns.DIAGNOSTIC_DATA_SOURCES = {
 	-- { label, sources = { { table, kind, rowId, dataColumns } } }
 	{
@@ -1359,11 +1358,12 @@ ns.DIAGNOSTIC_DATA_SOURCES = {
 			{ table = "RESTRICTED_MAP_IDS", kind = "other" },
 		},
 	},
+	-- One constant, not a table: the validator reads it as one row keyed by its own name.
 	{
 		label = "Game-IDs",
 		sources = {
 			{
-				table = "DIAGNOSTIC_GAME_IDS",
+				table = "SAMPLE_HERB_ITEM_ID",
 				kind = "item",
 				rowId = RowValue,
 				dataColumns = { { "DATA_CONSTANT", KeyIsId } },

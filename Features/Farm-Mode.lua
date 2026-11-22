@@ -369,6 +369,31 @@ function ns.RestartFarmTicker()
 end
 
 --------------------------------------------------------------------------------
+-- Cycle Speed
+--------------------------------------------------------------------------------
+
+-- Cycle Speed's range and step, shared by the options dropdown and the button's mouse wheel.
+ns.FARM_INTERVAL_MIN = 2
+ns.FARM_INTERVAL_MAX = 10
+ns.FARM_INTERVAL_STEP = 0.5
+
+-- One decimal throughout, except a bare "10" at the top of the range.
+function ns.FormatFarmInterval(seconds)
+	return seconds == 10 and "10" or string.format("%.1f", seconds)
+end
+
+-- Stores a new Cycle Speed, snapped to the step and kept in range, and restarts the ticker on it.
+function ns.SetFarmInterval(seconds)
+	if not ns.db then
+		return
+	end
+	local steps = math.floor(seconds / ns.FARM_INTERVAL_STEP + 0.5)
+	local snapped = math.min(ns.FARM_INTERVAL_MAX, math.max(ns.FARM_INTERVAL_MIN, steps * ns.FARM_INTERVAL_STEP))
+	ns.db.profile.farmInterval = snapped
+	ns.RestartFarmTicker()
+end
+
+--------------------------------------------------------------------------------
 -- Initialization
 --------------------------------------------------------------------------------
 
