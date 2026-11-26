@@ -66,7 +66,7 @@ The menu shows every feature and whether it's on, with a Toggle under each, your
 ### Good to Know
 
 * **Free Placement Mode** // Crowded mini-map? Pull the tracking icon off it and park it anywhere on your screen.
-* **One-Key Cycling** // Bind a key to jump to your next tracking ability, even with Farm Mode off.
+* **Key Bindings** // Bind a key to jump to your next tracking ability, even with Farm Mode off, or to switch Farm Mode or Automatic Target Tracking on and off.
 
 ## Testing & Localization Status
 

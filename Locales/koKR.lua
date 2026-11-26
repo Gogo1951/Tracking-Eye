@@ -33,7 +33,7 @@ L["FARM_STATUS_ACTIVE"] = "활성"
 L["FARM_STATUS_PAUSED"] = "일시 중지"
 L["MENU_TRACKING_NOW"] = "현재 추적"
 L["MENU_TRACKING_NONE"] = "없음"
-L["MENU_CYCLE_SPEED_EVERY"] = "순환 속도: %s초마다"
+L["MENU_CYCLE_EVERY"] = "%s초마다"
 
 L["FARM_PAUSED_DEAD"] = "사망 상태입니다."
 L["FARM_PAUSED_TAXI"] = "비행 경로 이용 중입니다."
@@ -74,14 +74,15 @@ L["MENU_OFF"] = "꺼짐"
 L["MENU_PERSISTENT_DESCRIPTION"] =
 	"죽거나, 변신하거나, 지역을 이동해도 추적을 되돌려 놓습니다."
 L["MENU_FARM_DESCRIPTION"] = "이동하는 동안 추적 능력을 순환합니다."
+L["MENU_FARM_PAUSED_REASON"] = "일시 중지 이유: %s"
 L["MENU_TARGET_DESCRIPTION"] = "대상으로 지정한 생물과 같은 종류를 추적합니다."
 L["MENU_TOGGLE"] = "전환"
 L["MENU_CLICK_RIGHT"] = "오른쪽 클릭"
-L["MENU_CLICK_SHIFT_LEFT"] = "Shift + 왼쪽 클릭"
-L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + 오른쪽 클릭"
-L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + 휠 클릭"
-L["MENU_CLICK_WHEEL"] = "마우스 휠"
 L["MENU_MORE_FEATURES"] = "추가 기능"
+L["MENU_MORE"] = "외 %d개"
+L["MENU_FEATURE_COUNT_ON"] = "%d개 켜짐"
+L["MENU_FEATURE_COUNT_OFF"] = "%d개 꺼짐"
+L["MENU_SHORTCUT"] = "바로 가기:미니맵 버튼을 우클릭하세요."
 
 L["MENU_OPTIONS"] = "Tracking Eye 옵션"
 
@@ -115,6 +116,8 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Tracking Eye가 로드될 때 대화창에 한 줄짜리 인사말을 출력합니다."
 L["OPTIONS_ENABLE_MINIMAP"] = "미니맵 버튼 활성화"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "버튼을 숨겨도 모든 기능이 계속 작동합니다."
+L["OPTIONS_MINIMAP_NO_TRACKING"] =
+	"이 캐릭터는 아직 추적 능력을 배우지 않아 미니맵 버튼이 숨겨져 있습니다. 추적 능력을 배우면 바로 나타납니다."
 L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
 	"%s 기능이 켜져 있어 해당 아이콘이 버튼을 대신합니다. 켜는 스위치는 %s 페이지에 있습니다."
 L["OPTIONS_HOOK_BLIZZARD"] = "기본 추적 버튼 사용"
@@ -130,9 +133,9 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] = "Tracking Eye 전용 항목이 있는 게임 
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"키 하나로 다음 추적 능력으로 넘어갑니다. 파밍 모드가 꺼져 있어도 작동합니다."
 L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
-	"미니맵 버튼에서 Shift + 왼쪽 클릭과 같이 파밍 모드를 켜거나 끕니다."
+	"미니맵 메뉴를 열지 않고 파밍 모드를 켜거나 끕니다."
 L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
-	"미니맵 버튼에서 Shift + 오른쪽 클릭과 같이 자동 대상 추적을 켜거나 끕니다."
+	"미니맵 메뉴를 열지 않고 자동 대상 추적을 켜거나 끕니다."
 
 -- Slash Commands
 
@@ -198,6 +201,9 @@ L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "미니맵 축소"
 L["OPTIONS_ZOOM_MINIMAP_OUT_DESCRIPTION"] =
 	"미니맵을 끝까지 축소하면 훨씬 먼 곳의 추적 대상도 표시됩니다."
+L["OPTIONS_FARM_PAUSE_WINDOWS"] = "창이 열려 있으면 일시 중지"
+L["OPTIONS_FARM_PAUSE_WINDOWS_DESCRIPTION"] =
+	"세계 지도나 다른 창을 열어 둔 채로 계속 전환하려면 끄세요. 예를 들어 보조 모니터에 띄워 둘 때 유용합니다."
 L["OPTIONS_FARM_CONDITIONS"] = "파밍 모드 조건"
 L["OPTIONS_FARM_CONDITIONS_DESCRIPTION"] =
 	"원하는 방식으로 파밍하세요. 탈것을 타고, 걸어서, 또는 직업 고유의 이동 형태로. 체크한 상태라면 언제든 파밍 모드가 순환합니다."

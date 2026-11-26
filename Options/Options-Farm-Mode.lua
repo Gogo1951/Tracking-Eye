@@ -8,9 +8,9 @@ local SubRow, SubLabel = ns.OptionsSubRow, ns.OptionsSubLabel
 -- Sized to its caption with slack; never the full row width. See ns.OptionsSubRow.
 local SUB_TOGGLE_WIDTH = 2.4
 
--- Cycle Speed's sub-row: its caption and the interval dropdown, each sized to its text with slack. See ns.OptionsSubRow.
-local CYCLE_LABEL_WIDTH = 0.9
-local CYCLE_SELECT_WIDTH = 1.6
+-- Cycle Speed's sub-row: its caption fills the label column after the indent, so the dropdown lines up with every other page's controls.
+local CYCLE_LABEL_WIDTH = ns.OPTIONS_LABEL_WIDTH - ns.OPTIONS_SUB_INDENT_WIDTH
+local CYCLE_SELECT_WIDTH = ns.OPTIONS_CONTROL_WIDTH
 
 --[[
     Cycle interval choices, 2 to 10 seconds in half-second steps, built once at
@@ -283,6 +283,23 @@ function ns.BuildFarmModeOptions()
 				set = function(_, value)
 					if ns.db then
 						ns.db.global.farmZoomOut = value
+					end
+					ns.RefreshSettings()
+				end,
+			},
+		}),
+		pauseWindowsRow = SubRow(3.25, FarmOff, {
+			{
+				type = "toggle",
+				name = SubLabel(L["OPTIONS_FARM_PAUSE_WINDOWS"]),
+				desc = L["OPTIONS_FARM_PAUSE_WINDOWS_DESCRIPTION"],
+				width = SUB_TOGGLE_WIDTH,
+				get = function()
+					return ns.db and ns.db.profile.farmPauseForWindows
+				end,
+				set = function(_, value)
+					if ns.db then
+						ns.db.profile.farmPauseForWindows = value
 					end
 					ns.RefreshSettings()
 				end,

@@ -74,6 +74,18 @@ function ns.IsBlockingWindowOpen()
 end
 
 --[[
+    True while an open window holds Farm Mode: never with Pause While a Window
+    Is Open switched off, for a player who keeps the world map open, say on a
+    second monitor. The options window holds Farm Mode either way, on its own.
+]]
+function ns.IsFarmHeldByWindow()
+	if not ns.db or not ns.db.profile.farmPauseForWindows then
+		return false
+	end
+	return ns.IsBlockingWindowOpen()
+end
+
+--[[
     Which movement states would start the cycle, phrased as what the player is
     not currently doing. Only the states this class can reach and this flavor can
     detect are considered, so a mage is never told about Ghost Wolf nor a Retail
@@ -208,7 +220,7 @@ function ns.GetFarmPauseReason()
 	if ns.IsOptionsPanelOpen and ns.IsOptionsPanelOpen() then
 		return "FARM_PAUSED_OPTIONS"
 	end
-	if ns.IsBlockingWindowOpen() then
+	if ns.IsFarmHeldByWindow() then
 		return "FARM_PAUSED_WINDOW"
 	end
 	if ns.IsTooltipShowing() then

@@ -177,8 +177,6 @@ function ns.CreateFreeFrame()
 	frame:SetScript("OnClick", ns.HandleLauncherClick)
 	-- The menu closes itself once the cursor leaves, so there is no OnLeave.
 	frame:SetScript("OnEnter", ns.HandleLauncherEnter)
-	frame:EnableMouseWheel(true)
-	frame:SetScript("OnMouseWheel", ns.HandleLauncherWheel)
 
 	ns.freeFrame = frame
 	--[[

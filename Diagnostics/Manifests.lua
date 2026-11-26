@@ -431,6 +431,37 @@ ns.DIAGNOSTIC_API_CHECKS = {
 			return type(ChatFrameUtil) == "table" and type(ChatFrameUtil.GetActiveWindow) == "function"
 		end,
 	},
+	--[[
+	    The mini-map menu's reads (Features/Minimap-Menu.lua and Menu-Kit.lua):
+	    the cursor position that keeps it open while hovered, the Escape list it
+	    joins, the Shift key the launchers' clicks read, and the spell tooltip an
+	    ability row shows. Without the cursor read the menu closes the moment it
+	    opens.
+	]]
+	{
+		"GetCursorPosition",
+		function()
+			return type(GetCursorPosition) == "function"
+		end,
+	},
+	{
+		"UISpecialFrames",
+		function()
+			return type(UISpecialFrames) == "table"
+		end,
+	},
+	{
+		"IsShiftKeyDown",
+		function()
+			return type(IsShiftKeyDown) == "function"
+		end,
+	},
+	{
+		"GameTooltip.SetSpellByID",
+		function()
+			return type(GameTooltip) == "table" and type(GameTooltip.SetSpellByID) == "function"
+		end,
+	},
 	{
 		"GetTrackingTexture (legacy)",
 		function()
@@ -981,10 +1012,11 @@ function ns:BuildFarmContextReport()
 	-- RunFarmLogic's holds, in its order.
 	lines[#lines + 1] = "Holds, in the order the cycle checks them:"
 	lines[#lines + 1] = string.format(
-		"  options panel open: %s // window open: %s (%s)",
+		"  options panel open: %s // window open: %s (%s) // farmPauseForWindows: %s",
 		tostring(ns.IsOptionsPanelOpen and ns.IsOptionsPanelOpen()),
 		tostring(ns.IsBlockingWindowOpen()),
-		OpenPanelWindows()
+		OpenPanelWindows(),
+		tostring(ns.db and ns.db.profile.farmPauseForWindows)
 	)
 	-- moving is the boolean, never the raw speed, which can be secret on WoW Forever.
 	lines[#lines + 1] = string.format(

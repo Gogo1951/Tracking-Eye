@@ -35,7 +35,7 @@ L["FARM_STATUS_ACTIVE"] = "Активен"
 L["FARM_STATUS_PAUSED"] = "Приостановлен"
 L["MENU_TRACKING_NOW"] = "Сейчас отслеживается"
 L["MENU_TRACKING_NONE"] = "Ничего"
-L["MENU_CYCLE_SPEED_EVERY"] = "Скорость цикла: каждые %s сек."
+L["MENU_CYCLE_EVERY"] = "Каждые %s сек."
 
 L["FARM_PAUSED_DEAD"] = "Вы мертвы."
 L["FARM_PAUSED_TAXI"] = "На маршруте полета."
@@ -78,15 +78,16 @@ L["MENU_OFF"] = "Выкл."
 L["MENU_PERSISTENT_DESCRIPTION"] =
 	"Возвращает отслеживание после смерти, смены облика или перехода в другую зону."
 L["MENU_FARM_DESCRIPTION"] = "Переключает способности отслеживания в пути."
+L["MENU_FARM_PAUSED_REASON"] = "Причина паузы: %s"
 L["MENU_TARGET_DESCRIPTION"] =
 	"Отслеживает существ того же вида, что и ваша цель."
 L["MENU_TOGGLE"] = "Переключить"
 L["MENU_CLICK_RIGHT"] = "ПКМ"
-L["MENU_CLICK_SHIFT_LEFT"] = "Shift + ЛКМ"
-L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + ПКМ"
-L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + СКМ"
-L["MENU_CLICK_WHEEL"] = "Колесо мыши"
 L["MENU_MORE_FEATURES"] = "Другие функции"
+L["MENU_MORE"] = "Еще: %d"
+L["MENU_FEATURE_COUNT_ON"] = "Вкл.: %d"
+L["MENU_FEATURE_COUNT_OFF"] = "Выкл.: %d"
+L["MENU_SHORTCUT"] = "Быстрый вызов: ПКМ по кнопке у мини-карты."
 
 L["MENU_OPTIONS"] = "Настройки Tracking Eye"
 
@@ -121,6 +122,8 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 L["OPTIONS_ENABLE_MINIMAP"] = "Включить кнопку у мини-карты"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] =
 	"Все продолжает работать и со скрытой кнопкой."
+L["OPTIONS_MINIMAP_NO_TRACKING"] =
+	"Этот персонаж ещё не знает ни одной способности отслеживания, поэтому кнопка у мини-карты скрыта. Она появится, как только вы изучите такую способность."
 L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
 	'%s включён, поэтому его значок заменяет кнопку. Его переключатель находится на странице "%s".'
 L["OPTIONS_HOOK_BLIZZARD"] = "Использовать стандартную кнопку отслеживания"
@@ -135,11 +138,11 @@ L["OPTIONS_KEY_SET"] = "Назначить клавишу"
 L["OPTIONS_KEY_SET_DESCRIPTION"] =
 	"Открывает игровой список назначения клавиш, где у Tracking Eye есть собственный раздел."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
-	"Переход к следующей способности отслеживания одной клавишей, даже при выключенном Режиме фарма."
+	"Переходит к следующей способности отслеживания одной клавишей, даже при выключенном Режиме фарма."
 L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
-	"Включает или выключает Режим фарма, как Shift + ЛКМ по кнопке у мини-карты."
+	"Включает или выключает Режим фарма, не открывая меню у мини-карты."
 L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
-	"Включает или выключает Автоматическое отслеживание цели, как Shift + ПКМ по кнопке у мини-карты."
+	"Включает или выключает Автоматическое отслеживание цели, не открывая меню у мини-карты."
 
 -- Slash Commands
 
@@ -207,6 +210,9 @@ L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "Отдалить мини-карту"
 L["OPTIONS_ZOOM_MINIMAP_OUT_DESCRIPTION"] =
 	"При максимальном отдалении мини-карта показывает отслеживаемые ресурсы с гораздо большего расстояния."
+L["OPTIONS_FARM_PAUSE_WINDOWS"] = "Пауза при открытом окне"
+L["OPTIONS_FARM_PAUSE_WINDOWS_DESCRIPTION"] =
+	"Выключите, чтобы чередование продолжалось при открытой карте мира или другом окне, например на втором мониторе."
 L["OPTIONS_FARM_CONDITIONS"] = "Условия Режима фарма"
 L["OPTIONS_FARM_CONDITIONS_DESCRIPTION"] =
 	"Фармите как удобно: верхом, пешком или в походном облике вашего класса. Режим фарма работает в любом отмеченном состоянии."

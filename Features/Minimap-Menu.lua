@@ -7,29 +7,24 @@ local Kit = ns.MenuKit
 --------------------------------------------------------------------------------
 
 --[[
-    The mini-map button's menu, laid out as Pretty Wide Quest Log's Quest Arrow
-    menu is: the add-on's name, then for each feature a gold title with where it
-    stands on the right, a line saying what it does, and a blue Toggle row, then
-    the More Features rows and the Options row. Persistent Tracking's
-    block also lists the abilities to pick from, between its description and its
-    Toggle row, so picking one is a single click in the menu itself, and Clear
-    Tracking under its Toggle row while something is picked or tracked. A title
-    with settings to show carries the menu kit's own submenu arrow and opens its
-    flyout beside the menu, under the cursor or on a click.
+    The mini-map button's menu, built on Menu-Kit v2 (Features/Menu-Kit.lua):
+    the add-on's name, then for each feature a gold title with where it stands
+    on the right, a line saying what it does, and a blue Toggle row, then More
+    Features and the Options row. Persistent Tracking's block also lists the
+    abilities to pick from, between its description and its Toggle row, so
+    picking one is a single click in the menu itself, and Clear Tracking under
+    its Toggle row while something is picked or tracked. A title with settings
+    to show carries the kit's arrow and opens its flyout beside the menu.
 
-    Hovering the launcher opens it, and moving into it keeps it open; it closes a
-    moment after the cursor leaves the launcher, the menu, and the flyout. A
-    left-click opens it too, and keeps it open a little longer once the cursor
-    leaves. Every row is a plain click, so a controller's cursor reaches all of
-    it, and the button keeps its old clicks, each named on the row that does the
-    same job (Button Clicks, below).
+    The kit opens, places, closes and redraws it, and takes the button's
+    clicks: Left-Click opens and holds the menu, Right-Click is Clear Tracking.
 
-    The rules every add-on's menu follows (README-Technical → Mini-map Menu):
+    The rules every add-on's menu follows (Style Guide → MINIMAP MENU):
       - Each block feature (Persistent Tracking, Farm Mode, Automatic Target
         Tracking) gets a block here: its title, its description, and a Toggle
-        row for its Enable switch. Its flyout holds
-        its settings, hidden while the feature is off, as the options hide them.
-        Persistent Tracking's pick is the exception: it lives in the block.
+        row for its Enable switch. Its flyout holds its settings, hidden while
+        the feature is off, as the options hide them. Persistent Tracking's
+        pick is the exception: it lives in the block.
       - A row for one class's spell shows only to a character who knows that
         spell; the options page lists every row, for profiles shared across
         classes. Hiding a row never changes its setting.
@@ -37,31 +32,20 @@ local Kit = ns.MenuKit
         Enable option's.
       - A pick from a set (an ability) closes the menu; a switch leaves it open.
       - Free Placement Mode and Come & Get It aren't changed mid-session, so each
-        is one On/Off row under More Features rather than a block. Free Placement
-        Mode's row opens its options panel instead of switching.
+        is one On/Off row in the More Features flyout rather than a block. Free
+        Placement Mode's row opens its options panel instead of switching.
 ]]
 
-local HOVER_CLOSE_DELAY = 0.5
-local CLICK_CLOSE_DELAY = 1.0
-local MENU_GAP = 2 -- From the launcher's corner to the menu's
-
-local menu = Kit.CreatePanel(ADDON_NAME .. "Menu", UIParent)
-local flyout = Kit.CreatePanel(nil, menu)
-flyout:SetFrameLevel(menu:GetFrameLevel() + 20)
-
--- Escape closes it, as it does any game menu.
-table.insert(UISpecialFrames, menu:GetName())
-
-Kit.SetToggleText(L["MENU_ON"], L["MENU_OFF"])
-
-local state = {
-	anchor = nil,
-	flyoutKey = nil,
-	closeDelay = HOVER_CLOSE_DELAY,
-	idle = 0,
-	openLeft = true,
-	openDown = true,
-}
+Kit.SetText({
+	on = L["MENU_ON"],
+	off = L["MENU_OFF"],
+	toggle = L["MENU_TOGGLE"],
+	more = L["MENU_MORE"],
+	moreFeatures = L["MENU_MORE_FEATURES"],
+	featuresOn = L["MENU_FEATURE_COUNT_ON"],
+	featuresOff = L["MENU_FEATURE_COUNT_OFF"],
+	shortcut = L["MENU_SHORTCUT"],
+})
 
 --------------------------------------------------------------------------------
 -- Helpers
@@ -76,113 +60,35 @@ local function SpellText(spellId, name)
 	return string.format("|T%s:0|t %s", C_Spell.GetSpellTexture(spellId) or ns.ICON_DEFAULT, name)
 end
 
--- An option's caption and tooltip, drawn the way the options panel draws them.
-local function OptionTooltip(name, desc)
-	return function(tooltip)
-		tooltip:SetText(name, 1, 0.82, 0, 1, true)
-		if desc and desc ~= "" then
-			tooltip:AddLine(desc, 1, 1, 1, true)
-		end
-	end
-end
-
--- An open options page redraws with the new value, and so does the menu, through ns.RefreshSettings.
-local function AfterChange()
-	ns.RefreshSettings()
-end
-
--- A pick from a set closes the menu, and an open options page redraws.
-local function AfterPick()
-	ns.HideMenu()
-	ns.RefreshSettings()
-end
-
 --------------------------------------------------------------------------------
--- Button Clicks
+-- Jobs
 --------------------------------------------------------------------------------
 
 --[[
-    One table, both ways: the button's OnClick looks the click up here, and the
-    row that does the same job names the click on its right, so a row never names
-    a click that does something else. Left-Click has no job here, so it opens and
-    holds the menu (Minimap-Button.lua).
+    The jobs a row and a key binding share (Key-Bindings.lua). The button's
+    clicks go to the kit (ns.HandleMenuClick, below): Left-Click opens and holds
+    the menu, and Right-Click runs Clear Tracking while its row shows, which
+    names "Right-Click" on its right, since a click the button does is named.
 ]]
-local CLICKS = {
-	clear = {
-		button = "RightButton",
-		shift = false,
-		name = "MENU_CLICK_RIGHT",
-		run = function()
-			ns.ClearTracking()
-		end,
-	},
-	farm = {
-		button = "LeftButton",
-		shift = true,
-		name = "MENU_CLICK_SHIFT_LEFT",
-		run = function()
-			ns.db.profile.farmMode = not ns.db.profile.farmMode
-		end,
-	},
-	target = {
-		button = "RightButton",
-		shift = true,
-		name = "MENU_CLICK_SHIFT_RIGHT",
-		run = function()
-			ns.SetTargetTracking(not ns.db.profile.targetTracking)
-		end,
-	},
-	options = {
-		button = "MiddleButton",
-		shift = true,
-		name = "MENU_CLICK_SHIFT_MIDDLE",
-		run = function()
-			ns.HideMenu()
-			ns:OpenOptionsPanel()
-		end,
-	},
+local JOBS = {
+	clear = function()
+		ns.ClearTracking()
+	end,
+	farm = function()
+		ns.db.profile.farmMode = not ns.db.profile.farmMode
+	end,
+	target = function()
+		ns.SetTargetTracking(not ns.db.profile.targetTracking)
+	end,
 }
 
--- Runs one click's job by its key, as the key bindings do (Key-Bindings.lua), and redraws as a click does.
-function ns.RunClickJob(key)
-	if not ns.db or not CLICKS[key] then
+-- Runs one job by its key and redraws the menu and any open options page.
+function ns.RunMenuJob(key)
+	if not ns.db or not JOBS[key] then
 		return
 	end
-	CLICKS[key].run()
-	AfterChange()
-end
-
--- Runs the click's job and redraws the menu and any open options page; false when the click has none.
-function ns.RunButtonClick(button)
-	local shift = IsShiftKeyDown() and true or false
-	for _, click in pairs(CLICKS) do
-		if click.button == button and click.shift == shift then
-			if not ns.db and click ~= CLICKS.options then
-				return true
-			end
-			click.run()
-			AfterChange()
-			return true
-		end
-	end
-	return false
-end
-
--- An action row: blue, naming its button click on the right in gray.
-local function ClickRow(label, clickKey, tooltip)
-	local click = CLICKS[clickKey]
-	return {
-		kind = "action",
-		left = label,
-		leftColor = "INFO",
-		right = L[click.name],
-		rightColor = "MUTED",
-		tooltip = tooltip,
-		onClick = function()
-			click.run()
-			AfterChange()
-		end,
-	}
+	JOBS[key]()
+	ns.RefreshSettings()
 end
 
 --[[
@@ -219,39 +125,6 @@ local function SpellTooltip(spellId)
 	end
 end
 
--- A switch bound to one saved field.
-local function Toggle(store, field, name, desc, onChange)
-	return {
-		kind = "toggle",
-		left = name,
-		on = store[field] and true or false,
-		tooltip = OptionTooltip(name, desc),
-		onClick = function()
-			store[field] = not store[field]
-			if onChange then
-				onChange(store[field])
-			end
-			AfterChange()
-		end,
-	}
-end
-
-local function Section(text)
-	return { kind = "section", left = text }
-end
-
-local function Separator()
-	return { kind = "separator" }
-end
-
--- The right side of a feature's label: On in green, Off in gray.
-local function OnOff(enabled)
-	if enabled then
-		return L["MENU_ON"], "ON"
-	end
-	return L["MENU_OFF"], "MUTED"
-end
-
 --------------------------------------------------------------------------------
 -- Actions
 --------------------------------------------------------------------------------
@@ -264,7 +137,6 @@ local function PickPersistent(spellId)
 	ns.InvalidateFarmCache()
 	ns.state.wasFarming = false
 	ns.CastTracking(spellId)
-	AfterPick()
 end
 
 -- A Persistent Tracking override changes the resolver's answer, so it recasts at once.
@@ -281,7 +153,7 @@ local FLYOUTS = {}
 
 --[[
     The abilities to pick from, drawn inside Persistent Tracking's block in the
-    main menu: the pick white with a check and the rest gray. The pick is chosen
+    main menu, the pick with a check. A pick closes the menu. The pick is chosen
     even with Persistent Tracking off, so the list never hides.
 ]]
 local function PersistentPickRows()
@@ -293,6 +165,7 @@ local function PersistentPickRows()
 			left = SpellText(data.id, data.name),
 			selected = profile.selectedSpellId == data.id,
 			tooltip = SpellTooltip(data.id),
+			closes = true,
 			onClick = function()
 				PickPersistent(data.id)
 			end,
@@ -303,13 +176,23 @@ end
 
 --[[
     Clear Tracking, under Persistent Tracking's Toggle row whenever something is
-    picked or tracked: Right-Click clears either, so the row shows for both.
+    picked or tracked: it clears either, so it shows for both. Right-Click on
+    the button runs it only while it shows, and the row names that click.
 ]]
 local function PersistentClearRows()
 	if not ns.db.profile.selectedSpellId and not ns.GetActiveTrackingSpell() then
 		return nil
 	end
-	return { ClickRow(L["CLEAR_TRACKING"], "clear") }
+	return {
+		{
+			kind = "action",
+			left = L["CLEAR_TRACKING"],
+			click = "RightButton",
+			right = L["MENU_CLICK_RIGHT"],
+			rightColor = "MUTED",
+			onClick = JOBS.clear,
+		},
+	}
 end
 
 --[[
@@ -320,61 +203,53 @@ end
 function FLYOUTS.persistent()
 	local profile = ns.db.profile
 	local entries = {}
+	if not profile.persistentTracking then
+		return entries
+	end
 
 	-- Each override shows only to a character who knows its spell; the options page lists all three.
-	if profile.persistentTracking then
-		local overrides = {}
-		if IsKnown(ns.SPELLS.FISH) then
-			overrides[#overrides + 1] = Toggle(
-				profile,
-				"fishingPoleFish",
-				L["OPTIONS_FISHING_POLE_FISH_NAMED"]:format(
-					ns.GetSpellNameText(ns.SPELLS.FISH),
-					ns.GetFishingPoleName()
-				),
-				L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"],
-				OnPersistentOverride
-			)
-		end
-		if IsKnown(ns.SPELLS.DRUID_HUMANOIDS) then
-			overrides[#overrides + 1] = Toggle(
-				profile,
-				"catFormHumanoids",
-				L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"]:format(
-					ns.GetClassNameText("DRUID"),
-					ns.GetSpellNameText(ns.SPELLS.DRUID_HUMANOIDS),
-					ns.GetSpellNameText(ns.SPELLS.CAT)
-				),
-				L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"],
-				OnPersistentOverride
-			)
-		end
-		if IsKnown(ns.SPELLS.HUMANOIDS) then
-			overrides[#overrides + 1] = Toggle(
-				profile,
-				"battlegroundHumanoids",
-				L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"]:format(
-					ns.GetClassNameText("HUNTER"),
-					ns.GetSpellNameText(ns.SPELLS.HUMANOIDS)
-				),
-				L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"],
-				OnPersistentOverride
-			)
-		end
-		for _, entry in ipairs(overrides) do
-			entries[#entries + 1] = entry
-		end
+	if IsKnown(ns.SPELLS.FISH) then
+		entries[#entries + 1] = Kit.Toggle(
+			profile,
+			"fishingPoleFish",
+			L["OPTIONS_FISHING_POLE_FISH_NAMED"]:format(ns.GetSpellNameText(ns.SPELLS.FISH), ns.GetFishingPoleName()),
+			L["OPTIONS_FISHING_POLE_FISH_DESCRIPTION"],
+			OnPersistentOverride
+		)
+	end
+	if IsKnown(ns.SPELLS.DRUID_HUMANOIDS) then
+		entries[#entries + 1] = Kit.Toggle(
+			profile,
+			"catFormHumanoids",
+			L["OPTIONS_CAT_FORM_HUMANOIDS_NAMED"]:format(
+				ns.GetClassNameText("DRUID"),
+				ns.GetSpellNameText(ns.SPELLS.DRUID_HUMANOIDS),
+				ns.GetSpellNameText(ns.SPELLS.CAT)
+			),
+			L["OPTIONS_CAT_FORM_HUMANOIDS_STEALTH_DESCRIPTION"],
+			OnPersistentOverride
+		)
+	end
+	if IsKnown(ns.SPELLS.HUMANOIDS) then
+		entries[#entries + 1] = Kit.Toggle(
+			profile,
+			"battlegroundHumanoids",
+			L["OPTIONS_BATTLEGROUND_HUMANOIDS_NAMED"]:format(
+				ns.GetClassNameText("HUNTER"),
+				ns.GetSpellNameText(ns.SPELLS.HUMANOIDS)
+			),
+			L["OPTIONS_BATTLEGROUND_HUMANOIDS_DESCRIPTION"],
+			OnPersistentOverride
+		)
 	end
 	return entries
 end
 
 --[[
     While Farm Mode is on: Farm Mode Status and, while paused, why; Tracking
-    Now; the Cycle Speed read-out the button's mouse wheel sets; the abilities to
-    cycle; the conditions; and the two extras. Farm Mode Abilities lists what
-    this character knows; the options page lists every ability for shared
-    profiles. Picking a Cycle Speed from its seventeen choices stays on the
-    options page; the flyout only reads it back.
+    Now; Cycle Speed, whose own flyout picks it; the abilities to cycle; the
+    conditions; and the extras. Farm Mode Abilities lists what this character
+    knows; the options page lists every ability for shared profiles.
 ]]
 function FLYOUTS.farm()
 	local profile = ns.db.profile
@@ -385,15 +260,11 @@ function FLYOUTS.farm()
 	end
 
 	local reason, reasonState = ns.GetFarmPauseReason()
-	local status = Section(L["FARM_STATUS"])
 	if reason then
-		status.right, status.rightColor = L["FARM_STATUS_PAUSED"], "MUTED"
-	else
-		status.right, status.rightColor = L["FARM_STATUS_ACTIVE"], "ON"
-	end
-	entries[#entries + 1] = status
-	if reason then
+		entries[#entries + 1] = Kit.Section(L["FARM_STATUS"], L["FARM_STATUS_PAUSED"], "MUTED")
 		entries[#entries + 1] = { kind = "note", left = ns.FormatFarmPauseReason(reason, reasonState) }
+	else
+		entries[#entries + 1] = Kit.Section(L["FARM_STATUS"], L["FARM_STATUS_ACTIVE"], "ON")
 	end
 
 	--[[
@@ -407,19 +278,19 @@ function FLYOUTS.farm()
 		kind = "value",
 		left = L["MENU_TRACKING_NOW"],
 		right = activeName and SpellText(activeId, activeName) or L["MENU_TRACKING_NONE"],
-		rightColor = activeName and "TEXT" or "MUTED",
+		rightColor = not activeName and "MUTED" or nil,
 	}
-	-- The button's mouse wheel sets this (ns.HandleLauncherWheel), so the row names it.
 	entries[#entries + 1] = {
 		kind = "value",
-		left = L["MENU_CYCLE_SPEED_EVERY"]:format(ns.FormatFarmInterval(profile.farmInterval)),
-		right = L["MENU_CLICK_WHEEL"],
-		rightColor = "MUTED",
+		left = L["OPTIONS_CYCLE_SPEED"],
+		right = L["MENU_CYCLE_EVERY"]:format(ns.FormatFarmInterval(profile.farmInterval)),
+		submenu = "speed",
+		tooltip = Kit.OptionTooltip(L["OPTIONS_CYCLE_SPEED"], L["OPTIONS_CYCLE_SPEED_DESCRIPTION"]),
 	}
 
 	local cycleSpells = profile.farmCycleSpells or {}
-	entries[#entries + 1] = Section(L["OPTIONS_FARM_ABILITIES"])
-	entries[#entries + 1] = Toggle(
+	entries[#entries + 1] = Kit.Section(L["OPTIONS_FARM_ABILITIES"])
+	entries[#entries + 1] = Kit.Toggle(
 		profile,
 		"farmIncludePersistent",
 		L["OPTIONS_FARM_PERSISTENT"],
@@ -438,16 +309,15 @@ function FLYOUTS.farm()
 					profile.farmCycleSpells[data.id] = not profile.farmCycleSpells[data.id]
 					ns.InvalidateFarmCache()
 				end
-				AfterChange()
 			end,
 		}
 	end
 
 	-- A class's travel state shows only to a character who knows a spell for it; the options page lists them all.
-	entries[#entries + 1] = Section(L["OPTIONS_FARM_CONDITIONS"])
+	entries[#entries + 1] = Kit.Section(L["OPTIONS_FARM_CONDITIONS"])
 	local function Condition(field, name, desc, movementState)
 		if movementState == nil or ns.KnowsMovementState(movementState) then
-			entries[#entries + 1] = Toggle(profile, field, name, desc, ns.InvalidatePlayerStates)
+			entries[#entries + 1] = Kit.Toggle(profile, field, name, desc, ns.InvalidatePlayerStates)
 		end
 	end
 	Condition("farmMounted", L["OPTIONS_FARM_MOUNTED"], L["OPTIONS_FARM_MOUNTED_DESCRIPTION"])
@@ -467,8 +337,8 @@ function FLYOUTS.farm()
 		"ghostWolf"
 	)
 
-	entries[#entries + 1] = Separator()
-	entries[#entries + 1] = Toggle(
+	entries[#entries + 1] = Kit.Separator()
+	entries[#entries + 1] = Kit.Toggle(
 		profile,
 		"muteCycleSound",
 		L["OPTIONS_SILENCE_TRACKING_SOUNDS"],
@@ -481,7 +351,34 @@ function FLYOUTS.farm()
 		end
 	)
 	entries[#entries + 1] =
-		Toggle(global, "farmZoomOut", L["OPTIONS_ZOOM_MINIMAP_OUT"], L["OPTIONS_ZOOM_MINIMAP_OUT_DESCRIPTION"])
+		Kit.Toggle(global, "farmZoomOut", L["OPTIONS_ZOOM_MINIMAP_OUT"], L["OPTIONS_ZOOM_MINIMAP_OUT_DESCRIPTION"])
+	entries[#entries + 1] = Kit.Toggle(
+		profile,
+		"farmPauseForWindows",
+		L["OPTIONS_FARM_PAUSE_WINDOWS"],
+		L["OPTIONS_FARM_PAUSE_WINDOWS_DESCRIPTION"]
+	)
+	return entries
+end
+
+-- Cycle Speed's choices, off Farm Mode's flyout: the options dropdown's range, 2 to 10 seconds in half-second steps.
+function FLYOUTS.speed()
+	local profile = ns.db.profile
+	local entries = {}
+	if not profile.farmMode then
+		return entries
+	end
+	for halfSeconds = ns.FARM_INTERVAL_MIN * 2, ns.FARM_INTERVAL_MAX * 2 do
+		local seconds = halfSeconds * ns.FARM_INTERVAL_STEP
+		entries[#entries + 1] = {
+			kind = "choice",
+			left = L["MENU_CYCLE_EVERY"]:format(ns.FormatFarmInterval(seconds)),
+			selected = profile.farmInterval == seconds,
+			onClick = function()
+				ns.SetFarmInterval(seconds)
+			end,
+		}
+	end
 	return entries
 end
 
@@ -489,98 +386,58 @@ end
 -- Main Menu
 --------------------------------------------------------------------------------
 
---[[
-    A feature's block: the gold title with where it
-    stands on the right, what the feature does, any note, any rows of its own
-    (Persistent Tracking's abilities), a blue Toggle row, and any rows after it
-    (Persistent Tracking's Clear Tracking). The title opens its
-    flyout, under the cursor or on a click, only while the flyout has something to
-    show; otherwise it's a plain heading.
-]]
-local function AddFeature(entries, key, title, right, rightColor, description, note, toggle, rows, after)
-	local hasFlyout = FLYOUTS[key] ~= nil and #FLYOUTS[key]() > 0
-	entries[#entries + 1] = {
-		kind = hasFlyout and "submenu" or "status",
-		submenu = hasFlyout and key or nil,
-		left = title,
-		right = right,
-		rightColor = rightColor,
-		onClick = hasFlyout and function()
-			ns.OpenFlyout(key)
-		end or nil,
-	}
-	entries[#entries + 1] = { kind = "description", left = description }
-	if note then
-		entries[#entries + 1] = { kind = "note", left = note }
-	end
-	if rows then
-		for _, row in ipairs(rows) do
-			entries[#entries + 1] = row
-		end
-	end
-	-- The Toggle row names the button click that does the same, when the feature has one.
-	if toggle.click then
-		entries[#entries + 1] = ClickRow(L["MENU_TOGGLE"], toggle.click, OptionTooltip(toggle.name, toggle.desc))
-	else
-		entries[#entries + 1] = {
-			kind = "action",
-			left = L["MENU_TOGGLE"],
-			leftColor = "INFO",
-			tooltip = OptionTooltip(toggle.name, toggle.desc),
-			onClick = function()
-				toggle.flip()
-				AfterChange()
-			end,
-		}
-	end
-	if after then
-		for _, row in ipairs(after) do
-			entries[#entries + 1] = row
-		end
-	end
-end
-
 local function BuildMainEntries()
 	local profile = ns.db.profile
 	local entries = {
 		{ kind = "header", left = L["ADDON_TITLE"], right = ns.Version or "" },
-		{ kind = "spacer" },
+		Kit.Spacer(),
 	}
 
 	-- Persistent Tracking reads On or Off like the others; its pick carries the check in the list below.
-	local right, rightColor = OnOff(profile.persistentTracking)
-	AddFeature(
-		entries,
-		"persistent",
-		L["PERSISTENT_TRACKING"],
-		right,
-		rightColor,
-		L["MENU_PERSISTENT_DESCRIPTION"],
-		nil,
-		{
+	local state, stateColor = Kit.OnOff(profile.persistentTracking)
+	Kit.FeatureBlock(entries, {
+		key = "persistent",
+		title = L["PERSISTENT_TRACKING"],
+		state = state,
+		stateColor = stateColor,
+		description = L["MENU_PERSISTENT_DESCRIPTION"],
+		rows = PersistentPickRows(),
+		after = PersistentClearRows(),
+		toggle = {
 			name = L["OPTIONS_ENABLE_PERSISTENT"],
 			desc = L["OPTIONS_ENABLE_PERSISTENT_DESCRIPTION"],
 			flip = function()
 				ns.SetPersistentTracking(not profile.persistentTracking)
 			end,
 		},
-		PersistentPickRows(),
-		PersistentClearRows()
-	)
+	})
 
-	-- Farm Mode: Active in green, Paused or Off in gray. Why it's paused is in its flyout's Farm Mode Status.
-	right, rightColor = OnOff(false)
+	-- Farm Mode: Active in green, Paused or Off in gray. While paused, a labelled gray note under the description says why.
+	state, stateColor = Kit.OnOff(false)
+	local farmNote
 	if profile.farmMode then
-		if ns.GetFarmPauseReason() then
-			right, rightColor = L["FARM_STATUS_PAUSED"], "MUTED"
+		local reason, reasonState = ns.GetFarmPauseReason()
+		if reason then
+			state, stateColor = L["FARM_STATUS_PAUSED"], "MUTED"
+			farmNote = L["MENU_FARM_PAUSED_REASON"]:format(ns.FormatFarmPauseReason(reason, reasonState))
 		else
-			right, rightColor = L["FARM_STATUS_ACTIVE"], "ON"
+			state, stateColor = L["FARM_STATUS_ACTIVE"], "ON"
 		end
 	end
-	AddFeature(entries, "farm", L["TAB_FARM_MODE"], right, rightColor, L["MENU_FARM_DESCRIPTION"], nil, {
-		name = L["OPTIONS_ENABLE_FARM"],
-		desc = L["OPTIONS_ENABLE_FARM_DESCRIPTION"],
-		click = "farm",
+	Kit.FeatureBlock(entries, {
+		key = "farm",
+		title = L["TAB_FARM_MODE"],
+		state = state,
+		stateColor = stateColor,
+		description = L["MENU_FARM_DESCRIPTION"],
+		note = farmNote,
+		toggle = {
+			name = L["OPTIONS_ENABLE_FARM"],
+			desc = L["OPTIONS_ENABLE_FARM_DESCRIPTION"],
+			flip = function()
+				ns.RunMenuJob("farm")
+			end,
+		},
 	})
 
 	--[[
@@ -589,200 +446,51 @@ local function BuildMainEntries()
 		SetTargetTracking.
 	]]
 	if ns.KnowsHuntAbility() then
-		right, rightColor = OnOff(profile.targetTracking)
-		AddFeature(
-			entries,
-			"targetTracking",
-			L["TARGET_TRACKING"],
-			right,
-			rightColor,
-			L["MENU_TARGET_DESCRIPTION"],
-			nil,
-			{
+		state, stateColor = Kit.OnOff(profile.targetTracking)
+		Kit.FeatureBlock(entries, {
+			key = "targetTracking",
+			title = L["TARGET_TRACKING"],
+			state = state,
+			stateColor = stateColor,
+			description = L["MENU_TARGET_DESCRIPTION"],
+			toggle = {
 				name = L["OPTIONS_ENABLE_TARGET_TRACKING"],
 				desc = L["OPTIONS_ENABLE_TARGET_TRACKING_DESCRIPTION"],
-				click = "target",
-			}
-		)
+				flip = function()
+					ns.RunMenuJob("target")
+				end,
+			},
+		})
 	end
 
-	--[[
-        More Features: the set-and-forget features from ns.FEATURES, one On/Off row
-        each. Come & Get It switches in place; Free Placement Mode opens its own
-        options panel, where its icon shape and size are set.
-    ]]
-	entries[#entries + 1] = { kind = "spacer" }
-	entries[#entries + 1] = Section(L["MENU_MORE_FEATURES"])
-	for _, feature in ipairs(ns.FEATURES) do
-		if not feature.block then
-			local store = ns.db[feature.store]
-			local row = Toggle(store, feature.setting, L[feature.name], L[feature.desc])
-			row.tooltip = OptionTooltip(L[feature.caption], L[feature.desc])
-			if feature.opensOptions then
-				row.onClick = function()
-					ns.HideMenu()
-					ns:OpenOptionsPanel(feature.opensOptions)
-				end
-			end
-			entries[#entries + 1] = row
-		end
-	end
-
-	entries[#entries + 1] = { kind = "spacer" }
-	entries[#entries + 1] = Separator()
-	entries[#entries + 1] = ClickRow(L["MENU_OPTIONS"], "options")
+	-- Come & Get It and Free Placement Mode, from ns.FEATURES, in the More Features flyout with their count.
+	Kit.MoreFeatures(entries)
+	Kit.OptionsRow(entries, L["MENU_OPTIONS"])
 	return entries
 end
 
 --------------------------------------------------------------------------------
--- Drawing & Placement
+-- The Menu
 --------------------------------------------------------------------------------
 
 --[[
-    The flyout beside its label, its first row level with the label, on the side
-    the menu opened toward. The label keeps its highlight while it's open.
+    The kit's menu: named, so Escape closes it, and it publishes ns.ShowMenu,
+    ns.HideMenu, ns.RefreshMenu, ns.IsMenuShown, ns.IsMenuFrame and
+    ns.OpenFlyout for the rest of the add-on.
+    Every row click ends in ns.RefreshSettings, so an open options page follows.
 ]]
-local function PositionFlyout(row)
-	flyout:ClearAllPoints()
-	if state.openLeft then
-		flyout:SetPoint("TOPRIGHT", row, "TOPLEFT", -Kit.FLYOUT_GAP, Kit.FLYOUT_RISE)
-	else
-		flyout:SetPoint("TOPLEFT", row, "TOPRIGHT", Kit.FLYOUT_GAP, Kit.FLYOUT_RISE)
-	end
-end
+local menu = Kit.CreateMenu({
+	name = ADDON_NAME .. "Menu",
+	build = BuildMainEntries,
+	flyouts = FLYOUTS,
+	afterChange = function()
+		ns.RefreshSettings()
+	end,
+})
 
-local function RenderFlyout()
-	local key = state.flyoutKey
-	local row = key and menu:SubmenuRow(key)
-	local builder = key and FLYOUTS[key]
-	if not (row and builder) then
-		state.flyoutKey = nil
-		flyout:Hide()
-		return
-	end
-	flyout.tooltipAnchor = menu.tooltipAnchor
-	flyout:Render(builder())
-	PositionFlyout(row)
-	flyout:Show()
-	row:LockHighlight()
-end
-
-local function Render()
-	if not menu:IsShown() or not ns.db then
-		return
-	end
-	menu:Render(BuildMainEntries())
-	RenderFlyout()
-end
-
-function ns.OpenFlyout(key)
-	if key ~= state.flyoutKey then
-		state.flyoutKey = key
-		Render()
-	end
-end
-
--- Entering a label opens its flyout, and any other row closes it, the way any game submenu behaves.
-menu.onEnterRow = function(_, entry)
-	ns.OpenFlyout(entry and entry.submenu or nil)
-end
-
--- Opens away from the screen edges: left of the launcher on the right half of the screen, below it on the top half.
-local function PositionMenu(anchor)
-	local x, y = anchor:GetCenter()
-	local scale = anchor:GetEffectiveScale() / UIParent:GetEffectiveScale()
-	state.openLeft = (x or 0) * scale > UIParent:GetWidth() / 2
-	state.openDown = (y or 0) * scale > UIParent:GetHeight() / 2
-
-	local point = (state.openDown and "TOP" or "BOTTOM") .. (state.openLeft and "RIGHT" or "LEFT")
-	local relative = (state.openDown and "BOTTOM" or "TOP") .. (state.openLeft and "LEFT" or "RIGHT")
-	menu:ClearAllPoints()
-	menu:SetPoint(
-		point,
-		anchor,
-		relative,
-		state.openLeft and -MENU_GAP or MENU_GAP,
-		state.openDown and -MENU_GAP or MENU_GAP
-	)
-	menu.tooltipAnchor = state.openLeft and "ANCHOR_LEFT" or "ANCHOR_RIGHT"
-end
-
--- Closes a moment after the cursor has left the launcher, the menu, and the flyout.
-menu:SetScript("OnUpdate", function(self, elapsed)
-	local anchor = state.anchor
-	if not anchor or not anchor:IsVisible() then
-		self:Hide()
-		return
-	end
-	if Kit.IsCursorOver(anchor) or Kit.IsCursorOver(self) or Kit.IsCursorOver(flyout) then
-		state.idle = 0
-		return
-	end
-	state.idle = state.idle + elapsed
-	if state.idle >= state.closeDelay then
-		self:Hide()
-	end
-end)
-
-menu:SetScript("OnHide", function(self)
-	state.flyoutKey = nil
-	state.anchor = nil
-	flyout:Hide()
-	if ns.IsMenuFrame(GameTooltip:GetOwner()) then
-		GameTooltip:Hide()
-	end
-end)
-
---------------------------------------------------------------------------------
--- Public API
---------------------------------------------------------------------------------
-
---[[
-    Opens the menu from a launcher. how is "hover" or "click"; a click keeps it
-    open a little longer once the cursor leaves. flyoutKey opens that label's
-    flyout at once. A launcher already showing the menu keeps its place and its
-    open flyout.
-]]
-function ns.ShowMenu(anchor, flyoutKey, how)
-	if not ns.db or not anchor then
-		return
-	end
-	local reopen = menu:IsShown() and state.anchor == anchor
-	if not reopen then
-		state.closeDelay = HOVER_CLOSE_DELAY
-		state.flyoutKey = nil
-	end
-	state.anchor = anchor
-	state.idle = 0
-	if how == "click" then
-		state.closeDelay = CLICK_CLOSE_DELAY
-	end
-	if flyoutKey then
-		state.flyoutKey = flyoutKey
-	end
-	if not reopen then
-		PositionMenu(anchor)
-	end
-	menu:Show()
-	Render()
-end
-
-function ns.HideMenu()
-	menu:Hide()
-end
-
--- Redraws the menu in place while it is open; a no-op otherwise.
-function ns.RefreshMenu()
-	Render()
-end
-
-function ns.IsMenuShown()
-	return menu:IsShown()
-end
-
--- True for the menu, its flyout, and anything inside them; the pause check uses it to recognize our own tooltips.
-function ns.IsMenuFrame(frame)
-	return frame ~= nil and Kit.IsInside(frame, menu)
+-- Both launchers hand every click here (Minimap-Button.lua, Free-Placement.lua).
+function ns.HandleMenuClick(anchor, button)
+	return menu:HandleClick(anchor, button)
 end
 
 --------------------------------------------------------------------------------

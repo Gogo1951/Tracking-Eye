@@ -32,7 +32,7 @@ L["FARM_STATUS_ACTIVE"] = "Active"
 L["FARM_STATUS_PAUSED"] = "Paused"
 L["MENU_TRACKING_NOW"] = "Tracking Now"
 L["MENU_TRACKING_NONE"] = "Nothing"
-L["MENU_CYCLE_SPEED_EVERY"] = "Cycle Speed: Every %s Seconds"
+L["MENU_CYCLE_EVERY"] = "Every %s Seconds"
 
 L["FARM_PAUSED_DEAD"] = "Dead."
 L["FARM_PAUSED_TAXI"] = "On a flight path."
@@ -70,14 +70,15 @@ L["MENU_ON"] = "On"
 L["MENU_OFF"] = "Off"
 L["MENU_PERSISTENT_DESCRIPTION"] = "Brings your tracking back after you die, shapeshift, or zone."
 L["MENU_FARM_DESCRIPTION"] = "Cycles your tracking abilities as you travel."
+L["MENU_FARM_PAUSED_REASON"] = "Paused Reason: %s"
 L["MENU_TARGET_DESCRIPTION"] = "Tracks whatever kind of creature you target."
 L["MENU_TOGGLE"] = "Toggle"
 L["MENU_CLICK_RIGHT"] = "Right-Click"
-L["MENU_CLICK_SHIFT_LEFT"] = "Shift + Left-Click"
-L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + Right-Click"
-L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + Middle-Click"
-L["MENU_CLICK_WHEEL"] = "Mouse Wheel"
 L["MENU_MORE_FEATURES"] = "More Features"
+L["MENU_MORE"] = "%d more"
+L["MENU_FEATURE_COUNT_ON"] = "%d On"
+L["MENU_FEATURE_COUNT_OFF"] = "%d Off"
+L["MENU_SHORTCUT"] = "Shortcut: Right-Click the mini-map button."
 
 L["MENU_OPTIONS"] = "Tracking Eye Options"
 
@@ -110,6 +111,8 @@ L["OPTIONS_ENABLE_WELCOME"] = "Enable Welcome Message"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Prints a one-line greeting in chat when Tracking Eye loads."
 L["OPTIONS_ENABLE_MINIMAP"] = "Enable Mini-map Button"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Everything keeps running with the button hidden."
+L["OPTIONS_MINIMAP_NO_TRACKING"] =
+	"This character doesn't know a tracking ability yet, so the mini-map button stays hidden. It shows up as soon as you learn one."
 L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
 	"%s is on, so its icon takes the button's place. Its switch is on the %s page."
 L["OPTIONS_HOOK_BLIZZARD"] = "Use the Default Tracking Button"
@@ -122,11 +125,10 @@ L["OPTIONS_FEATURES_HEADER"] = "Features"
 L["OPTIONS_KEYBINDS"] = "Key Bindings"
 L["OPTIONS_KEY_SET"] = "Set Key"
 L["OPTIONS_KEY_SET_DESCRIPTION"] = "Opens the game's key binding list, where Tracking Eye has its own section."
-L["OPTIONS_KEYBINDS_DESCRIPTION"] = "Jump to the next tracking ability with one key, even with Farm Mode off."
-L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
-	"Turns Farm Mode on or off, the same as Shift + Left-Click on the mini-map button."
+L["OPTIONS_KEYBINDS_DESCRIPTION"] = "Jumps to the next tracking ability with one key, even with Farm Mode off."
+L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] = "Turns Farm Mode on or off without opening the mini-map menu."
 L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
-	"Turns Automatic Target Tracking on or off, the same as Shift + Right-Click on the mini-map button."
+	"Turns Automatic Target Tracking on or off without opening the mini-map menu."
 
 -- Slash Commands
 
@@ -189,6 +191,9 @@ L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "Zoom Mini-map Out"
 L["OPTIONS_ZOOM_MINIMAP_OUT_DESCRIPTION"] =
 	"Zoomed all the way out, the mini-map shows tracked nodes from much farther away."
+L["OPTIONS_FARM_PAUSE_WINDOWS"] = "Pause While a Window Is Open"
+L["OPTIONS_FARM_PAUSE_WINDOWS_DESCRIPTION"] =
+	"Turn off to keep cycling with the world map or another window open, such as on a second monitor."
 L["OPTIONS_FARM_CONDITIONS"] = "Farm Mode Conditions"
 L["OPTIONS_FARM_CONDITIONS_DESCRIPTION"] =
 	"Farm your way: mounted, on foot, or in your class's travel form. Farm Mode cycles in any state you tick."

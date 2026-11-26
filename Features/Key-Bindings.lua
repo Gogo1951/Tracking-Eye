@@ -22,13 +22,13 @@ BINDING_NAME_TRACKINGEYE_CYCLE_FARM_ABILITY = L["BINDING_CYCLE_FARM_ABILITY"]
 BINDING_NAME_TRACKINGEYE_TOGGLE_FARM_MODE = L["BINDING_TOGGLE_FARM_MODE"]
 BINDING_NAME_TRACKINGEYE_TOGGLE_TARGET_TRACKING = L["BINDING_TOGGLE_TARGET_TRACKING"]
 
--- The same jobs as Shift + Left-Click and Shift + Right-Click on the button (Minimap-Menu.lua's click table).
+-- The same jobs as the menu's Farm Mode and Automatic Target Tracking Toggle rows (Minimap-Menu.lua's jobs).
 function TrackingEye_ToggleFarmMode()
-	ns.RunClickJob("farm")
+	ns.RunMenuJob("farm")
 end
 
 function TrackingEye_ToggleTargetTracking()
-	ns.RunClickJob("target")
+	ns.RunMenuJob("target")
 end
 
 -- ns.GetEmptyCycleKind -> the chat line that explains an empty cycle.

@@ -32,7 +32,7 @@ L["FARM_STATUS_ACTIVE"] = "运行中"
 L["FARM_STATUS_PAUSED"] = "已暂停"
 L["MENU_TRACKING_NOW"] = "当前追踪"
 L["MENU_TRACKING_NONE"] = "无"
-L["MENU_CYCLE_SPEED_EVERY"] = "循环速度：每 %s 秒"
+L["MENU_CYCLE_EVERY"] = "每 %s 秒"
 
 L["FARM_PAUSED_DEAD"] = "您已死亡。"
 L["FARM_PAUSED_TAXI"] = "正在飞行路线上。"
@@ -70,14 +70,15 @@ L["MENU_ON"] = "开启"
 L["MENU_OFF"] = "关闭"
 L["MENU_PERSISTENT_DESCRIPTION"] = "死亡、变形或切换区域后，自动恢复您的追踪。"
 L["MENU_FARM_DESCRIPTION"] = "在旅途中循环切换您的追踪技能。"
+L["MENU_FARM_PAUSED_REASON"] = "暂停原因：%s"
 L["MENU_TARGET_DESCRIPTION"] = "追踪您所选目标的同类生物。"
 L["MENU_TOGGLE"] = "切换"
 L["MENU_CLICK_RIGHT"] = "右键"
-L["MENU_CLICK_SHIFT_LEFT"] = "Shift + 左键"
-L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + 右键"
-L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + 中键"
-L["MENU_CLICK_WHEEL"] = "鼠标滚轮"
 L["MENU_MORE_FEATURES"] = "更多功能"
+L["MENU_MORE"] = "还有 %d 项"
+L["MENU_FEATURE_COUNT_ON"] = "%d 项开启"
+L["MENU_FEATURE_COUNT_OFF"] = "%d 项关闭"
+L["MENU_SHORTCUT"] = "快捷操作：右键点击小地图按钮。"
 
 L["MENU_OPTIONS"] = "Tracking Eye 选项"
 
@@ -110,6 +111,8 @@ L["OPTIONS_ENABLE_WELCOME"] = "启用欢迎消息"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Tracking Eye 加载时在聊天中显示一行欢迎语。"
 L["OPTIONS_ENABLE_MINIMAP"] = "启用小地图按钮"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "隐藏按钮后，所有功能照常运行。"
+L["OPTIONS_MINIMAP_NO_TRACKING"] =
+	"该角色尚未学会任何追踪技能，因此小地图按钮保持隐藏。学会一个追踪技能后它就会出现。"
 L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
 	"%s 已开启，因此它的图标取代了按钮。它的开关位于 %s 页面。"
 L["OPTIONS_HOOK_BLIZZARD"] = "使用默认追踪按钮"
@@ -123,10 +126,9 @@ L["OPTIONS_KEYBINDS"] = "快捷键"
 L["OPTIONS_KEY_SET"] = "设置按键"
 L["OPTIONS_KEY_SET_DESCRIPTION"] = "打开游戏的快捷键列表，Tracking Eye 在其中有专属分类。"
 L["OPTIONS_KEYBINDS_DESCRIPTION"] = "一键跳到下一个追踪技能，即使采集模式已关闭也能使用。"
-L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
-	"开启或关闭采集模式，与在小地图按钮上 Shift + 左键相同。"
+L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] = "无需打开小地图菜单即可开启或关闭采集模式。"
 L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
-	"开启或关闭自动目标追踪，与在小地图按钮上 Shift + 右键相同。"
+	"无需打开小地图菜单即可开启或关闭自动目标追踪。"
 
 -- Slash Commands
 
@@ -188,6 +190,9 @@ L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"只有采集模式自己的切换会静音。您亲自选择的追踪仍会发出声音。"
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "缩小小地图"
 L["OPTIONS_ZOOM_MINIMAP_OUT_DESCRIPTION"] = "小地图缩到最小后，能显示远得多的已追踪资源点。"
+L["OPTIONS_FARM_PAUSE_WINDOWS"] = "窗口打开时暂停"
+L["OPTIONS_FARM_PAUSE_WINDOWS_DESCRIPTION"] =
+	"关闭后，打开世界地图或其他窗口时仍会继续轮换，例如放在第二台显示器上时。"
 L["OPTIONS_FARM_CONDITIONS"] = "采集模式条件"
 L["OPTIONS_FARM_CONDITIONS_DESCRIPTION"] =
 	"随心采集：骑乘、步行或使用本职业的旅行形态皆可。采集模式会在您勾选的任一状态下循环。"

@@ -33,7 +33,7 @@ L["FARM_STATUS_ACTIVE"] = "Activo"
 L["FARM_STATUS_PAUSED"] = "En pausa"
 L["MENU_TRACKING_NOW"] = "Rastreo actual"
 L["MENU_TRACKING_NONE"] = "Nada"
-L["MENU_CYCLE_SPEED_EVERY"] = "Velocidad del ciclo: cada %s segundos"
+L["MENU_CYCLE_EVERY"] = "Cada %s segundos"
 
 L["FARM_PAUSED_DEAD"] = "Estás muerto."
 L["FARM_PAUSED_TAXI"] = "En una ruta de vuelo."
@@ -71,14 +71,15 @@ L["MENU_ON"] = "Activado"
 L["MENU_OFF"] = "Desactivado"
 L["MENU_PERSISTENT_DESCRIPTION"] = "Recupera tu rastreo cuando mueres, cambias de forma o cambias de zona."
 L["MENU_FARM_DESCRIPTION"] = "Alterna tus habilidades de rastreo mientras viajas."
+L["MENU_FARM_PAUSED_REASON"] = "Motivo de la pausa: %s"
 L["MENU_TARGET_DESCRIPTION"] = "Rastrea la especie de cualquier criatura que tengas como objetivo."
 L["MENU_TOGGLE"] = "Alternar"
 L["MENU_CLICK_RIGHT"] = "Clic derecho"
-L["MENU_CLICK_SHIFT_LEFT"] = "Mayús + Clic izquierdo"
-L["MENU_CLICK_SHIFT_RIGHT"] = "Mayús + Clic derecho"
-L["MENU_CLICK_SHIFT_MIDDLE"] = "Mayús + Clic central"
-L["MENU_CLICK_WHEEL"] = "Rueda del mouse"
 L["MENU_MORE_FEATURES"] = "Más funciones"
+L["MENU_MORE"] = "%d más"
+L["MENU_FEATURE_COUNT_ON"] = "%d activadas"
+L["MENU_FEATURE_COUNT_OFF"] = "%d desactivadas"
+L["MENU_SHORTCUT"] = "Atajo: clic derecho en el botón del minimapa."
 
 L["MENU_OPTIONS"] = "Opciones de Tracking Eye"
 
@@ -111,6 +112,8 @@ L["OPTIONS_ENABLE_WELCOME"] = "Habilitar mensaje de bienvenida"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Muestra un saludo de una línea en el chat al cargarse Tracking Eye."
 L["OPTIONS_ENABLE_MINIMAP"] = "Habilitar botón del minimapa"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Todo sigue funcionando con el botón oculto."
+L["OPTIONS_MINIMAP_NO_TRACKING"] =
+	"Este personaje aún no conoce ninguna habilidad de rastreo, así que el botón del minimapa permanece oculto. Aparecerá en cuanto aprendas una."
 L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
 	"%s está activado, así que su ícono ocupa el lugar del botón. Su interruptor está en la página %s."
 L["OPTIONS_HOOK_BLIZZARD"] = "Usar el botón de rastreo predeterminado"
@@ -126,9 +129,9 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] = "Abre la lista de atajos del juego, donde Tra
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Salta a la siguiente habilidad de rastreo con una sola tecla, incluso con el Modo de recolección desactivado."
 L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
-	"Activa o desactiva el Modo de recolección, igual que Mayús + Clic izquierdo en el botón del minimapa."
+	"Activa o desactiva el Modo de recolección sin abrir el menú del minimapa."
 L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
-	"Activa o desactiva el Rastreo automático de objetivo, igual que Mayús + Clic derecho en el botón del minimapa."
+	"Activa o desactiva el Rastreo automático de objetivo sin abrir el menú del minimapa."
 
 -- Slash Commands
 
@@ -193,6 +196,9 @@ L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "Alejar el minimapa"
 L["OPTIONS_ZOOM_MINIMAP_OUT_DESCRIPTION"] =
 	"Con el zoom al mínimo, el minimapa muestra los nodos rastreados desde mucho más lejos."
+L["OPTIONS_FARM_PAUSE_WINDOWS"] = "Pausar con una ventana abierta"
+L["OPTIONS_FARM_PAUSE_WINDOWS_DESCRIPTION"] =
+	"Desactívalo para seguir alternando con el mapa del mundo u otra ventana abierta, por ejemplo en un segundo monitor."
 L["OPTIONS_FARM_CONDITIONS"] = "Condiciones del Modo de recolección"
 L["OPTIONS_FARM_CONDITIONS_DESCRIPTION"] =
 	"Recolecta a tu manera: montado, a pie o en la forma de viaje de tu clase. El Modo de recolección alterna en cualquier estado que marques."
