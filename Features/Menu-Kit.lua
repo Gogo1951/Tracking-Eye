@@ -32,11 +32,11 @@ local ADDON_NAME, ns = ...
       status       left, right            A gold label and where it stands
       submenu      left, right, submenu   A gold label that opens a flyout
       separator                           A thin line
-      action       left, click            A row to click: blue, its button click gray on the right
+      action       left, click            A row to click: blue; on the right what it touches, or its click gray
       toggle       left, on               A switch: On in green, or Off with its name gray
-      choice       left, selected         One of a set: the pick white with a check, the rest gray
+      choice       left, selected         One of a set: the pick light yellow with a check, the rest white
       item         itemID or link, count  An item: its icon, its name in its quality color, the count
-      value        left, right            A read-out: white label, white value, nothing to click
+      value        left, right            A setting's value: white label, light yellow value (Off gray)
       description  left                   What a feature does, white, wrapped at 320
       note         left                   Gray helper text, wrapped at 256
 
@@ -44,10 +44,12 @@ local ADDON_NAME, ns = ...
       leftColor, rightColor   a palette key, a six-digit hex or { r, g, b }
       onClick                 what a click does; the menu's afterChange runs after it
       closes                  true for a pick that acts: the menu closes first
-      click                   the button click that does the same ("RightButton", "ShiftLeftButton"),
-                              or a gesture's localized name ("Drag"), drawn the same and routing nothing
+      click                   the button's kept click that does the same ("RightButton"), its name from
+                              clicks drawn gray on the right; or a gesture's localized name ("Drag"),
+                              drawn the same and routing nothing
       disabled                true: gray, no highlight, no click, no sub-menu (its arrow gray); its tooltip still shows
       tooltip                 a function(GameTooltip), shown beside the row under the cursor
+      helper                  a gray sentence under the row's tooltip (or an item's), after a spacer
       submenu                 the key of the flyout its hover opens (flyouts[key]), or with
       flyout                  a function returning the flyout's entries in place of flyouts[key]
       rightOnHover            true: the right side shows only while the row is hovered
@@ -95,6 +97,10 @@ local HOVER_CLOSE_DELAY = 0.5 -- Forgiving for a cursor that slips off the edge,
 local CLICK_CLOSE_DELAY = 1.0
 local MENU_GAP = 2 -- From the launcher's corner to the menu's
 local MAX_DEPTH = 4 -- The menu and three sub-menus deep
+local SCREEN_MARGIN = 64 -- A panel is never taller than the screen less this; past it, it scrolls
+local SCROLL_STEP = 3 -- Rows per notch of the wheel
+local THUMB_WIDTH = 2
+local THUMB_ALPHA = 0.6
 local LIST_MAX = 8
 
 local OPTIONS = { choice = true, toggle = true, item = true, value = true }
@@ -136,7 +142,7 @@ Kit.FLYOUT_GAP = ROW_INSET - Kit.FLYOUT_OVERLAP
       count              L["ITEM_QUANTITY"]             "x%d"
       loading            L["LOADING_ITEM"]              "Loading ID: %d"
       shortName          L["ADDON_SHORT_NAME"]          a right-click menu's header
-      clicks             { LeftButton = L["MENU_CLICK_LEFT"], ShiftMiddleButton = ..., }
+      clicks             { RightButton = L["MENU_CLICK_RIGHT"] }  "Right-Click"; only where the button keeps it
 ]]
 local TEXT = {
 	on = "On",
@@ -151,6 +157,11 @@ local TEXT = {
 	shortName = "",
 	clicks = {},
 }
+
+-- A button click ("RightButton", "ShiftLeftButton"), as opposed to a gesture the caller names ("Drag").
+local function IsButtonClick(click)
+	return type(click) == "string" and click:match("Button%d*$") ~= nil
+end
 
 function Kit.SetText(strings)
 	for key, value in pairs(strings) do
@@ -171,12 +182,15 @@ local function HexRGB(hex)
 	return tonumber(hex:sub(1, 2), 16) / 255, tonumber(hex:sub(3, 4), 16) / 255, tonumber(hex:sub(5, 6), 16) / 255
 end
 
+-- Roles an add-on's ns.PALETTE may not have yet (Style Guide → COLORS).
+local PALETTE_FALLBACK = { VALUE = "FFFF99", HELP = "CCCCCC" }
+
 -- A palette key, a six-digit hex (a class or quality color), or { r, g, b }.
 local function RGB(color)
 	if type(color) == "table" then
 		return color[1] or color.r or 1, color[2] or color.g or 1, color[3] or color.b or 1
 	end
-	local hex = ns.PALETTE and ns.PALETTE[color]
+	local hex = ns.PALETTE and ns.PALETTE[color] or PALETTE_FALLBACK[color]
 	if not hex and type(color) == "string" and color:match("^%x%x%x%x%x%x$") then
 		hex = color
 	end
@@ -398,14 +412,20 @@ local function Look(entry)
 		leftColor = leftColor or (not entry.on and "MUTED") or "TEXT"
 		rightColor = rightColor or (entry.on and "ON") or "MUTED"
 	elseif kind == "choice" then
+		-- The pick matches the value on the row that opened it; the rest are options, not gray. Off stays gray.
 		right = entry.selected and Kit.CHECK_MARK or nil
-		leftColor = leftColor or (not entry.selected and "MUTED") or "TEXT"
+		leftColor = leftColor or (left == TEXT.off and "MUTED") or (entry.selected and "VALUE") or "BODY"
 	elseif kind == "action" then
+		-- The button's kept click is named on its row, gray, as a gesture is ("Drag").
 		if not right and entry.click then
-			-- A button click's localized name, or a gesture the caller names itself ("Drag").
-			right = TEXT.clicks[entry.click] or entry.click
+			if IsButtonClick(entry.click) then
+				right = TEXT.clicks[entry.click]
+			else
+				right = entry.click
+			end
+			rightColor = rightColor or "MUTED"
 		end
-		leftColor, rightColor = leftColor or "INFO", rightColor or "MUTED"
+		leftColor, rightColor = leftColor or "INFO", rightColor or "VALUE"
 	elseif kind == "hint" then
 		-- v1's click hint, kept so an add-on not yet moved still draws; new menus use action rows.
 		leftColor, rightColor = leftColor or "INFO", rightColor or "INFO"
@@ -425,9 +445,10 @@ local function Look(entry)
 		if entry.count then
 			left = (left or "") .. " " .. Kit.Color("TEXT", format(TEXT.count, entry.count))
 		end
-		rightColor = rightColor or "MUTED"
+		rightColor = rightColor or "VALUE"
 	elseif kind == "value" then
 		leftColor = leftColor or "BODY"
+		rightColor = rightColor or (right == TEXT.off and "MUTED") or "VALUE"
 	elseif kind == "description" then
 		leftColor = leftColor or "BODY"
 	elseif kind == "note" then
@@ -495,6 +516,16 @@ local function LooksKey(entries, looks, arrows)
 	return table.concat(parts, "\30")
 end
 
+-- A new section of a tooltip gets a spacer above it: the row's helper sits one blank line under the rest, gray.
+local function AddHelper(tooltip, helper)
+	if not helper or helper == "" then
+		return
+	end
+	tooltip:AddLine(" ")
+	local red, green, blue = RGB("HELP")
+	tooltip:AddLine(helper, red, green, blue, true)
+end
+
 local function HideOwnTooltip(owner)
 	if GameTooltip:GetOwner() == owner then
 		GameTooltip:Hide()
@@ -508,7 +539,7 @@ local function Row(panel, index)
 		return row
 	end
 	row = CreateFrame("Button", nil, panel)
-	row:RegisterForClicks("LeftButtonUp")
+	row:RegisterForClicks("AnyUp") -- Any mouse button does a row's job, so an old Right-Click habit can't miss.
 	row.highlight = row:CreateTexture(nil, "HIGHLIGHT")
 	row.highlight:SetAllPoints()
 	local red, green, blue = RGB("TITLE")
@@ -560,6 +591,7 @@ local function Row(panel, index)
 		if entry and entry.tooltip then
 			GameTooltip:SetOwner(self, panel.tooltipAnchor or "ANCHOR_RIGHT")
 			entry.tooltip(GameTooltip)
+			AddHelper(GameTooltip, entry.helper)
 			GameTooltip:Show()
 		elseif entry and entry.kind == "item" and (entry.itemID or entry.link) then
 			GameTooltip:SetOwner(self, panel.tooltipAnchor or "ANCHOR_RIGHT")
@@ -568,6 +600,7 @@ local function Row(panel, index)
 			else
 				GameTooltip:SetItemByID(entry.itemID)
 			end
+			AddHelper(GameTooltip, entry.helper)
 			GameTooltip:Show()
 		end
 		local menu = panel.menu
@@ -652,6 +685,7 @@ function Panel:Render(source, context)
 	end
 
 	local rows = self.rows
+	self.rowCount = #entries
 	for index, entry in ipairs(entries) do
 		local row = Row(self, index)
 		row.entry = entry
@@ -668,6 +702,7 @@ function Panel:Render(source, context)
 
 	local key = LooksKey(entries, looks, arrows)
 	if key == self.shownKey then
+		self:Layout() -- Row() showed every row again: a scrolled list hides the ones out of view
 		return
 	end
 	self.shownKey = key
@@ -737,7 +772,6 @@ function Panel:Render(source, context)
 	width = math.min(math.ceil(width), MAX_WIDTH)
 
 	-- Second pass: a left side that doesn't fit wraps within what the right side leaves, and the row grows.
-	local y = PANEL_INSET
 	for index, entry in ipairs(entries) do
 		local row = rows[index]
 		local size = measured[index]
@@ -748,8 +782,10 @@ function Panel:Render(source, context)
 			if WRAPS[entry.kind] or size.leftWidth > available then
 				row.left:SetWordWrap(true)
 				row.left:SetWidth(math.max(available, 1))
-				-- Set again now the width is set, so it wraps there instead of keeping the first pass's one-line layout.
-				row.left:SetText(row.left:GetText() or "")
+				-- Cleared, then set: the game doesn't re-wrap unchanged text, so a refresh would keep the one-line layout.
+				local text = row.left:GetText() or ""
+				row.left:SetText("")
+				row.left:SetText(text)
 				local textHeight = math.max(lineHeight, math.ceil(row.left:GetStringHeight() or lineHeight))
 				row.left:SetHeight(textHeight)
 				row.height = textHeight + 2 * SPACE.LINE
@@ -765,18 +801,98 @@ function Panel:Render(source, context)
 			row.right:SetPoint("TOPRIGHT", -(TEXT_INSET + (anyArrow and arrowWidth or 0)), -SPACE.LINE)
 		end
 		row:SetHeight(row.height)
-		row:ClearAllPoints()
-		row:SetPoint("TOPLEFT", self, "TOPLEFT", ROW_INSET, -y)
-		row:SetPoint("TOPRIGHT", self, "TOPRIGHT", -ROW_INSET, -y)
-		y = y + row.height
 	end
-	self:SetSize(width, y + PANEL_INSET)
+	self:SetWidth(width)
+	self:Layout()
 	-- A row already under the cursor shows its hover look; every other hover-only right side hides.
 	for index = 1, #entries do
 		local row = rows[index]
 		if row.look then
 			Dress(row, row:IsMouseEnabled() and Kit.IsCursorOver(row))
 		end
+	end
+end
+
+--[[
+    Stacks the rows and sets the panel's height. Every panel, the main menu
+    included, grows to fit its rows. Only one whose rows would run off the
+    screen (taller than the screen less SCREEN_MARGIN, as a very long bag list
+    can be) stays that tall and shows whole rows from self.scroll on: the mouse
+    wheel moves them SCROLL_STEP at a time, and a thin thumb in the plate's
+    right margin shows where the view sits in the list.
+]]
+function Panel:Layout()
+	local rows, count = self.rows, self.rowCount or 0
+	local content = 0
+	for index = 1, count do
+		content = content + rows[index].height
+	end
+	-- The screen's height in this panel's own points, whatever the UI scale.
+	local screen = UIParent:GetHeight() * UIParent:GetEffectiveScale() / self:GetEffectiveScale()
+	local maxHeight = math.floor(screen - SCREEN_MARGIN)
+	local room = maxHeight - 2 * PANEL_INSET
+	local scrolls = content > room
+
+	-- The first row shown: never so far down that the view has room left at the bottom.
+	local first = 1
+	if scrolls then
+		local lastFirst, used = count, 0
+		for index = count, 1, -1 do
+			used = used + rows[index].height
+			if used > room then
+				break
+			end
+			lastFirst = index
+		end
+		first = math.max(1, math.min(self.scroll or 1, lastFirst))
+	end
+	self.scroll = first
+
+	local y, above, full = PANEL_INSET, 0, false
+	for index = 1, count do
+		local row = rows[index]
+		if index < first then
+			above = above + row.height
+		elseif not full and (not scrolls or y + row.height <= PANEL_INSET + room) then
+			row:ClearAllPoints()
+			row:SetPoint("TOPLEFT", self, "TOPLEFT", ROW_INSET, -y)
+			row:SetPoint("TOPRIGHT", self, "TOPRIGHT", -ROW_INSET, -y)
+			y = y + row.height
+		else
+			full = true
+		end
+		row:SetShown(index >= first and not full)
+	end
+	self:SetHeight(scrolls and maxHeight or y + PANEL_INSET)
+	self:EnableMouseWheel(scrolls)
+
+	if scrolls and not self.thumb then
+		self.thumb = self:CreateTexture(nil, "ARTWORK")
+		self.thumb:SetWidth(THUMB_WIDTH)
+		local red, green, blue = RGB("SEPARATOR")
+		self.thumb:SetColorTexture(red, green, blue, THUMB_ALPHA)
+		self:SetScript("OnMouseWheel", function(panel, delta)
+			panel:Scroll(delta)
+		end)
+	end
+	if self.thumb then
+		self.thumb:SetShown(scrolls)
+		if scrolls then
+			self.thumb:ClearAllPoints()
+			local top = PANEL_INSET + room * above / content
+			self.thumb:SetPoint("TOPRIGHT", self, "TOPRIGHT", -(ROW_INSET - THUMB_WIDTH) / 2, -top)
+			self.thumb:SetHeight(math.max(room * (y - PANEL_INSET) / content, LINE_HEIGHT))
+		end
+	end
+end
+
+-- A notch of the wheel up (delta 1) or down (-1); a sub-menu off a row that moved closes.
+function Panel:Scroll(delta)
+	local before = self.scroll
+	self.scroll = (self.scroll or 1) - delta * SCROLL_STEP
+	self:Layout()
+	if self.scroll ~= before and self.menu then
+		self.menu:CloseFrom(self.depth + 1)
 	end
 end
 
@@ -829,7 +945,7 @@ local menus = {}
           build = BuildMainEntries,     -- returns the menu's entries
           flyouts = FLYOUTS,            -- flyouts[key]() returns a sub-menu's entries
           afterChange = ns.RefreshSettings, -- after every row click and button click
-          fallback = nil,               -- optional { LeftButton = fn }: when no row's click matches
+          fallback = nil,               -- optional { RightButton = fn }: when no row's click matches
           publish = nil,                -- false: don't set ns.ShowMenu and the rest
       })
 
@@ -941,12 +1057,12 @@ function Kit.CreateDropdownMenu(name)
 		end
 		shown.entries, shown.onClose = list, onClose
 		kitMenu:Show(anchor, "hover")
-		-- A dropdown's list hangs straight under its field, or over it, not off a corner.
+		-- A dropdown's list hangs straight under its field, or over it, MENU_GAP off it, not off a corner.
 		frame:ClearAllPoints()
 		if upward then
-			frame:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 0)
+			frame:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, MENU_GAP)
 		else
-			frame:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, 0)
+			frame:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -MENU_GAP)
 		end
 	end
 
@@ -1088,6 +1204,10 @@ function Menu:Show(anchor, how, flyoutKey)
 	if not reopen then
 		state.closeDelay = HOVER_CLOSE_DELAY
 		state.open = {}
+		-- A long list opens at its top.
+		for _, panel in ipairs(self.panels) do
+			panel.scroll, panel.shownFor = 1, nil
+		end
 	end
 	state.anchor = anchor
 	state.idle = 0
@@ -1178,6 +1298,9 @@ function Menu:Render()
 			return
 		end
 		local panel = self:Panel(depth)
+		if panel.shownFor ~= key then
+			panel.scroll, panel.shownFor = 1, key
+		end
 		panel.tooltipAnchor = main.tooltipAnchor
 		panel:Render(entries, context)
 		PlaceFlyout(panel, row, self.state.openLeft)
@@ -1238,16 +1361,24 @@ end
 --------------------------------------------------------------------------------
 
 --[[
-    Both ways, from one place: an action entry names its click ("RightButton",
-    "ShiftLeftButton"), the row draws that click's name on its right, and the
-    button's OnClick lands here, which runs the main entry whose click matches.
-    With no match: the add-on's fallback for that click, if it gave one; else a
-    Left-Click opens and holds the menu, and Shift + Middle-Click opens options.
-    True when the click did something.
+    Left-Click toggles the menu in every add-on: it holds a menu that hover
+    opened, and closes one it already holds. Any other click runs the main
+    entry that names it (the add-on's one kept click, a Right-Click: Style Guide
+    → MINIMAP MENU → Button Clicks), else the add-on's fallback for it; a click
+    with no job does nothing. True when the click did something.
 ]]
 function Menu:HandleClick(anchor, button)
 	if not ns.db then
 		return false
+	end
+	if button == "LeftButton" then
+		local state = self.state
+		if self:IsShown() and state.anchor == anchor and state.closeDelay == CLICK_CLOSE_DELAY then
+			self:Hide()
+		else
+			self:Show(anchor, "click")
+		end
+		return true
 	end
 	local key = (IsShiftKeyDown() and "Shift" or "") .. button
 	for _, entry in ipairs(self.spec.build(self) or {}) do
@@ -1264,15 +1395,6 @@ function Menu:HandleClick(anchor, button)
 	if fallback then
 		fallback(anchor)
 		self:AfterChange()
-		return true
-	end
-	if key == "LeftButton" then
-		self:Show(anchor, "click")
-		return true
-	end
-	if key == "ShiftMiddleButton" and ns.OpenOptionsPanel then
-		self:Hide()
-		ns:OpenOptionsPanel()
 		return true
 	end
 	return false
@@ -1449,7 +1571,8 @@ end
       })
 
     toggle.name and desc are the feature's Enable option, its tooltip. label
-    replaces Toggle (Open). click names the button click that does the same.
+    replaces Toggle (Open). click is the button's kept click that does the same
+    (RightButton), named gray on the row's right.
     With on and confirm, turning it off asks confirm first.
 ]]
 function Kit.FeatureBlock(entries, block)
@@ -1513,14 +1636,13 @@ function Kit.List(entries, rows, max)
 	end
 end
 
--- The Options footer: a spacer, a separator, and the action row naming Shift + Middle-Click.
+-- The Options footer: a spacer, a separator, and the Options action row. It has no button click.
 function Kit.OptionsRow(entries, label)
 	entries[#entries + 1] = { kind = "spacer" }
 	entries[#entries + 1] = { kind = "separator" }
 	entries[#entries + 1] = {
 		kind = "action",
 		left = label,
-		click = "ShiftMiddleButton",
 		closes = true,
 		onClick = function()
 			if ns.OpenOptionsPanel then

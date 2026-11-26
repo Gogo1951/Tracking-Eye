@@ -33,7 +33,7 @@ L["FARM_STATUS_ACTIVE"] = "Attiva"
 L["FARM_STATUS_PAUSED"] = "In pausa"
 L["MENU_TRACKING_NOW"] = "Tracciamento Attuale"
 L["MENU_TRACKING_NONE"] = "Niente"
-L["MENU_CYCLE_SPEED_EVERY"] = "Velocità del Ciclo: Ogni %s Secondi"
+L["MENU_CYCLE_EVERY"] = "Ogni %s Secondi"
 
 L["FARM_PAUSED_DEAD"] = "Sei morto."
 L["FARM_PAUSED_TAXI"] = "Su una rotta di volo."
@@ -71,14 +71,15 @@ L["MENU_ON"] = "Attivo"
 L["MENU_OFF"] = "Disattivo"
 L["MENU_PERSISTENT_DESCRIPTION"] = "Ripristina il tuo tracciamento dopo che muori, cambi forma o cambi zona."
 L["MENU_FARM_DESCRIPTION"] = "Alterna le tue abilità di tracciamento mentre viaggi."
+L["MENU_FARM_PAUSED_REASON"] = "Motivo della pausa: %s"
 L["MENU_TARGET_DESCRIPTION"] = "Traccia la specie di qualsiasi creatura che bersagli."
 L["MENU_TOGGLE"] = "Attiva/Disattiva"
 L["MENU_CLICK_RIGHT"] = "Clic Destro"
-L["MENU_CLICK_SHIFT_LEFT"] = "Maiusc + Clic Sinistro"
-L["MENU_CLICK_SHIFT_RIGHT"] = "Maiusc + Clic Destro"
-L["MENU_CLICK_SHIFT_MIDDLE"] = "Maiusc + Clic Centrale"
-L["MENU_CLICK_WHEEL"] = "Rotellina del Mouse"
 L["MENU_MORE_FEATURES"] = "Altre Funzionalità"
+L["MENU_MORE"] = "Altri %d"
+L["MENU_FEATURE_COUNT_ON"] = "%d attive"
+L["MENU_FEATURE_COUNT_OFF"] = "%d disattivate"
+L["MENU_SHORTCUT"] = "Scorciatoia: clic destro sul pulsante della minimappa."
 
 L["MENU_OPTIONS"] = "Opzioni di Tracking Eye"
 
@@ -111,6 +112,8 @@ L["OPTIONS_ENABLE_WELCOME"] = "Abilita Messaggio di Benvenuto"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Mostra in chat un saluto di una riga al caricamento di Tracking Eye."
 L["OPTIONS_ENABLE_MINIMAP"] = "Abilita Pulsante Minimappa"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Tutto continua a funzionare anche con il pulsante nascosto."
+L["OPTIONS_MINIMAP_NO_TRACKING"] =
+	"Questo personaggio non conosce ancora alcuna abilità di tracciamento, quindi il pulsante della minimappa resta nascosto. Comparirà non appena ne imparerai una."
 L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
 	"%s è attiva, quindi la sua icona prende il posto del pulsante. Il suo interruttore è nella pagina %s."
 L["OPTIONS_HOOK_BLIZZARD"] = "Usa il Pulsante di Tracciamento Predefinito"
@@ -127,9 +130,9 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] =
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Passa alla prossima abilità di tracciamento con un solo tasto, anche con la Modalità Raccolta disattivata."
 L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
-	"Attiva o disattiva la Modalità Raccolta, come Maiusc + Clic Sinistro sul pulsante della minimappa."
+	"Attiva o disattiva la Modalità Raccolta senza aprire il menu della minimappa."
 L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
-	"Attiva o disattiva il Tracciamento Automatico del Bersaglio, come Maiusc + Clic Destro sul pulsante della minimappa."
+	"Attiva o disattiva il Tracciamento Automatico del Bersaglio senza aprire il menu della minimappa."
 
 -- Slash Commands
 
@@ -193,6 +196,9 @@ L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "Riduci lo Zoom della Minimappa"
 L["OPTIONS_ZOOM_MINIMAP_OUT_DESCRIPTION"] =
 	"Con lo zoom al minimo, la minimappa mostra i nodi tracciati da molto più lontano."
+L["OPTIONS_FARM_PAUSE_WINDOWS"] = "Pausa con una Finestra Aperta"
+L["OPTIONS_FARM_PAUSE_WINDOWS_DESCRIPTION"] =
+	"Disattiva per continuare ad alternare con la mappa del mondo o un'altra finestra aperta, ad esempio su un secondo monitor."
 L["OPTIONS_FARM_CONDITIONS"] = "Condizioni della Modalità Raccolta"
 L["OPTIONS_FARM_CONDITIONS_DESCRIPTION"] =
 	"Raccogli a modo tuo: in sella, a piedi o nella forma di viaggio della tua classe. La Modalità Raccolta alterna in ogni stato che spunti."

@@ -33,7 +33,7 @@ L["FARM_STATUS_ACTIVE"] = "Actif"
 L["FARM_STATUS_PAUSED"] = "En pause"
 L["MENU_TRACKING_NOW"] = "Pistage actuel"
 L["MENU_TRACKING_NONE"] = "Rien"
-L["MENU_CYCLE_SPEED_EVERY"] = "Vitesse du cycle : toutes les %s secondes"
+L["MENU_CYCLE_EVERY"] = "Toutes les %s secondes"
 
 L["FARM_PAUSED_DEAD"] = "Vous êtes mort."
 L["FARM_PAUSED_TAXI"] = "Sur un trajet aérien."
@@ -72,14 +72,15 @@ L["MENU_OFF"] = "Désactivé"
 L["MENU_PERSISTENT_DESCRIPTION"] =
 	"Rétablit votre pistage après une mort, un changement de forme ou un changement de zone."
 L["MENU_FARM_DESCRIPTION"] = "Alterne vos capacités de pistage pendant vos déplacements."
+L["MENU_FARM_PAUSED_REASON"] = "Raison de la pause : %s"
 L["MENU_TARGET_DESCRIPTION"] = "Piste l'espèce de toute créature que vous ciblez."
 L["MENU_TOGGLE"] = "Basculer"
 L["MENU_CLICK_RIGHT"] = "Clic droit"
-L["MENU_CLICK_SHIFT_LEFT"] = "Maj + Clic gauche"
-L["MENU_CLICK_SHIFT_RIGHT"] = "Maj + Clic droit"
-L["MENU_CLICK_SHIFT_MIDDLE"] = "Maj + Clic milieu"
-L["MENU_CLICK_WHEEL"] = "Molette"
 L["MENU_MORE_FEATURES"] = "Autres fonctionnalités"
+L["MENU_MORE"] = "%d de plus"
+L["MENU_FEATURE_COUNT_ON"] = "%d activées"
+L["MENU_FEATURE_COUNT_OFF"] = "%d désactivées"
+L["MENU_SHORTCUT"] = "Raccourci : clic droit sur le bouton de la minicarte."
 
 L["MENU_OPTIONS"] = "Options de Tracking Eye"
 
@@ -113,6 +114,8 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Affiche une ligne de bienvenue dans la fenêtre de discussion au chargement de Tracking Eye."
 L["OPTIONS_ENABLE_MINIMAP"] = "Activer le bouton de la minicarte"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Tout continue de fonctionner quand le bouton est masqué."
+L["OPTIONS_MINIMAP_NO_TRACKING"] =
+	"Ce personnage ne connaît encore aucune capacité de pistage, donc le bouton de la minicarte reste masqué. Il apparaît dès que vous en apprenez une."
 L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
 	"%s est activé, son icône remplace donc le bouton. Son interrupteur se trouve sur la page %s."
 L["OPTIONS_HOOK_BLIZZARD"] = "Utiliser le bouton de pistage par défaut"
@@ -126,11 +129,11 @@ L["OPTIONS_KEYBINDS"] = "Raccourcis clavier"
 L["OPTIONS_KEY_SET"] = "Définir une touche"
 L["OPTIONS_KEY_SET_DESCRIPTION"] = "Ouvre la liste des raccourcis clavier du jeu, où Tracking Eye a sa propre section."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
-	"Passez à la capacité de pistage suivante d'une seule touche, même avec le Mode de collecte désactivé."
+	"Passe à la capacité de pistage suivante d'une seule touche, même avec le Mode de collecte désactivé."
 L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
-	"Active ou désactive le Mode de collecte, comme Maj + Clic gauche sur le bouton de la minicarte."
+	"Active ou désactive le Mode de collecte sans ouvrir le menu de la minicarte."
 L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
-	"Active ou désactive le Pistage automatique de la cible, comme Maj + Clic droit sur le bouton de la minicarte."
+	"Active ou désactive le Pistage automatique de la cible sans ouvrir le menu de la minicarte."
 
 -- Slash Commands
 
@@ -195,6 +198,9 @@ L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "Dézoomer la minicarte"
 L["OPTIONS_ZOOM_MINIMAP_OUT_DESCRIPTION"] =
 	"Dézoomée au maximum, la minicarte affiche les ressources pistées de bien plus loin."
+L["OPTIONS_FARM_PAUSE_WINDOWS"] = "Pause quand une fenêtre est ouverte"
+L["OPTIONS_FARM_PAUSE_WINDOWS_DESCRIPTION"] =
+	"Désactivez pour continuer l'alternance avec la carte du monde ou une autre fenêtre ouverte, par exemple sur un second écran."
 L["OPTIONS_FARM_CONDITIONS"] = "Conditions du Mode de collecte"
 L["OPTIONS_FARM_CONDITIONS_DESCRIPTION"] =
 	"Collectez à votre façon : en monture, à pied ou dans la forme de voyage de votre classe. Le Mode de collecte alterne dans chaque état coché."

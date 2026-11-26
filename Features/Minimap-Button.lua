@@ -56,33 +56,20 @@ end
 
 --[[
     Shared by the mini-map button and the free-placement frame (Free-Placement.lua).
-    Hovering opens the menu (Minimap-Menu.lua). A click runs its job from the
-    menu's click table (Right-Click Clear Tracking, Shift + Left-Click Farm Mode,
-    Shift + Right-Click Automatic Target Tracking, Shift + Middle-Click Options);
-    a plain Left-Click has no job, so it opens and holds the menu.
+    Hovering opens the menu (Minimap-Menu.lua). Every click goes to the menu's
+    kit: Left-Click opens and holds the menu, and Right-Click runs Clear
+    Tracking while its row shows. The kit counts Shift + Left-Click as
+    Left-Click, so it stops here: the button has no Shift clicks.
 ]]
 function ns.HandleLauncherClick(self, button)
-	if not ns.RunButtonClick(button) and button == "LeftButton" then
-		ns.ShowMenu(self, nil, "click")
+	if button == "LeftButton" and IsShiftKeyDown() then
+		return
 	end
+	ns.HandleMenuClick(self, button)
 end
 
 function ns.HandleLauncherEnter(self)
 	ns.ShowMenu(self, nil, "hover")
-end
-
---[[
-    The mouse wheel sets Cycle Speed, half a second a notch: up cycles faster,
-    down slower. The menu opens on Farm Mode's flyout, whose Cycle Speed row
-    shows the new value and names the wheel.
-]]
-function ns.HandleLauncherWheel(self, delta)
-	if not ns.db then
-		return
-	end
-	ns.SetFarmInterval(ns.db.profile.farmInterval - delta * ns.FARM_INTERVAL_STEP)
-	ns.RefreshSettings()
-	ns.ShowMenu(self, ns.db.profile.farmMode and "farm" or nil, "hover")
 end
 
 --------------------------------------------------------------------------------
@@ -113,10 +100,6 @@ function ns.InitMinimap()
 			button's icon.
 		]]
 		local fitButton = LibDBIcon:GetMinimapButton(ADDON_NAME)
-		if fitButton then
-			fitButton:EnableMouseWheel(true)
-			fitButton:SetScript("OnMouseWheel", ns.HandleLauncherWheel)
-		end
 		if (ns.FLAVOR == "Camelot" or ns.FLAVOR == "Mainline") and fitButton and fitButton.icon then
 			fitButton.icon:SetSize(20, 20)
 			fitButton.icon:ClearAllPoints()

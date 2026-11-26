@@ -224,8 +224,11 @@ function ns.RunFarmLogic()
 		return
 	end
 
-	-- Hold while any window is open, something attackable is targeted, any tooltip shows, or our own menu is open.
-	if ns.IsBlockingWindowOpen() or ns.HasAttackableTarget() or ns.IsTooltipShowing() or ns.IsOwnMenuShowing() then
+	--[[
+		Hold while a window is open (unless Pause While a Window Is Open is off),
+		something attackable is targeted, any tooltip shows, or our own menu is open.
+	]]
+	if ns.IsFarmHeldByWindow() or ns.HasAttackableTarget() or ns.IsTooltipShowing() or ns.IsOwnMenuShowing() then
 		return
 	end
 
@@ -372,7 +375,7 @@ end
 -- Cycle Speed
 --------------------------------------------------------------------------------
 
--- Cycle Speed's range and step, shared by the options dropdown and the button's mouse wheel.
+-- Cycle Speed's range and step, shared by the options dropdown and the mini-map menu's Cycle Speed flyout.
 ns.FARM_INTERVAL_MIN = 2
 ns.FARM_INTERVAL_MAX = 10
 ns.FARM_INTERVAL_STEP = 0.5

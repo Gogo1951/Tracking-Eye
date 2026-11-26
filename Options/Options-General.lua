@@ -28,8 +28,9 @@ local KEY_BINDINGS = {
 	},
 }
 
-local KEY_LABEL_WIDTH = 1.9
-local KEY_STATUS_WIDTH = 0.85
+-- The caption takes the label column, so each key and Set Key start where every other page's controls do.
+local KEY_LABEL_WIDTH = ns.OPTIONS_LABEL_WIDTH
+local KEY_STATUS_WIDTH = 0.75
 local KEY_BUTTON_WIDTH = 0.55
 
 local function GetBindingStatus(bindingName)
@@ -149,6 +150,13 @@ function ns.BuildGeneralOptions()
 				ns.RefreshSettings()
 			end,
 		},
+		-- Only for a character with no tracking ability, whose mini-map button stays hidden (ns:ApplyMinimapButton).
+		statusMinimapNoTracking = ns.OptionsStatusLine(function()
+			if ns.HasTrackingAbility() then
+				return nil
+			end
+			return L["OPTIONS_MINIMAP_NO_TRACKING"]
+		end, 13.4),
 		-- Only while Free Placement Mode is on, which is what grays Enable Mini-map Button.
 		statusMinimapFree = ns.OptionsStatusLine(function()
 			if not (ns.db and ns.db.global.freePlacement) then

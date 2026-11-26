@@ -33,7 +33,7 @@ L["FARM_STATUS_ACTIVE"] = "Aktiv"
 L["FARM_STATUS_PAUSED"] = "Pausiert"
 L["MENU_TRACKING_NOW"] = "Aktuelle Aufspürung"
 L["MENU_TRACKING_NONE"] = "Nichts"
-L["MENU_CYCLE_SPEED_EVERY"] = "Wechselgeschwindigkeit: alle %s Sekunden"
+L["MENU_CYCLE_EVERY"] = "Alle %s Sekunden"
 
 L["FARM_PAUSED_DEAD"] = "Ihr seid tot."
 L["FARM_PAUSED_TAXI"] = "Auf einer Flugroute."
@@ -72,14 +72,15 @@ L["MENU_OFF"] = "Aus"
 L["MENU_PERSISTENT_DESCRIPTION"] =
 	"Bringt Eure Aufspürung nach dem Tod, einem Gestaltwechsel oder einem Zonenwechsel zurück."
 L["MENU_FARM_DESCRIPTION"] = "Wechselt unterwegs zwischen Euren Aufspürungsfähigkeiten."
+L["MENU_FARM_PAUSED_REASON"] = "Pausegrund: %s"
 L["MENU_TARGET_DESCRIPTION"] = "Spürt die Art jeder Kreatur auf, die Ihr anvisiert."
 L["MENU_TOGGLE"] = "Umschalten"
 L["MENU_CLICK_RIGHT"] = "Rechtsklick"
-L["MENU_CLICK_SHIFT_LEFT"] = "Umschalt + Linksklick"
-L["MENU_CLICK_SHIFT_RIGHT"] = "Umschalt + Rechtsklick"
-L["MENU_CLICK_SHIFT_MIDDLE"] = "Umschalt + Mittelklick"
-L["MENU_CLICK_WHEEL"] = "Mausrad"
 L["MENU_MORE_FEATURES"] = "Weitere Funktionen"
+L["MENU_MORE"] = "%d weitere"
+L["MENU_FEATURE_COUNT_ON"] = "%d an"
+L["MENU_FEATURE_COUNT_OFF"] = "%d aus"
+L["MENU_SHORTCUT"] = "Kurzbefehl: Rechtsklick auf den Minikarten-Button."
 
 L["MENU_OPTIONS"] = "Tracking Eye-Optionen"
 
@@ -113,6 +114,8 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Gibt im Chat eine einzeilige Begrüßung aus, wenn Tracking Eye geladen wird."
 L["OPTIONS_ENABLE_MINIMAP"] = "Minikarten-Button aktivieren"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Auch mit ausgeblendetem Button läuft alles weiter."
+L["OPTIONS_MINIMAP_NO_TRACKING"] =
+	"Dieser Charakter kennt noch keine Aufspürungsfähigkeit, deshalb bleibt der Minikarten-Button verborgen. Er erscheint, sobald Ihr eine erlernt."
 L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
 	"%s ist an, daher nimmt sein Symbol den Platz des Buttons ein. Der Schalter befindet sich auf der Seite %s."
 L["OPTIONS_HOOK_BLIZZARD"] = "Standard-Aufspürungsbutton verwenden"
@@ -129,9 +132,9 @@ L["OPTIONS_KEY_SET_DESCRIPTION"] =
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
 	"Springt mit einer Taste zur nächsten Aufspürungsfähigkeit, auch bei ausgeschaltetem Farming-Modus."
 L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
-	"Schaltet den Farming-Modus ein oder aus, genau wie Umschalt + Linksklick auf den Minikarten-Button."
+	"Schaltet den Farming-Modus ein oder aus, ohne das Minikartenmenü zu öffnen."
 L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
-	"Schaltet die Automatische Zielaufspürung ein oder aus, genau wie Umschalt + Rechtsklick auf den Minikarten-Button."
+	"Schaltet die Automatische Zielaufspürung ein oder aus, ohne das Minikartenmenü zu öffnen."
 
 -- Slash Commands
 
@@ -195,6 +198,9 @@ L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "Minikarte herauszoomen"
 L["OPTIONS_ZOOM_MINIMAP_OUT_DESCRIPTION"] =
 	"Ganz herausgezoomt zeigt die Minikarte aufgespürte Vorkommen aus viel größerer Entfernung."
+L["OPTIONS_FARM_PAUSE_WINDOWS"] = "Bei offenem Fenster pausieren"
+L["OPTIONS_FARM_PAUSE_WINDOWS_DESCRIPTION"] =
+	"Ausschalten, um mit offener Weltkarte oder einem anderen offenen Fenster weiter zu wechseln, etwa auf einem zweiten Monitor."
 L["OPTIONS_FARM_CONDITIONS"] = "Farming-Modus-Bedingungen"
 L["OPTIONS_FARM_CONDITIONS_DESCRIPTION"] =
 	"Farmt, wie Ihr wollt: beritten, zu Fuß oder in der Reisegestalt Eurer Klasse. Der Farming-Modus wechselt in jedem Zustand, den Ihr ankreuzt."

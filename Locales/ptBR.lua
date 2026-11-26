@@ -33,7 +33,7 @@ L["FARM_STATUS_ACTIVE"] = "Ativo"
 L["FARM_STATUS_PAUSED"] = "Pausado"
 L["MENU_TRACKING_NOW"] = "Rastreamento Atual"
 L["MENU_TRACKING_NONE"] = "Nada"
-L["MENU_CYCLE_SPEED_EVERY"] = "Velocidade do Ciclo: a Cada %s Segundos"
+L["MENU_CYCLE_EVERY"] = "A Cada %s Segundos"
 
 L["FARM_PAUSED_DEAD"] = "Você está morto."
 L["FARM_PAUSED_TAXI"] = "Em uma rota de voo."
@@ -72,14 +72,15 @@ L["MENU_OFF"] = "Desligado"
 L["MENU_PERSISTENT_DESCRIPTION"] =
 	"Traz o seu rastreamento de volta depois que você morre, muda de forma ou troca de zona."
 L["MENU_FARM_DESCRIPTION"] = "Alterna suas habilidades de rastreamento enquanto você viaja."
+L["MENU_FARM_PAUSED_REASON"] = "Motivo da pausa: %s"
 L["MENU_TARGET_DESCRIPTION"] = "Rastreia a espécie de qualquer criatura que você tenha como alvo."
 L["MENU_TOGGLE"] = "Alternar"
 L["MENU_CLICK_RIGHT"] = "Clique Direito"
-L["MENU_CLICK_SHIFT_LEFT"] = "Shift + Clique Esquerdo"
-L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + Clique Direito"
-L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + Clique do Meio"
-L["MENU_CLICK_WHEEL"] = "Roda do Mouse"
 L["MENU_MORE_FEATURES"] = "Mais Recursos"
+L["MENU_MORE"] = "Mais %d"
+L["MENU_FEATURE_COUNT_ON"] = "%d ligados"
+L["MENU_FEATURE_COUNT_OFF"] = "%d desligados"
+L["MENU_SHORTCUT"] = "Atalho: clique direito no botão do minimapa."
 
 L["MENU_OPTIONS"] = "Opções do Tracking Eye"
 
@@ -113,6 +114,8 @@ L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] =
 	"Exibe no bate-papo uma saudação de uma linha quando o Tracking Eye é carregado."
 L["OPTIONS_ENABLE_MINIMAP"] = "Habilitar Botão do Minimapa"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "Tudo continua funcionando com o botão oculto."
+L["OPTIONS_MINIMAP_NO_TRACKING"] =
+	"Este personagem ainda não conhece nenhuma habilidade de rastreamento, então o botão do minimapa fica oculto. Ele aparece assim que você aprender uma."
 L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
 	"%s está ligado, então o ícone dele ocupa o lugar do botão. A chave fica na página %s."
 L["OPTIONS_HOOK_BLIZZARD"] = "Usar o Botão de Rastreamento Padrão"
@@ -127,11 +130,10 @@ L["OPTIONS_KEY_SET"] = "Definir Tecla"
 L["OPTIONS_KEY_SET_DESCRIPTION"] =
 	"Abre a lista de atalhos do teclado do jogo, onde o Tracking Eye tem a sua própria seção."
 L["OPTIONS_KEYBINDS_DESCRIPTION"] =
-	"Pule para a próxima habilidade de rastreamento com uma só tecla, mesmo com o Modo de Coleta desligado."
-L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
-	"Liga ou desliga o Modo de Coleta, igual a Shift + Clique Esquerdo no botão do minimapa."
+	"Pula para a próxima habilidade de rastreamento com uma só tecla, mesmo com o Modo de Coleta desligado."
+L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] = "Liga ou desliga o Modo de Coleta sem abrir o menu do minimapa."
 L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
-	"Liga ou desliga o Rastreamento Automático de Alvo, igual a Shift + Clique Direito no botão do minimapa."
+	"Liga ou desliga o Rastreamento Automático de Alvo sem abrir o menu do minimapa."
 
 -- Slash Commands
 
@@ -195,6 +197,9 @@ L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "Afastar o Zoom do Minimapa"
 L["OPTIONS_ZOOM_MINIMAP_OUT_DESCRIPTION"] =
 	"Com o zoom todo afastado, o minimapa mostra os pontos rastreados de muito mais longe."
+L["OPTIONS_FARM_PAUSE_WINDOWS"] = "Pausar com uma Janela Aberta"
+L["OPTIONS_FARM_PAUSE_WINDOWS_DESCRIPTION"] =
+	"Desligue para continuar alternando com o mapa-múndi ou outra janela aberta, como em um segundo monitor."
 L["OPTIONS_FARM_CONDITIONS"] = "Condições do Modo de Coleta"
 L["OPTIONS_FARM_CONDITIONS_DESCRIPTION"] =
 	"Colete do seu jeito: montado, a pé ou na forma de viagem da sua classe. O Modo de Coleta alterna em qualquer estado que você marcar."

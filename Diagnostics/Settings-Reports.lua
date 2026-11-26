@@ -71,7 +71,7 @@ function ns:BuildDisplayContextReport()
 		"Button hover opens menu: %s, click runs menu clicks: %s",
 		tostring(type(broker) == "table" and type(broker.OnEnter) == "function"),
 		tostring(
-			type(broker) == "table" and type(broker.OnClick) == "function" and type(ns.RunButtonClick) == "function"
+			type(broker) == "table" and type(broker.OnClick) == "function" and type(ns.HandleMenuClick) == "function"
 		)
 	)
 	lines[#lines + 1] = string.format(

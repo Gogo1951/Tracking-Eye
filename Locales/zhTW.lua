@@ -32,7 +32,7 @@ L["FARM_STATUS_ACTIVE"] = "運作中"
 L["FARM_STATUS_PAUSED"] = "已暫停"
 L["MENU_TRACKING_NOW"] = "目前追蹤"
 L["MENU_TRACKING_NONE"] = "無"
-L["MENU_CYCLE_SPEED_EVERY"] = "循環速度：每 %s 秒"
+L["MENU_CYCLE_EVERY"] = "每 %s 秒"
 
 L["FARM_PAUSED_DEAD"] = "您已死亡。"
 L["FARM_PAUSED_TAXI"] = "正在飛行路線上。"
@@ -70,14 +70,15 @@ L["MENU_ON"] = "開啟"
 L["MENU_OFF"] = "關閉"
 L["MENU_PERSISTENT_DESCRIPTION"] = "死亡、變形或切換區域後，自動恢復您的追蹤。"
 L["MENU_FARM_DESCRIPTION"] = "在旅途中循環切換您的追蹤技能。"
+L["MENU_FARM_PAUSED_REASON"] = "暫停原因：%s"
 L["MENU_TARGET_DESCRIPTION"] = "追蹤您所選目標的同類生物。"
 L["MENU_TOGGLE"] = "切換"
 L["MENU_CLICK_RIGHT"] = "右鍵"
-L["MENU_CLICK_SHIFT_LEFT"] = "Shift + 左鍵"
-L["MENU_CLICK_SHIFT_RIGHT"] = "Shift + 右鍵"
-L["MENU_CLICK_SHIFT_MIDDLE"] = "Shift + 中鍵"
-L["MENU_CLICK_WHEEL"] = "滑鼠滾輪"
 L["MENU_MORE_FEATURES"] = "更多功能"
+L["MENU_MORE"] = "還有 %d 項"
+L["MENU_FEATURE_COUNT_ON"] = "%d 項開啟"
+L["MENU_FEATURE_COUNT_OFF"] = "%d 項關閉"
+L["MENU_SHORTCUT"] = "捷徑：右鍵點擊小地圖按鈕。"
 
 L["MENU_OPTIONS"] = "Tracking Eye 選項"
 
@@ -110,6 +111,8 @@ L["OPTIONS_ENABLE_WELCOME"] = "啟用歡迎訊息"
 L["OPTIONS_ENABLE_WELCOME_DESCRIPTION"] = "Tracking Eye 載入時在聊天中顯示一行歡迎語。"
 L["OPTIONS_ENABLE_MINIMAP"] = "啟用小地圖按鈕"
 L["OPTIONS_ENABLE_MINIMAP_DESCRIPTION"] = "隱藏按鈕後，所有功能照常運作。"
+L["OPTIONS_MINIMAP_NO_TRACKING"] =
+	"該角色尚未學會任何追蹤技能，因此小地圖按鈕保持隱藏。學會一個追蹤技能後它就會出現。"
 L["OPTIONS_ENABLE_MINIMAP_FREE_STATUS"] =
 	"%s 已開啟，因此它的圖示取代了按鈕。它的開關位於 %s 頁面。"
 L["OPTIONS_HOOK_BLIZZARD"] = "使用預設追蹤按鈕"
@@ -123,10 +126,9 @@ L["OPTIONS_KEYBINDS"] = "按鍵綁定"
 L["OPTIONS_KEY_SET"] = "設定按鍵"
 L["OPTIONS_KEY_SET_DESCRIPTION"] = "開啟遊戲的按鍵綁定清單，Tracking Eye 在其中有專屬分類。"
 L["OPTIONS_KEYBINDS_DESCRIPTION"] = "一鍵跳到下一個追蹤技能，即使採集模式已關閉也能使用。"
-L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] =
-	"開啟或關閉採集模式，與在小地圖按鈕上 Shift + 左鍵相同。"
+L["OPTIONS_KEYBINDS_TOGGLE_FARM_DESCRIPTION"] = "無需打開小地圖選單即可開啟或關閉採集模式。"
 L["OPTIONS_KEYBINDS_TOGGLE_TARGET_DESCRIPTION"] =
-	"開啟或關閉自動目標追蹤，與在小地圖按鈕上 Shift + 右鍵相同。"
+	"無需打開小地圖選單即可開啟或關閉自動目標追蹤。"
 
 -- Slash Commands
 
@@ -188,6 +190,9 @@ L["OPTIONS_SILENCE_TRACKING_SOUNDS_DESCRIPTION"] =
 	"只有採集模式自己的切換會靜音。您親自選擇的追蹤仍會發出聲音。"
 L["OPTIONS_ZOOM_MINIMAP_OUT"] = "縮小小地圖"
 L["OPTIONS_ZOOM_MINIMAP_OUT_DESCRIPTION"] = "小地圖縮到最小後，能顯示遠得多的已追蹤資源點。"
+L["OPTIONS_FARM_PAUSE_WINDOWS"] = "視窗開啟時暫停"
+L["OPTIONS_FARM_PAUSE_WINDOWS_DESCRIPTION"] =
+	"關閉後，開啟世界地圖或其他視窗時仍會繼續輪換，例如放在第二台螢幕上時。"
 L["OPTIONS_FARM_CONDITIONS"] = "採集模式條件"
 L["OPTIONS_FARM_CONDITIONS_DESCRIPTION"] =
 	"隨心採集：騎乘、步行或使用本職業的旅行形態皆可。採集模式會在您勾選的任一狀態下循環。"

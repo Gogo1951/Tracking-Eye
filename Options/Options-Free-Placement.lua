@@ -14,11 +14,11 @@ local function Hidden()
 	return not (ns.db and ns.db.global.freePlacement)
 end
 
--- Sized to their captions with slack; never the full row width. See ns.OptionsSubRow.
-local SUB_LABEL_WIDTH = 0.9
-local SHAPE_DROPDOWN_WIDTH = 1.0
-local SCALE_SLIDER_WIDTH = 1.9
-local RESET_BUTTON_WIDTH = 1.0
+-- Each caption fills the label column after the indent, so every control lines up with the other pages' controls.
+local SUB_LABEL_WIDTH = ns.OPTIONS_LABEL_WIDTH - ns.OPTIONS_SUB_INDENT_WIDTH
+local SHAPE_DROPDOWN_WIDTH = ns.OPTIONS_CONTROL_WIDTH
+local SCALE_SLIDER_WIDTH = ns.OPTIONS_CONTROL_WIDTH
+local RESET_BUTTON_WIDTH = ns.OPTIONS_CONTROL_WIDTH
 
 --------------------------------------------------------------------------------
 -- Free Placement Mode Panel

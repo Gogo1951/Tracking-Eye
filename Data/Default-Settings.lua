@@ -49,6 +49,8 @@ ns.DATABASE_DEFAULTS = {
 		targetTracking = false,
 		-- On by default: the cycle's repeated cast sound is the add-on's own noise.
 		muteCycleSound = true,
+		-- On by default: a window open over the world means the player is reading or trading, not farming.
+		farmPauseForWindows = true,
 	},
 	global = {
 		minimap = {},
